@@ -1,7 +1,7 @@
 \pdfoutput=1
 %% Author: PGL  Porta Mana
 %% Created: 2015-05-01T20:53:34+0200
-%% Last-Updated: 2022-02-01T08:29:59+0100
+%% Last-Updated: 2022-03-04T08:07:40+0100
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \newif\ifarxiv
 \arxivfalse
@@ -16,15 +16,15 @@
 onecolumn,oneside,article,%french,italian,german,swedish,latin,
 british%
 ]{memoir}
-\newcommand*{\firstdraft}{***}
+\newcommand*{\firstdraft}{4 March 2022}
 \newcommand*{\firstpublished}{\firstdraft}
 \newcommand*{\updated}{\ifarxiv***\else\today\fi}
-\newcommand*{\propertitle}{***[draft]%\\{\large ***}%
+\newcommand*{\propertitle}{Consistency and classification of metrics\\for binary classifiers%\\{\large ***}%
 }% title uses LARGE; set Large for smaller
 \newcommand*{\pdftitle}{\propertitle}
-\newcommand*{\headtitle}{***}
-\newcommand*{\pdfauthor}{P.G.L.  Porta Mana}
-\newcommand*{\headauthor}{Porta Mana}
+\newcommand*{\headtitle}{Metrics for binary classifiers}
+\newcommand*{\pdfauthor}{K. Dirland, A. S. Lundervold, P.G.L.  Porta Mana}
+\newcommand*{\headauthor}{Dirland, Lundervold, Porta Mana}
 \newcommand*{\reporthead}{\ifarxiv\else Open Science Framework \href{https://doi.org/10.31219/osf.io/***}{\textsc{doi}:10.31219/osf.io/***}\fi}% Report number
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -519,14 +519,16 @@ Open Science Framework \doi{10.31219/osf.io/#1}%
 \author{%
 \hspace*{\stretch{1}}%
 %% uncomment if additional authors present
-% \parbox{0.5\linewidth}%\makebox[0pt][c]%
-% {\protect\centering ***\\%
-% \footnotesize\epost{\email{***}{***}}}%
-% \hspace*{\stretch{1}}%
-\parbox{1\linewidth}%\makebox[0pt][c]%
-{\protect\centering P.G.L.  Porta Mana  \href{https://orcid.org/0000-0002-6070-0784}{\protect\includegraphics[scale=0.16]{orcid_32x32.png}}\\\footnotesize
-Western Norway University of Applied Sciences%
-\quad\epost{\email{pgl}{portamana.org}}}%
+\parbox{0.3\linewidth}%\makebox[0pt][c]%
+{\protect\centering K. Dirland\\%
+\footnotesize\epost{\email{***}{***}}}%
+\hspace*{\stretch{1}}%
+\parbox{0.3\linewidth}%\makebox[0pt][c]%
+{\protect\centering A. S. Lundervold\\%
+\footnotesize\epost{\email{***}{***}}}%
+\hspace*{\stretch{1}}%
+\parbox{0.3\linewidth}%\makebox[0pt][c]%
+{\protect\centering P.G.L.  Porta Mana  \href{https://orcid.org/0000-0002-6070-0784}{\protect\includegraphics[scale=0.16]{orcid_32x32.png}}\\\footnotesize\epost{\email{pgl}{portamana.org}}}%
 % Mohn Medical Imaging and Visualization Centre, Dept of Computer science, Electrical Engineering and Mathematical Sciences, Western Norway University of Applied Sciences, Bergen, Norway
 %% uncomment if additional authors present
 % \hspace*{\stretch{1}}%
@@ -534,10 +536,11 @@ Western Norway University of Applied Sciences%
 % {\protect\centering ***\\%
 % \footnotesize\epost{\email{***}{***}}}%
 \hspace*{\stretch{1}}%
+\\\scriptsize(or any permutation thereof)
 }
 
 %\date{Draft of \today\ (first drafted \firstdraft)}
-\date{\firstpublished; updated \updated}
+\date{Draft. \firstpublished; updated \updated}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%% Macros @@@
