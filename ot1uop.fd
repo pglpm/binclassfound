@@ -1,0 +1,61 @@
+\ProvidesFile{OT1uop.fd}
+    [2014/08/03 Font definitions for OT1/uop.]
+
+\expandafter\ifx\csname URWClassico@scale\endcsname\relax
+    \let\URWClassico@@scale\@empty
+\else
+    \edef\URWClassico@@scale{s*[\csname URWClassico@scale\endcsname]}%
+\fi
+
+\DeclareFontFamily{OT1}{uop}{}
+
+\DeclareFontShape{OT1}{uop}{b}{n}{
+      <-> \URWClassico@@scale URWClassico-Bold-lf-ot1
+}{}
+
+\DeclareFontShape{OT1}{uop}{b}{it}{
+      <-> \URWClassico@@scale URWClassico-BoldItalic-lf-ot1
+}{}
+
+\DeclareFontShape{OT1}{uop}{b}{sl}{
+      <-> ssub * uop/b/it
+}{}
+
+\DeclareFontShape{OT1}{uop}{m}{n}{
+      <-> \URWClassico@@scale URWClassico-Regular-lf-ot1
+}{}
+
+\DeclareFontShape{OT1}{uop}{m}{it}{
+      <-> \URWClassico@@scale URWClassico-Italic-lf-ot1
+}{}
+
+\DeclareFontShape{OT1}{uop}{m}{sl}{
+      <-> ssub * uop/m/it
+}{}
+
+\DeclareFontShape{OT1}{uop}{bx}{sl}{
+      <-> ssub * uop/b/sl
+}{}
+
+\DeclareFontShape{OT1}{uop}{bx}{n}{
+      <-> ssub * uop/b/n
+}{}
+
+\DeclareFontShape{OT1}{uop}{bx}{it}{
+      <-> ssub * uop/b/it
+}{}
+
+\DeclareFontShape{OT1}{uop}{b}{sc}{
+   <-> \URWClassico@@scale uopbc7t
+}{}
+
+\DeclareFontShape{OT1}{uop}{m}{sc}{
+   <-> \URWClassico@@scale uoprc7t
+}{}
+
+\DeclareFontShape{OT1}{uop}{bx}{sc}{
+      <-> ssub * uop/b/sc
+}{}
+
+
+\endinput

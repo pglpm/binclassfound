@@ -1,0 +1,60 @@
+\ProvidesFile{T1uop.fd}
+    [2014/08/02 Font definitions for T1/uop.]
+
+\expandafter\ifx\csname URWClassico@scale\endcsname\relax
+    \let\URWClassico@@scale\@empty
+\else
+    \edef\URWClassico@@scale{s*[\csname URWClassico@scale\endcsname]}%
+\fi
+
+\DeclareFontFamily{T1}{uop}{}
+
+\DeclareFontShape{T1}{uop}{b}{n}{
+      <-> \URWClassico@@scale URWClassico-Bold-lf-t1
+}{}
+
+\DeclareFontShape{T1}{uop}{b}{it}{
+      <-> \URWClassico@@scale URWClassico-BoldItalic-lf-t1
+}{}
+
+\DeclareFontShape{T1}{uop}{b}{sl}{
+      <-> ssub * uop/b/it
+}{}
+
+\DeclareFontShape{T1}{uop}{m}{n}{
+      <-> \URWClassico@@scale URWClassico-Regular-lf-t1
+}{}
+
+\DeclareFontShape{T1}{uop}{m}{it}{
+      <-> \URWClassico@@scale URWClassico-Italic-lf-t1
+}{}
+
+\DeclareFontShape{T1}{uop}{m}{sl}{
+      <-> ssub * uop/m/it
+}{}
+
+\DeclareFontShape{T1}{uop}{bx}{sl}{
+      <-> ssub * uop/b/sl
+}{}
+
+\DeclareFontShape{T1}{uop}{bx}{n}{
+      <-> ssub * uop/b/n
+}{}
+
+\DeclareFontShape{T1}{uop}{bx}{it}{
+      <-> ssub * uop/b/it
+}{}
+
+\DeclareFontShape{T1}{uop}{b}{sc}{
+   <-> \URWClassico@@scale uopbc8t
+}{}
+
+\DeclareFontShape{T1}{uop}{m}{sc}{
+   <-> \URWClassico@@scale uoprc8t
+}{}
+
+\DeclareFontShape{T1}{uop}{bx}{sc}{
+      <-> ssub * uop/b/sc
+}{}
+
+\endinput
