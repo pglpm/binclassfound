@@ -1,7 +1,7 @@
 \pdfoutput=1
 %% Author: PGL  Porta Mana
 %% Created: 2015-05-01T20:53:34+0200
-%% Last-Updated: 2022-03-07T17:10:12+0100
+%% Last-Updated: 2022-03-16T15:19:30+0100
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \newif\ifarxiv
 \arxivfalse
@@ -682,7 +682,7 @@ Open Science Framework \doi{10.31219/osf.io/#1}%
 \newcommand*{\puzzle}{{\fontencoding{U}\fontfamily{fontawesometwo}\selectfont\symbol{225}}}
 \newcommand*{\wrench}{{\fontencoding{U}\fontfamily{fontawesomethree}\selectfont\symbol{114}}}
 \newcommand*{\pencil}{{\fontencoding{U}\fontfamily{fontawesometwo}\selectfont\symbol{210}}}
-\newcommand{\mynote}[1]{ {\color{notecolour}\puzzle\ #1}}
+\newcommand{\mynote}[1]{ {\color{notecolour}#1}}
 
 \newcommand*{\widebar}[1]{{\mkern1.5mu\skew{2}\overline{\mkern-1.5mu#1\mkern-1.5mu}\mkern 1.5mu}}
 
@@ -693,6 +693,7 @@ Open Science Framework \doi{10.31219/osf.io/#1}%
 %\DeclareMathOperator*{\argsup}{arg\,sup}
 \newcommand*{\dob}{degree of belief}
 \newcommand*{\dobs}{degrees of belief}
+\newcommand*{\ml}{machine-learning}
 %%% Custom macros end @@@
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -714,7 +715,7 @@ Open Science Framework \doi{10.31219/osf.io/#1}%
 \setlength{\absrightindent}{0pt}
 \setlength{\abstitleskip}{-\absparindent}
 \begin{abstract}\labelsep 0pt%
-  \noindent ***
+  \noindent ***abstract***
 % \\\noindent\emph{\footnotesize Note: Dear Reader
 %     \amp\ Peer, this manuscript is being peer-reviewed by you. Thank you.}
 % \par%\\[\jot]
@@ -745,6 +746,41 @@ Open Science Framework \doi{10.31219/osf.io/#1}%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%% BEGINNING OF MAIN TEXT
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\mynote{\footnotesize\puzzle\ [Luca] I find it very difficult to structure the paper: there seems to be issues at several levels in the development and use of binary classifiers (and classifiers in general) within machine-learning.
+
+  Here are some relevant points:
+  \begin{itemize}
+  \item There should be a distinction between \enquote{inference} (or forecast, prediction, guess) and \enquote{decision} (or action, choice). In particular, the possible situations we may be uncertain about and the possible decisions available may be completely different things. A clinician, for example, may be uncertain about \enquote{cancer} vs \enquote{non-cancer}, while the choices are about \enquote{drug treatment 1} vs \enquote{drug treatment 2} vs \enquote{surgery}.
+
+  \item Probability theory \amp\ decision theory say that in order to make self-consistent decision we need two things: (a) the probabilities for the possible situations, (b) the utilities of the decisions given each possible situation.
+
+  \item A useful \ml\ algorithm should therefore give us one of two things:
+\begin{itemize}
+\item either the \emph{probabilities} of the uncertain situations
+  (\enquote{cancer} vs \enquote{non-cancer} in the example above),
+\item or the final decision (\enquote{drug treatment 1} vs \enquote{drug
+    treatment 2} vs \enquote{surgery} in the example above).
+\end{itemize}
+Current \ml\ classifiers do not give us either: the output in the example
+above would be \enquote{cancer} vs \enquote{non-cancer}, often without
+probabilities.
+
+\item So there are two possible solutions to the problem above:
+  \begin{itemize}
+  \item We must build a classifier that outputs probabilities. The 0--1
+    outputs of current classifiers cannot properly interpreted as
+    probabilities, for various reasons.
+  \item We must build a classifier that output \emph{decisions}: so not
+    \enquote{cancer} vs \enquote{non-cancer}, but \enquote{drug treatment
+      1} vs \etc.
+  \end{itemize}
+
+\end{itemize}
+}
+
+
+
 
 \section{***}
 \label{sec:***}
