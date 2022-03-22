@@ -1,6 +1,6 @@
 ## Author: PGL  Porta Mana
 ## Created: 2022-03-17T14:21:57+0100
-## Last-Updated: 2022-03-17T15:48:06+0100
+## Last-Updated: 2022-03-22T11:36:34+0100
 ################
 ## Exploration of several issues for binary classifiers
 ################
@@ -33,7 +33,7 @@ if(file.exists("/cluster/home/pglpm/R")){
     plan(multisession, workers=6)
 }
 ##library('ash')
-## library('LaplacesDemon')
+library('LaplacesDemon')
 ## library('extraDistr')
 ## library('mvtnorm')
 ## options(bitmapType='cairo')
@@ -51,8 +51,8 @@ condpCols <- function(x){
 
 ## We consider two binary {0,1} variables X and Y and a population with a given conditional frequency of Y given X
 
-pXgY0 <- rbind(0.375, 1-0.375)
-pXgY1 <- rbind(1-0.25, 0.25)
+pXgY0 <- rbind(1-0.4375, 0.4375)
+pXgY1 <- rbind(0.25, 1-0.25)
 ##
 pXgY <- rbind(t(pXgY0), t(pXgY1))
 ##
@@ -66,8 +66,8 @@ pYgX <- condpRows(pYX)
 ##           [,1]       [,2]
 ## [1,] 0.7777778 0.94594595
 ## [2,] 0.2222222 0.05405405
-
-
+##
+##
 pY2 <- rbind(0.5, 1-0.5)
 ##
 pYX2 <- pXgY * c(pY2)
@@ -78,4 +78,15 @@ pYgX2 <- condpRows(pYX2)
 ##           [,1]      [,2]
 ## [1,] 0.3333333 0.7142857
 ## [2,] 0.6666667 0.2857143
-
+##
+print('distr:')
+pYX
+print('true:')
+pYgX
+print('mod:')
+pYgX2
+##
+print('acc true:')
+sum(sapply(1:ncol(pYX),function(x)pYX[which.max(pYgX[,x]),x]))
+print('acc mod:')
+sum(sapply(1:ncol(pYX),function(x)pYX[which.max(pYgX2[,x]),x]))
