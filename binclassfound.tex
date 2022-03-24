@@ -1,7 +1,7 @@
 \pdfoutput=1
 %% Author: PGL  Porta Mana
 %% Created: 2015-05-01T20:53:34+0200
-%% Last-Updated: 2022-03-22T16:05:19+0100
+%% Last-Updated: 2022-03-24T08:10:35+0100
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \newif\ifarxiv
 \arxivfalse
@@ -789,19 +789,23 @@ Let's consider the simple example of a binary classifier and several dilemmas th
 
 At the moment of evaluating different classifier algorithms, or different
 hyperparameter settings for one algorithm, we are avalanched by a choice of
-possible evaluation metrics: accuracy, area under curve,
-F\textsubscript{1}-measure, precision, recall, sensitivity, specificity,
-and many others \citep{sammutetal2011_r2017}. Only vague guidelines are
-usually given to face this choice.
+possible evaluation scales: accuracy, area under curve, $F_{1}$-measure,
+Matthews correlation coefficient, precision, recall, sensitivity,
+specificity, and many others \citep{sammutetal2011_r2017}. Only vague
+guidelines are usually given to face this choice.
 
-Regarding such metrics, we can also ask: are they all well-founded and
+Regarding such scales, we can also ask: are they all well-founded and
 self-consistent? is it possible that the use of any of them lead to
-contradictions? Several studies show that using area under curve, for
-example, may imply hidden contradictions with the data or the assumptions
-used for our inference
-\citep{swets1988,bakeretal2001,loboetal2008}.
+contradictions? The literature abounds with studies showing that some scale
+$X$ may imply hidden contradictions with the data or the assumptions used
+for our inference, and is therefore worse than some other scale $Y$. See
+for example \textcite{bakeretal2001,loboetal2008,handetal2018,zhu2020} for
+instances of criticisms of area under the curve, $F_{1}$-measure, and
+Matthews correlation coefficient.
 
-If we have many more data for one of the two classes -- a common predicament in medical applications -- we must face the \enquote{class-imbalance problem}
+If we have many more data for one class than for the other -- a common
+predicament in medical applications -- we must face the
+\enquote{class-imbalance problem}
 
 
 
