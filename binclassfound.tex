@@ -1,7 +1,7 @@
 \pdfoutput=1
 %% Author: PGL  Porta Mana
 %% Created: 2015-05-01T20:53:34+0200
-%% Last-Updated: 2022-03-25T17:43:28+0100
+%% Last-Updated: 2022-03-29T16:04:48+0200
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \newif\ifarxiv
 \arxivfalse
@@ -313,7 +313,7 @@ citestyle=authoryear-comp,bibstyle=pglpm-authoryear,autopunct=false,sorting=ny,s
 \g@addto@macro{\UrlBreaks}{\myUrlOrds}
 \makeatother
 \newcommand*{\arxiveprint}[1]{%
-\href{https://arxiv.org/abs/#1}{arXiv:\allowbreak\nolinkurl{#1}}%
+arXiv \doi{10.48550/arXiv.#1}%
 }
 \newcommand*{\mparceprint}[1]{%
 \href{http://www.ma.utexas.edu/mp_arc-bin/mpa?yn=#1}{mp\_arc:\allowbreak\nolinkurl{#1}}%
@@ -803,16 +803,27 @@ it possible that the use of any of them leads to contradictions? The
 literature abounds with studies showing that some scale $X$ may imply
 hidden contradictions with the data or the assumptions used for our
 inference, and is therefore worse than some other scale $Y$. See for
-example \textcite{bakeretal2001,loboetal2008,handetal2018,zhu2020} for
-instances of criticisms of area under the curve, $F_{1}$-measure, and
-Matthews correlation coefficient, as well as Goodman \amp\ Kruskal's papers
-cited above.
+example \textcite{bakeretal2001,loboetal2008,handetal2018,zhu2020} and
+Goodman \amp\ Kruskal's papers cited above for instances of criticisms of
+area under the curve, $F_{1}$-measure, Matthews correlation coefficient,
+and other scales.
 
 If we have many more data for one class than for the other -- a common
 predicament in medical applications -- we must face the
-\enquote{class-imbalance problem}
+\enquote{class-imbalance problem} \citep{sammutetal2011_r2017}: the
+classifier ends up classifying all data as belonging to the more numerous
+class. 
 
 
+\section{Overview of decision theory}
+\label{sec:decision_theory}
+
+Decision theory makes a distinction between
+\begin{enumerate}[label=\alph*]
+\item the possible situations we are uncertain about
+\item the possible choices we can make.
+\end{enumerate}
+This distinction is important, in fact in some cases the numbers of possible uncertain situations
 
 
 % \[ \color{mypurpleblue}\bm{a} \color{myredpurple}\mathbin{\bm{\land}}\color{mypurpleblue} \bm{b} \]
