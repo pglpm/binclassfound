@@ -1,7 +1,7 @@
 \pdfoutput=1
 %% Author: PGL  Porta Mana
 %% Created: 2015-05-01T20:53:34+0200
-%% Last-Updated: 2022-03-29T16:04:48+0200
+%% Last-Updated: 2022-03-29T17:48:01+0200
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \newif\ifarxiv
 \arxivfalse
@@ -810,9 +810,26 @@ and other scales.
 
 If we have many more data for one class than for the other -- a common
 predicament in medical applications -- we must face the
-\enquote{class-imbalance problem} \citep{sammutetal2011_r2017}: the
-classifier ends up classifying all data as belonging to the more numerous
-class. 
+\enquote{class-imbalance problem}: the classifier ends up classifying all
+data as belonging to the more numerous class
+\citep{sammutetal2011_r2017,provost2000}, which may be an undesirable
+action if the misclassification of cases belonging to the less numerous
+class entails high costs.
+
+The three points above turn out to be tightly related and to have a common
+solution. We show that
+\begin{enumerate}
+\item\label{item:2D_family} the admissible valuation scales for a binary
+  classifier form a two-dimensional family; that is, the choice of a specific
+  scale corresponds to the choice of two numbers. Such choice is
+  problem-dependent and cannot be given a priori.
+\item\label{item:inconsistent} admissible scales are only those that can be
+  expressed as a linear function of the elements of the
+  population-normalized confusion matrix. Scales such as the
+  $F_{1}$-measure or the Matthews correlation coefficient are therefore inad***
+\end{enumerate}
+
+
 
 
 \section{Overview of decision theory}
