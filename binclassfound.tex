@@ -1,7 +1,7 @@
 \pdfoutput=1
 %% Author: PGL  Porta Mana
 %% Created: 2015-05-01T20:53:34+0200
-%% Last-Updated: 2022-04-02T12:22:23+0200
+%% Last-Updated: 2022-04-02T16:46:18+0200
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \newif\ifarxiv
 \arxivfalse
@@ -697,6 +697,7 @@ Open Science Framework \doi{10.31219/osf.io/#1}%
 \newcommand*{\dob}{degree of belief}
 \newcommand*{\dobs}{degrees of belief}
 \newcommand*{\ml}{machine-learning}
+\newcommand*{\sF}{F_{\textrm{s}}}
 %%% Custom macros end @@@
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -933,48 +934,74 @@ individual before us is one of them) a proportion $f(x \| z)$ has $X\mo x$.
 Thus we can say that there is a probability $f(x \| z)$ that our individual
 has $X\mo x$. And this is all we can say if we only know $Z$.
 
+\medskip
+
 For this individual we must choose among two actions $\set{a, b}$. The
-utility of performing action $a$ if the individual has $X\mo x$ is
-$U(a \| x)$; similarly for $b$. If we knew the value of $X$, say $X\mo 0$,
-we would simply choose the action leading to maximal utility:
+utility of performing action $a$ if the individual has $X\mo x$, and given
+any other known circumstances, is $U(a \| x)$; similarly for $b$. If we
+knew the value of $X$, say $X\mo 0$, we would simply choose the action
+leading to maximal utility:
 \begin{equation}
   \label{eq:choice_ex}
   \begin{aligned}
     &\text{if}\quad U(a \| X\mo 0) > U(b \| X\mo 0) \quad\text{then choose action $a$},
 \\
       &\text{if}\quad U(a \| X\mo 0) < U(b \| X\mo 0) \quad\text{then choose action $b$},
-\\&\text{else}\quad\text{it is irrelevant which action is chosen}.
+\\&\text{else}\quad\text{it does not matter which action is chosen}.
   \end{aligned}
 \end{equation}
 But we do not know the actual value of $X$. We have probabilities for the
 possible values of $X$ given that $Z\mo z$ for our individual. Since $X$ is
-uncertain, the final utility of each action is also uncertain; we can
+uncertain, the final utilities of the two actions are also uncertain; but we can
 calculate their \emph{expected} values $\bar{U}(a \| Z \mo z)$ and
 $\bar{U}(b \| Z \mo z)$:
 \begin{equation}
   \label{eq:expe_util}
   \begin{aligned}
-    &\bar{U}(a \| Z \mo z) \defd
+    &\bar{U}(a \| z) \defd
     U(a \| X\mo 0)\ f(X\mo 0 \| z) + U(a \| X\mo 1)\ f(X\mo 1 \| z) \ ,
     \\
-    &\bar{U}(b \| Z \mo z) \defd
-    U(b \| X\mo 0)\ f(X\mo 0 \| z) + U(b \| X\mo 1)\ f(X\mo 1 \| z) \ ,
+    &\bar{U}(b \| z) \defd
+    U(b \| X\mo 0)\ f(X\mo 0 \| z) + U(b \| X\mo 1)\ f(X\mo 1 \| z) \ .
 \end{aligned}
 \end{equation}
 Decision theory shows that the optimal action is the one having the maximal
-expected utility. So our choice is
+expected utility. Our choice therefore proceeds as follows:
 \begin{equation}
   \label{eq:choice_uncertain}
   \begin{aligned}
-    &\text{if}\quad \bar{U}(a \| Z \mo z) > \bar{U}(b \| Z \mo z) \quad\text{then choose action $a$},
+    &\text{if}\quad \bar{U}(a \| z) > \bar{U}(b \| z) \quad\text{then choose action $a$},
 \\
-      &\text{if}\quad \bar{U}(a \| Z \mo z) < \bar{U}(b \| Z \mo z) \quad\text{then choose action $b$},
-\\&\text{else}\quad\text{it is irrelevant which action is chosen}.
+      &\text{if}\quad \bar{U}(a \| z) < \bar{U}(b \| z) \quad\text{then choose action $b$},
+\\&\text{else}\quad\text{it does not matter which action is chosen}.
   \end{aligned}
 \end{equation}
 
+\medskip
 
+The decision procedure just discussed is very simple and does not need any machine-learning algorithms. It could be implemented in a simple algorithm that takes as input the full statistics $F(X,Z)$ of the population, the utilities, and yields an output according to~\eqref{eq:choice_uncertain}.
 
+Our main problem is that the full statistics $F(X,Z)$ is almost universally not known. Typically we only have the statistics $\sF(X,Z)$ of a sample of individuals that come from the population of interest or from populations that are somewhat related to the one of interest. This is where probability theory steps in. It allows us to assign probabilities to all the possible statistics $F(X,Z)$. From these probabilities we can calculate the \emph{expected} value of the conditional frequencies $f(x \| z)$. Decision theory says that this expected value should then be used, in this uncertain case, in \eqn~\eqref{eq:expe_util} in place of the unknown $f(x \| z)$. The decision procedure~\eqref{eq:choice_uncertain} can then be used again.
+
+Probability theory says that in this particular situation the probability of a particular possible statistics $F(X,Z)$ is the product of two factors having intuitive interpretations:
+\begin{itemize}
+\item the probability of observing the statistics $\sF(X,Z)$ of our data sample, assuming the full statistics to be $F(X,Z)$. With some combinatorics it can be shown that this probability is proportional to
+  \begin{equation}
+    \label{eq:likelihood_relentropy}
+%    \exp\biggl[\sum_{X,Z}\sF(X,Z) \ln \frac{\sF(X,Z)}{F(X,Z)}\biggr]
+    \exp\biggl[\sum_{X,Z}\sF(X,Z) \ln F(X,Z)\biggr]
+  \end{equation}
+  The argument of the exponential is the cross-entropy between $\sF(X,Z)$ and $F(X,Z)$; this is the reason of its appearance in the loss function used for classifiers \citep{bridle1990,mackay1992d}.
+
+  This factor tells us how much the possible statistics \emph{fits} the sample data; it gives more weight to a better fit.
+  
+\item the probability of the full statistics $F(X,Z)$ for reasons not present in the data, for example because of physical laws, biological plausibility, or similar.
+
+This factor tells us whether the possible statistics should be especially considered, or maybe discarded, for reasons that go beyond the data we have seen; in other words, whether the hypothetical statistics would \emph{generalize} well beyond the sample data.  
+\end{itemize}
+The final probability comes from the balance between these \enquote{fit} and \enquote{generalization} factors. Note that the first factor becomes more important as the sample size and therefore $\sF(X,Z)$ increases; the sample data eventually determine what the most probable statistics is, if the sample is large enough.
+
+A similar probabilistic reasoning applies if our sample data come not from the population of interest but from a population having at least the same \emph{conditional} frequencies as the one of interest, either $f(X \| Z)$ or $f(Z \| X)$.
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
