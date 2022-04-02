@@ -1,7 +1,7 @@
 \pdfoutput=1
 %% Author: PGL  Porta Mana
 %% Created: 2015-05-01T20:53:34+0200
-%% Last-Updated: 2022-03-29T17:48:01+0200
+%% Last-Updated: 2022-04-02T12:22:23+0200
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \newif\ifarxiv
 \arxivfalse
@@ -611,7 +611,7 @@ Open Science Framework \doi{10.31219/osf.io/#1}%
 %\DeclareMathOperator{\pr}{P}%probability
 \newcommand*{\p}{\mathrm{p}}%probability
 \renewcommand*{\P}{\mathrm{P}}%probability
-%\newcommand*{\E}{\mathrm{E}}
+\newcommand*{\E}{\mathrm{E}}
 %% The "\:" space is chosen to correctly separate inner binary and external rels
 \renewcommand*{\|}[1][]{\nonscript\:#1\vert\nonscript\:\mathopen{}}
 %\DeclarePairedDelimiterX{\cp}[2]{(}{)}{#1\nonscript\:\delimsize\vert\nonscript\:\mathopen{}#2}
@@ -625,7 +625,10 @@ Open Science Framework \doi{10.31219/osf.io/#1}%
 % \let\texteq\=
 % \renewcommand*{\=}{\TextOrMath\texteq\eq}
 % \newcommand*{\eq}[1][=]{\mathrel{\!#1\!}}
-\newcommand*{\mo}[1][=]{\mathord{\,#1\,}}
+\newcommand*{\mo}[1][=]{\mathrel{\mkern-3.5mu#1\mkern-3.5mu}}
+%\newcommand*{\moo}[1][=]{\mathrel{\!#1\!}}
+%\newcommand*{\mo}[1][=]{\mathord{#1}}
+%\newcommand*{\mo}[1][=]{\mathord{\,#1\,}}
 %%
 \newcommand*{\sect}{\S}% Sect.~
 \newcommand*{\sects}{\S\S}% Sect.~
@@ -835,12 +838,16 @@ solution. We show that
 \section{Overview of decision theory}
 \label{sec:decision_theory}
 
+ \citep[\chap~15]{russelletal1995_r2022}{jeffrey1965}{north1968}
+
 Decision theory makes a distinction between
-\begin{enumerate}[label=\alph*]
+\begin{enumerate}[label=\alph*.]
 \item the possible situations we are uncertain about
 \item the possible choices we can make.
 \end{enumerate}
 This distinction is important, in fact in some cases the numbers of possible uncertain situations
+
+
 
 
 % \[ \color{mypurpleblue}\bm{a} \color{myredpurple}\mathbin{\bm{\land}}\color{mypurpleblue} \bm{b} \]
@@ -865,33 +872,6 @@ This distinction is important, in fact in some cases the numbers of possible unc
 %   \p\bigl[\yE{N+1}{k} \bigcond \tsum\yo\yf{N}\in\yA, \yM\bigr] = \mathord{?}
 % \end{empheq}
 
-
-
-% \[
-%   \begin{tikzcd}
-%       M_{n,n}(\CC) \arrow{r}{R'_{a}(\Hat{U})} & M_{n,n}(\CC)
-%     \\
-%     L(\mathcal{H}) \arrow{r}{\Hat{U}} \arrow[swap]{d}{R_*}\arrow[swap]{u}{R'_*} & L(\mathcal{H}) \arrow{d}{R_*}\arrow{u}{R'_*} \\
-%       M_{n,n}(\CC) \arrow{r}{R_{a}(\Hat{U})} & M_{n,n}(\CC)
-%   \end{tikzcd}
-% \]
-
-% \[
-%   \begin{tikzcd}
-%       \CC^n \arrow{r}{R'_*(A)} & \CC^n
-%     \\
-%     \mathcal{H} \arrow{r}{A} \arrow[swap]{d}{R}\arrow[swap]{u}{R'} & \mathcal{H} \arrow{d}{R}\arrow{u}{R'} \\
-%       \CC^n \arrow{r}{R_*(A)} & \CC^n
-%   \end{tikzcd}
-% \]
-
-
-% \[
-%   \begin{tikzcd}
-%     \mathcal{H} \arrow{r}{A} \arrow[swap]{d}{R} & \mathcal{H} \arrow{d}{R} \\
-%       \CC^n \arrow{r}{R_*(A)} & \CC^n
-%   \end{tikzcd}
-% \]
 
 %%\setlength{\intextsep}{0ex}% with wrapfigure
 %%\setlength{\columnsep}{0ex}% with wrapfigure
@@ -924,10 +904,78 @@ This distinction is important, in fact in some cases the numbers of possible unc
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 
 %\clearpage
 \bigskip
-% %\renewcommand*{\appendixpagename}{Appendix}
-% %\renewcommand*{\appendixname}{Appendix}
+\renewcommand*{\appendixpagename}{}
+% \renewcommand*{\appendixname}{Appendix: test2}
 % %\appendixpage
-% \appendix
+\appendix
+
+\addsec{Appendix: broader overview of binary classification}
+% \label{sec:test}
+
+Suppose we have a population of units or individuals characterized by a possibly multidimensional variable $Z$ and a binary variable $X \in \set{0,1}$. Different joint combinations of $(X,Z)$ values can appear in this population. Denote by $F(X\mo x, Z\mo z)$, or more simply $F(x, z)$ when there is no confusion, the number of individuals having specific joint values $(X\mo x, Z\mo z)$. This is the absolute frequency of the values $(x,z)$. We can also count the number of individuals having a specific value of $Z\mo z$, regardless of $X$; this is the marginal absolute frequency $F(z)$. It is easy to see that
+\begin{equation}
+  \label{eq:marginal_prob}
+  F(z) = F(X\mo 0, z) + F(X\mo 1, z) \equiv \sum_{x} F(x,z)\ .
+\end{equation}
+Analogously for $F(x)$.
+
+Select only the subpopulation of individuals that have a specific value $Z\mo z$. In this subpopulation, the \emph{proportion} of individuals having a specific value $X\mo x$ is $f(x\| Z\mo z)$. This is the conditional relative frequency of $x$ given that $z$. It is easy to see that
+\begin{equation}
+  \label{eq:cond_prob}
+  f(x \| z) = \frac{F(x,z)}{F(z)} \ .
+\end{equation}
+
+Now suppose that we know all these statistics about this population. An
+individual coming from this population is presented to us. We measure its
+$Z$ and obtain the value $z$. What could be the value of $X$ for this
+individual? We know that among all individuals having $Z\mo z$ (and the
+individual before us is one of them) a proportion $f(x \| z)$ has $X\mo x$.
+Thus we can say that there is a probability $f(x \| z)$ that our individual
+has $X\mo x$. And this is all we can say if we only know $Z$.
+
+For this individual we must choose among two actions $\set{a, b}$. The
+utility of performing action $a$ if the individual has $X\mo x$ is
+$U(a \| x)$; similarly for $b$. If we knew the value of $X$, say $X\mo 0$,
+we would simply choose the action leading to maximal utility:
+\begin{equation}
+  \label{eq:choice_ex}
+  \begin{aligned}
+    &\text{if}\quad U(a \| X\mo 0) > U(b \| X\mo 0) \quad\text{then choose action $a$},
+\\
+      &\text{if}\quad U(a \| X\mo 0) < U(b \| X\mo 0) \quad\text{then choose action $b$},
+\\&\text{else}\quad\text{it is irrelevant which action is chosen}.
+  \end{aligned}
+\end{equation}
+But we do not know the actual value of $X$. We have probabilities for the
+possible values of $X$ given that $Z\mo z$ for our individual. Since $X$ is
+uncertain, the final utility of each action is also uncertain; we can
+calculate their \emph{expected} values $\bar{U}(a \| Z \mo z)$ and
+$\bar{U}(b \| Z \mo z)$:
+\begin{equation}
+  \label{eq:expe_util}
+  \begin{aligned}
+    &\bar{U}(a \| Z \mo z) \defd
+    U(a \| X\mo 0)\ f(X\mo 0 \| z) + U(a \| X\mo 1)\ f(X\mo 1 \| z) \ ,
+    \\
+    &\bar{U}(b \| Z \mo z) \defd
+    U(b \| X\mo 0)\ f(X\mo 0 \| z) + U(b \| X\mo 1)\ f(X\mo 1 \| z) \ ,
+\end{aligned}
+\end{equation}
+Decision theory shows that the optimal action is the one having the maximal
+expected utility. So our choice is
+\begin{equation}
+  \label{eq:choice_uncertain}
+  \begin{aligned}
+    &\text{if}\quad \bar{U}(a \| Z \mo z) > \bar{U}(b \| Z \mo z) \quad\text{then choose action $a$},
+\\
+      &\text{if}\quad \bar{U}(a \| Z \mo z) < \bar{U}(b \| Z \mo z) \quad\text{then choose action $b$},
+\\&\text{else}\quad\text{it is irrelevant which action is chosen}.
+  \end{aligned}
+\end{equation}
+
+
+
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%% Bibliography
