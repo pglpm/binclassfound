@@ -1,7 +1,7 @@
 \pdfoutput=1
 %% Author: PGL  Porta Mana
 %% Created: 2015-05-01T20:53:34+0200
-%% Last-Updated: 2022-04-02T17:49:22+0200
+%% Last-Updated: 2022-04-02T18:35:54+0200
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \newif\ifarxiv
 \arxivfalse
@@ -699,6 +699,8 @@ Open Science Framework \doi{10.31219/osf.io/#1}%
 \newcommand*{\ml}{machine-learning}
 \newcommand*{\Fs}{F_{\textrm{s}}}
 \newcommand*{\fs}{f_{\textrm{s}}}
+\newcommand*{\uF}{\bar{F}}
+\newcommand*{\uf}{\bar{f}}
 %%% Custom macros end @@@
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -982,7 +984,7 @@ expected utility. Our choice therefore proceeds as follows:
 
 The decision procedure just discussed is very simple and does not need any machine-learning algorithms. It could be implemented in a simple algorithm that takes as input the full statistics $F(X,Z)$ of the population, the utilities, and yields an output according to~\eqref{eq:choice_uncertain}.
 
-Our main problem is that the full statistics $F(X,Z)$ is almost universally not known. Typically we only have the statistics $\Fs(X,Z)$ of a sample of individuals that come from the population of interest or from populations that are somewhat related to the one of interest. This is where probability theory steps in. It allows us to assign probabilities to all the possible statistics $F(X,Z)$. From these probabilities we can calculate the \emph{expected} value of the conditional frequencies $f(x \| z)$. Decision theory says that this expected value should then be used, in this uncertain case, in \eqn~\eqref{eq:expe_util} in place of the unknown $f(x \| z)$. The decision procedure~\eqref{eq:choice_uncertain} can then be used again.
+Our main problem is that the full statistics $F(X,Z)$ is almost universally not known. Typically we only have the statistics $\Fs(X,Z)$ of a sample of individuals that come from the population of interest or from populations that are somewhat related to the one of interest. This is where probability theory steps in. It allows us to assign probabilities to all the possible statistics $F(X,Z)$. From these probabilities we can calculate the \emph{expected} value $\uf(x \| z)$ of the conditional frequencies $f(x \| z)$. Decision theory says that the expected value $\uf(x \| z)$ should then be used, in this uncertain case, in \eqn~\eqref{eq:expe_util} in place of the unknown $f(x \| z)$. The decision procedure~\eqref{eq:choice_uncertain} can then be used again.
 
 Probability theory says that in this particular situation the probability of a particular possible statistics $F(X,Z)$ is the product of two factors having intuitive interpretations:
 \begin{itemize}
@@ -1007,8 +1009,12 @@ the population of interest but from a population having at least the same
 \emph{conditional} frequencies of as the one of interest, either $f(X \| Z)$
 or $f(Z \| X)$. The latter case must be examined with care when our purpose
 is to guess $X$ from $Z$. In this case we cannot use the
-conditional frequencies $\fs(X \| Z)$ that appear in the data -- they could
-be completely different from the ones of the population of interest.
+conditional frequencies $\fs(X \| Z)$ that appear in the data to obtain the expected value $\uf(X \| Z)$: they could be completely different from the ones of the population of interest. We must instead use the sample conditional frequencies $\fs(Z \| X)$ to obtain the expected value $\uf(Z \| X)$, and then combine the latter with an appropriate probability $P(X)$ through Bayes's theorem:
+\begin{equation}
+  \label{eq:bayes_app}
+  \frac{\uf(Z \| X)\ P(X)}{\sum_{X} \uf(Z \| X)\ P(X)} \ .
+\end{equation}
+The probability $P(X)$ cannot be obtained from the data, but need a separate study or survey. In medical applications, where $X$ represents for example the presence or absence of a disease, the probability $P(X)$ is the base rate of the disease. Direct use of $\fs(X \| Z)$ from the data instead of \eqref{eq:bayes_app} is the \enquote{base-rate fallacy} \citep[\sect~12.5]{russelletal1995_r2022}{axelsson2000}{jennyetal2018}.
 
 
 
