@@ -1,7 +1,7 @@
 \pdfoutput=1
 %% Author: PGL  Porta Mana
 %% Created: 2015-05-01T20:53:34+0200
-%% Last-Updated: 2022-04-02T16:46:18+0200
+%% Last-Updated: 2022-04-02T17:49:22+0200
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \newif\ifarxiv
 \arxivfalse
@@ -697,7 +697,8 @@ Open Science Framework \doi{10.31219/osf.io/#1}%
 \newcommand*{\dob}{degree of belief}
 \newcommand*{\dobs}{degrees of belief}
 \newcommand*{\ml}{machine-learning}
-\newcommand*{\sF}{F_{\textrm{s}}}
+\newcommand*{\Fs}{F_{\textrm{s}}}
+\newcommand*{\fs}{f_{\textrm{s}}}
 %%% Custom macros end @@@
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -981,27 +982,39 @@ expected utility. Our choice therefore proceeds as follows:
 
 The decision procedure just discussed is very simple and does not need any machine-learning algorithms. It could be implemented in a simple algorithm that takes as input the full statistics $F(X,Z)$ of the population, the utilities, and yields an output according to~\eqref{eq:choice_uncertain}.
 
-Our main problem is that the full statistics $F(X,Z)$ is almost universally not known. Typically we only have the statistics $\sF(X,Z)$ of a sample of individuals that come from the population of interest or from populations that are somewhat related to the one of interest. This is where probability theory steps in. It allows us to assign probabilities to all the possible statistics $F(X,Z)$. From these probabilities we can calculate the \emph{expected} value of the conditional frequencies $f(x \| z)$. Decision theory says that this expected value should then be used, in this uncertain case, in \eqn~\eqref{eq:expe_util} in place of the unknown $f(x \| z)$. The decision procedure~\eqref{eq:choice_uncertain} can then be used again.
+Our main problem is that the full statistics $F(X,Z)$ is almost universally not known. Typically we only have the statistics $\Fs(X,Z)$ of a sample of individuals that come from the population of interest or from populations that are somewhat related to the one of interest. This is where probability theory steps in. It allows us to assign probabilities to all the possible statistics $F(X,Z)$. From these probabilities we can calculate the \emph{expected} value of the conditional frequencies $f(x \| z)$. Decision theory says that this expected value should then be used, in this uncertain case, in \eqn~\eqref{eq:expe_util} in place of the unknown $f(x \| z)$. The decision procedure~\eqref{eq:choice_uncertain} can then be used again.
 
 Probability theory says that in this particular situation the probability of a particular possible statistics $F(X,Z)$ is the product of two factors having intuitive interpretations:
 \begin{itemize}
-\item the probability of observing the statistics $\sF(X,Z)$ of our data sample, assuming the full statistics to be $F(X,Z)$. With some combinatorics it can be shown that this probability is proportional to
+\item the probability of observing the statistics $\Fs(X,Z)$ of our data sample, assuming the full statistics to be $F(X,Z)$. With some combinatorics it can be shown that this probability is proportional to
   \begin{equation}
     \label{eq:likelihood_relentropy}
-%    \exp\biggl[\sum_{X,Z}\sF(X,Z) \ln \frac{\sF(X,Z)}{F(X,Z)}\biggr]
-    \exp\biggl[\sum_{X,Z}\sF(X,Z) \ln F(X,Z)\biggr]
+%    \exp\biggl[\sum_{X,Z}\Fs(X,Z) \ln \frac{\Fs(X,Z)}{F(X,Z)}\biggr]
+    \exp\biggl[\sum_{X,Z}\Fs(X,Z) \ln F(X,Z)\biggr]
   \end{equation}
-  The argument of the exponential is the cross-entropy between $\sF(X,Z)$ and $F(X,Z)$; this is the reason of its appearance in the loss function used for classifiers \citep{bridle1990,mackay1992d}.
+  The argument of the exponential is the cross-entropy between $\Fs(X,Z)$ and $F(X,Z)$; this is the reason of its appearance in the loss function used for classifiers \citep{bridle1990,mackay1992d}.
 
   This factor tells us how much the possible statistics \emph{fits} the sample data; it gives more weight to a better fit.
   
 \item the probability of the full statistics $F(X,Z)$ for reasons not present in the data, for example because of physical laws, biological plausibility, or similar.
 
-This factor tells us whether the possible statistics should be especially considered, or maybe discarded, for reasons that go beyond the data we have seen; in other words, whether the hypothetical statistics would \emph{generalize} well beyond the sample data.  
+This factor tells us whether the possible statistics should be favourably considered, or maybe even discarded instead, for reasons that go beyond the data we have seen; in other words, whether the hypothetical statistics would \emph{generalize} well beyond the sample data.  
 \end{itemize}
-The final probability comes from the balance between these \enquote{fit} and \enquote{generalization} factors. Note that the first factor becomes more important as the sample size and therefore $\sF(X,Z)$ increases; the sample data eventually determine what the most probable statistics is, if the sample is large enough.
+The final probability comes from the balance between these \enquote{fit} and \enquote{generalization} factors. Note that the first factor becomes more important as the sample size and therefore $\Fs(X,Z)$ increases; the sample data eventually determine what the most probable statistics is, if the sample is large enough.
 
-A similar probabilistic reasoning applies if our sample data come not from the population of interest but from a population having at least the same \emph{conditional} frequencies as the one of interest, either $f(X \| Z)$ or $f(Z \| X)$.
+A similar probabilistic reasoning applies if our sample data come not from
+the population of interest but from a population having at least the same
+\emph{conditional} frequencies of as the one of interest, either $f(X \| Z)$
+or $f(Z \| X)$. The latter case must be examined with care when our purpose
+is to guess $X$ from $Z$. In this case we cannot use the
+conditional frequencies $\fs(X \| Z)$ that appear in the data -- they could
+be completely different from the ones of the population of interest.
+
+
+
+
+In supervised learning the classifier is trained to learn the most probable $f(X \| Z)$ from the data. The training finds the $f(X \| Z)$ that most closely fits the conditional frequency $\fs(X \| Z)$ of the sampled data; this roughly corresponds to maximizing the first factor \eqref{eq:likelihood_relentropy} described above. The architecture and the parameter regularizer of the classifier play the role of the second factor.
+
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
