@@ -1,7 +1,7 @@
 \pdfoutput=1
 %% Author: PGL  Porta Mana
 %% Created: 2015-05-01T20:53:34+0200
-%% Last-Updated: 2022-04-02T18:35:54+0200
+%% Last-Updated: 2022-04-08T12:22:13+0200
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \newif\ifarxiv
 \arxivfalse
@@ -100,7 +100,7 @@ british%
 \newcommand{\langnohyph}[1]{\begin{hyphenrules}{nohyphenation}#1\end{hyphenrules}}
 
 \usepackage[autostyle=false,autopunct=false,english=british]{csquotes}
-\setquotestyle{american}
+\setquotestyle{british}
 \newcommand*{\defquote}[1]{`\,#1\,'}
 
 % \makeatletter
@@ -701,6 +701,10 @@ Open Science Framework \doi{10.31219/osf.io/#1}%
 \newcommand*{\fs}{f_{\textrm{s}}}
 \newcommand*{\uF}{\bar{F}}
 \newcommand*{\uf}{\bar{f}}
+\newcommand*{\za}{\hat{0}}
+\newcommand*{\zb}{\hat{1}}
+\newcommand*{\eu}{\bar{U}}
+
 %%% Custom macros end @@@
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -916,7 +920,46 @@ This distinction is important, in fact in some cases the numbers of possible unc
 \addsec{Appendix: broader overview of binary classification}
 % \label{sec:test}
 
-Suppose we have a population of units or individuals characterized by a possibly multidimensional variable $Z$ and a binary variable $X \in \set{0,1}$. Different joint combinations of $(X,Z)$ values can appear in this population. Denote by $F(X\mo x, Z\mo z)$, or more simply $F(x, z)$ when there is no confusion, the number of individuals having specific joint values $(X\mo x, Z\mo z)$. This is the absolute frequency of the values $(x,z)$. We can also count the number of individuals having a specific value of $Z\mo z$, regardless of $X$; this is the marginal absolute frequency $F(z)$. It is easy to see that
+Let us consider our binary-classification problem from a general perspective and summarize how it would be approached and solved from first principles\citep[part~IV]{russelletal1995_r2022} if our computational resources had no constraints.
+
+In our long-term task we will receive  \enquote{units} of a specific kind; the units for example could be gadgets, individuals, or investment portfolios. Each new unit will belong to one of two classes, which we can denote $X\mo 0$ and $X\mo 1$; for example they could be \enquote{defective} vs \enquote{non-defective}, \enquote{ill} vs \enquote{healthy}. The class will be unknown to us. For each new unit we shall need to decide among two possible actions, which we can denote $A\mo\za$ and $A\mo\zb$; for example \enquote{discard} vs \enquote{keep}, or \enquote{treat} vs \enquote{dismiss}. The utility of each action depends on the unknown class of the unit; we denote these utilities by $U(A \| X)$. For each new unit we will be able to measure a \enquote{feature} $Z$ of a specific kind common to all units; for example $Z$ could be a set of categorical and real quantities, or an image such as a brain scan. We have a set of units -- our \enquote{sample units} or \enquote{sample data} -- that are somehow \enquote*{representative} of the units we will receive in our long-term task; we know both the class and the feature of each of these sample units. Let us denote this sample information by $D$.
+
+According to the principles of decision theory and probability theory, for each new unit we would proceed as follows:
+\begin{enumerate}[label=\arabic*.]
+\item Assign probabilities to the two possible values of the unit's class, given the unit's feature $Z$, our sample data $D$, and any other available information:
+  \begin{equation}
+    \p(X\mo 0 \| Z, D), \qquad \p(X\mo 1 \| Z,D) \equiv 1- \p(X\mo 0 \| Z,D) \ ,
+  \end{equation}
+  according to the rules of the probability calculus.
+\item Calculate the expected utilities $\eu$ of the two possible actions:
+  \begin{equation}
+    \begin{aligned}
+      \eu(\za) &\defd U(\za \| X\mo 0) \ 
+                 \p(X\mo 0 \| Z, D) + U(\za \| X\mo 1) \ 
+                 \p(X\mo 1 \| Z, D)
+      \\
+      \eu(\zb) &\defd U(\zb \| X\mo 0) \ 
+                 \p(X\mo 0 \| Z, D) + U(\zb \| X\mo 1) \ 
+                 \p(X\mo 1 \| Z, D)
+    \end{aligned}
+\end{equation}
+  and choose the action having maximal expected utility.
+\end{enumerate}
+
+\medskip
+
+How does the probability calculus determine the probability $\p(X \| Z, D)$?
+
+
+
+
+\mynote{old text below}
+
+Given the unit's feature $Z$ we will assign probabilities to the possible values of the unit's class:  according to the rules of the probability calculus.
+
+As mentioned in \sect~\ref{sec:decision_theory}, a decision problem under uncertainty is conceptually divided into two steps 
+
+The Suppose we have a population of units or individuals characterized by a possibly multidimensional variable $Z$ and a binary variable $X \in \set{0,1}$. Different joint combinations of $(X,Z)$ values can appear in this population. Denote by $F(X\mo x, Z\mo z)$, or more simply $F(x, z)$ when there is no confusion, the number of individuals having specific joint values $(X\mo x, Z\mo z)$. This is the absolute frequency of the values $(x,z)$. We can also count the number of individuals having a specific value of $Z\mo z$, regardless of $X$; this is the marginal absolute frequency $F(z)$. It is easy to see that
 \begin{equation}
   \label{eq:marginal_prob}
   F(z) = F(X\mo 0, z) + F(X\mo 1, z) \equiv \sum_{x} F(x,z)\ .
@@ -996,7 +1039,7 @@ Probability theory says that in this particular situation the probability of a p
   \end{equation}
   The argument of the exponential is the cross-entropy between $\Fs(X,Z)$ and $F(X,Z)$; this is the reason of its appearance in the loss function used for classifiers \citep{bridle1990,mackay1992d}.
 
-  This factor tells us how much the possible statistics \emph{fits} the sample data; it gives more weight to a better fit.
+  This factor tells us how much the possible statistics \emph{fit} the sample data; it gives more weight to statistics with a better fit.
   
 \item the probability of the full statistics $F(X,Z)$ for reasons not present in the data, for example because of physical laws, biological plausibility, or similar.
 
@@ -1006,15 +1049,20 @@ The final probability comes from the balance between these \enquote{fit} and \en
 
 A similar probabilistic reasoning applies if our sample data come not from
 the population of interest but from a population having at least the same
-\emph{conditional} frequencies of as the one of interest, either $f(X \| Z)$
-or $f(Z \| X)$. The latter case must be examined with care when our purpose
-is to guess $X$ from $Z$. In this case we cannot use the
-conditional frequencies $\fs(X \| Z)$ that appear in the data to obtain the expected value $\uf(X \| Z)$: they could be completely different from the ones of the population of interest. We must instead use the sample conditional frequencies $\fs(Z \| X)$ to obtain the expected value $\uf(Z \| X)$, and then combine the latter with an appropriate probability $P(X)$ through Bayes's theorem:
+\emph{conditional} frequencies of as the one of interest, either
+$f(X \| Z)$ or $f(Z \| X)$. The latter case must be examined with care when
+our purpose is to guess $X$ from $Z$. In this case we cannot use the
+conditional frequencies $\fs(X \| Z)$ that appear in the data to obtain the
+expected value $\uf(X \| Z)$: they could be completely different from the
+ones of the population of interest. We must instead use the sample
+conditional frequencies $\fs(Z \| X)$ to obtain the expected value
+$\uf(Z \| X)$, and then combine the latter with an appropriate probability
+$P(X)$ through Bayes's theorem:
 \begin{equation}
   \label{eq:bayes_app}
   \frac{\uf(Z \| X)\ P(X)}{\sum_{X} \uf(Z \| X)\ P(X)} \ .
 \end{equation}
-The probability $P(X)$ cannot be obtained from the data, but need a separate study or survey. In medical applications, where $X$ represents for example the presence or absence of a disease, the probability $P(X)$ is the base rate of the disease. Direct use of $\fs(X \| Z)$ from the data instead of \eqref{eq:bayes_app} is the \enquote{base-rate fallacy} \citep[\sect~12.5]{russelletal1995_r2022}{axelsson2000}{jennyetal2018}.
+The probability $P(X)$ cannot be obtained from the data, but requires a separate study or survey. In medical applications, where $X$ represents for example the presence or absence of a disease, the probability $P(X)$ is the base rate of the disease. Direct use of $\fs(X \| Z)$ from the data instead of \eqref{eq:bayes_app} is the \enquote{base-rate fallacy} \citep[\sect~12.5]{russelletal1995_r2022}{axelsson2000,jennyetal2018}.
 
 
 
