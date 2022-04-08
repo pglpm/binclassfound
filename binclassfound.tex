@@ -1,7 +1,7 @@
 \pdfoutput=1
 %% Author: PGL  Porta Mana
 %% Created: 2015-05-01T20:53:34+0200
-%% Last-Updated: 2022-04-08T12:22:13+0200
+%% Last-Updated: 2022-04-08T15:11:28+0200
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \newif\ifarxiv
 \arxivfalse
@@ -926,21 +926,21 @@ In our long-term task we will receive  \enquote{units} of a specific kind; the u
 
 According to the principles of decision theory and probability theory, for each new unit we would proceed as follows:
 \begin{enumerate}[label=\arabic*.]
-\item Assign probabilities to the two possible values of the unit's class, given the unit's feature $Z$, our sample data $D$, and any other available information:
+\item Assign probabilities to the two possible values of the unit's class, given the value of the unit's feature $Z\mo z$, our sample data $D$, and any other available information:
   \begin{equation}
-    \p(X\mo 0 \| Z, D), \qquad \p(X\mo 1 \| Z,D) \equiv 1- \p(X\mo 0 \| Z,D) \ ,
+    \p(X\mo 0 \| Z\mo z, D), \qquad \p(X\mo 1 \| Z\mo z,D) \equiv 1- \p(X\mo 0 \| Z\mo z,D) \ ,
   \end{equation}
   according to the rules of the probability calculus.
 \item Calculate the expected utilities $\eu$ of the two possible actions:
   \begin{equation}
     \begin{aligned}
       \eu(\za) &\defd U(\za \| X\mo 0) \ 
-                 \p(X\mo 0 \| Z, D) + U(\za \| X\mo 1) \ 
-                 \p(X\mo 1 \| Z, D)
+                 \p(X\mo 0 \| Z\mo z, D) + U(\za \| X\mo 1) \ 
+                 \p(X\mo 1 \| Z\mo z, D)
       \\
       \eu(\zb) &\defd U(\zb \| X\mo 0) \ 
-                 \p(X\mo 0 \| Z, D) + U(\zb \| X\mo 1) \ 
-                 \p(X\mo 1 \| Z, D)
+                 \p(X\mo 0 \| Z\mo z, D) + U(\zb \| X\mo 1) \ 
+                 \p(X\mo 1 \| Z\mo z, D)
     \end{aligned}
 \end{equation}
   and choose the action having maximal expected utility.
@@ -948,12 +948,18 @@ According to the principles of decision theory and probability theory, for each 
 
 \medskip
 
-How does the probability calculus determine the probability $\p(X \| Z, D)$?
+How does the probability calculus determine the probability $\p(X \| Z\mo z, D)$? Here is a simplified, intuitive picture. First consider the case where the possible values the feature $Z$ can assume are few, so that many units can in principle have the same value of $Z$.
+
+Consider the collection of all units having $Z\mo z$ that we would receive in the future. Among them, a proportion $F(X\mo 0 \| Z\mo z)$ will belong to class $0$, and a proportion $1 - F(X\mo 0 \| Z\mo z) \equiv F(X\mo 1 \| Z\mo z)$ will belong to class $1$. For example the two proportions could be 74\% and 26\%.
+
+
+
+If , then Such a collection is more difficult to imagine is the case where the feature $Z$ can assume a continuum of values -- as is the case for a brain scan, for example. In this case each unit will be unique in its feature value -- no two brains are exactly alike.
 
 
 
 
-\mynote{old text below}
+\mynote{\medskip\hrule old text below}
 
 Given the unit's feature $Z$ we will assign probabilities to the possible values of the unit's class:  according to the rules of the probability calculus.
 
