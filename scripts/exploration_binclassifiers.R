@@ -1,6 +1,6 @@
 ## Author: PGL  Porta Mana
 ## Created: 2022-03-17T14:21:57+0100
-## Last-Updated: 2022-03-22T11:36:34+0100
+## Last-Updated: 2022-04-09T01:08:29+0200
 ################
 ## Exploration of several issues for binary classifiers
 ################
@@ -41,6 +41,83 @@ library('LaplacesDemon')
 ## pngf <- function(filename,res=300){png(file=paste0(filename,'.png'),height=11.7*1.2,width=16.5,units='in',res=res,pointsize=36)} # to output in pdf format
 ## library('nimble')
 #### End custom setup ####
+#### FUNCTION TO CALCULATE MUTUAL INFO FROM JOINT DISTRIBUTION
+## freqs[S,B] = freq spike count B and stimulus S (one ROW per stimulus)
+## The function calculates the conditional frequencies of B|S
+## and if requested constructs
+## a new joint distribution with equal marginals for S
+## Note: don't need to normalize input to mutualinfo
+mutualinfo <- function(jointFreqs, equalstim=FALSE, base=2L){##in bits by default
+    if(equalstim){
+        jointFreqs <- (jointFreqs/rowSums(jointFreqs))/nrow(jointFreqs)
+    }else{
+        jointFreqs <- jointFreqs/sum(jointFreqs)
+    }
+    jointFreqs[is.na(jointFreqs)] <- 0
+    jointFreqs <- jointFreqs *
+        log2(jointFreqs/outer(rowSums(jointFreqs), colSums(jointFreqs)))
+    sum(jointFreqs[is.finite(jointFreqs)])/log2(base)
+}
+mutualinfoX <- function(jointFreqs, pstim1, base=2L){##in bits by default
+        jointFreqs <- (jointFreqs/rowSums(jointFreqs))*c(1-pstim1, pstim1) # conditionals p(spike|stim) * p(stim)
+        jointFreqs[is.na(jointFreqs)] <- 0
+    jointFreqs <- jointFreqs *
+        log2(jointFreqs/outer(rowSums(jointFreqs), colSums(jointFreqs)))
+    sum(jointFreqs[is.finite(jointFreqs)])/log2(base)
+}
+accmi <- function(mi){0.5 + 0.5 * sqrt(1 - (1 - mi)^(4/3))}
+entropy <- function(freqs, base=2L){
+    freqs <- cbind(freqs)
+    freqs <- t(t(freqs)/colSums(freqs, na.rm=T))
+    c(entropy=colSums(freqs*log2(1/freqs), na.rm=T)/log2(base))
+}
+
+dt  <- as.data.table(read.csv('CHEMBL205_cl_sigmoid_and_softmax.csv',header=TRUE,sep=','))
+##
+class0 <- dt[class==0]
+class1 <- dt[class==1]
+
+h0 <- thist(class0$softmax_output0)
+h1 <- thist(class1$softmax_output0)
+##
+hb0 <- thist(class0$sigmoid_output0)
+hb1 <- thist(class1$sigmoid_output0)
+
+nbin <- 16+1
+##
+h0 <- thist(class0$softmax_output0, n=seq(0,1,length.out=nbin))
+h1 <- thist(class1$softmax_output0, n=seq(0,1,length.out=nbin))
+##
+hb0 <- thist(class0$sigmoid_output0, n=seq(0,1,length.out=nbin))
+hb1 <- thist(class1$sigmoid_output0, n=seq(0,1,length.out=nbin))
+##
+## tplot(h0$mids, cbind(h1$density-h0$density, hb1$density-hb0$density))
+##
+tplot(h0$mids, h0$counts/(h0$counts+h1$counts), xlab='softmax output 0', ylab='probability of class 0', xlim=c(0,1), ylim=c(0,1))
+
+tplot(1-h0$mids, h1$counts/(h0$counts+h1$counts), xlab='softmax output 1', ylab='probability of class 1', xlim=c(0,1), ylim=c(0,1))
+
+
+tplot(h0$mids, cbind(h0$counts/(h0$counts+h1$counts), hb0$counts/(hb0$counts+hb1$counts)))
+
+
+##
+jp <- rbind(h0$counts,h1$counts)
+jpb <- rbind(hb0$counts,hb1$counts)
+##
+mutualinfo(jp)
+mutualinfo(jpb)
+
+accmi(mutualinfo(jp))
+accmi(mutualinfo(jpb))
+
+entropy(rowSums(jp)) - mutualinfo(jp)
+entropy(rowSums(jpb)) - mutualinfo(jpb)
+##entropy(colSums(jp)) - mutualinfo(jpb)
+
+
+
+
 
 condpRows <- function(x){
     t(t(x)/colSums(x))
