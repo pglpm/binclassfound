@@ -1,7 +1,7 @@
 \pdfoutput=1
 %% Author: PGL  Porta Mana
 %% Created: 2015-05-01T20:53:34+0200
-%% Last-Updated: 2022-04-08T15:14:38+0200
+%% Last-Updated: 2022-04-08T15:32:26+0200
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \newif\ifarxiv
 \arxivfalse
@@ -948,9 +948,9 @@ According to the principles of decision theory and probability theory, for each 
 
 \medskip
 
-How does the probability calculus determine the probability $\p(X \| Z\mo z, D)$? Here is a simplified, intuitive picture. First consider the case where the possible values the feature $Z$ can assume are few, so that many units can in principle have the same value of $Z$.
+How is the probability $\p(X \| Z\mo z, D)$ determined by the probability calculus? Here is a simplified, intuitive picture. First consider the case where the feature $Z$ can only assume a small number of possible values, so that many units can in principle have the same value of $Z$.
 
-Consider the collection of all units having $Z\mo z$ that we would receive in the future. Among them, a proportion $F(X\mo 0 \| Z\mo z)$ will belong to class $0$, and a proportion $1 - F(X\mo 0 \| Z\mo z) \equiv F(X\mo 1 \| Z\mo z)$ will belong to class $1$. For example the two proportions could be 74\% and 26\%.
+Consider the collection of all units having $Z\mo z$ that we received in the past and will receive in the future. Among them, a proportion $F(X\mo 0 \| Z\mo z)$ will belong to class $0$, and a proportion $1 - F(X\mo 0 \| Z\mo z) \equiv F(X\mo 1 \| Z\mo z)$ will belong to class $1$. For example these two proportions could be 74\% and 26\%. Our present unit with $Z\mo z$ is a member of this collection. The probability that our unit belongs to class $X\mo 0$ is then intuitively equal to the proportion $F(X\mo 0 \| Z\mo z)$, and analogously for $X\mo 1$.
 
 
 
