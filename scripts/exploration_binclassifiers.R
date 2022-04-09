@@ -1,6 +1,6 @@
 ## Author: PGL  Porta Mana
 ## Created: 2022-03-17T14:21:57+0100
-## Last-Updated: 2022-04-09T01:08:29+0200
+## Last-Updated: 2022-04-09T13:56:46+0200
 ################
 ## Exploration of several issues for binary classifiers
 ################
@@ -71,6 +71,13 @@ entropy <- function(freqs, base=2L){
     freqs <- t(t(freqs)/colSums(freqs, na.rm=T))
     c(entropy=colSums(freqs*log2(1/freqs), na.rm=T)/log2(base))
 }
+condpRows <- function(x){
+    t(t(x)/colSums(x))
+}
+condpCols <- function(x){
+    x/rowSums(x)
+}
+
 
 dt  <- as.data.table(read.csv('CHEMBL205_cl_sigmoid_and_softmax.csv',header=TRUE,sep=','))
 ##
@@ -93,13 +100,9 @@ hb1 <- thist(class1$sigmoid_output0, n=seq(0,1,length.out=nbin))
 ##
 ## tplot(h0$mids, cbind(h1$density-h0$density, hb1$density-hb0$density))
 ##
+pdff('softmax_vs_prob')
 tplot(h0$mids, h0$counts/(h0$counts+h1$counts), xlab='softmax output 0', ylab='probability of class 0', xlim=c(0,1), ylim=c(0,1))
-
-tplot(1-h0$mids, h1$counts/(h0$counts+h1$counts), xlab='softmax output 1', ylab='probability of class 1', xlim=c(0,1), ylim=c(0,1))
-
-
-tplot(h0$mids, cbind(h0$counts/(h0$counts+h1$counts), hb0$counts/(hb0$counts+hb1$counts)))
-
+dev.off()
 
 ##
 jp <- rbind(h0$counts,h1$counts)
@@ -116,15 +119,20 @@ entropy(rowSums(jpb)) - mutualinfo(jpb)
 ##entropy(colSums(jp)) - mutualinfo(jpb)
 
 
+############################################################
+## Write data to file for nonparametric analysis
+softmax2 <- ((dt$softmax_output0-0.5)*(1-min(dt$softmax_output0)))+0.5
+outdt <- data.table(item=as.integer(1:nrow(dt)), class=as.integer(dt$class), logitsoftmax=qlogis(softmax2))
+outdt <- outdt[sample(1:nrow(outdt)),]
+fwrite(outdt, 'softmaxdata_test.csv', sep=',')
 
 
 
-condpRows <- function(x){
-    t(t(x)/colSums(x))
-}
-condpCols <- function(x){
-    x/rowSums(x)
-}
+
+
+
+
+
 
 ## We consider two binary {0,1} variables X and Y and a population with a given conditional frequency of Y given X
 
