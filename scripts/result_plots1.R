@@ -1,6 +1,6 @@
 ## Author: PGL  Porta Mana
 ## Created: 2022-01-12T14:51:16+0100
-## Last-Updated: 2022-04-09T14:33:57+0200
+## Last-Updated: 2022-04-09T16:40:42+0200
 ################
 ## Relation between softmax & probability
 ################
@@ -54,8 +54,8 @@ dbernoulli <- function(x, prob, log=FALSE){
 
 maincov <- 'class'
 source('functions_mcmc.R')
-dirname <- 'testmcmc1_-V2-D2048-K16-I1024'
-frequenciesfile <- '_mcsamples-Rtestmcmc1_1-V2-D4096-K16-I4096.rds'
+dirname <- 'testmcmc1_-V2-D4096-K16-I4096'
+frequenciesfile <- '_mcsamples-Rtestmcmc1_2-V2-D4096-K16-I4096.rds'
 ##
 datafile <- 'softmaxdata_test.csv'
 varinfofile <- 'variate_info.csv'
@@ -99,7 +99,7 @@ alldata <- alldata[,..covNames]
 smgrid <- matrix(seq(1e-6, 1-1e-6, length.out=256), ncol=1, dimnames=list(NULL,'softmax'))
 lsmgrid <- qlogis(smgrid)
 colnames(lsmgrid) <- 'logitsoftmax'
-
+##
 probf <- samplesF(Y=cbind(class=0), X=lsmgrid, parmList=parmList, inorder=F)
 ##
 qprobf <- apply(probf,1,function(x)c(mean(x,na.rm=T), quant(x=x, probs=c(1,15)/16, na.rm=T)))
@@ -124,27 +124,84 @@ dev.off()
 
 
 testdata <- tail(alldata,n=8192)
-
 transfsm <- samplesF(Y=cbind(class=0), X=cbind(logitsoftmax=testdata$logitsoftmax), parmList=parmList, inorder=T)
-
 prob0 <- rowMeans(transfsm)
 testdata <- cbind(testdata, data.table(prob=prob0))
 
-tp1 <- nrow(testdata[class==0 & logitsoftmax>0]) + nrow(testdata[class==0 & logitsoftmax==0])/2
-fp1 <- nrow(testdata[class==0 & logitsoftmax<0]) + nrow(testdata[class==0 & logitsoftmax==0])/2
-tn1 <- nrow(testdata[class==1 & logitsoftmax<0]) + nrow(testdata[class==1 & logitsoftmax==0])/2
-fn1 <- nrow(testdata[class==1 & logitsoftmax>0]) + nrow(testdata[class==1 & logitsoftmax==0])/2
-##
-confm1 <- rbind(c(tp1,fp1),c(fn1,tn1))
+decidevaluate <- function(truevalues, probs0, umatrix, normalize=F, shift=F, average=T){
+    dimnames(umatrix) <- list(paste0('choice.',0:1), paste0('true.',0:1))
+    if(shift){ umatrix <- umatrix - min(umatrix) }
+    if(normalize){ umatrix <- umatrix/max(abs(umatrix)) }
+    if(normalize | shift){
+        print('rescaled utility matrix:')
+        print(umatrix)
+    }
+    print(paste0('probability threshold: ',
+(umatrix[2,2]-umatrix[1,2])/(umatrix[1,1]+umatrix[2,2]-umatrix[1,2]-umatrix[2,1])
+                 ))
+    ##
+    exputilities <- umatrix %*% rbind(probs0, 1-probs0)
+    decmatrix <- rbind(c(
+        sum(truevalues==0 & exputilities[1,]>exputilities[2,]) +
+        sum(truevalues==0 & exputilities[1,]==exputilities[2,])/2 ,
+        sum(truevalues==1 & exputilities[1,]>exputilities[2,]) +
+        sum(truevalues==1 & exputilities[1,]==exputilities[2,])/2
+        ), c(
+        sum(truevalues==0 & exputilities[1,]<exputilities[2,]) +
+        sum(truevalues==0 & exputilities[1,]==exputilities[2,])/2 ,
+        sum(truevalues==1 & exputilities[1,]<exputilities[2,]) +
+        sum(truevalues==1 & exputilities[1,]==exputilities[2,])/2
+        ))
+    dimnames(decmatrix) <- dimnames(umatrix)
+    print('decision matrix:')
+    print(decmatrix)
+    ##
+    res <- sum(decmatrix * umatrix)
+    if(average){res <- res/length(truevalues)}
+    print(paste0((if(average){'average'}else{'total'}), ' utility:'))
+    res
+}
+
+decidevaluate(testdata$class, plogis(testdata$logitsoftmax), diag(2),average=F)
+decidevaluate(testdata$class, testdata$prob, diag(2),average=F)
+
+um <- rbind(c(1,-99),c(0,1))
+decidevaluate(testdata$class, plogis(testdata$logitsoftmax), um,average=F)
+decidevaluate(testdata$class, testdata$prob, um,average=F)
+
+um <- rbind(c(1,0),c(-99,1))
+decidevaluate(testdata$class, plogis(testdata$logitsoftmax), um,average=F)
+decidevaluate(testdata$class, testdata$prob, um,average=F)
 
 
-tp2 <- nrow(testdata[class==0 & prob0>0.5]) + nrow(testdata[class==0 & prob0==0.5])/2
-fp2 <- nrow(testdata[class==0 & prob0<0.5]) + nrow(testdata[class==0 & prob0==0.5])/2
-tn2 <- nrow(testdata[class==1 & prob0<0.5]) + nrow(testdata[class==1 & prob0==0.5])/2
-fn2 <- nrow(testdata[class==1 & prob0>0.5]) + nrow(testdata[class==1 & prob0==0.5])/2
-##
-confm2 <- rbind(c(tp2,fp2),c(fn2,tn2))
 
+
+decidevaluate(dt$class, dt$softmax_output0, diag(2),average=F)
+decidevaluate(dt$class, newdata$probability0, diag(2),average=F)
+
+um <- rbind(c(1,-99),c(0,1))
+decidevaluate(dt$class, dt$softmax_output0, um,average=F)
+decidevaluate(dt$class, newdata$probability0, um,average=F)
+
+um <- rbind(c(1,0),c(-99,1))
+decidevaluate(dt$class, dt$softmax_output0, um,average=F)
+decidevaluate(dt$class, newdata$probability0, um,average=F)
+
+
+
+## formula for threshold
+## u00 Q + u01 (1-Q) > u10 Q + u11 (1-Q)
+## Q (u00-u01-u10+u11) > u11-u01
+## Q > (u11-u01)/(u00+u11-u10-u01)
+
+
+
+
+
+
+
+#################
+## Old code below
 
 
 tplot(x=smgrid, y=rowMeans(probf))

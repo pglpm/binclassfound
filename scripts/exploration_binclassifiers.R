@@ -1,6 +1,6 @@
 ## Author: PGL  Porta Mana
 ## Created: 2022-03-17T14:21:57+0100
-## Last-Updated: 2022-04-09T13:56:46+0200
+## Last-Updated: 2022-04-09T16:33:40+0200
 ################
 ## Exploration of several issues for binary classifiers
 ################
@@ -126,8 +126,13 @@ outdt <- data.table(item=as.integer(1:nrow(dt)), class=as.integer(dt$class), log
 outdt <- outdt[sample(1:nrow(outdt)),]
 fwrite(outdt, 'softmaxdata_test.csv', sep=',')
 
+outdtprobs <- samplesF(Y=cbind(class=0), X=cbind(logitsoftmax=qlogis(softmax2)), parmList=parmList, inorder=T)
 
+newdata <- data.table(class=dt$class,
+                      softmax_output0=softmax2,
+                      probability0=rowMeans(outdtprobs))
 
+fwrite(newdata, 'CHEMBL205_cl_softmax0_prob0.csv', sep=',')
 
 
 
