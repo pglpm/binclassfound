@@ -1,6 +1,6 @@
 ## Author: PGL  Porta Mana
 ## Created: 2022-01-12T14:51:16+0100
-## Last-Updated: 2022-04-09T18:12:16+0200
+## Last-Updated: 2022-04-09T23:26:06+0200
 ################
 ## Relation between softmax & probability
 ################
@@ -121,6 +121,22 @@ polygon(x=c(smgrid,rev(smgrid)), y=c(qprobf[2,], rev(qprobf[3,])), col=paste0(pa
     ## }
 dev.off()
 
+ndata <- 4096L
+schoices <- 1L*(!(alldata$logitsoftmax > 0))
+probd <- t(sapply(0:1, function(xclass){sapply(0:1, function(xsch){
+    sum(alldata$class[1:ndata]==xclass & schoices[1:ndata]==xsch)
+})}))
+dimnames(probd) <- list(paste0('true.',0:1), paste0('schoice.',0:1))
+##
+cprob <- t(t(probd)/colSums(probd))
+cprob0 <- cprob[1,schoices+1]
+names(cprob0) <- NULL
+
+confmatrix <- t(sapply(0:1, function(xclass){sapply(0:1, function(xsch){
+    sum(alldata$class==xclass & schoices==xsch)
+})}))
+dimnames(confmatrix) <- list(paste0('true.',0:1), paste0('schoice.',0:1))
+
 
 
 testdata <- tail(alldata,n=8192)
@@ -159,6 +175,7 @@ decidevaluate <- function(truevalues, probs0, umatrix, normalize=F, shift=F, ave
     res <- sum(decmatrix * umatrix)
     if(average){res <- res/length(truevalues)}
     print(paste0((if(average){'average'}else{'total'}), ' utility:'))
+    print(res)
     res
 }
 
@@ -173,23 +190,48 @@ um <- rbind(c(1,0),c(-99,1))
 decidevaluate(testdata$class, plogis(testdata$logitsoftmax), um,average=F)
 decidevaluate(testdata$class, testdata$prob, um,average=F)
 
-um <- rbind(c(0.1,0),c(0,1))
+um <- rbind(c(0.01,0),c(0,1))
+decidevaluate(testdata$class, plogis(testdata$logitsoftmax), um,average=F)
+decidevaluate(testdata$class, testdata$prob, um,average=F)
+
+um <- rbind(c(1,0),c(0,0.01))
 decidevaluate(testdata$class, plogis(testdata$logitsoftmax), um,average=F)
 decidevaluate(testdata$class, testdata$prob, um,average=F)
 
 
+for(um in list(diag(2),
+               rbind(c(1,-99),c(0,1)),
+               rbind(c(1,0),c(-99,1)),
+               rbind(c(0.01,0),c(0,1)),
+               rbind(c(1,0),c(0,0.01))
+               )){
+    print('utility matrix:')
+    print(um)
+    resu <- decidevaluate(alldata$class, cprob0, um, average=F)
+print('final;')
+    print(c(sum(um * confmatrix), resu))
+}
 
 
-decidevaluate(dt$class, dt$softmax_output0, diag(2),average=F)
-decidevaluate(dt$class, newdata$probability0, diag(2),average=F)
+                                        #um <- diag(2)
 
-um <- rbind(c(1,-99),c(0,1))
-decidevaluate(dt$class, dt$softmax_output0, um,average=F)
-decidevaluate(dt$class, newdata$probability0, um,average=F)
+um <- 
 
-um <- rbind(c(1,0),c(-99,1))
-decidevaluate(dt$class, dt$softmax_output0, um,average=F)
-decidevaluate(dt$class, newdata$probability0, um,average=F)
+decidevaluate(testdata$class, plogis(testdata$logitsoftmax), um,average=F)
+decidevaluate(testdata$class, testdata$prob, um,average=F)
+
+um <- 
+decidevaluate(testdata$class, plogis(testdata$logitsoftmax), um,average=F)
+decidevaluate(testdata$class, testdata$prob, um,average=F)
+
+um <- 
+decidevaluate(testdata$class, plogis(testdata$logitsoftmax), um,average=F)
+decidevaluate(testdata$class, testdata$prob, um,average=F)
+
+um <- 
+decidevaluate(testdata$class, plogis(testdata$logitsoftmax), um,average=F)
+decidevaluate(testdata$class, testdata$prob, um,average=F)
+
 
 
 
