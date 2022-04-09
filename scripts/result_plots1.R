@@ -1,6 +1,6 @@
 ## Author: PGL  Porta Mana
 ## Created: 2022-01-12T14:51:16+0100
-## Last-Updated: 2022-04-09T23:26:06+0200
+## Last-Updated: 2022-04-10T00:19:28+0200
 ################
 ## Relation between softmax & probability
 ################
@@ -123,19 +123,19 @@ dev.off()
 
 ndata <- 4096L
 schoices <- 1L*(!(alldata$logitsoftmax > 0))
-probd <- t(sapply(0:1, function(xclass){sapply(0:1, function(xsch){
+probd <- sapply(0:1, function(xclass){sapply(0:1, function(xsch){
     sum(alldata$class[1:ndata]==xclass & schoices[1:ndata]==xsch)
-})}))
-dimnames(probd) <- list(paste0('true.',0:1), paste0('schoice.',0:1))
+})})
+dimnames(probd) <- list(paste0('schoice.',0:1),paste0('true.',0:1))
 ##
-cprob <- t(t(probd)/colSums(probd))
-cprob0 <- cprob[1,schoices+1]
+cprob <- probd/rowSums(probd)
+cprob0 <- cprob[schoices+1,1]
 names(cprob0) <- NULL
 
-confmatrix <- t(sapply(0:1, function(xclass){sapply(0:1, function(xsch){
+confmatrix <- sapply(0:1, function(xclass){sapply(0:1, function(xsch){
     sum(alldata$class==xclass & schoices==xsch)
-})}))
-dimnames(confmatrix) <- list(paste0('true.',0:1), paste0('schoice.',0:1))
+})})
+dimnames(confmatrix) <- list(paste0('schoice.',0:1), paste0('true.',0:1))
 
 
 
@@ -200,16 +200,16 @@ decidevaluate(testdata$class, testdata$prob, um,average=F)
 
 
 for(um in list(diag(2),
-               rbind(c(1,-99),c(0,1)),
-               rbind(c(1,0),c(-99,1)),
-               rbind(c(0.01,0),c(0,1)),
-               rbind(c(1,0),c(0,0.01))
+               rbind(c(1,-999),c(0,1)),
+               rbind(c(1,0),c(-999,1)),
+               rbind(c(0.001,0),c(0,1)),
+               rbind(c(1,0),c(0,0.001))
                )){
     print('utility matrix:')
     print(um)
     resu <- decidevaluate(alldata$class, cprob0, um, average=F)
-print('final;')
-    print(c(sum(um * confmatrix), resu))
+    print('softmax utility:')
+    print(c(sum(um * confmatrix)))
 }
 
 
