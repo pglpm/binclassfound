@@ -1,6 +1,6 @@
 ## Author: PGL  Porta Mana
 ## Created: 2022-01-12T14:51:16+0100
-## Last-Updated: 2022-04-09T16:40:42+0200
+## Last-Updated: 2022-04-09T18:12:16+0200
 ################
 ## Relation between softmax & probability
 ################
@@ -54,7 +54,7 @@ dbernoulli <- function(x, prob, log=FALSE){
 
 maincov <- 'class'
 source('functions_mcmc.R')
-dirname <- 'testmcmc1_-V2-D4096-K16-I4096'
+dirname <- '_testmcmc1_-V2-D4096-K16-I4096'
 frequenciesfile <- '_mcsamples-Rtestmcmc1_2-V2-D4096-K16-I4096.rds'
 ##
 datafile <- 'softmaxdata_test.csv'
@@ -128,7 +128,7 @@ transfsm <- samplesF(Y=cbind(class=0), X=cbind(logitsoftmax=testdata$logitsoftma
 prob0 <- rowMeans(transfsm)
 testdata <- cbind(testdata, data.table(prob=prob0))
 
-decidevaluate <- function(truevalues, probs0, umatrix, normalize=F, shift=F, average=T){
+decidevaluate <- function(truevalues, probs0, umatrix, normalize=F, shift=F, average=F){
     dimnames(umatrix) <- list(paste0('choice.',0:1), paste0('true.',0:1))
     if(shift){ umatrix <- umatrix - min(umatrix) }
     if(normalize){ umatrix <- umatrix/max(abs(umatrix)) }
@@ -170,6 +170,10 @@ decidevaluate(testdata$class, plogis(testdata$logitsoftmax), um,average=F)
 decidevaluate(testdata$class, testdata$prob, um,average=F)
 
 um <- rbind(c(1,0),c(-99,1))
+decidevaluate(testdata$class, plogis(testdata$logitsoftmax), um,average=F)
+decidevaluate(testdata$class, testdata$prob, um,average=F)
+
+um <- rbind(c(0.1,0),c(0,1))
 decidevaluate(testdata$class, plogis(testdata$logitsoftmax), um,average=F)
 decidevaluate(testdata$class, testdata$prob, um,average=F)
 
