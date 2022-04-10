@@ -1,7 +1,7 @@
 \pdfoutput=1
 %% Author: PGL  Porta Mana
 %% Created: 2015-05-01T20:53:34+0200
-%% Last-Updated: 2022-04-09T21:46:42+0200
+%% Last-Updated: 2022-04-10T13:29:52+0200
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \newif\ifarxiv
 \arxivfalse
@@ -19,7 +19,7 @@ british%
 \newcommand*{\firstdraft}{4 March 2022}
 \newcommand*{\firstpublished}{\firstdraft}
 \newcommand*{\updated}{\ifarxiv***\else\today\fi}
-\newcommand*{\propertitle}{Guessing what's true or choosing what's optimal?\\{\Large A first-principle analysis of classifiers}%
+\newcommand*{\propertitle}{Guessing what's true or choosing what's optimal?\\ {\Large A first-principle approach to some issues of classifiers}%
 }% title uses LARGE; set Large for smaller
 \newcommand*{\pdftitle}{\propertitle}
 \newcommand*{\headtitle}{Guessing truth or choosing optimality?}
@@ -758,66 +758,34 @@ Open Science Framework \doi{10.31219/osf.io/#1}%
 %%% BEGINNING OF MAIN TEXT
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\mynote{\scriptsize\puzzle\ [Luca] I find it very difficult to structure the paper: there seems to be issues at several levels in the development and use of binary classifiers (and classifiers in general) within machine-learning.
-
-  Here are some relevant points:
+\mynote{\scriptsize\wrench [Luca] The two main points of the paper are about
   \begin{itemize}
-  \item There should be a distinction between \enquote{inference} (or forecast, prediction, guess) and \enquote{decision} (or action, choice). In particular, the possible situations we may be uncertain about and the possible decisions available may be completely different things. A clinician, for example, may be uncertain about \enquote{cancer} vs \enquote{non-cancer}, while the choices are about \enquote{drug treatment 1} vs \enquote{drug treatment 2} vs \enquote{surgery}.
-
-  \item Probability theory \amp\ decision theory say that in order to make self-consistent decision we need two things: (a) the probabilities for the possible situations, (b) the utilities of the decisions given each possible situation.
-
-  \item A useful \ml\ algorithm should therefore give us one of two things:
-\begin{itemize}
-\item either the \emph{probabilities} of the uncertain situations
-  (\enquote{cancer} vs \enquote{non-cancer} in the example above),
-\item or the final decision (\enquote{drug treatment 1} vs \enquote{drug
-    treatment 2} vs \enquote{surgery} in the example above).
-\end{itemize}
-Current \ml\ classifiers do not give us either: the output in the example
-above would be \enquote{cancer} vs \enquote{non-cancer}, often without
-probabilities.
-
-\item So there are two possible solutions to the problem above:
-  \begin{itemize}
-  \item We must build a classifier that outputs probabilities. The 0--1
-    outputs of current classifiers cannot properly interpreted as
-    probabilities, for various reasons.
-  \item We must build a classifier that output \emph{decisions}: so not
-    \enquote{cancer} vs \enquote{non-cancer}, but \enquote{drug treatment
-      1} vs \etc.
+  \item Deriving correct probabilities for classes by a simple, low-cost Bayesian analysis: from the confusion matrix, for \ml\ algorithms that only output class labels; and from the continuous output (\eg\ last layer or softmax in deep nets), for algorithms that can provide some kind of continuous score.
+  \item Implement decision-theory principles: (1) in the algorithm, so that it yields the \emph{optimal} class label, (2) in the categorization of valuation scores, (3) in calculating valuation scores.
   \end{itemize}
+  Maybe it'd be best to address these two points in two papers with subtitles \enquote{I. \ldots} and \enquote{II. \ldots}, for a neater presentation. The two points depend on each other, though: to show the improvements by the Bayesian analysis we use the valuation scores of the second point; to implement decision theory in the algorithm we need the probabilities from the first point.
 
-\end{itemize}
+  Let me know your thoughts about this.
 }
-
 
 
 
 \section{Valuation metrics, amounts of data, inferences, and decisions}
 \label{sec:intro}
 
-Let's consider the simple example of a binary classifier and several dilemmas that appear in its development, choice, and use.
+In comparing, evaluating, and using \ml\ classifiers we face a number of questions and issues; some are well-known, others are rarely discussed:
+\begin{enumerate}[wide]
+\item When we have to evaluate and compare different classifying algorithms or different hyperparameter values for one algorithm, we are avalanched by a choice of possible evaluation scales: accuracy, area under curve, $F_{1}$-measure, mean square contingency \citep[denoted \enquote{$r$} there]{yule1912} also known as Matthews correlation coefficient \citep{matthews1975}[\sect~31 p.~183]{fisher1925_r1963}, precision, recall, sensitivity, specificity, and many others \citep{sammutetal2011_r2017}[see also the analysis in ][]{goodmanetal1954,goodmanetal1959,goodmanetal1963,goodmanetal1972b}. Only vague guidelines are usually given to face this choice. Typically one computes several of such scores and hopes that they will lead to similar ranking.
 
-At the moment of evaluating different classifier algorithms, or different
-hyperparameter settings for one algorithm, we are avalanched by a choice of
-possible evaluation scales: accuracy, area under curve, $F_{1}$-measure,
-mean square contingency \citep[denoted \enquote{$r$} there]{yule1912} also
-known as Matthews correlation coefficient \citep{matthews1975}, precision,
-recall, sensitivity, specificity, and many others
-\citep{sammutetal2011_r2017}. Only vague guidelines are usually given to
-face this choice. A thorough analysis and discussion of several such scales
-was given by
-\textcite{goodmanetal1954,goodmanetal1959,goodmanetal1963,goodmanetal1972b}.
+  Most or all of such scales were proposed only on intuitive grounds, from the exploration of specific problems and relying on tacit assumptions, then heedlessly applied to different problems.  The Matthews correlation coefficient, for example, relies on several assumption of normality \citep[\sect~31 p.~183 first paragraph]{fisher1925_r1963} which for instance do not apply to skewed population distributions \citep{jenietal2013,zhu2020}. The area under the receiver-operating-characteristic curve is heavily affected by values of false-positive and false-negative frequencies,  and by misclassification costs, that have nothing to do with those of the specific application of the classifier \citep{bakeretal2001,loboetal2008}. The $F_{1}$-measure implicitly gives misclassification a weight that depends on the frequency of that misclassification \citep{handetal2018}, which amounts to saying, for example, \enquote*{this error happens often, \emph{therefore} it is not important} or similar wishful thinking \mynote{\puzzle\ check the exact term for this bias in Kahneman}.
 
-We can also ask: are all these scales well-founded and self-consistent? is
-it possible that the use of any of them leads to contradictions? The
-literature abounds with studies showing that some scale $X$ may imply
-hidden contradictions with the data or the assumptions used for our
-inference, and is therefore worse than some other scale $Y$. See for
-example \textcite{bakeretal2001,loboetal2008,handetal2018,zhu2020} and
-Goodman \amp\ Kruskal's papers cited above for instances of criticisms of
-area under the curve, $F_{1}$-measure, Matthews correlation coefficient,
-and other scales.
+\end{enumerate}
+
+
+
+
+
+
 
 If we have many more data for one class than for the other -- a common
 predicament in medical applications -- we must face the
@@ -1100,6 +1068,38 @@ In supervised learning the classifier is trained to learn the most probable $f(X
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%% Cut text (won't be compiled)
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 
+
+\mynote{\scriptsize\puzzle\ [Luca] I find it very difficult to structure the paper: there seems to be issues at several levels in the development and use of binary classifiers (and classifiers in general) within machine-learning.
+
+  Here are some relevant points:
+  \begin{itemize}
+  \item There should be a distinction between \enquote{inference} (or forecast, prediction, guess) and \enquote{decision} (or action, choice). In particular, the possible situations we may be uncertain about and the possible decisions available may be completely different things. A clinician, for example, may be uncertain about \enquote{cancer} vs \enquote{non-cancer}, while the choices are about \enquote{drug treatment 1} vs \enquote{drug treatment 2} vs \enquote{surgery}.
+
+  \item Probability theory \amp\ decision theory say that in order to make self-consistent decision we need two things: (a) the probabilities for the possible situations, (b) the utilities of the decisions given each possible situation.
+
+  \item A useful \ml\ algorithm should therefore give us one of two things:
+\begin{itemize}
+\item either the \emph{probabilities} of the uncertain situations
+  (\enquote{cancer} vs \enquote{non-cancer} in the example above),
+\item or the final decision (\enquote{drug treatment 1} vs \enquote{drug
+    treatment 2} vs \enquote{surgery} in the example above).
+\end{itemize}
+Current \ml\ classifiers do not give us either: the output in the example
+above would be \enquote{cancer} vs \enquote{non-cancer}, often without
+probabilities.
+
+\item So there are two possible solutions to the problem above:
+  \begin{itemize}
+  \item We must build a classifier that outputs probabilities. The 0--1
+    outputs of current classifiers cannot properly interpreted as
+    probabilities, for various reasons.
+  \item We must build a classifier that output \emph{decisions}: so not
+    \enquote{cancer} vs \enquote{non-cancer}, but \enquote{drug treatment
+      1} vs \etc.
+  \end{itemize}
+
+\end{itemize}
+}
 
 
 %%% Local Variables: 
