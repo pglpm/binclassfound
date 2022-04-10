@@ -1,7 +1,7 @@
 \pdfoutput=1
 %% Author: PGL  Porta Mana
 %% Created: 2015-05-01T20:53:34+0200
-%% Last-Updated: 2022-04-10T13:29:52+0200
+%% Last-Updated: 2022-04-10T15:51:32+0200
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \newif\ifarxiv
 \arxivfalse
@@ -777,8 +777,13 @@ In comparing, evaluating, and using \ml\ classifiers we face a number of questio
 \begin{enumerate}[wide]
 \item When we have to evaluate and compare different classifying algorithms or different hyperparameter values for one algorithm, we are avalanched by a choice of possible evaluation scales: accuracy, area under curve, $F_{1}$-measure, mean square contingency \citep[denoted \enquote{$r$} there]{yule1912} also known as Matthews correlation coefficient \citep{matthews1975}[\sect~31 p.~183]{fisher1925_r1963}, precision, recall, sensitivity, specificity, and many others \citep{sammutetal2011_r2017}[see also the analysis in ][]{goodmanetal1954,goodmanetal1959,goodmanetal1963,goodmanetal1972b}. Only vague guidelines are usually given to face this choice. Typically one computes several of such scores and hopes that they will lead to similar ranking.
 
-  Most or all of such scales were proposed only on intuitive grounds, from the exploration of specific problems and relying on tacit assumptions, then heedlessly applied to different problems.  The Matthews correlation coefficient, for example, relies on several assumption of normality \citep[\sect~31 p.~183 first paragraph]{fisher1925_r1963} which for instance do not apply to skewed population distributions \citep{jenietal2013,zhu2020}. The area under the receiver-operating-characteristic curve is heavily affected by values of false-positive and false-negative frequencies,  and by misclassification costs, that have nothing to do with those of the specific application of the classifier \citep{bakeretal2001,loboetal2008}. The $F_{1}$-measure implicitly gives misclassification a weight that depends on the frequency of that misclassification \citep{handetal2018}, which amounts to saying, for example, \enquote*{this error happens often, \emph{therefore} it is not important} or similar wishful thinking \mynote{\puzzle\ check the exact term for this bias in Kahneman}.
+  Most or all of such scales were proposed only on intuitive grounds, from the exploration of specific problems and relying on tacit assumptions, then heedlessly applied to different problems. The Matthews correlation coefficient, for example, relies on several assumptions of gaussianity \citep[\sect~31 p.~183 first paragraph]{fisher1925_r1963}, which for instance do not apply to skewed population distributions \citep{jenietal2013,zhu2020}. The area under the receiver-operating-characteristic curve is heavily affected by values of false-positive and false-negative frequencies, as well as by misclassification costs, that have nothing to do with those of the specific application of the classifier \citep{bakeretal2001,loboetal2008}. The $F_{1}$-measure implicitly gives  correct classifications a weight that depends on their frequency \citep{handetal2018}; such dependence amounts to saying, for example, \enquote*{this error rarely happens, \emph{therefore} it has a high cost}, which is a form of scarcity cognitive bias \citep{camereretal1989,kimetal1999,mittoneetal2009}. We are therefore led to ask: are there valuation scales that can be proven, from first principles, to be free from biases and unnecessary assumptions?
 
+\item If we have many more data for one class than for another -- a common predicament in medical applications -- we must face the \enquote{class-imbalance problem}: the classifier ends up classifying all data as belonging to the more numerous class \citep{sammutetal2011_r2017,provost2000}, which may be an undesirable action if the misclassification of cases from the less numerous class entails high costs. \mynote{\wrench\ refs to cost-sensitive learning}
+  
+\item 
+
+\item Our ultimate purpose in classification is often the choice of a specific course of action among several possible ones, rather than simply guessing the correct class. This is especially true in medical applications. A clinician does not simply tell a patient \enquote*{you will probably not contract the disease}, but has to decide among dismissal or different kinds of preventive treatment. In other words, our problem is often not  \emph{to guess the probable truth}, but \emph{to make the optimal choice}.
 \end{enumerate}
 
 
@@ -787,13 +792,6 @@ In comparing, evaluating, and using \ml\ classifiers we face a number of questio
 
 
 
-If we have many more data for one class than for the other -- a common
-predicament in medical applications -- we must face the
-\enquote{class-imbalance problem}: the classifier ends up classifying all
-data as belonging to the more numerous class
-\citep{sammutetal2011_r2017,provost2000}, which may be an undesirable
-action if the misclassification of cases belonging to the less numerous
-class entails high costs.
 
 The three points above turn out to be tightly related and to have a common
 solution. We show that
