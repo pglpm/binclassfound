@@ -1,7 +1,7 @@
 \pdfoutput=1
 %% Author: PGL  Porta Mana
 %% Created: 2015-05-01T20:53:34+0200
-%% Last-Updated: 2022-04-11T11:40:13+0200
+%% Last-Updated: 2022-04-11T16:05:10+0200
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \newif\ifarxiv
 \arxivfalse
@@ -703,8 +703,9 @@ Open Science Framework \doi{10.31219/osf.io/#1}%
 \newcommand*{\uf}{\bar{f}}
 \newcommand*{\za}{\hat{0}}
 \newcommand*{\zb}{\hat{1}}
-\newcommand*{\eu}{\bar{U}}
-\newcommand*{\myll}[1]{}
+\newcommand*{\U}{\mathrm{u}}
+\newcommand*{\UU}{\mathrm{U}}
+\newcommand*{\eu}{\bar{\U}}
 
 %%% Custom macros end @@@
 
@@ -779,7 +780,7 @@ In comparing, evaluating, and using \ml\ classifiers we face a number of questio
   
 \item\label{item:scales}\textsf{\textbf{Choice.}}\enspace When we have to evaluate and compare different classifying algorithms or different hyperparameter values for one algorithm, we are avalanched by a choice of possible evaluation scales: accuracy, area under curve, $F_{1}$-measure, mean square contingency \citep[denoted \enquote{$r$} there]{yule1912} also known as Matthews correlation coefficient \citep{matthews1975}[\sect~31 p.~183]{fisher1925_r1963}, precision, recall, sensitivity, specificity, and many others \citep{sammutetal2011_r2017}[see also the analysis in ][]{goodmanetal1954,goodmanetal1959,goodmanetal1963,goodmanetal1972b}. Only vague guidelines are usually given to face this choice. Typically one computes several of such scores and hopes that they will lead to similar ranking.
 
-\item\label{item:ground}\textsf{\textbf{Rationale and consistency.}}\enspace Most or all of such scales were proposed only on intuitive grounds, from the exploration of specific problems and relying on tacit assumptions, then heedlessly applied to new problems. The Matthews correlation coefficient, for example, relies on several assumptions of gaussianity \citep[\sect~31 p.~183 first paragraph]{fisher1925_r1963}, which for instance do not apply to skewed population distributions \citep{jenietal2013,zhu2020}. The area under the receiver-operating-characteristic curve is heavily affected by values of false-positive and false-negative frequencies, as well as by misclassification costs, that have nothing to do with those of the specific application of the classifier \citep{bakeretal2001,loboetal2008}. The $F_{1}$-measure implicitly gives correct classifications a weight that depends on their frequency \citep{handetal2018}; such dependence amounts to saying, for example, \enquote*{this class is rare, \emph{therefore} its correct classification leads to high gains}, which is a form of scarcity cognitive bias \citep{camereretal1989,kimetal1999,mittoneetal2009}.
+\item\label{item:ground}\textsf{\textbf{Rationale and consistency.}}\enspace Most or all of such scales were proposed only on intuitive grounds, from the exploration of specific problems and relying on tacit assumptions, then heedlessly applied to new problems. The Matthews correlation coefficient, for example, relies on several assumptions of gaussianity \citep[\sect~31 p.~183 first paragraph]{fisher1925_r1963}, which for instance do not apply to skewed population distributions \citep{jenietal2013,zhu2020}. The area under the receiver-operating-characteristic curve is heavily affected by values of false-positive and false-negative frequencies, as well as by misclassification costs, that have nothing to do with those of the specific application of the classifier \citep{bakeretal2001,loboetal2008}. The $F_{1}$-measure implicitly gives correct classifications a weight that depends on their frequency or probability \citep{handetal2018}; such dependence amounts to saying, for example, \enquote*{this class is rare, \emph{therefore} its correct classification leads to high gains}, which is a form of scarcity cognitive bias \citep{camereretal1989,kimetal1999,mittoneetal2009}.
 
   We are therefore led to ask: are there valuation scales that can be proven, from first principles, to be free from biases and unnecessary assumptions?
 
@@ -800,55 +801,62 @@ This point of view has profound potential implications for the training of our a
 
 \medskip
 
-All these issues are plainly connected: they involve considerations of importance or gain or cost, and of uncertainty.
+All the issues above are manifestly connected: they involve considerations of importance or gain or cost, and of uncertainty.
 
-In the present work we show how issues~\ref{item:scales}--\ref{item:optimal_true} are all solved at once by using the principles of \emph{Decision Theory}. Decision theory gives a logically and mathematically self-consistent procedure to catalogue all possible valuation scales, to make optimal choices under uncertainty, and to evaluate and compare the performance of several decision algorithms. Most important, the application of decision theory does not require any changes in current training practices, is computationally inexpensive, and takes place downstream after the output of the classifier.
+In the present work we show how issues~\ref{item:scales}--\ref{item:optimal_true} are all solved at once by using the principles of \emph{Decision Theory}. Decision theory gives a logically and mathematically self-consistent procedure to catalogue all possible valuation scales, to make optimal choices under uncertainty, and to evaluate and compare the performance of several decision algorithms. Most important, we show that implementing decision-theoretic procedures in a \ml\ classifier does not require any changes in current training practices \mynote{(\puzzle\ possibly it may even make procedures like under- or over-sampling unnecessary!)}, is computationally inexpensive, and takes place downstream after the output of the classifier.
 
-The use of decision theory, however, requires the probabilities for the possible classes, which is issue~\ref{item:no_probs}. We present a computationally inexpensive way of calculating these probabilities from the ordinary output of a \ml\ classifier:
-\begin{itemize}
-\item 
-\end{itemize}
+The use of decision theory requires sensible probabilities for the possible classes, which brings us to issue~\ref{item:no_probs} above. In the present work we also present and use a computationally inexpensive way of calculating these probabilities from the ordinary output of a \ml\ classifier, both for classifiers such as \mynote{\puzzle\ example here} that can only output a class label, and for classifiers that can output some sort of continuous score.
 
-
-
-
-
-\mynote{\wrench\ old text:
-  
-The three points above turn out to be tightly related and to have a common
-solution. We show that
-\begin{enumerate}
-\item\label{item:2D_family} the admissible valuation scales for a binary
+\mynote{\wrench\ Write here a summary or outlook of the rest of the paper and a summary of results:  
+\begin{itemize*}
+\item The admissible valuation scales for a binary
   classifier form a two-dimensional family; that is, the choice of a specific
   scale corresponds to the choice of two numbers. Such choice is
   problem-dependent and cannot be given a priori.
-\item\label{item:inconsistent} admissible scales are only those that can be
+\item Admissible scales are only those that can be
   expressed as a linear function of the elements of the
   population-normalized confusion matrix. Scales such as the
   $F_{1}$-measure or the Matthews correlation coefficient are therefore inadmissible
-\end{enumerate}
+\end{itemize*}
 }
 
 
 
-\section{Overview of decision theory}
+\section{Brief overview of decision theory}
 \label{sec:decision_theory}
 
-For a presentation from the point of view of artificial intelligence and machine learning see \textcite[\chap~15]{russelletal1995_r2022}. Simple introductions are given by \textcite{jeffrey1965,north1968,raiffa1968_r1970}, and a discussion of its foundations and history in \textcite{steeleetal2015_r2020}. For more thorough expositions see \textcite{raiffaetal1961_r2000,berger1980_r1985,savage1954_r1972}; and \textcite{soxetal1988_r2013,huninketal2001_r2014} for a medical perspective
-
-
-
-
- \citep[\chap~15]{russelletal1995_r2022}{jeffrey1965}{north1968}
+Here we give only a brief overview of decision theory, focusing only on the notions relevant to the applications to be presented later.
+For a presentation of decision theory from the point of view of artificial intelligence and machine learning see \textcite[\chap~15]{russelletal1995_r2022}. Simple introductions are given by \textcite{jeffrey1965,north1968,raiffa1968_r1970}, and a discussion of its foundations and history by \textcite{steeleetal2015_r2020}. For more thorough expositions see \textcite{raiffaetal1961_r2000,berger1980_r1985,savage1954_r1972}; and \textcite{soxetal1988_r2013,huninketal2001_r2014} for a medical perspective.
 
 Decision theory makes a distinction between
-\begin{enumerate}[label=\alph*.]
-\item the possible situations we are uncertain about
-\item the possible choices we can make.
-\end{enumerate}
-This distinction is important, in fact in some cases the numbers of possible uncertain situations
+\begin{itemize}
+\item the possible situations we are uncertain about, in our case the possible classes;
+\item the possible decisions we can make.
+\end{itemize}
+This distinction is important, as argued under issue~\ref{item:optimal_true}; in some cases even the number of classes and the number of decisions differ. This distinction prevents the appearance of various cognitive biases \citep{kahnemanetal1982_r2008,gilovichetal2002_r2009,kahneman2011}, for example the scarcity bias mentioned in \ref{item:ground}, or plain wishful thinking: \enquote*{this event is valuable, \emph{therefore} it is more probable}.
 
+To each decision we associate a \emph{utility} which depends on which of the possible classes is actually true. The utility may equal a concrete monetary gain or cost, or a more abstract value of importance.
 
+For example, we are offered to buy a lottery ticket, which may be winning or not. The ticket costs $1$ unit of some monetary currency to buy, and the lottery prize is $101$ units. Our decisions are whether to buy the ticket or not. We have four utilities, represented in the following self-explanatory table:
+\begin{center}
+  \begin{tabular}{rcc}
+    &\multicolumn{2}{c}{\small winning?}\\
+    \cmidrule(lr){2-3}
+    {\small buy?}&\texttt{yes}&\texttt{no}\\
+    \cmidrule(lr){1-1}
+    \texttt{yes}&+100&-1\\
+    \texttt{no}&0&0
+  \end{tabular}
+\end{center}
+
+We denote $\U(d\|c)$ the utility of decision $d$ if class $c$ is true, or  \enquote{the utility of $d$ given $c$}, or \enquote{the utility of $d$ conditional on $c$}
+
+If we know which class is true, the optimal decision is the one having maximal utility among those conditional on the true class. If we are uncertain about which class is true, decision theory states that the optimal decision is the one having maximal \emph{expected} utility, defined as the expected value of the utility with respect to the probabilities of the various classes. For binary classification, for example:
+\begin{equation}
+  \label{eq:exp_utility}
+  \eu(d) \defd \U(d \| c_{1})\ \p(c_{1}) + \U(d \| c_{2})\ \p(c_{1})
+\end{equation}
+where $\p(c_{1})$ and $\p(c_{2}) \equiv 1 - \p(c_{1})$ are the probabilities of classes $c_{1}$ and $c_{2}$.
 
 
 % \[ \color{mypurpleblue}\bm{a} \color{myredpurple}\mathbin{\bm{\land}}\color{mypurpleblue} \bm{b} \]
