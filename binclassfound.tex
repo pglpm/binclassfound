@@ -1,7 +1,7 @@
 \pdfoutput=1
 %% Author: PGL  Porta Mana
 %% Created: 2015-05-01T20:53:34+0200
-%% Last-Updated: 2022-04-10T22:42:38+0200
+%% Last-Updated: 2022-04-11T07:36:52+0200
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \newif\ifarxiv
 \arxivfalse
@@ -780,7 +780,7 @@ In comparing, evaluating, and using \ml\ classifiers we face a number of questio
 
 \item\label{item:class_imbal} If our sample data are more numerous for one class than for another -- a common predicament in medical applications -- we must face the \enquote{class-imbalance problem}: the classifier ends up classifying all data as belonging to the more numerous class \citep{sammutetal2011_r2017,provost2000}, which may be an undesirable action if the misclassification of cases from the less numerous class entails high costs. \mynote{\wrench\ discussion and refs about cost-sensitive learning}
   
-\item\label{item:no_probs} It is difficult to assess sensible probabilities for the possible classes. Some \ml\ algorithms only output a class label. Others, including deep networks, output real numbers that, even if normalized, cannot be reliably interpreted as degrees of belief \citep{mackay1992d,galetal2016}. Algorithms that internally do perform probabilistic calculations, such as naive-Bayes or logistic-regression classifiers \citep[\sect~3.5, \chap~8]{murphy2012}[\sects~8.2, 4.3]{bishop2006}[\chap~10, \sect~17.4]{barber2007_r2020}, unfortunately rest on probabilistic assumptions -- independence and particular shapes of distributions, for example -- that are often unrealistic (and their consistency with the specific application is rarely checked).
+\item\label{item:no_probs} It is difficult to assess sensible probabilities for the possible classes. Some \ml\ algorithms only output a class label. Others, including deep networks, output real numbers that, even if normalized, cannot be reliably interpreted as degrees of belief or as frequencies in the population of interest \citep{mackay1992d,galetal2016}. Algorithms that internally do perform probabilistic calculations, such as naive-Bayes or logistic-regression classifiers \citep[\sect~3.5, \chap~8]{murphy2012}[\sects~8.2, 4.3]{bishop2006}[\chap~10, \sect~17.4]{barber2007_r2020}, unfortunately rest on probabilistic assumptions -- independence and particular shapes of distributions, for example -- that are often unrealistic (and their consistency with the specific application is rarely checked).
 
 \item\label{item:optimal_true} Our ultimate purpose in classification is often the choice of a specific course of action among several possible ones, rather than a simple guess of the correct class. This is especially true in medical applications. A clinician does not simply tell a patient \enquote*{you will probably not contract the disease}, but has to decide among dismissal or different kinds of preventive treatment \citep{soxetal1988_r2013,huninketal2001_r2014}.
 
