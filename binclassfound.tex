@@ -1,7 +1,7 @@
 \pdfoutput=1
 %% Author: PGL  Porta Mana
 %% Created: 2015-05-01T20:53:34+0200
-%% Last-Updated: 2022-04-11T19:25:33+0200
+%% Last-Updated: 2022-04-11T22:01:23+0200
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \newif\ifarxiv
 \arxivfalse
@@ -825,7 +825,7 @@ The use of decision theory requires sensible probabilities for the possible clas
 \section{Brief overview of decision theory}
 \label{sec:decision_theory}
 
-Here we give only a brief overview of decision theory, focusing only on the notions relevant to the applications to be discussed later. For a presentation of decision theory from the point of view of artificial intelligence and machine learning see \textcite[\chap~15]{russelletal1995_r2022}. Simple introductions are given by \textcite{jeffrey1965,north1968,raiffa1968_r1970}, and a discussion of its foundations and history by \textcite{steeleetal2015_r2020}. For more thorough expositions see \textcite{raiffaetal1961_r2000,berger1980_r1985,savage1954_r1972}; and \textcite{soxetal1988_r2013,huninketal2001_r2014} for a medical perspective.
+Here we give a brief overview of decision theory. We only focus on the notions relevant to the applications to be discussed later, and simply state the rules of the theory. These rules are quite intuitive, but it must be remarked that they are constructed in order to be logically and mathematically self-consistent: see the following references. For a presentation of decision theory from the point of view of artificial intelligence and machine learning see \textcite[\chap~15]{russelletal1995_r2022}. Simple introductions are given by \textcite{jeffrey1965,north1968,raiffa1968_r1970}, and a discussion of its foundations and history by \textcite{steeleetal2015_r2020}. For more thorough expositions see \textcite{raiffaetal1961_r2000,berger1980_r1985,savage1954_r1972}; and \textcite{soxetal1988_r2013,huninketal2001_r2014} for a medical perspective.
 
 Decision theory makes a distinction between
 \begin{itemize}
@@ -850,20 +850,22 @@ For example, we are offered to buy a lottery ticket, which may be winning or not
 
 We denote $\U(d\|c)$ the utility of decision $d$ if class $c$ is true, or  \enquote{the utility of $d$ given $c$}, or \enquote{the utility of $d$ conditional on $c$}. For instance $\U(\texttt{\small buy} \| \texttt{\small lose}) = -1$.
 
-If we know which class is true, the optimal decision is the one having maximal utility among those conditional on the true class. If we are uncertain about which class is true, decision theory states that the optimal decision is the one having maximal \emph{expected} utility, defined as the expected value of the utility with respect to the probabilities of the various classes. For binary classification, for example:
+If we know which class is true, the optimal decision is the one having maximal utility among those conditional on the true class. If we are uncertain about which class is true, decision theory states that the optimal decision is the one having maximal \emph{expected} utility, denoted $\eu(d)$ and defined as the expected value of the utility of decision $d$ with respect to the probabilities of the various classes. For binary classification
 \begin{equation}
   \label{eq:exp_utility}
   \eu(d) \defd \U(d \| c_{1})\ \p(c_{1}) + \U(d \| c_{2})\ \p(c_{1})
 \end{equation}
-where $\p(c_{1})$ and $\p(c_{2}) \equiv 1 - \p(c_{1})$ are the probabilities of classes $c_{1}$ and $c_{2}$. For instance, if the ticket above has a 20\% probability of winning and 80\% of losing, the expected utilities of the two decisions are
+where $\p(c_{1})$ and $\p(c_{2}) \equiv 1 - \p(c_{1})$ are the probabilities of classes $c_{1}$ and $c_{2}$. For instance, if the ticket above has a 20\% probability of winning and 80\% of losing, that is $\p(\texttt{\small win}) = 0.2$ and $\p(\texttt{\small lose}) = 0.8$, then our two decisions have expected utilities
 \begin{equation}
   \label{eq:exp_utilities_example}
   \begin{aligned}
-    \eu(\texttt{\small buy}) &= +10\cdot 0.2 - 1\cdot 0.8 = +1.2\\
-    \eu(\texttt{\small don't buy}) &= 0\cdot 0.2 + 0\cdot 0.8 = 0
+    \eu(\texttt{\small buy}) &= +10\cdot 0.2 - 1\cdot 0.8 = +1.2 \ ,\\
+    \eu(\texttt{\small don't buy}) &= 0\cdot 0.2 + 0\cdot 0.8 = 0 \ .
   \end{aligned}
 \end{equation}
-and the optimal choice is to buy the ticket, that is, to classify the ticket \emph{as if} it were a \texttt{win}, even if it is most probably a \texttt{lose}. (Note that the utility of money is usually not equal to the amount of money: the relationship between the two being somewhat logarithmic \citep[\eg][pp.~203ff]{north1968}[\chap~4]{raiffa1968_r1970}.)
+The optimal choice is to buy the ticket, that is, to classify the ticket \emph{as if} it belonged to class \texttt{win}, even if it most probably belongs to class \texttt{lose}. (Note that the utility of money is usually not equal to the amount of money, the relationship between the two being somewhat logarithmic \citep[\eg][pp.~203ff]{north1968}[\chap~4]{raiffa1968_r1970}.)
+
+
 
 % \[ \color{mypurpleblue}\bm{a} \color{myredpurple}\mathbin{\bm{\land}}\color{mypurpleblue} \bm{b} \]
 
