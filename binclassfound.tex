@@ -1,7 +1,7 @@
 \pdfoutput=1
 %% Author: PGL  Porta Mana
 %% Created: 2015-05-01T20:53:34+0200
-%% Last-Updated: 2022-04-11T07:36:52+0200
+%% Last-Updated: 2022-04-11T10:39:39+0200
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \newif\ifarxiv
 \arxivfalse
@@ -704,6 +704,7 @@ Open Science Framework \doi{10.31219/osf.io/#1}%
 \newcommand*{\za}{\hat{0}}
 \newcommand*{\zb}{\hat{1}}
 \newcommand*{\eu}{\bar{U}}
+\newcommand*{\myll}[1]{}
 
 %%% Custom macros end @@@
 
@@ -773,24 +774,35 @@ Open Science Framework \doi{10.31219/osf.io/#1}%
 \label{sec:intro}
 
 In comparing, evaluating, and using \ml\ classifiers we face a number of questions and issues; some are well-known, others are rarely discussed:
-\begin{enumerate}[wide,label=\textbf{Issue \arabic*.},ref=\textbf{Issue \arabic*}]
-\item\label{item:scales} When we have to evaluate and compare different classifying algorithms or different hyperparameter values for one algorithm, we are avalanched by a choice of possible evaluation scales: accuracy, area under curve, $F_{1}$-measure, mean square contingency \citep[denoted \enquote{$r$} there]{yule1912} also known as Matthews correlation coefficient \citep{matthews1975}[\sect~31 p.~183]{fisher1925_r1963}, precision, recall, sensitivity, specificity, and many others \citep{sammutetal2011_r2017}[see also the analysis in ][]{goodmanetal1954,goodmanetal1959,goodmanetal1963,goodmanetal1972b}. Only vague guidelines are usually given to face this choice. Typically one computes several of such scores and hopes that they will lead to similar ranking.
 
-  Most or all of such scales were proposed only on intuitive grounds, from the exploration of specific problems and relying on tacit assumptions, then heedlessly applied to different problems. The Matthews correlation coefficient, for example, relies on several assumptions of gaussianity \citep[\sect~31 p.~183 first paragraph]{fisher1925_r1963}, which for instance do not apply to skewed population distributions \citep{jenietal2013,zhu2020}. The area under the receiver-operating-characteristic curve is heavily affected by values of false-positive and false-negative frequencies, as well as by misclassification costs, that have nothing to do with those of the specific application of the classifier \citep{bakeretal2001,loboetal2008}. The $F_{1}$-measure implicitly gives  correct classifications a weight that depends on their frequency \citep{handetal2018}; such dependence amounts to saying, for example, \enquote*{this error rarely happens, \emph{therefore} it has a high cost}, which is a form of scarcity cognitive bias \citep{camereretal1989,kimetal1999,mittoneetal2009}. We are therefore led to ask: are there valuation scales that can be proven, from first principles, to be free from biases and unnecessary assumptions?
-
-\item\label{item:class_imbal} If our sample data are more numerous for one class than for another -- a common predicament in medical applications -- we must face the \enquote{class-imbalance problem}: the classifier ends up classifying all data as belonging to the more numerous class \citep{sammutetal2011_r2017,provost2000}, which may be an undesirable action if the misclassification of cases from the less numerous class entails high costs. \mynote{\wrench\ discussion and refs about cost-sensitive learning}
+\begin{enumerate}[label=\textbf{\textsf{i\arabic*}},ref=\textbf{\textsf{i\arabic*}},itemsep=\parsep]
   
-\item\label{item:no_probs} It is difficult to assess sensible probabilities for the possible classes. Some \ml\ algorithms only output a class label. Others, including deep networks, output real numbers that, even if normalized, cannot be reliably interpreted as degrees of belief or as frequencies in the population of interest \citep{mackay1992d,galetal2016}. Algorithms that internally do perform probabilistic calculations, such as naive-Bayes or logistic-regression classifiers \citep[\sect~3.5, \chap~8]{murphy2012}[\sects~8.2, 4.3]{bishop2006}[\chap~10, \sect~17.4]{barber2007_r2020}, unfortunately rest on probabilistic assumptions -- independence and particular shapes of distributions, for example -- that are often unrealistic (and their consistency with the specific application is rarely checked).
+\item\label{item:scales}\textsf{\textbf{Choice.}} When we have to evaluate and compare different classifying algorithms or different hyperparameter values for one algorithm, we are avalanched by a choice of possible evaluation scales: accuracy, area under curve, $F_{1}$-measure, mean square contingency \citep[denoted \enquote{$r$} there]{yule1912} also known as Matthews correlation coefficient \citep{matthews1975}[\sect~31 p.~183]{fisher1925_r1963}, precision, recall, sensitivity, specificity, and many others \citep{sammutetal2011_r2017}[see also the analysis in ][]{goodmanetal1954,goodmanetal1959,goodmanetal1963,goodmanetal1972b}. Only vague guidelines are usually given to face this choice. Typically one computes several of such scores and hopes that they will lead to similar ranking.
 
-\item\label{item:optimal_true} Our ultimate purpose in classification is often the choice of a specific course of action among several possible ones, rather than a simple guess of the correct class. This is especially true in medical applications. A clinician does not simply tell a patient \enquote*{you will probably not contract the disease}, but has to decide among dismissal or different kinds of preventive treatment \citep{soxetal1988_r2013,huninketal2001_r2014}.
+\item\label{item:ground}\textsf{\textbf{Rationale and consistency.}} Most or all of such scales were proposed only on intuitive grounds, from the exploration of specific problems and relying on tacit assumptions, then heedlessly applied to new problems. The Matthews correlation coefficient, for example, relies on several assumptions of gaussianity \citep[\sect~31 p.~183 first paragraph]{fisher1925_r1963}, which for instance do not apply to skewed population distributions \citep{jenietal2013,zhu2020}. The area under the receiver-operating-characteristic curve is heavily affected by values of false-positive and false-negative frequencies, as well as by misclassification costs, that have nothing to do with those of the specific application of the classifier \citep{bakeretal2001,loboetal2008}. The $F_{1}$-measure implicitly gives correct classifications a weight that depends on their frequency \citep{handetal2018}; such dependence amounts to saying, for example, \enquote*{this error rarely happens, \emph{therefore} it has a high cost}, which is a form of scarcity cognitive bias \citep{camereretal1989,kimetal1999,mittoneetal2009}.
+
+  We are therefore led to ask: are there valuation scales that can be proven, from first principles, to be free from biases and unnecessary assumptions?
+
+\item\label{item:class_imbal}\textsf{\textbf{Class imbalance.}}  If our sample data are more numerous for one class than for another -- a common predicament in medical applications -- we must face the \enquote{class-imbalance problem}: the classifier ends up classifying all data as belonging to the more numerous class \citep{sammutetal2011_r2017,provost2000}, which may be an undesirable action if the misclassification of cases from the less numerous class entails high costs. \mynote{\wrench\ discussion and refs about cost-sensitive learning}
+  
+  
+\item\label{item:optimal_true}\textsf{\textbf{Optimality vs truth.}}  Our ultimate purpose in classification is often the choice of a specific course of action among several possible ones, rather than a simple guess of the correct class. This is especially true in medical applications. A clinician does not simply tell a patient \enquote*{you will probably not contract the disease}, but has to decide among dismissal or different kinds of preventive treatment \citep{soxetal1988_r2013,huninketal2001_r2014}.
 
   In other words, our problem is often not \emph{to guess the probable true class}, but \emph{to make the optimal choice}.
 
   The two problems are not equivalent when classification takes place under uncertainty. For example, some test results may indicate a very low probability that a patient has a disease, or in other words that \emph{the class \enquote{healthy} is very probably true}. Yet the clinician may decide to give the patient some kind of treatment, that is, to behave \emph{as if the patient belonged to the class \enquote{ill}}, on the grounds that the treatment would cure the disease if present and only cause mild discomfort if the patient is healthy, and that the disease would have dangerous consequences if present and untreated. In this example the most probable class is \enquote{healthy}, but the optimal classification is \enquote{ill}.
 
+This point of view has profound potential implications for the training of our algorithm: it means that its training targets ought to be the \emph{optimal} class labels under that particular uncertain situation, not the \emph{true} class labels. But how could such optimality be determined? -- Luckily we shall see that no such change in the training process is necessary.
+
+\item\label{item:no_probs}\textsf{\textbf{Probability.}}  It is difficult to assess sensible probabilities for the possible classes. Some \ml\ algorithms only output a class label. Others, including deep networks, output real numbers that, even if normalized, cannot be reliably interpreted as degrees of belief or as frequencies in the population of interest \citep{mackay1992d,galetal2016}. Algorithms that internally do perform probabilistic calculations, such as naive-Bayes or logistic-regression classifiers \citep[\sect~3.5, \chap~8]{murphy2012}[\sects~8.2, 4.3]{bishop2006}[\chap~10, \sect~17.4]{barber2007_r2020}, unfortunately rest on probabilistic assumptions -- independence and particular shapes of distributions, for example -- that are often unrealistic (and their consistency with the specific application is rarely checked).
+
 \end{enumerate}
 
+\medskip
 
+All these issues are plainly connected: they involve considerations of importance or gain or cost, and of uncertainty. In the present work we show that issues~\ref{item:scales}--\ref{item:optimal_true} can all be solved at once
+
+\ref{item:no_probs}
 
 
 
