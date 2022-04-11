@@ -1,7 +1,7 @@
 \pdfoutput=1
 %% Author: PGL  Porta Mana
 %% Created: 2015-05-01T20:53:34+0200
-%% Last-Updated: 2022-04-11T18:57:34+0200
+%% Last-Updated: 2022-04-11T19:25:33+0200
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \newif\ifarxiv
 \arxivfalse
@@ -836,27 +836,34 @@ This distinction is important, as argued under issue~\ref{item:optimal_true}; in
 
 To each decision we associate several \emph{utilities}, depending on which of the possible classes is actually true. The utility may for instance equal a gain or loss of money, or energy, or life expectancy, or customers, measured in appropriate units; or a combination of such quantities.
 
-For example, we are offered to buy a lottery ticket, which may be winning or not. The ticket costs $1$ unit of some monetary currency to buy, and the lottery prize is $101$ units. Our available decisions are whether to buy the ticket or not. We have four utilities, displayed in this self-explanatory table:
+For example, we are offered to buy a lottery ticket, which may be winning or not. The ticket costs $1$ unit of some monetary currency to buy, and the lottery prize is $11$ units. Our available decisions are whether to buy the ticket or not. We have four utilities, representing the total change in our money after the lottery, displayed in this self-explanatory table:
 \begin{center}
   \begin{tabular}{rcc}
-    &\texttt{\small winner}&
-    \texttt{\small loser}
+    &\texttt{\small win}&
+    \texttt{\small lose}
     % \parbox[b]{\widthof{winning}}{\centering\small\texttt{not\\winning}}
     \\[0.5\jot]
-    \texttt{\small buy}&$+100$&$-1$\\
+    \texttt{\small buy}&$+10$&$-1$\\
     \texttt{\small don't buy}&$0$&$0$
   \end{tabular}
 \end{center}
 
-We denote $\U(d\|c)$ the utility of decision $d$ if class $c$ is true, or  \enquote{the utility of $d$ given $c$}, or \enquote{the utility of $d$ conditional on $c$}. For instance $\U(\texttt{\small buy} \| \texttt{\small loser}) = -1$.
+We denote $\U(d\|c)$ the utility of decision $d$ if class $c$ is true, or  \enquote{the utility of $d$ given $c$}, or \enquote{the utility of $d$ conditional on $c$}. For instance $\U(\texttt{\small buy} \| \texttt{\small lose}) = -1$.
 
 If we know which class is true, the optimal decision is the one having maximal utility among those conditional on the true class. If we are uncertain about which class is true, decision theory states that the optimal decision is the one having maximal \emph{expected} utility, defined as the expected value of the utility with respect to the probabilities of the various classes. For binary classification, for example:
 \begin{equation}
   \label{eq:exp_utility}
   \eu(d) \defd \U(d \| c_{1})\ \p(c_{1}) + \U(d \| c_{2})\ \p(c_{1})
 \end{equation}
-where $\p(c_{1})$ and $\p(c_{2}) \equiv 1 - \p(c_{1})$ are the probabilities of classes $c_{1}$ and $c_{2}$.
-
+where $\p(c_{1})$ and $\p(c_{2}) \equiv 1 - \p(c_{1})$ are the probabilities of classes $c_{1}$ and $c_{2}$. For instance, if the ticket above has a 20\% probability of winning and 80\% of losing, the expected utilities of the two decisions are
+\begin{equation}
+  \label{eq:exp_utilities_example}
+  \begin{aligned}
+    \eu(\texttt{\small buy}) &= +10\cdot 0.2 - 1\cdot 0.8 = +1.2\\
+    \eu(\texttt{\small don't buy}) &= 0\cdot 0.2 + 0\cdot 0.8 = 0
+  \end{aligned}
+\end{equation}
+and the optimal choice is to buy the ticket, that is, to classify the ticket \emph{as if} it were a \texttt{win}, even if it is most probably a \texttt{lose}. (Note that the utility of money is usually not equal to the amount of money: the relationship between the two being somewhat logarithmic \citep[\eg][pp.~203ff]{north1968}[\chap~4]{raiffa1968_r1970}.)
 
 % \[ \color{mypurpleblue}\bm{a} \color{myredpurple}\mathbin{\bm{\land}}\color{mypurpleblue} \bm{b} \]
 
