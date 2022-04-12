@@ -1,7 +1,7 @@
 \pdfoutput=1
 %% Author: PGL  Porta Mana
 %% Created: 2015-05-01T20:53:34+0200
-%% Last-Updated: 2022-04-12T19:19:19+0200
+%% Last-Updated: 2022-04-12T21:57:34+0200
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \newif\ifarxiv
 \arxivfalse
@@ -708,6 +708,8 @@ Open Science Framework \doi{10.31219/osf.io/#1}%
 \newcommand*{\eu}{\bar{\U}}
 \newcommand*{\nd}{n_{\textrm{d}}}
 \newcommand*{\nc}{n_{\textrm{c}}}
+\newcommand*{\Po}{\mathord{+}}
+\newcommand*{\Ne}{\mathord{-}}
 
 %%% Custom macros end @@@
 
@@ -923,17 +925,21 @@ In the lottery example this leads to
 
 \medskip
 
-The utility matrix is not only the basis for choosing optimal decisions by means of expected-utility maximization. It also provides a scale with which to rank a set of decisions already made, if we know the corresponding true classes. For example, if in instances $1,2,3,\dotsc, N$ we chose decisions $d_{1}, d_{2}, d_{3}, \dotsc d_{N}$ and  the true classes were $c_{1}, c_{2}, c_{3},\dotsc, c_{N}$, then the actual total utility gained is
+The utility matrix is not only the basis for choosing optimal decisions by means of expected-utility maximization. It also provides a scale with which to rank a set of decisions already made -- for example on a test set -- if we know the corresponding true classes. Suppose that in $N$ instances we chose decision $d$ when the true class was $c$ a total of $N_{dc}$ times (the absolute frequency of the $d,c$ pair), so that when we sum over all available decisions and possible classes we have
+\begin{equation}
+  \label{eq:sum_frequencies}
+  \sum_{dc} N_{dc} = N \ .
+\end{equation}
+In each of the $N_{dc}$ instances we gained a utility $U_{dc}$.
+The actual total utility gained is then
 \begin{equation}
   \label{eq:utility_gained}
-  \sum_{i=1}^{N} \U(d_{i} \| c_{i}) \equiv
-  \U(d_{1} \| c_{1}) +   \U(d_{2} \| c_{2}) +   \U(d_{3} \| c_{3}) + \dotsb
-  + \U(d_{N} \| c_{N}) \ ,
+\sum_{dc} U_{dc}\, N_{dc} \ ,
 \end{equation}
 or an average utility per instance of
 \begin{equation}
   \label{eq:avg_utility_gained}
-\frac{1}{N}  \sum_{i=1}^{N} \U(d_{i} \| c_{i}) \ .
+\frac{1}{N}  \sum_{dc} U_{dc}\,  N_{dc} \ .
 \end{equation}
 
 \medskip
@@ -949,14 +955,49 @@ In using \ml\ classifiers one typically considers situations where the set of av
 \subsection{Choice of valuation scale (issue~\ref{item:scales})}
 \label{sec:choice_valuation}
 
-According to decision theory, binary classification requires the specification of a  2-by-2 utility matrix, or 4 parameters. This utility matrix should also be used in evaluating the decisions made by the classification algorithm in a test set with $M$ datapoints. These decisions are encoded in the confusion matrix: denoting the classes $c_{1}$, $c_{2}$ and the decisions $d_{1}$, $d_{2}$, it is given by
+According to decision theory, binary classification requires the specification of a 2-by-2 utility matrix, or 4 parameters. This utility matrix should also be used in evaluating the decisions made by the classification algorithm in a test set with $N$ datapoints. The decisions and corresponding true classes are embodied in the confusion matrix $(N_{dc})$, containing the number $N_{dc}$ of times we chose decision $d$ when the true class was $c$. This is exactly the scenario presented at the end of the previous section. The average utility obtained by the classifier algorithm on the test set is thus given by
 \begin{equation}
-  \label{eq:conf_matrix}
-  
+  \label{eq:avg_utility_testset}
+  \frac{1}{N} \sum_{dc} U_{dc}\, N_{dc} \ .
 \end{equation}
 
+In binary classification the decisions and classes are typically both denoted as positive \enquote{$\Po$} and negative \enquote{$\Ne$} and we speak of the number of \enquote{true positives}, the number of \enquote{false positives}, and so on, so that
+\begin{equation*}
+  N_{\Po\Po} \equiv N_{\text{TP}}, \quad
+  N_{\Po\Ne} \equiv N_{\text{FP}}, \quad
+  N_{\Ne\Po} \equiv N_{\text{FN}}, \quad
+  N_{\Ne\Ne} \equiv N_{\text{TN}} \ .
+\end{equation*}
+Accordingly we can denote the elements of the utility matrix
+\begin{equation*}
+  U_{\Po\Po} \equiv U_{\text{TP}}, \quad
+  U_{\Po\Ne} \equiv U_{\text{FP}}, \quad
+  U_{\Ne\Po} \equiv U_{\text{FN}}, \quad
+  U_{\Ne\Ne} \equiv U_{\text{TN}} \ .
+\end{equation*}
+With this notation we have
+\begin{equation}
+  \label{eq:utility_testset_binary}
+%  \text{\small average utility obtained in test set}\\
+  \begin{aligned}
+  \text{\parbox[c]{\widthof{\small obtained in test set}}{
+      \centering\small average utility\\obtained in test set
+    }}
+&=  \frac{1}{N}\bigl(
+ U_{\text{TP}}\, N_{\text{TP}} + U_{\text{FP}}\, N_{\text{FP}} +
+ U_{\text{FN}}\, N_{\text{FN}} + U_{\text{TN}}\, N_{\text{TN}}
+                    \bigr)
+    \\
+&=  
+ U_{\text{TP}}\, \frac{N_{\text{TP}}}{N} + U_{\text{FP}}\, \frac{N_{\text{FP}}}{N} +
+ U_{\text{FN}}\, \frac{N_{\text{FN}}}{N} + U_{\text{TN}}\, \frac{N_{\text{TN}}}{N}
+  \end{aligned}
+\end{equation}
+(The term in parentheses is the sum of the elements of the matrix obtained by the element-wise Hadamard product of the utility matrix and the confusion matrix.)
 
+The expression above is a linear combination of the counts appearing in the confusion matrix $N_{\dotso}$. The coefficients of the linear combination are the elements of the utility matrix $U_{\dotso}$.
 
+We thus find the following important result according to decision theory: \emph{a valuation score should be a \textbf{linear combination} of elements of the confusion matrix. The coefficients of the linear combination are \textbf{problem-specific} and represent the \textbf{utilities} associated with a true-positive classification, a false-positive classification, and so on.}
 
 
 % \[ \color{mypurpleblue}\bm{a} \color{myredpurple}\mathbin{\bm{\land}}\color{mypurpleblue} \bm{b} \]
