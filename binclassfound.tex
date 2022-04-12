@@ -1,7 +1,7 @@
 \pdfoutput=1
 %% Author: PGL  Porta Mana
 %% Created: 2015-05-01T20:53:34+0200
-%% Last-Updated: 2022-04-12T19:08:26+0200
+%% Last-Updated: 2022-04-12T19:19:19+0200
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \newif\ifarxiv
 \arxivfalse
@@ -949,7 +949,11 @@ In using \ml\ classifiers one typically considers situations where the set of av
 \subsection{Choice of valuation scale (issue~\ref{item:scales})}
 \label{sec:choice_valuation}
 
-According to decision theory, binary classification requires the specification of a  2-by-2 utility matrix, or 4 parameters. 
+According to decision theory, binary classification requires the specification of a  2-by-2 utility matrix, or 4 parameters. This utility matrix should also be used in evaluating the decisions made by the classification algorithm in a test set with $M$ datapoints. These decisions are encoded in the confusion matrix: denoting the classes $c_{1}$, $c_{2}$ and the decisions $d_{1}$, $d_{2}$, it is given by
+\begin{equation}
+  \label{eq:conf_matrix}
+  
+\end{equation}
 
 
 
