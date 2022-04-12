@@ -1,7 +1,7 @@
 \pdfoutput=1
 %% Author: PGL  Porta Mana
 %% Created: 2015-05-01T20:53:34+0200
-%% Last-Updated: 2022-04-12T15:47:59+0200
+%% Last-Updated: 2022-04-12T19:08:26+0200
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \newif\ifarxiv
 \arxivfalse
@@ -800,6 +800,8 @@ This point of view has profound potential implications for the training of our a
 \item\label{item:no_probs}\textsf{\textbf{Probability.}}\enspace  It is difficult to assess sensible probabilities for the possible classes. Some \ml\ algorithms only output a class label. Others, including deep networks, output real numbers that, even if normalized, cannot be reliably interpreted as degrees of belief or as frequencies in the population of interest \citep{mackay1992d,galetal2016}. Algorithms that internally do perform probabilistic calculations, such as naive-Bayes or logistic-regression classifiers \citep[\sect~3.5, \chap~8]{murphy2012}[\sects~8.2, 4.3]{bishop2006}[\chap~10, \sect~17.4]{barber2007_r2020}, unfortunately rest on probabilistic assumptions -- independence and particular shapes of distributions, for example -- that are often unrealistic (and their consistency with the specific application is rarely checked).
 
 \end{enumerate}
+\mynote{\puzzle\ possible additional issue: should we use the algorithm in a \enquote{discriminative} or \enquote{generative} way?}
+
 
 \medskip
 
@@ -879,9 +881,45 @@ The optimal choice is to buy the ticket, that is, to classify the ticket \emph{a
 
 How are utilities determined? They are obviously problem-specific and cannot be given by the theory (which would otherwise be a model rather than a theory). Utilities can be  obvious in decision problems involving gain or losses of concrete quantities such as money or energy. In medical problems they can correspond to life expectancy and quality of life; see for example \textcite{soxetal1988_r2013} for a discussion of how such health factors are transformed into utilities. Decision theory, in the subfield of \emph{utility theory}, gives rules that guarantee the mutual consistency of a set of utilities. In the present work we shall not worry about such rules, in order not to complicate the discussion: they should be approximately satisfied if the utilities of a problem have been carefully chosen. For simple introductions to utility theory see \textcite[\sect~15.2]{russelletal1995_r2022}, \textcite[pp.~201--205]{north1968}, and the references given at the beginning of the present section.
 
-It is nevertheless clear that every decision problem is completely determined by a set of $\nd \cdot \nc$ utilities. Actually if we change the elements of the utility matrix of a decision problem by a common additive constant or by a common positive multiplicative constant, then that decision problem is unchanged, in the sense that we reach the same decision by maximizing expected utility with the new utility matrix, given the same probabilities. This is evident from \eqn~\eqref{eq:exp_utility}: all expected utilities change by the same additive constant or the same positive factor, and therefore their ordering does not change. After all, an additive constant or a positive factor represents only changes in the zero or the measurement unit of our utility scale. Such changes should not affect a decision problem. The fact that they do not indeed is another example of the logical consistency of decision theory.
+It is nevertheless clear that every decision problem is completely determined by a set of $\nd \cdot \nc$ utilities. Actually if we change the elements of the utility matrix of a decision problem by a common additive constant or by a common positive multiplicative constant, then that decision problem is unchanged, in the sense that we reach the same decision by maximizing expected utility with the new utility matrix, given the same probabilities. This is evident from \eqn~\eqref{eq:exp_utility}: all expected utilities change by the same additive constant or the same positive factor, and therefore their ordering does not change. After all, an additive constant or a positive factor represents only changes in the zero or the measurement unit of our utility scale. Such changes should not affect a decision problem. The fact that, indeed, they do not, is another example of the logical consistency of decision theory.
+
 
 Thus \emph{all decision problems with $\nd$ decisions and $\nc$ classes are catalogued by\; $\nd \nc - 2$\; parameters} (the set of such problems has the topology of an $(\nd\nc-1)$-dimensional sphere). In the case of binary classification this means 2 parameters.
+
+\mynote{[\puzzle\ maybe the following discussion is unnecessary:]
+  
+Several conventions can be used to fix the two redundant degrees of freedom. We can choose them in such a way that the smallest utility is 0 and the largest is 1; this is achieved by subtracting the value of the smallest utility from all elements of the utility matrix and then dividing them by the value of the largest minus the smallest; in symbols
+\begin{equation}
+  \label{eq:standardize1}
+  U_{cd} \mapsto \frac{U_{cd} - \min(U_{cd})}{\max(U_{cd}) - \min(U_{cd})} \ .
+\end{equation}
+In the lottery example this leads to
+\begin{equation}
+  \label{eq:standardize1_lottery}
+  \begin{pmatrix}
+    +10 & -1 \\ 0 & 0
+  \end{pmatrix} \mapsto
+    \begin{pmatrix}
+    1 & 0 \\ 1/11 & 1/11
+  \end{pmatrix} \ .
+\end{equation}
+Another convention is to choose them in such a way that the smallest utility is 0 and the sum of all utilities is 1; this is achieved by the transformation
+\begin{equation}
+  \label{eq:standardize2}
+  U_{cd} \mapsto
+  \frac{U_{cd} - \min(U_{cd})}{\sum_{cd}U_{cd} - \nd\nc\min(U_{cd})} \ .
+\end{equation}
+In the lottery example this leads to
+\begin{equation}
+  \label{eq:standardize1_lottery}
+  \begin{pmatrix}
+    +10 & -1 \\ 0 & 0
+  \end{pmatrix} \mapsto
+    \begin{pmatrix}
+    11/13 & 0 \\ 1/13 & 1/13
+  \end{pmatrix} \ .
+\end{equation}
+}
 
 \medskip
 
