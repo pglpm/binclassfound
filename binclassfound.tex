@@ -1,7 +1,7 @@
 \pdfoutput=1
 %% Author: PGL  Porta Mana
 %% Created: 2015-05-01T20:53:34+0200
-%% Last-Updated: 2022-04-11T22:01:23+0200
+%% Last-Updated: 2022-04-12T08:02:38+0200
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \newif\ifarxiv
 \arxivfalse
@@ -221,7 +221,7 @@ british%
 \renewcommand\sfdefault{uop}
 \DeclareMathAlphabet{\mathsf}  {T1}{\sfdefault}{m}{sl}
 \SetMathAlphabet{\mathsf}{bold}{T1}{\sfdefault}{b}{sl}
-%\newcommand*{\mathte}[1]{\textbf{\textit{\textsf{#1}}}}
+\newcommand*{\mathte}[1]{\textbf{\textit{\textsf{#1}}}}
 % Upright sans-serif math alphabet
 % \DeclareMathAlphabet{\mathsu}  {T1}{\sfdefault}{m}{n}
 % \SetMathAlphabet{\mathsu}{bold}{T1}{\sfdefault}{b}{n}
@@ -706,6 +706,8 @@ Open Science Framework \doi{10.31219/osf.io/#1}%
 \newcommand*{\U}{\mathrm{u}}
 \newcommand*{\UU}{\mathrm{U}}
 \newcommand*{\eu}{\bar{\U}}
+\newcommand*{\nd}{n_{\textrm{d}}}
+\newcommand*{\nc}{n_{\textrm{c}}}
 
 %%% Custom macros end @@@
 
@@ -834,9 +836,11 @@ Decision theory makes a distinction between
 \end{itemize}
 This distinction is important, as argued under issue~\ref{item:optimal_true}; in some cases even the number of classes and the number of decisions differ. This distinction prevents the appearance of various cognitive biases \citep{kahnemanetal1982_r2008,gilovichetal2002_r2009,kahneman2011}, for example the scarcity bias mentioned in \ref{item:ground}, or plain wishful thinking: \enquote*{this event is valuable, \emph{therefore} it is more probable}.
 
-To each decision we associate several \emph{utilities}, depending on which of the possible classes is actually true. The utility may for instance equal a gain or loss of money, or energy, or life expectancy, or customers, measured in appropriate units; or a combination of such quantities.
+For \ml\ classifiers one typically considers situations where the set of available decisions and the set of possible classes have some kind of natural correspondence and equal in number. In a \enquote{cat vs dog} image classification, for example, the classes are \enquote{image of a cat} and \enquote{image of a dog}, and the decisions could be \enquote{put into folder Cats} vs \enquote{put into folder Dogs}. In a medical application the classes could be \enquote{ill} and \enquote{healthy} and the decisions \enquote{treat} vs \enquote{dismiss}. In the following when we speak of \enquote{classification} we mean a decision problem of this kind.
 
-For example, we are offered to buy a lottery ticket, which may be winning or not. The ticket costs $1$ unit of some monetary currency to buy, and the lottery prize is $11$ units. Our available decisions are whether to buy the ticket or not. We have four utilities, representing the total change in our money after the lottery, displayed in this self-explanatory table:
+To each decision we associate several \emph{utilities}, depending on which of the possible classes is actually true. The utility may for instance equal a gain or loss in money, energy, life expectancy, or number of customers, measured in appropriate units; or a in combination of such quantities.
+
+As an example, imagine we are offered to buy a lottery ticket, which may be winning or not. The ticket costs $1$ unit of some monetary currency, and the lottery prize is $11$ units. Our available decisions are whether to buy the ticket or not. We have four utilities, representing the total change in our money after the lottery, displayed in this self-explanatory table:
 \begin{center}
   \begin{tabular}{rcc}
     &\texttt{\small win}&
@@ -844,27 +848,39 @@ For example, we are offered to buy a lottery ticket, which may be winning or not
     % \parbox[b]{\widthof{winning}}{\centering\small\texttt{not\\winning}}
     \\[0.5\jot]
     \texttt{\small buy}&$+10$&$-1$\\
-    \texttt{\small don't buy}&$0$&$0$
+    \texttt{\small not-buy}&$0$&$0$
   \end{tabular}
 \end{center}
 
-We denote $\U(d\|c)$ the utility of decision $d$ if class $c$ is true, or  \enquote{the utility of $d$ given $c$}, or \enquote{the utility of $d$ conditional on $c$}. For instance $\U(\texttt{\small buy} \| \texttt{\small lose}) = -1$.
+We denote $\U(d\|c)$ the utility of decision $d$ if class $c$ is true, or  \enquote{the utility of $d$ given $c$}, or \enquote{the utility of $d$ conditional on $c$}. One utility from the lottery example is $\U(\texttt{\small buy} \| \texttt{\small lose}) = -1$. If we have $\nd$ possible decisions and $\nc$ possible classes, the utilities can be collected in a \emph{utility matrix} $\mathte{U} \equiv (U_{dc})$ having $\nd$ rows and $\nc$ columns. The utility matrix for the lottery is
+\begin{equation}
+  \label{eq:utmatr_lottery}
+  \mathte{U} =
+  \begin{pmatrix}
+    +10 & -1 \\ 0 & 0
+  \end{pmatrix} \ .
+\end{equation}
 
 If we know which class is true, the optimal decision is the one having maximal utility among those conditional on the true class. If we are uncertain about which class is true, decision theory states that the optimal decision is the one having maximal \emph{expected} utility, denoted $\eu(d)$ and defined as the expected value of the utility of decision $d$ with respect to the probabilities of the various classes. For binary classification
 \begin{equation}
   \label{eq:exp_utility}
-  \eu(d) \defd \U(d \| c_{1})\ \p(c_{1}) + \U(d \| c_{2})\ \p(c_{1})
+  \eu(d) \defd \U(d \| c_{1})\ \p(c_{1}) + \U(d \| c_{2})\ \p(c_{2})
 \end{equation}
-where $\p(c_{1})$ and $\p(c_{2}) \equiv 1 - \p(c_{1})$ are the probabilities of classes $c_{1}$ and $c_{2}$. For instance, if the ticket above has a 20\% probability of winning and 80\% of losing, that is $\p(\texttt{\small win}) = 0.2$ and $\p(\texttt{\small lose}) = 0.8$, then our two decisions have expected utilities
+where $\p(c_{1})$ and $\p(c_{2}) \equiv 1 - \p(c_{1})$ are the probabilities of classes $c_{1}$ and $c_{2}$. The $\nd$ expected utilities are therefore given by the matrix product of the utility matrix times the column matrix of probabilities.
+
+For instance, if the ticket above has a 20\% probability of winning and 80\% of losing, that is $\p(\texttt{\small win}) = 0.2$ and $\p(\texttt{\small lose}) = 0.8$, then our two decisions have expected utilities
 \begin{equation}
-  \label{eq:exp_utilities_example}
+  \label{eq:exp_utilities_lottery}
   \begin{aligned}
     \eu(\texttt{\small buy}) &= +10\cdot 0.2 - 1\cdot 0.8 = +1.2 \ ,\\
-    \eu(\texttt{\small don't buy}) &= 0\cdot 0.2 + 0\cdot 0.8 = 0 \ .
+    \eu(\texttt{\small not-buy}) &= 0\cdot 0.2 + 0\cdot 0.8 = 0 \ .
   \end{aligned}
 \end{equation}
 The optimal choice is to buy the ticket, that is, to classify the ticket \emph{as if} it belonged to class \texttt{win}, even if it most probably belongs to class \texttt{lose}. (Note that the utility of money is usually not equal to the amount of money, the relationship between the two being somewhat logarithmic \citep[\eg][pp.~203ff]{north1968}[\chap~4]{raiffa1968_r1970}.)
 
+Any decision problem is therefore completely determined by a set of $\nd \cdot \nc$ utilities. Actually if we change the elements of the utility matrix of a decision problem by a common additive constant or by a common positive multiplicative constant, then that decision problem is the same, in the sense that we reach the same decision by maximizing expected utility, given the same probabilities. This is evident from \eqn~\eqref{eq:exp_utility}: all expected utilities will change by the same additive constant or the same positive factor, and therefore their ordering will not change. After all an additive constant only represents a change in the zero of our utility scale, and a positive multiplicative constant represents a change in its measurement unit. Such changes should not affect a decision problem; the fact that they do not is another example of the logical consistency of decision theory.
+
+Every decision problem with $\nd$ decisions and $\nc$ classes is therefore uniquely characterized by\; $\nd \nc - 2$\; parameters (the set of such problems has the topology of an $(\nd\nc-1)$-dimensional sphere). In the case of binary classification this means 2 parameters.
 
 
 % \[ \color{mypurpleblue}\bm{a} \color{myredpurple}\mathbin{\bm{\land}}\color{mypurpleblue} \bm{b} \]
