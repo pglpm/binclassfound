@@ -1,7 +1,7 @@
 \pdfoutput=1
 %% Author: PGL  Porta Mana
 %% Created: 2015-05-01T20:53:34+0200
-%% Last-Updated: 2022-04-12T10:53:43+0200
+%% Last-Updated: 2022-04-12T15:47:59+0200
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \newif\ifarxiv
 \arxivfalse
@@ -836,7 +836,6 @@ Decision theory makes a distinction between
 \end{itemize}
 This distinction is important, as argued under issue~\ref{item:optimal_true}; in some cases even the number of classes and the number of decisions differ. This distinction prevents the appearance of various cognitive biases \citep{kahnemanetal1982_r2008,gilovichetal2002_r2009,kahneman2011}, for example the scarcity bias mentioned in \ref{item:ground}, or plain wishful thinking: \enquote*{this event is valuable, \emph{therefore} it is more probable}.
 
-For \ml\ classifiers one typically considers situations where the set of available decisions and the set of possible classes have some kind of natural correspondence and equal in number. In a \enquote{cat vs dog} image classification, for example, the classes are \enquote{image of a cat} and \enquote{image of a dog}, and the decisions could be \enquote{put into folder Cats} vs \enquote{put into folder Dogs}. In a medical application the classes could be \enquote{ill} and \enquote{healthy} and the decisions \enquote{treat} vs \enquote{dismiss}. In the following when we speak of \enquote{classification} we mean a decision problem of this kind.
 
 To each decision we associate several \emph{utilities}, depending on which of the possible classes is actually true. The utility may for instance equal a gain or loss in money, energy, life expectancy, or number of customers, measured in appropriate units; or a in combination of such quantities.
 
@@ -906,9 +905,13 @@ The summary of decision theory just given suffices to address issues~\ref{item:s
 \section{Classification from the point of view of decision theory}
 \label{sec:classification_decision}
 
-\subsection{Choice of valuation scale}
+In using \ml\ classifiers one typically considers situations where the set of available decisions and the set of possible classes have some kind of natural correspondence and equal in number. In a \enquote{cat vs dog} image classification, for example, the classes are \enquote{cat} and \enquote{dog}, and the decisions could be \enquote{put into folder Cats} vs \enquote{put into folder Dogs}. In a medical application the classes could be \enquote{ill} and \enquote{healthy} and the decisions \enquote{treat} vs \enquote{dismiss}. In the following when we speak of \enquote{classification} we mean a \emph{decision} problem of this kind. The number of decisions thus equals that of classes: $\nd=\nc$. For simplicity we will focus on binary classification, $\nd=\nc=2$, but the discussion generalizes to multi-class problems in an obvious way.
+
+
+\subsection{Choice of valuation scale (issue~\ref{item:scales})}
 \label{sec:choice_valuation}
 
+According to decision theory, binary classification requires the specification of a  2-by-2 utility matrix, or 4 parameters. 
 
 
 
