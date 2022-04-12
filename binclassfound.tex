@@ -1,7 +1,7 @@
 \pdfoutput=1
 %% Author: PGL  Porta Mana
 %% Created: 2015-05-01T20:53:34+0200
-%% Last-Updated: 2022-04-12T21:57:34+0200
+%% Last-Updated: 2022-04-12T22:00:07+0200
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \newif\ifarxiv
 \arxivfalse
@@ -995,9 +995,9 @@ With this notation we have
 \end{equation}
 (The term in parentheses is the sum of the elements of the matrix obtained by the element-wise Hadamard product of the utility matrix and the confusion matrix.)
 
-The expression above is a linear combination of the counts appearing in the confusion matrix $N_{\dotso}$. The coefficients of the linear combination are the elements of the utility matrix $U_{\dotso}$.
+The expression above is a linear combination of the counts appearing in the confusion matrix $N_{\dotso}$, possibly normalized to the total number of test data. The coefficients of the linear combination are the elements of the utility matrix $U_{\dotso}$.
 
-We thus find the following important result according to decision theory: \emph{a valuation score should be a \textbf{linear combination} of elements of the confusion matrix. The coefficients of the linear combination are \textbf{problem-specific} and represent the \textbf{utilities} associated with a true-positive classification, a false-positive classification, and so on.}
+We thus find the following important result according to decision theory: \emph{A valuation score should be a \textbf{linear combination} of elements of the confusion matrix. The coefficients of the linear combination are \textbf{problem-specific} and represent the \textbf{utilities} of a true-positive classification, a false-positive classification, and so on.}
 
 
 % \[ \color{mypurpleblue}\bm{a} \color{myredpurple}\mathbin{\bm{\land}}\color{mypurpleblue} \bm{b} \]
