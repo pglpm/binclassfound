@@ -1,7 +1,7 @@
 \pdfoutput=1
 %% Author: PGL  Porta Mana
 %% Created: 2015-05-01T20:53:34+0200
-%% Last-Updated: 2022-04-12T08:21:15+0200
+%% Last-Updated: 2022-04-12T10:53:43+0200
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \newif\ifarxiv
 \arxivfalse
@@ -780,7 +780,7 @@ In comparing, evaluating, and using \ml\ classifiers we face a number of questio
 
 \begin{enumerate}[label=\textbf{\textsf{i\arabic*}},ref=\textbf{\textsf{i\arabic*}},itemsep=\parsep]
   
-\item\label{item:scales}\textsf{\textbf{Choice.}}\enspace When we have to evaluate and compare different classifying algorithms or different hyperparameter values for one algorithm, we are avalanched by a choice of possible evaluation scales: accuracy, area under curve, $F_{1}$-measure, mean square contingency \citep[denoted \enquote{$r$} there]{yule1912} also known as Matthews correlation coefficient \citep{matthews1975}[\sect~31 p.~183]{fisher1925_r1963}, precision, recall, sensitivity, specificity, and many others \citep{sammutetal2011_r2017}[see also the analysis in ][]{goodmanetal1954,goodmanetal1959,goodmanetal1963,goodmanetal1972b}. Only vague guidelines are usually given to face this choice. Typically one computes several of such scores and hopes that they will lead to similar ranking.
+\item\label{item:scales}\textsf{\textbf{Choice of valuation scale.}}\enspace When we have to evaluate and compare different classifying algorithms or different hyperparameter values for one algorithm, we are avalanched by a choice of possible evaluation scales: accuracy, area under curve, $F_{1}$-measure, mean square contingency \citep[denoted \enquote{$r$} there]{yule1912} also known as Matthews correlation coefficient \citep{matthews1975}[\sect~31 p.~183]{fisher1925_r1963}, precision, recall, sensitivity, specificity, and many others \citep{sammutetal2011_r2017}[see also the analysis in ][]{goodmanetal1954,goodmanetal1959,goodmanetal1963,goodmanetal1972b}. Only vague guidelines are usually given to face this choice. Typically one computes several of such scores and hopes that they will lead to similar ranking.
 
 \item\label{item:ground}\textsf{\textbf{Rationale and consistency.}}\enspace Most or all of such scales were proposed only on intuitive grounds, from the exploration of specific problems and relying on tacit assumptions, then heedlessly applied to new problems. The Matthews correlation coefficient, for example, relies on several assumptions of gaussianity \citep[\sect~31 p.~183 first paragraph]{fisher1925_r1963}, which for instance do not apply to skewed population distributions \citep{jenietal2013,zhu2020}. The area under the receiver-operating-characteristic curve is heavily affected by values of false-positive and false-negative frequencies, as well as by misclassification costs, that have nothing to do with those of the specific application of the classifier \citep{bakeretal2001,loboetal2008}. The $F_{1}$-measure implicitly gives correct classifications a weight that depends on their frequency or probability \citep{handetal2018}; such dependence amounts to saying, for example, \enquote*{this class is rare, \emph{therefore} its correct classification leads to high gains}, which is a form of scarcity cognitive bias \citep{camereretal1989,kimetal1999,mittoneetal2009}.
 
@@ -878,9 +878,40 @@ For instance, if the ticket above has a 20\% probability of winning and 80\% of 
 \end{equation}
 The optimal choice is to buy the ticket, that is, to classify the ticket \emph{as if} it belonged to class \texttt{win}, even if it most probably belongs to class \texttt{lose}. (Note that the utility of money is usually not equal to the amount of money, the relationship between the two being somewhat logarithmic \citep[\eg][pp.~203--204]{north1968}[\chap~4]{raiffa1968_r1970}.)
 
-Any decision problem is therefore completely determined by a set of $\nd \cdot \nc$ utilities. Actually if we change the elements of the utility matrix of a decision problem by a common additive constant or by a common positive multiplicative constant, then that decision problem is the same, in the sense that we reach the same decision by maximizing expected utility, given the same probabilities. This is evident from \eqn~\eqref{eq:exp_utility}: all expected utilities will change by the same additive constant or the same positive factor, and therefore their ordering will not change. After all an additive constant only represents a change in the zero of our utility scale, and a positive multiplicative constant represents a change in its measurement unit. Such changes should not affect a decision problem; the fact that they do not is another example of the logical consistency of decision theory.
+How are utilities determined? They are obviously problem-specific and cannot be given by the theory (which would otherwise be a model rather than a theory). Utilities can be  obvious in decision problems involving gain or losses of concrete quantities such as money or energy. In medical problems they can correspond to life expectancy and quality of life; see for example \textcite{soxetal1988_r2013} for a discussion of how such health factors are transformed into utilities. Decision theory, in the subfield of \emph{utility theory}, gives rules that guarantee the mutual consistency of a set of utilities. In the present work we shall not worry about such rules, in order not to complicate the discussion: they should be approximately satisfied if the utilities of a problem have been carefully chosen. For simple introductions to utility theory see \textcite[\sect~15.2]{russelletal1995_r2022}, \textcite[pp.~201--205]{north1968}, and the references given at the beginning of the present section.
 
-Every decision problem with $\nd$ decisions and $\nc$ classes is therefore uniquely characterized by\; $\nd \nc - 2$\; parameters (the set of such problems has the topology of an $(\nd\nc-1)$-dimensional sphere). In the case of binary classification this means 2 parameters.
+It is nevertheless clear that every decision problem is completely determined by a set of $\nd \cdot \nc$ utilities. Actually if we change the elements of the utility matrix of a decision problem by a common additive constant or by a common positive multiplicative constant, then that decision problem is unchanged, in the sense that we reach the same decision by maximizing expected utility with the new utility matrix, given the same probabilities. This is evident from \eqn~\eqref{eq:exp_utility}: all expected utilities change by the same additive constant or the same positive factor, and therefore their ordering does not change. After all, an additive constant or a positive factor represents only changes in the zero or the measurement unit of our utility scale. Such changes should not affect a decision problem. The fact that they do not indeed is another example of the logical consistency of decision theory.
+
+Thus \emph{all decision problems with $\nd$ decisions and $\nc$ classes are catalogued by\; $\nd \nc - 2$\; parameters} (the set of such problems has the topology of an $(\nd\nc-1)$-dimensional sphere). In the case of binary classification this means 2 parameters.
+
+\medskip
+
+The utility matrix is not only the basis for choosing optimal decisions by means of expected-utility maximization. It also provides a scale with which to rank a set of decisions already made, if we know the corresponding true classes. For example, if in instances $1,2,3,\dotsc, N$ we chose decisions $d_{1}, d_{2}, d_{3}, \dotsc d_{N}$ and  the true classes were $c_{1}, c_{2}, c_{3},\dotsc, c_{N}$, then the actual total utility gained is
+\begin{equation}
+  \label{eq:utility_gained}
+  \sum_{i=1}^{N} \U(d_{i} \| c_{i}) \equiv
+  \U(d_{1} \| c_{1}) +   \U(d_{2} \| c_{2}) +   \U(d_{3} \| c_{3}) + \dotsb
+  + \U(d_{N} \| c_{N}) \ ,
+\end{equation}
+or an average utility per instance of
+\begin{equation}
+  \label{eq:avg_utility_gained}
+\frac{1}{N}  \sum_{i=1}^{N} \U(d_{i} \| c_{i}) \ .
+\end{equation}
+
+\medskip
+
+The summary of decision theory just given suffices to address issues~\ref{item:scales}--\ref{item:optimal_true}.
+
+\section{Classification from the point of view of decision theory}
+\label{sec:classification_decision}
+
+\subsection{Choice of valuation scale}
+\label{sec:choice_valuation}
+
+
+
+
 
 
 % \[ \color{mypurpleblue}\bm{a} \color{myredpurple}\mathbin{\bm{\land}}\color{mypurpleblue} \bm{b} \]
