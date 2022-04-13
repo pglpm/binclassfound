@@ -1,7 +1,7 @@
 \pdfoutput=1
 %% Author: PGL  Porta Mana
 %% Created: 2015-05-01T20:53:34+0200
-%% Last-Updated: 2022-04-13T08:47:27+0200
+%% Last-Updated: 2022-04-13T11:56:35+0200
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \newif\ifarxiv
 \arxivfalse
@@ -710,7 +710,10 @@ Open Science Framework \doi{10.31219/osf.io/#1}%
 \newcommand*{\nc}{n_{\textrm{c}}}
 \newcommand*{\Po}{\mathord{+}}
 \newcommand*{\Ne}{\mathord{-}}
-
+\newcommand*{\tp}{\textrm{tp}}
+\newcommand*{\fp}{\textrm{fp}}
+\newcommand*{\fn}{\textrm{fn}}
+\newcommand*{\tn}{\textrm{tn}}
 %%% Custom macros end @@@
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -831,7 +834,13 @@ The use of decision theory requires sensible probabilities for the possible clas
 \section{Brief overview of decision theory}
 \label{sec:decision_theory}
 
+\subsection{References}
+\label{sec:dt_refs}
+
 Here we give a brief overview of decision theory. We only focus on the notions relevant to the applications to be discussed later, and simply state the rules of the theory. These rules are quite intuitive, but it must be remarked that they are constructed in order to be logically and mathematically self-consistent: see the following references. For a presentation of decision theory from the point of view of artificial intelligence and machine learning see \textcite[\chap~15]{russelletal1995_r2022}. Simple introductions are given by \textcite{jeffrey1965,north1968,raiffa1968_r1970}, and a discussion of its foundations and history by \textcite{steeleetal2015_r2020}. For more thorough expositions see \textcite{raiffaetal1961_r2000,berger1980_r1985,savage1954_r1972}; and \textcite{soxetal1988_r2013,huninketal2001_r2014} for a medical perspective.
+
+\subsection{Decisions and classes}
+\label{sec:dt_dec_classes}
 
 Decision theory makes a distinction between
 \begin{itemize}
@@ -840,6 +849,8 @@ Decision theory makes a distinction between
 \end{itemize}
 This distinction is important, as argued under issue~\ref{item:optimal_true}; in some cases even the number of classes and the number of decisions differ. This distinction prevents the appearance of various cognitive biases \citep{kahnemanetal1982_r2008,gilovichetal2002_r2009,kahneman2011}, for example the scarcity bias mentioned in \ref{item:ground}, or plain wishful thinking: \enquote*{this event is valuable, \emph{therefore} it is more probable}.
 
+\subsection{Utilities and maximization of expected utility}
+\label{sec:dt_utilities}
 
 To each decision we associate several \emph{utilities}, depending on which of the possible classes is actually true. The utility may for instance equal a gain or loss in money, energy, life expectancy, or number of customers, measured in appropriate units; or a in combination of such quantities.
 
@@ -881,15 +892,17 @@ For instance, if the ticket above has a 20\% probability of winning and 80\% of 
 \end{equation}
 The optimal choice is to buy the ticket, that is, to classify the ticket \emph{as if} it belonged to class \texttt{win}, even if it most probably belongs to class \texttt{lose}. (Note that the utility of money is usually not equal to the amount of money, the relationship between the two being somewhat logarithmic \citep[\eg][pp.~203--204]{north1968}[\chap~4]{raiffa1968_r1970}.)
 
+\subsection{Space of utility matrices}
+\label{sec:dt_space_util}
+
 How are utilities determined? They are obviously problem-specific and cannot be given by the theory (which would otherwise be a model rather than a theory). Utilities can be  obvious in decision problems involving gain or losses of concrete quantities such as money or energy. In medical problems they can correspond to life expectancy and quality of life; see for example \textcite{soxetal1988_r2013} for a discussion of how such health factors are transformed into utilities. Decision theory, in the subfield of \emph{utility theory}, gives rules that guarantee the mutual consistency of a set of utilities. In the present work we shall not worry about such rules, in order not to complicate the discussion: they should be approximately satisfied if the utilities of a problem have been carefully chosen. For simple introductions to utility theory see \textcite[\sect~15.2]{russelletal1995_r2022}, \textcite[pp.~201--205]{north1968}, and the references given at the beginning of the present section.
 
 It is nevertheless clear that every decision problem is completely determined by a set of $\nd \cdot \nc$ utilities. Actually if we change the elements of the utility matrix of a decision problem by a common additive constant or by a common positive multiplicative constant, then that decision problem is unchanged, in the sense that we reach the same decision by maximizing expected utility with the new utility matrix, given the same probabilities. This is evident from \eqn~\eqref{eq:exp_utility}: all expected utilities change by the same additive constant or the same positive factor, and therefore their ordering does not change. After all, an additive constant or a positive factor represents only changes in the zero or the measurement unit of our utility scale. Such changes should not affect a decision problem. The fact that, indeed, they do not, is another example of the logical consistency of decision theory.
 
+Let us call \emph{equivalent} two utility matrices that differ only by a constant additive term or by a positive factor or both. Inequivalent utility matrices represent inequivalent decision problems. Thus \emph{all decision problems with $\nd$ decisions and $\nc$ classes are catalogued by\; $\nd \nc - 2$\; parameters} (the set of such problems has the topology of an $(\nd\nc-1)$-dimensional sphere). In the case of binary classification this means 2 parameters.
 
-Thus \emph{all decision problems with $\nd$ decisions and $\nc$ classes are catalogued by\; $\nd \nc - 2$\; parameters} (the set of such problems has the topology of an $(\nd\nc-1)$-dimensional sphere). In the case of binary classification this means 2 parameters.
-
-
-\medskip
+\subsection{Actual utility yield}
+\label{sec:dt_utility_yield}
 
 The utility matrix is not only the basis for making optimal decisions by means of expected-utility maximization. It also provides the scale to rank a set of decisions already made -- for example on a test set -- by some algorithm, if we know the corresponding true classes. Suppose we have $N$ test instances, in which each class $c$ occurs $N_{c}$ times, so that $\sum_{c} N_{c} = N$. A decision algorithm made decision $d$ when the true class was $c$ a number $M_{dc}$ of times. These numbers form the confusion matrix $(M_{dc})$ of the algorithm's output. The numbers $M_{dc}$ are not all independent: they must satisfy the constraints
 \begin{equation}
@@ -930,6 +943,10 @@ the second expression being in terms of the independent elements of the confusio
   + \sum_{c=1}^{\nc} U_{\nd c}\,\frac{N_{c}}{N} \ .
 \end{equation}
 
+% [Don't know whether to include the following discussion, it may not have substantial import in this work]
+% Formulae~\eqref{eq:utility_gained} or \eqref{eq:avg_utility_gained} show that the performance and ranking of several decision algorithm depend on the values of the utility matrix $(U_{dc})$, and that changes in the zero or measurement unit of the utilities do not affect such raking, as it should intuitively be the case. Note, however, that two \emph{in}equivalent utility matrices can also lead to the same ranking, \emph{provided the frequencies $N_{c}$ of the classes are not changed}. If we add a different constant term to each column of the utility matrix, these terms disappear within the parentheses of formulae~\eqref{eq:utility_gained} and \eqref{eq:avg_utility_gained} and only contribute a total constant term in the remaining sum. This happens because the performance depends not only on the utility but also on the relative proportions of classes.
+
+
 It may not be amiss to emphasize that the \emph{proportions $N_{c}$ of classes in the test set should be representative of the proportions that will be encountered in the real application}. Otherwise the test-set results would misleading or even opposite to what the real performance will be. In the lottery example with utility matrix~\eqref{eq:exp_utilities_lottery}, suppose we have an algorithm that always makes the decision \texttt{buy} and another algorithm that always decides \texttt{not-buy}. In  real instances of such lotteries the class \texttt{win} occurs 1\% of the time, and \texttt{lose}, 99\%. In a real application the first algorithm would thus yield $-0.89$, a loss, on average at each instance, and the second $0$. The second algorithm is actually best. Suppose we test these algorithms on a test set where the two classes appear 50\%/50\% instead. On this test set the first algorithm will yield $4.5$ on average, the second $0$. Thus according to the test the first algorithm is best -- a wrong conclusion.
 
 \bigskip
@@ -939,55 +956,73 @@ The summary of decision theory just given suffices to address issues~\ref{item:s
 \section{Classification from the point of view of decision theory}
 \label{sec:classification_decision}
 
-In using \ml\ classifiers one typically considers situations where the set of available decisions and the set of possible classes have some kind of natural correspondence and equal in number. In a \enquote{cat vs dog} image classification, for example, the classes are \enquote{cat} and \enquote{dog}, and the decisions could be \enquote{put into folder Cats} vs \enquote{put into folder Dogs}. In a medical application the classes could be \enquote{ill} and \enquote{healthy} and the decisions \enquote{treat} vs \enquote{dismiss}. In the following when we speak of \enquote{classification} we mean a \emph{decision} problem of this kind. The number of decisions thus equals that of classes: $\nd=\nc$. For simplicity we will focus on binary classification, $\nd=\nc=2$, but the discussion generalizes to multi-class problems in an obvious way.
+In using \ml\ classifiers one typically considers situations where the set of available decisions and the set of possible classes have some kind of natural correspondence and equal in number. In a \enquote{cat vs dog} image classification, for example, the classes are \enquote{cat} and \enquote{dog}, and the decisions could be \enquote{put into folder Cats} vs \enquote{put into folder Dogs}. In a medical application the classes could be \enquote{ill} and \enquote{healthy} and the decisions \enquote{treat} vs \enquote{dismiss}. In the following when we speak of \enquote{classification} we mean a \emph{decision} problem of this kind. The number of decisions thus equals that of classes: $\nd=\nc$.
+
+\mynote{\puzzle\ For simplicity we will focus on binary classification, $\nd=\nc=2$, but the discussion generalizes to multi-class problems in an obvious way.}
 
 
 \subsection{Choice of valuation scale (issue~\ref{item:scales})}
 \label{sec:choice_valuation}
 
-According to decision theory, binary classification requires the specification of a 2-by-2 utility matrix, or 4 parameters. This utility matrix should also be used in evaluating the decisions made by the classification algorithm in a test set with $N$ datapoints. The decisions and corresponding true classes are embodied in the confusion matrix $(N_{dc})$, containing the number $N_{dc}$ of times we made decision $d$ when the true class was $c$. This is exactly the scenario presented at the end of the previous section. The average utility obtained by the classifier algorithm on the test set is thus given by
+According to decision theory, a classification problem requires the specification of a utility matrix. We saw in \sect~\ref{sec:dt_utility_yield} that the utility matrix should also be used in evaluating the decisions made by the classification algorithm in a test set with $N$ datapoints. The decisions made by the algorithm and corresponding true classes constitute the confusion matrix $(M_{dc})$, containing the number $M_{dc}$ of times we made decision $d$ when the true class was $c$. We saw that the total and average utilities obtained by the classifier algorithm on the test set are, in terms of the independent components of the confusion matrix,
 \begin{equation}
-  \label{eq:avg_utility_testset}
-  \frac{1}{N} \sum_{dc} U_{dc}\, N_{dc} \ .
-\end{equation}
-
-In binary classification the decisions and classes are typically both denoted as positive \enquote{$\Po$} and negative \enquote{$\Ne$} and we speak of the number of \enquote{true positives}, the number of \enquote{false positives}, and so on, so that
-\begin{equation*}
-  N_{\Po\Po} \equiv N_{\text{TP}}, \quad
-  N_{\Po\Ne} \equiv N_{\text{FP}}, \quad
-  N_{\Ne\Po} \equiv N_{\text{FN}}, \quad
-  N_{\Ne\Ne} \equiv N_{\text{TN}} \ .
-\end{equation*}
-Accordingly we can denote the elements of the utility matrix
-\begin{equation*}
-  U_{\Po\Po} \equiv U_{\text{TP}}, \quad
-  U_{\Po\Ne} \equiv U_{\text{FP}}, \quad
-  U_{\Ne\Po} \equiv U_{\text{FN}}, \quad
-  U_{\Ne\Ne} \equiv U_{\text{TN}} \ .
-\end{equation*}
-With this notation we have
-\begin{equation}
-  \label{eq:utility_testset_binary}
-%  \text{\small average utility obtained in test set}\\
+  \label{eq:utility_testset}
   \begin{aligned}
-  \text{\parbox[c]{\widthof{\small obtained in test set}}{
-      \centering\small average utility\\obtained in test set
-    }}
-&=  \frac{1}{N}\bigl(
- U_{\text{TP}}\, N_{\text{TP}} + U_{\text{FP}}\, N_{\text{FP}} +
- U_{\text{FN}}\, N_{\text{FN}} + U_{\text{TN}}\, N_{\text{TN}}
-                    \bigr)
-    \\
-&=  
- U_{\text{TP}}\, \frac{N_{\text{TP}}}{N} + U_{\text{FP}}\, \frac{N_{\text{FP}}}{N} +
- U_{\text{FN}}\, \frac{N_{\text{FN}}}{N} + U_{\text{TN}}\, \frac{N_{\text{TN}}}{N}
+%  \sum_{d=1}^{\nd}\sum_{c=1}^{\nc} U_{dc}\, M_{dc}
+\text{\small total:}&\quad  \sum_{d=1}^{\nd  - 1}\sum_{c=1}^{\nc} (U_{dc} - U_{\nd c})\, M_{dc}
+  + \sum_{c=1}^{\nc} U_{\nd c}\,N_{c}
+   \\
+  % \sum_{d=1}^{\nd}\sum_{c=1}^{\nc} U_{dc}\, \frac{M_{dc}}{N}
+\text{\small average:}&\quad  \sum_{d=1}^{\nd  - 1}\sum_{c=1}^{\nc} (U_{dc} - U_{\nd c})\, \frac{M_{dc}}{N}
+  + \sum_{c=1}^{\nc} U_{\nd c}\,\frac{N_{c}}{N} \ .
   \end{aligned}
 \end{equation}
-(The term in parentheses is the sum of the elements of the matrix obtained by the element-wise Hadamard product of the utility matrix and the confusion matrix.)
 
-The expression above is a linear combination of the counts appearing in the confusion matrix $N_{\dotso}$, possibly normalized to the total number of test data. The coefficients of the linear combination are the elements of the utility matrix $U_{\dotso}$.
+The expressions above are a linear combination of the elements in the first $\nd-1$ rows of the confusion matrix $(M_{dc})$, possibly normalized to the total number of test data, plus a term independent of the confusion matrix. The coefficients of the linear combination depend only on the utility matrix $(U_{dc})$, the additive term also depends on the frequencies of the classes.
 
-We thus find the following important result according to decision theory: \emph{A valuation score should be a \textbf{linear combination} of elements of the confusion matrix. The coefficients of the linear combination are \textbf{problem-specific} and represent the \textbf{utilities} of a true-positive classification, a false-positive classification, and so on.}
+We thus find the following important result according to decision theory: \emph{A valuation scale should be a \textbf{linear combination} of the independent elements of the confusion matrix, possibly normalized to the number of test data. The coefficients of the linear combination are problem-specific and \textbf{cannot depend on the confusion matrix}, nor on the frequencies of the classes.}
+
+Let us see what this means in the case of binary classification. The decisions and classes are typically both denoted as positive \enquote{$\Po$} and negative \enquote{$\Ne$}, and we speak of the number of \enquote{true positives}, \enquote{false positives}, and so on, so that
+\begin{equation*}
+  M_{\Po\Po} \equiv M_{\tp}, \quad
+  M_{\Po\Ne} \equiv M_{\fp}, \quad
+  M_{\Ne\Po} \equiv M_{\fn}, \quad
+  M_{\Ne\Ne} \equiv M_{\tn} \ .
+\end{equation*}
+Accordingly we denote the elements of the utility matrix as
+\begin{equation*}
+  U_{\Po\Po} \equiv U_{\tp}, \quad
+  U_{\Po\Ne} \equiv U_{\fp}, \quad
+  U_{\Ne\Po} \equiv U_{\fn}, \quad
+  U_{\Ne\Ne} \equiv U_{\tn} \ .
+\end{equation*}
+With this notation, formulae~\eqref{eq:utility_testset} take the general form
+\begin{equation}
+  \label{eq:utility_testset_binary}
+  \begin{aligned}
+    \text{\small total:}&\quad
+                          x_{\tp}\, M_{\tp} + x_{\fp}\, M_{\fp} +
+                          (y_{\Po}\, N_{\Po} + y_{\Ne}\, N_{\Ne})
+    \\
+    \text{\small average:}&\quad
+                            x_{\tp}\, \frac{M_{\tp}}{N} + x_{\fp}\, \frac{M_{\fp}}{N} +
+                            \Bigl(y_{\Po}\, \frac{N_{\Po}}{N} + y_{\Ne}\, \frac{N_{\Ne}}{N}\Bigr) \ .
+  \end{aligned}
+\end{equation}
+
+A valuation scale consistent with decision theory must take one of the forms above for particular values of the coefficients $x_{\tp}, x_{\fp}, y_{\Po}, y_{\Ne}$. Let us examine some common valuation scales according to this requirement.
+
+\begin{itemize}
+\item[\checkmark] \emph{Accuracy:} $(M_{\tp}-M_{\fp}+N_{\Ne})/N$. It is a particular case of formula~\eqref{eq:utility_testset_binary} with $x_{\tp}=y_{\Ne}=1$, $x_{\fp}=-1$, $y_{\Po}=0$. In fact it corresponds to using a utility matrix equivalent to the identity $\begin{psmallmatrix} 1&0\\0&1 \end{psmallmatrix}$.
+  
+\item[\texttimes] \emph{Precision:} $M_{\tp}/(M_{\tp}+M_{\fp})$.  It cannot be written as a linear expression in $M_{\tp},M_{\fp}$.
+
+\item[\texttimes] \emph{$F_{1}$-measure:} $2 M_{\tp}/(M_{\tp} + M_{\fp} + N_{\Po})$.
+
+\item[\texttimes] \emph{Matthews correlation coefficient:} $2 M_{\tp}/(M_{\tp} + M_{\fp} + N_{\Po})$.
+\end{itemize}
+
+
 
 
 % \[ \color{mypurpleblue}\bm{a} \color{myredpurple}\mathbin{\bm{\land}}\color{mypurpleblue} \bm{b} \]
