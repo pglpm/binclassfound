@@ -1,7 +1,7 @@
 \pdfoutput=1
 %% Author: PGL  Porta Mana
 %% Created: 2015-05-01T20:53:34+0200
-%% Last-Updated: 2022-04-13T11:56:35+0200
+%% Last-Updated: 2022-04-13T14:36:05+0200
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \newif\ifarxiv
 \arxivfalse
@@ -592,7 +592,7 @@ Open Science Framework \doi{10.31219/osf.io/#1}%
 %\newcommand*{\with}{\colon}%with (list of indices)
 %\newcommand*{\mul}{\times}%multiplication
 %\newcommand*{\inn}{\cdot}%inner product
-%\newcommand*{\dotv}{\mathord{\,\cdot\,}}%variable place
+\newcommand*{\dotv}{\mathord{\,\cdot\,}}%variable place
 %\newcommand*{\comp}{\circ}%composition of functions
 %\newcommand*{\con}{\mathbin{:}}%scal prod of tensors
 %\newcommand*{\equi}{\sim}%equivalent to 
@@ -714,6 +714,10 @@ Open Science Framework \doi{10.31219/osf.io/#1}%
 \newcommand*{\fp}{\textrm{fp}}
 \newcommand*{\fn}{\textrm{fn}}
 \newcommand*{\tn}{\textrm{tn}}
+\newcommand*{\itemyes}{{\fontencoding{U}\fontfamily{pzd}\selectfont\symbol{51}}}
+\newcommand*{\itemno}{{\fontencoding{U}\fontfamily{pzd}\selectfont\symbol{55}}}
+
+
 %%% Custom macros end @@@
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -904,44 +908,55 @@ Let us call \emph{equivalent} two utility matrices that differ only by a constan
 \subsection{Actual utility yield}
 \label{sec:dt_utility_yield}
 
-The utility matrix is not only the basis for making optimal decisions by means of expected-utility maximization. It also provides the scale to rank a set of decisions already made -- for example on a test set -- by some algorithm, if we know the corresponding true classes. Suppose we have $N$ test instances, in which each class $c$ occurs $N_{c}$ times, so that $\sum_{c} N_{c} = N$. A decision algorithm made decision $d$ when the true class was $c$ a number $M_{dc}$ of times. These numbers form the confusion matrix $(M_{dc})$ of the algorithm's output. The numbers $M_{dc}$ are not all independent: they must satisfy the constraints
-\begin{equation}
-  \label{eq:sum_frequencies}
-  \sum_{d} M_{dc} = N_{c} \quad\text{for each class $c$} \ .
-\end{equation}
-The test output of the decision algorithm is therefore characterized by $(\nd-1)\nc$ independent numbers. We can take these to be the first $\nd-1$ rows of the confusion matrix, so that for the last row we have
-\begin{equation}
-  \label{eq:lastrow_conf_matrix}
-  M_{\nd c} = N_{c} - \sum_{d=1}^{\nd - 1} M_{dc}
-  \quad\text{for each class $c$} \ .
-\end{equation}
-In binary classification for example, where $\nd=\nc=2$, the two independent numbers are often taken to be the \enquote{true positives} and \enquote{false positives} (the axes of the receiver-operating-characteristic plot).
+The utility matrix is not only the basis for making optimal decisions by means of expected-utility maximization. It also provides the scale to rank a set of decisions already made -- for example on a test set -- by some algorithm, if we know the corresponding true classes. Suppose we have $N$ test instances, in which each class $c$ occurs $N_{c}$ times, so that $\sum_{c} N_{c} = N$. A decision algorithm made decision $d$ when the true class was $c$ a number $M_{dc}$ of times. These numbers form the confusion matrix $(M_{dc})$ of the algorithm's output. The numbers $M_{dc}$ are must satisfy the constraints $\sum_{d} M_{dc} = N_{c}$ for each $c$.
 
-For given decision $d$ and class $c$, in each of the $M_{dc}$ instances the algorithm yielded a utility $U_{dc}$. The actual total utility gained in the test set is then
+For given decision $d$ and class $c$, in each of the $M_{dc}$ instances the algorithm yielded a utility $U_{dc}$. The actual average utility yield in the test set is then
 \begin{equation}
   \label{eq:utility_gained}
-  \sum_{d=1}^{\nd}\sum_{c=1}^{\nc} U_{dc}\, M_{dc}
-  \quad\text{or}\quad
-  \sum_{d=1}^{\nd  - 1}\sum_{c=1}^{\nc} (U_{dc} - U_{\nd c})\, M_{dc}
-  + \sum_{c=1}^{\nc} U_{\nd c}\,N_{c}
-   \ ,
-  % \sum_{d=1}^{\nd}\sum{c=1}^{\nc} U_{dc}\, M_{dc}
-  % \sum_{d=1}^{\nd-1}\sum{c=1}^{\nc} U_{dc}\, M_{dc}
-  % + \sum_{c=1}^{\nc} U_{\nd c}\,M_{\nd c}
-  % \sum_{d=1}^{\nd-1}\sum{c=1}^{\nc} U_{dc}\, M_{dc}
-  % + \sum_{c=1}^{\nc} U_{\nd c}\,(N_{c} - \sum_{d=1}^{\nd-1}M_{d c})
-  % \sum_{d=1}^{\nd-1}\sum{c=1}^{\nc} U_{dc}\, M_{dc}
-  % + \sum_{c=1}^{\nc} U_{\nd c}\,N_{c}
-  % - \sum_{c=1}^{\nc}\sum_{d=1}^{\nd-1} U_{\nd c}\,M_{dc})
+ \frac{1}{N} \sum_{dc} U_{dc}\, M_{dc} \ .
 \end{equation}
-the second expression being in terms of the independent elements of the confusion matrix. We can also consider the average gained utility per test instance:
-\begin{equation}
-  \label{eq:avg_utility_gained}
-  \sum_{d=1}^{\nd}\sum_{c=1}^{\nc} U_{dc}\, \frac{M_{dc}}{N}
-  \quad\text{or}\quad
-  \sum_{d=1}^{\nd  - 1}\sum_{c=1}^{\nc} (U_{dc} - U_{\nd c})\, \frac{M_{dc}}{N}
-  + \sum_{c=1}^{\nc} U_{\nd c}\,\frac{N_{c}}{N} \ .
-\end{equation}
+It is convenient to consider the average utility yield, rather than the total utility yield (without the $1/N$ factor), because if we shift the zero or change the measurement unity of our utilities then the yield changes in the same way.
+
+
+
+% The utility matrix is not only the basis for making optimal decisions by means of expected-utility maximization. It also provides the scale to rank a set of decisions already made -- for example on a test set -- by some algorithm, if we know the corresponding true classes. Suppose we have $N$ test instances, in which each class $c$ occurs $N_{c}$ times, so that $\sum_{c} N_{c} = N$. A decision algorithm made decision $d$ when the true class was $c$ a number $M_{dc}$ of times. These numbers form the confusion matrix $(M_{dc})$ of the algorithm's output. The numbers $M_{dc}$ are not all independent: they must satisfy the constraints
+% \begin{equation}
+%   \label{eq:sum_frequencies}
+%   \sum_{d} M_{dc} = N_{c} \quad\text{for each class $c$} \ .
+% \end{equation}
+% The test output of the decision algorithm is therefore characterized by $(\nd-1)\nc$ independent numbers. We can take these to be the first $\nd-1$ rows of the confusion matrix, so that for the last row we have
+% \begin{equation}
+%   \label{eq:lastrow_conf_matrix}
+%   M_{\nd c} = N_{c} - \sum_{d=1}^{\nd - 1} M_{dc}
+%   \quad\text{for each class $c$} \ .
+% \end{equation}
+% In binary classification for example, where $\nd=\nc=2$, the two independent numbers are often taken to be the \enquote{true positives} and \enquote{false positives} (the axes of the receiver-operating-characteristic plot).
+
+% For given decision $d$ and class $c$, in each of the $M_{dc}$ instances the algorithm yielded a utility $U_{dc}$. The actual total utility gained in the test set is then
+% \begin{equation}
+%   \label{eq:utility_gained}
+%   \sum_{d=1}^{\nd}\sum_{c=1}^{\nc} U_{dc}\, M_{dc}
+%   \quad\text{or}\quad
+%   \sum_{d=1}^{\nd  - 1}\sum_{c=1}^{\nc} (U_{dc} - U_{\nd c})\, M_{dc}
+%   + \sum_{c=1}^{\nc} U_{\nd c}\,N_{c}
+%    \ ,
+%   % \sum_{d=1}^{\nd}\sum{c=1}^{\nc} U_{dc}\, M_{dc}
+%   % \sum_{d=1}^{\nd-1}\sum{c=1}^{\nc} U_{dc}\, M_{dc}
+%   % + \sum_{c=1}^{\nc} U_{\nd c}\,M_{\nd c}
+%   % \sum_{d=1}^{\nd-1}\sum{c=1}^{\nc} U_{dc}\, M_{dc}
+%   % + \sum_{c=1}^{\nc} U_{\nd c}\,(N_{c} - \sum_{d=1}^{\nd-1}M_{d c})
+%   % \sum_{d=1}^{\nd-1}\sum{c=1}^{\nc} U_{dc}\, M_{dc}
+%   % + \sum_{c=1}^{\nc} U_{\nd c}\,N_{c}
+%   % - \sum_{c=1}^{\nc}\sum_{d=1}^{\nd-1} U_{\nd c}\,M_{dc})
+% \end{equation}
+% the second expression being in terms of the independent elements of the confusion matrix. We can also consider the average gained utility per test instance:
+% \begin{equation}
+%   \label{eq:avg_utility_gained}
+%   \sum_{d=1}^{\nd}\sum_{c=1}^{\nc} U_{dc}\, \frac{M_{dc}}{N}
+%   \quad\text{or}\quad
+%   \sum_{d=1}^{\nd  - 1}\sum_{c=1}^{\nc} (U_{dc} - U_{\nd c})\, \frac{M_{dc}}{N}
+%   + \sum_{c=1}^{\nc} U_{\nd c}\,\frac{N_{c}}{N} \ .
+% \end{equation}
 
 % [Don't know whether to include the following discussion, it may not have substantial import in this work]
 % Formulae~\eqref{eq:utility_gained} or \eqref{eq:avg_utility_gained} show that the performance and ranking of several decision algorithm depend on the values of the utility matrix $(U_{dc})$, and that changes in the zero or measurement unit of the utilities do not affect such raking, as it should intuitively be the case. Note, however, that two \emph{in}equivalent utility matrices can also lead to the same ranking, \emph{provided the frequencies $N_{c}$ of the classes are not changed}. If we add a different constant term to each column of the utility matrix, these terms disappear within the parentheses of formulae~\eqref{eq:utility_gained} and \eqref{eq:avg_utility_gained} and only contribute a total constant term in the remaining sum. This happens because the performance depends not only on the utility but also on the relative proportions of classes.
@@ -964,23 +979,18 @@ In using \ml\ classifiers one typically considers situations where the set of av
 \subsection{Choice of valuation scale (issue~\ref{item:scales})}
 \label{sec:choice_valuation}
 
-According to decision theory, a classification problem requires the specification of a utility matrix. We saw in \sect~\ref{sec:dt_utility_yield} that the utility matrix should also be used in evaluating the decisions made by the classification algorithm in a test set with $N$ datapoints. The decisions made by the algorithm and corresponding true classes constitute the confusion matrix $(M_{dc})$, containing the number $M_{dc}$ of times we made decision $d$ when the true class was $c$. We saw that the total and average utilities obtained by the classifier algorithm on the test set are, in terms of the independent components of the confusion matrix,
+According to decision theory, a classification problem requires the specification of a utility matrix $(U_{dc})$. We saw in \sect~\ref{sec:dt_utility_yield} that the utility matrix should also be used in evaluating the decisions made by one or more classification algorithms in a test set with $N$ datapoints. Each algorithm gives rise to a confusion matrix $(M_{dc})$, containing the number $M_{dc}$ of times the algorithm made decision $d$ when the true class was $c$.
+
+The  average utility obtained by an algorithm on the test set is
 \begin{equation}
   \label{eq:utility_testset}
-  \begin{aligned}
-%  \sum_{d=1}^{\nd}\sum_{c=1}^{\nc} U_{dc}\, M_{dc}
-\text{\small total:}&\quad  \sum_{d=1}^{\nd  - 1}\sum_{c=1}^{\nc} (U_{dc} - U_{\nd c})\, M_{dc}
-  + \sum_{c=1}^{\nc} U_{\nd c}\,N_{c}
-   \\
-  % \sum_{d=1}^{\nd}\sum_{c=1}^{\nc} U_{dc}\, \frac{M_{dc}}{N}
-\text{\small average:}&\quad  \sum_{d=1}^{\nd  - 1}\sum_{c=1}^{\nc} (U_{dc} - U_{\nd c})\, \frac{M_{dc}}{N}
-  + \sum_{c=1}^{\nc} U_{\nd c}\,\frac{N_{c}}{N} \ .
-  \end{aligned}
+  \frac{1}{N}\sum_{cd} U_{dc}\, M_{dc} \ .
 \end{equation}
+This expressions is a linear combination of the confusion-matrix elements. Besides the factor $1/N$, the coefficients of the linear combination depend only on the utility matrix $(U_{dc})$.
 
-The expressions above are a linear combination of the elements in the first $\nd-1$ rows of the confusion matrix $(M_{dc})$, possibly normalized to the total number of test data, plus a term independent of the confusion matrix. The coefficients of the linear combination depend only on the utility matrix $(U_{dc})$, the additive term also depends on the frequencies of the classes.
+If we are comparing several classifiers \emph{on the same test set}, we can multiply the expression above by a generic positive function of the class frequencies, $a(N_{c})$, and also add a generic function of the class frequencies, $b(N_{c})$. These operations corresponds to changes in the zero and  measurement unit of the utilities by amounts which depend on the class frequencies. Since the class frequencies are independent of the algorithms, these changes are the same for all algorithms and do not affect their final ranking. Note, however, that if we were to compare utilities obtained on different test sets then such changes dependent on class frequencies would not be allowed.
 
-We thus find the following important result according to decision theory: \emph{A valuation scale should be a \textbf{linear combination} of the independent elements of the confusion matrix, possibly normalized to the number of test data. The coefficients of the linear combination are problem-specific and \textbf{cannot depend on the confusion matrix}, nor on the frequencies of the classes.}
+We thus find the following important result according to decision theory: \emph{A valuation scale should be a \textbf{linear combination} of the elements of the confusion matrix, possibly multiplied by a positive function of the class frequencies of the test set and with an additional term also depending only on the class frequencies. The coefficients of the linear combination are problem-specific and \textbf{cannot depend on the confusion matrix}.}
 
 Let us see what this means in the case of binary classification. The decisions and classes are typically both denoted as positive \enquote{$\Po$} and negative \enquote{$\Ne$}, and we speak of the number of \enquote{true positives}, \enquote{false positives}, and so on, so that
 \begin{equation*}
@@ -996,32 +1006,92 @@ Accordingly we denote the elements of the utility matrix as
   U_{\Ne\Po} \equiv U_{\fn}, \quad
   U_{\Ne\Ne} \equiv U_{\tn} \ .
 \end{equation*}
-With this notation, formulae~\eqref{eq:utility_testset} take the general form
+With this notation, decision theory says that a valuation scale for this test set should have the following general form
 \begin{equation}
   \label{eq:utility_testset_binary}
-  \begin{aligned}
-    \text{\small total:}&\quad
-                          x_{\tp}\, M_{\tp} + x_{\fp}\, M_{\fp} +
-                          (y_{\Po}\, N_{\Po} + y_{\Ne}\, N_{\Ne})
-    \\
-    \text{\small average:}&\quad
-                            x_{\tp}\, \frac{M_{\tp}}{N} + x_{\fp}\, \frac{M_{\fp}}{N} +
-                            \Bigl(y_{\Po}\, \frac{N_{\Po}}{N} + y_{\Ne}\, \frac{N_{\Ne}}{N}\Bigr) \ .
-  \end{aligned}
+  a(N_{\Po},N_{\Ne})\,
+  (x_{\tp}\, M_{\tp} + x_{\fp}\, M_{\fp} +
+ x_{\fn}\, M_{\fn} + x_{\tn}\, M_{\tn}) +
+  b(N_{\Po},N_{\Ne}) \ .
 \end{equation}
-
-A valuation scale consistent with decision theory must take one of the forms above for particular values of the coefficients $x_{\tp}, x_{\fp}, y_{\Po}, y_{\Ne}$. Let us examine some common valuation scales according to this requirement.
+for particular values of the coefficients $x_{\tp}, x_{\fp}, x_{\fn}, x_{\tn}$ and particular functions $a(\dotv)>0$ and $b(\dotv)$. Let us examine some common valuation scales according to this requirement.
 
 \begin{itemize}
-\item[\checkmark] \emph{Accuracy:} $(M_{\tp}-M_{\fp}+N_{\Ne})/N$. It is a particular case of formula~\eqref{eq:utility_testset_binary} with $x_{\tp}=y_{\Ne}=1$, $x_{\fp}=-1$, $y_{\Po}=0$. In fact it corresponds to using a utility matrix equivalent to the identity $\begin{psmallmatrix} 1&0\\0&1 \end{psmallmatrix}$.
+\item[\itemyes] \emph{Accuracy:} $(M_{\tp}-M_{\fp}+N_{\Ne})/N$. It is a particular case of formula~\eqref{eq:utility_testset_binary} with $x_{\tp}=x_{\tn}=1$, $x_{\fp}=x_{\fn}=01$, $a(N_{\Po},N_{\Ne})=1/N$, and $b(\dotv)=0$. It corresponds to using the utility matrix $\begin{psmallmatrix} 1&0\\0&1 \end{psmallmatrix}$.
   
-\item[\texttimes] \emph{Precision:} $M_{\tp}/(M_{\tp}+M_{\fp})$.  It cannot be written as a linear expression in $M_{\tp},M_{\fp}$.
+\item[\itemno] \emph{Precision:} $M_{\tp}/(M_{\tp}+M_{\fp})$. It cannot be written as a linear combination of the confusion-matrix elements.
 
-\item[\texttimes] \emph{$F_{1}$-measure:} $2 M_{\tp}/(M_{\tp} + M_{\fp} + N_{\Po})$.
+\item[\itemno] \emph{$F_{1}$-measure:} $2 M_{\tp}/(2M_{\tp} + M_{\fp} + M_{\fn})$. It cannot be written as a linear combination of the confusion-matrix elements.
 
-\item[\texttimes] \emph{Matthews correlation coefficient:} $2 M_{\tp}/(M_{\tp} + M_{\fp} + N_{\Po})$.
+\item[\itemno] \emph{Matthews correlation coefficient:} $\frac{M_{\tp}\, M_{\tn} - M_{\fp}\, M_{\fn}}{\sqrt{(M_{\tp}+M_{\fp})(M_{\tn}+M_{\fn})N_{\Po}N_{\Ne}}}$. It cannot be written as a linear combination of the confusion-matrix elements.
+
+\item[\itemyes] \emph{True-positive rate:} $M_{\tp}/N_{\Po}$. It is  formula~\eqref{eq:utility_testset_binary} with $x_{\tp}=1$, all other $x_{\dotso}=0$, $a(N_{\Po},N_{\Ne})=1/N_{\Po}$, and $b(\dotv)=0$. It corresponds to using the utility matrix $\begin{psmallmatrix} 1&0\\0&0 \end{psmallmatrix}$. 
+
+\item[\itemyes] \emph{True-negative rate:} $M_{\tn}/N_{\Ne}$. Analogous to true-positive rate.
+
+\item[\itemno] \emph{Balanced accuracy:} $(N_{\Ne}\,M_{\tp} + N_{\Po}\, M_{\tn})/(2 N_{\Po}N_{\Ne})$. Despite being an average of two scales (true-positive and true-negative rate) that agree with formula~\eqref{eq:utility_testset_binary}, it is not an instance of that formula. The reason is that the two averaged scales involve different $a(\dotv)$ functions.
 \end{itemize}
+\mynote{\puzzle\ It seems most or all commonly used scales do not comply with decision theory!}
 
+
+% According to decision theory, a classification problem requires the specification of a utility matrix $(U_{dc})$. We saw in \sect~\ref{sec:dt_utility_yield} that the utility matrix should also be used in evaluating the decisions made by one or more classification algorithms in a test set with $N$ datapoints. Each algorithm gives rise to a confusion matrix $(M_{dc})$, containing the number $M_{dc}$ of times the algorithm made decision $d$ when the true class was $c$. We saw that the total and average utilities obtained by the classifier algorithm on the test set are, in terms of the independent components of the confusion matrix,
+% \begin{equation}
+%   \label{eq:utility_testset}
+%   \begin{aligned}
+% %  \sum_{d=1}^{\nd}\sum_{c=1}^{\nc} U_{dc}\, M_{dc}
+% \text{\small total:}&\quad  \sum_{d=1}^{\nd  - 1}\sum_{c=1}^{\nc} (U_{dc} - U_{\nd c})\, M_{dc}
+%   + \sum_{c=1}^{\nc} U_{\nd c}\,N_{c}
+%    \\
+%   % \sum_{d=1}^{\nd}\sum_{c=1}^{\nc} U_{dc}\, \frac{M_{dc}}{N}
+% \text{\small average:}&\quad  \sum_{d=1}^{\nd  - 1}\sum_{c=1}^{\nc} (U_{dc} - U_{\nd c})\, \frac{M_{dc}}{N}
+%   + \sum_{c=1}^{\nc} U_{\nd c}\,\frac{N_{c}}{N} \ .
+%   \end{aligned}
+% \end{equation}
+
+% The expressions above are a linear combination of the elements in the first $\nd-1$ rows of the confusion matrix $(M_{dc})$, possibly normalized to the total number of test data, plus a term independent of the confusion matrix. The coefficients of the linear combination depend only on the utility matrix $(U_{dc})$, the additive term also depends on the frequencies of the classes.
+
+% We thus find the following important result according to decision theory: \emph{A valuation scale should be a \textbf{linear combination} of the independent elements of the confusion matrix, possibly normalized to the number of test data. The coefficients of the linear combination are problem-specific and \textbf{cannot depend on the confusion matrix}, nor on the frequencies of the classes.}
+
+% Let us see what this means in the case of binary classification. The decisions and classes are typically both denoted as positive \enquote{$\Po$} and negative \enquote{$\Ne$}, and we speak of the number of \enquote{true positives}, \enquote{false positives}, and so on, so that
+% \begin{equation*}
+%   M_{\Po\Po} \equiv M_{\tp}, \quad
+%   M_{\Po\Ne} \equiv M_{\fp}, \quad
+%   M_{\Ne\Po} \equiv M_{\fn}, \quad
+%   M_{\Ne\Ne} \equiv M_{\tn} \ .
+% \end{equation*}
+% Accordingly we denote the elements of the utility matrix as
+% \begin{equation*}
+%   U_{\Po\Po} \equiv U_{\tp}, \quad
+%   U_{\Po\Ne} \equiv U_{\fp}, \quad
+%   U_{\Ne\Po} \equiv U_{\fn}, \quad
+%   U_{\Ne\Ne} \equiv U_{\tn} \ .
+% \end{equation*}
+% With this notation, formulae~\eqref{eq:utility_testset} take the general form
+% \begin{equation}
+%   \label{eq:utility_testset_binary}
+%   \begin{aligned}
+%     \text{\small total:}&\quad
+%                           x_{\tp}\, M_{\tp} + x_{\fp}\, M_{\fp} +
+%                           (y_{\Po}\, N_{\Po} + y_{\Ne}\, N_{\Ne})
+%     \\
+%     \text{\small average:}&\quad
+%                             x_{\tp}\, \frac{M_{\tp}}{N} + x_{\fp}\, \frac{M_{\fp}}{N} +
+%                             \Bigl(y_{\Po}\, \frac{N_{\Po}}{N} + y_{\Ne}\, \frac{N_{\Ne}}{N}\Bigr) \ .
+%   \end{aligned}
+% \end{equation}
+
+% A valuation scale consistent with decision theory must take one of the forms above for particular values of the coefficients $x_{\tp}, x_{\fp}, y_{\Po}, y_{\Ne}$. Let us examine some common valuation scales according to this requirement.
+
+% \begin{itemize}
+% \item[\itemyes] \emph{Accuracy:} $(M_{\tp}-M_{\fp}+N_{\Ne})/N$. It is a particular case of formula~\eqref{eq:utility_testset_binary} with $x_{\tp}=y_{\Ne}=1$, $x_{\fp}=-1$, $y_{\Po}=0$. In fact it corresponds to using a utility matrix equivalent to the identity $\begin{psmallmatrix} 1&0\\0&1 \end{psmallmatrix}$.
+  
+% \item[\itemno] \emph{Precision:} $M_{\tp}/(M_{\tp}+M_{\fp})$.  It cannot be written as a linear expression in $M_{\tp},M_{\fp}$.
+
+% \item[\itemno] \emph{$F_{1}$-measure:} $2 M_{\tp}/(M_{\tp} + M_{\fp} + N_{\Po})$.
+
+% \item[\itemno] \emph{Matthews correlation coefficient:} $\frac{N_{\Ne}\, M_{\tp} - N_{\Po}\, M_{\fp}}{\sqrt{(M_{\tp}+M_{\fp})(N-M_{\tp}-M_{\fp})N_{\Po}N_{\Ne}}}$. It cannot be written as a linear expression in $M_{\tp},M_{\fp}$.
+% \end{itemize}
+% \mynote{\puzzle\ It seems most or all commonly used scales, except accuracy, do not comply with decision theory!}
 
 
 
