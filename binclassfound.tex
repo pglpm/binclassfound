@@ -1,7 +1,7 @@
 \pdfoutput=1
 %% Author: PGL  Porta Mana
 %% Created: 2015-05-01T20:53:34+0200
-%% Last-Updated: 2022-04-12T22:00:07+0200
+%% Last-Updated: 2022-04-13T08:47:27+0200
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \newif\ifarxiv
 \arxivfalse
@@ -855,7 +855,7 @@ As an example, imagine we are offered to buy a lottery ticket, which may be winn
   \end{tabular}
 \end{center}
 
-We denote $\U(d\|c)$ the utility of decision $d$ if class $c$ is true, or  \enquote{the utility of $d$ given $c$}, or \enquote{the utility of $d$ conditional on $c$}. One utility from the lottery example is $\U(\texttt{\small buy} \| \texttt{\small lose}) = -1$. If we have $\nd$ possible decisions and $\nc$ possible classes, the utilities can be collected in a \emph{utility matrix} $\mathte{U} \equiv (U_{dc})$ having $\nd$ rows and $\nc$ columns. The utility matrix for the lottery is
+We denote $\U(d\|c)$ the utility of decision $d$ if class $c$ is true, or  \enquote{the utility of $d$ given $c$}, or \enquote{the utility of $d$ conditional on $c$}. One utility from the lottery example is $\U(\texttt{\small buy} \| \texttt{\small lose}) = -1$. If we have $\nd$ available decisions and $\nc$ possible classes, the utilities can be collected in a \emph{utility matrix} $\mathte{U} \equiv (U_{dc})$ having $\nd$ rows and $\nc$ columns. The utility matrix for the lottery is
 \begin{equation}
   \label{eq:utmatr_lottery}
   \mathte{U} =
@@ -888,61 +888,51 @@ It is nevertheless clear that every decision problem is completely determined by
 
 Thus \emph{all decision problems with $\nd$ decisions and $\nc$ classes are catalogued by\; $\nd \nc - 2$\; parameters} (the set of such problems has the topology of an $(\nd\nc-1)$-dimensional sphere). In the case of binary classification this means 2 parameters.
 
-\mynote{[\puzzle\ maybe the following discussion is unnecessary:]
-  
-Several conventions can be used to fix the two redundant degrees of freedom. We can choose them in such a way that the smallest utility is 0 and the largest is 1; this is achieved by subtracting the value of the smallest utility from all elements of the utility matrix and then dividing them by the value of the largest minus the smallest; in symbols
-\begin{equation}
-  \label{eq:standardize1}
-  U_{cd} \mapsto \frac{U_{cd} - \min(U_{cd})}{\max(U_{cd}) - \min(U_{cd})} \ .
-\end{equation}
-In the lottery example this leads to
-\begin{equation}
-  \label{eq:standardize1_lottery}
-  \begin{pmatrix}
-    +10 & -1 \\ 0 & 0
-  \end{pmatrix} \mapsto
-    \begin{pmatrix}
-    1 & 0 \\ 1/11 & 1/11
-  \end{pmatrix} \ .
-\end{equation}
-Another convention is to choose them in such a way that the smallest utility is 0 and the sum of all utilities is 1; this is achieved by the transformation
-\begin{equation}
-  \label{eq:standardize2}
-  U_{cd} \mapsto
-  \frac{U_{cd} - \min(U_{cd})}{\sum_{cd}U_{cd} - \nd\nc\min(U_{cd})} \ .
-\end{equation}
-In the lottery example this leads to
-\begin{equation}
-  \label{eq:standardize1_lottery}
-  \begin{pmatrix}
-    +10 & -1 \\ 0 & 0
-  \end{pmatrix} \mapsto
-    \begin{pmatrix}
-    11/13 & 0 \\ 1/13 & 1/13
-  \end{pmatrix} \ .
-\end{equation}
-}
 
 \medskip
 
-The utility matrix is not only the basis for choosing optimal decisions by means of expected-utility maximization. It also provides a scale with which to rank a set of decisions already made -- for example on a test set -- if we know the corresponding true classes. Suppose that in $N$ instances we chose decision $d$ when the true class was $c$ a total of $N_{dc}$ times (the absolute frequency of the $d,c$ pair), so that when we sum over all available decisions and possible classes we have
+The utility matrix is not only the basis for making optimal decisions by means of expected-utility maximization. It also provides the scale to rank a set of decisions already made -- for example on a test set -- by some algorithm, if we know the corresponding true classes. Suppose we have $N$ test instances, in which each class $c$ occurs $N_{c}$ times, so that $\sum_{c} N_{c} = N$. A decision algorithm made decision $d$ when the true class was $c$ a number $M_{dc}$ of times. These numbers form the confusion matrix $(M_{dc})$ of the algorithm's output. The numbers $M_{dc}$ are not all independent: they must satisfy the constraints
 \begin{equation}
   \label{eq:sum_frequencies}
-  \sum_{dc} N_{dc} = N \ .
+  \sum_{d} M_{dc} = N_{c} \quad\text{for each class $c$} \ .
 \end{equation}
-In each of the $N_{dc}$ instances we gained a utility $U_{dc}$.
-The actual total utility gained is then
+The test output of the decision algorithm is therefore characterized by $(\nd-1)\nc$ independent numbers. We can take these to be the first $\nd-1$ rows of the confusion matrix, so that for the last row we have
+\begin{equation}
+  \label{eq:lastrow_conf_matrix}
+  M_{\nd c} = N_{c} - \sum_{d=1}^{\nd - 1} M_{dc}
+  \quad\text{for each class $c$} \ .
+\end{equation}
+In binary classification for example, where $\nd=\nc=2$, the two independent numbers are often taken to be the \enquote{true positives} and \enquote{false positives} (the axes of the receiver-operating-characteristic plot).
+
+For given decision $d$ and class $c$, in each of the $M_{dc}$ instances the algorithm yielded a utility $U_{dc}$. The actual total utility gained in the test set is then
 \begin{equation}
   \label{eq:utility_gained}
-\sum_{dc} U_{dc}\, N_{dc} \ ,
+  \sum_{d=1}^{\nd}\sum_{c=1}^{\nc} U_{dc}\, M_{dc}
+  \quad\text{or}\quad
+  \sum_{d=1}^{\nd  - 1}\sum_{c=1}^{\nc} (U_{dc} - U_{\nd c})\, M_{dc}
+  + \sum_{c=1}^{\nc} U_{\nd c}\,N_{c}
+   \ ,
+  % \sum_{d=1}^{\nd}\sum{c=1}^{\nc} U_{dc}\, M_{dc}
+  % \sum_{d=1}^{\nd-1}\sum{c=1}^{\nc} U_{dc}\, M_{dc}
+  % + \sum_{c=1}^{\nc} U_{\nd c}\,M_{\nd c}
+  % \sum_{d=1}^{\nd-1}\sum{c=1}^{\nc} U_{dc}\, M_{dc}
+  % + \sum_{c=1}^{\nc} U_{\nd c}\,(N_{c} - \sum_{d=1}^{\nd-1}M_{d c})
+  % \sum_{d=1}^{\nd-1}\sum{c=1}^{\nc} U_{dc}\, M_{dc}
+  % + \sum_{c=1}^{\nc} U_{\nd c}\,N_{c}
+  % - \sum_{c=1}^{\nc}\sum_{d=1}^{\nd-1} U_{\nd c}\,M_{dc})
 \end{equation}
-or an average utility per instance of
+the second expression being in terms of the independent elements of the confusion matrix. We can also consider the average gained utility per test instance:
 \begin{equation}
   \label{eq:avg_utility_gained}
-\frac{1}{N}  \sum_{dc} U_{dc}\,  N_{dc} \ .
+  \sum_{d=1}^{\nd}\sum_{c=1}^{\nc} U_{dc}\, \frac{M_{dc}}{N}
+  \quad\text{or}\quad
+  \sum_{d=1}^{\nd  - 1}\sum_{c=1}^{\nc} (U_{dc} - U_{\nd c})\, \frac{M_{dc}}{N}
+  + \sum_{c=1}^{\nc} U_{\nd c}\,\frac{N_{c}}{N} \ .
 \end{equation}
 
-\medskip
+It may not be amiss to emphasize that the \emph{proportions $N_{c}$ of classes in the test set should be representative of the proportions that will be encountered in the real application}. Otherwise the test-set results would misleading or even opposite to what the real performance will be. In the lottery example with utility matrix~\eqref{eq:exp_utilities_lottery}, suppose we have an algorithm that always makes the decision \texttt{buy} and another algorithm that always decides \texttt{not-buy}. In  real instances of such lotteries the class \texttt{win} occurs 1\% of the time, and \texttt{lose}, 99\%. In a real application the first algorithm would thus yield $-0.89$, a loss, on average at each instance, and the second $0$. The second algorithm is actually best. Suppose we test these algorithms on a test set where the two classes appear 50\%/50\% instead. On this test set the first algorithm will yield $4.5$ on average, the second $0$. Thus according to the test the first algorithm is best -- a wrong conclusion.
+
+\bigskip
 
 The summary of decision theory just given suffices to address issues~\ref{item:scales}--\ref{item:optimal_true}.
 
@@ -955,7 +945,7 @@ In using \ml\ classifiers one typically considers situations where the set of av
 \subsection{Choice of valuation scale (issue~\ref{item:scales})}
 \label{sec:choice_valuation}
 
-According to decision theory, binary classification requires the specification of a 2-by-2 utility matrix, or 4 parameters. This utility matrix should also be used in evaluating the decisions made by the classification algorithm in a test set with $N$ datapoints. The decisions and corresponding true classes are embodied in the confusion matrix $(N_{dc})$, containing the number $N_{dc}$ of times we chose decision $d$ when the true class was $c$. This is exactly the scenario presented at the end of the previous section. The average utility obtained by the classifier algorithm on the test set is thus given by
+According to decision theory, binary classification requires the specification of a 2-by-2 utility matrix, or 4 parameters. This utility matrix should also be used in evaluating the decisions made by the classification algorithm in a test set with $N$ datapoints. The decisions and corresponding true classes are embodied in the confusion matrix $(N_{dc})$, containing the number $N_{dc}$ of times we made decision $d$ when the true class was $c$. This is exactly the scenario presented at the end of the previous section. The average utility obtained by the classifier algorithm on the test set is thus given by
 \begin{equation}
   \label{eq:avg_utility_testset}
   \frac{1}{N} \sum_{dc} U_{dc}\, N_{dc} \ .
@@ -1274,6 +1264,43 @@ probabilities.
 
 \end{itemize}
 }
+
+
+\mynote{[\puzzle\ maybe the following discussion is unnecessary:]
+  
+Several conventions can be used to fix the two redundant degrees of freedom. We can choose them in such a way that the smallest utility is 0 and the largest is 1; this is achieved by subtracting the value of the smallest utility from all elements of the utility matrix and then dividing them by the value of the largest minus the smallest; in symbols
+\begin{equation}
+  \label{eq:standardize1}
+  U_{cd} \mapsto \frac{U_{cd} - \min(U_{cd})}{\max(U_{cd}) - \min(U_{cd})} \ .
+\end{equation}
+In the lottery example this leads to
+\begin{equation}
+  \label{eq:standardize1_lottery}
+  \begin{pmatrix}
+    +10 & -1 \\ 0 & 0
+  \end{pmatrix} \mapsto
+    \begin{pmatrix}
+    1 & 0 \\ 1/11 & 1/11
+  \end{pmatrix} \ .
+\end{equation}
+Another convention is to choose them in such a way that the smallest utility is 0 and the sum of all utilities is 1; this is achieved by the transformation
+\begin{equation}
+  \label{eq:standardize2}
+  U_{cd} \mapsto
+  \frac{U_{cd} - \min(U_{cd})}{\sum_{cd}U_{cd} - \nd\nc\min(U_{cd})} \ .
+\end{equation}
+In the lottery example this leads to
+\begin{equation}
+  \label{eq:standardize1_lottery}
+  \begin{pmatrix}
+    +10 & -1 \\ 0 & 0
+  \end{pmatrix} \mapsto
+    \begin{pmatrix}
+    11/13 & 0 \\ 1/13 & 1/13
+  \end{pmatrix} \ .
+\end{equation}
+}
+
 
 
 %%% Local Variables: 
