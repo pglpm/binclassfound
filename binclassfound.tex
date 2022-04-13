@@ -1,7 +1,7 @@
 \pdfoutput=1
 %% Author: PGL  Porta Mana
 %% Created: 2015-05-01T20:53:34+0200
-%% Last-Updated: 2022-04-13T17:21:10+0200
+%% Last-Updated: 2022-04-13T17:22:36+0200
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \newif\ifarxiv
 \arxivfalse
@@ -1120,14 +1120,14 @@ As discussed in \sect~\ref{sec:intro}, issue~\ref{item:optimal_true}, this means
 
 How can we amend current practice for this kind of classifiers, so that they look for optimality rather than truth?
 
-A first idea could be to simply modify the standard output step~\eqref{eq:argmax_probable} into~\eqref{eq:argmax_decision}. It is an easily implementable and computationally cheap modification: we are just multiplying the probability tuple by some matrix. Such simple modification, however, has a profound implication for the training procedure: we are modifying the algorithm to output the optimal class, and therefore it should also \emph{learn what is optimal}, not what is true: \emph{the targets in the training and validation phases should be the \textbf{optimal} classes, not the true classes}. But determining the optimal classes would require a probabilistic analysis that is computationally unfeasible at present for problems that involve very high-dimensional spaces, such as image classification -- if the exact probabilistic analysis were possible we would not be developing \ml\ classifiers in the first place \citep[\chap~12]{russelletal1995_r2022}. \mynote{\puzzle\ Maybe useful to add a reminder that probability theory is the \emph{learning} theory par excellence (even if there's no \enquote{learning} in its name)? Its rules are all about making logical updates given new data.}
+A first idea could be to simply modify the standard output step~\eqref{eq:argmax_probable} into~\eqref{eq:argmax_decision}. It is an easily implementable and computationally cheap modification: we are just multiplying the probability tuple by some matrix. Such simple modification, however, has a profound implication for the training procedure: we are modifying the algorithm to output the optimal class, and therefore it should also \emph{learn what is optimal}, not what is true: \emph{the targets in the training and validation phases should be the \textbf{optimal} classes, not the true classes}. But determining the optimal classes would require a probabilistic analysis that is computationally unfeasible at present for problems that involve very high-dimensional spaces, such as image classification -- if an exact probabilistic analysis were possible we would not be developing \ml\ classifiers in the first place \citep[\chap~12]{russelletal1995_r2022}. \mynote{\puzzle\ Maybe useful to add a reminder that probability theory is the \emph{learning} theory par excellence (even if there's no \enquote{learning} in its name)? Its rules are all about making logical updates given new data.}
 
 
 \section{Summary and discussion}
 \label{sec:summary_discussion}
 
 
-
+\clearpage
 
 
 %%%% examples use empheq
