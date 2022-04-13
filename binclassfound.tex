@@ -1,7 +1,7 @@
 \pdfoutput=1
 %% Author: PGL  Porta Mana
 %% Created: 2015-05-01T20:53:34+0200
-%% Last-Updated: 2022-04-13T16:44:13+0200
+%% Last-Updated: 2022-04-13T17:21:10+0200
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \newif\ifarxiv
 \arxivfalse
@@ -1113,14 +1113,14 @@ We assume here that the utilities are given and the same at each application -- 
 
 Current common practice with algorithms capable of outputting some sort of probability-like score is simply to output the class $c^{*}$ having highest probability:
 \begin{equation}
-  \label{eq:argmax_decision}
+  \label{eq:argmax_probable}
   c^{*} = \argmax_{c} p_{c\|z} \ .
 \end{equation}
-As discussed in \sect~\ref{sec:intro}, item~\ref{item:optimal_true}, this means choosing the \emph{most probable} class, not the \emph{optimal} class, and the two are often different, the second being what we typically want. This choice is also the one that would be made with an identity utility matrix $\begin{psmallmatrix} 1&0\\0&1 \end{psmallmatrix}$.
+As discussed in \sect~\ref{sec:intro}, issue~\ref{item:optimal_true}, this means choosing the \emph{most probable} class, not the \emph{optimal} class, and the two are often different, the second being what we typically want. This choice is also the one that would be made with an identity utility matrix $\begin{psmallmatrix} 1&0\\0&1 \end{psmallmatrix}$.
 
 How can we amend current practice for this kind of classifiers, so that they look for optimality rather than truth?
 
-A first idea could be 
+A first idea could be to simply modify the standard output step~\eqref{eq:argmax_probable} into~\eqref{eq:argmax_decision}. It is an easily implementable and computationally cheap modification: we are just multiplying the probability tuple by some matrix. Such simple modification, however, has a profound implication for the training procedure: we are modifying the algorithm to output the optimal class, and therefore it should also \emph{learn what is optimal}, not what is true: \emph{the targets in the training and validation phases should be the \textbf{optimal} classes, not the true classes}. But determining the optimal classes would require a probabilistic analysis that is computationally unfeasible at present for problems that involve very high-dimensional spaces, such as image classification -- if the exact probabilistic analysis were possible we would not be developing \ml\ classifiers in the first place \citep[\chap~12]{russelletal1995_r2022}. \mynote{\puzzle\ Maybe useful to add a reminder that probability theory is the \emph{learning} theory par excellence (even if there's no \enquote{learning} in its name)? Its rules are all about making logical updates given new data.}
 
 
 \section{Summary and discussion}
