@@ -1,0 +1,1493 @@
+\pdfoutput=1
+%% Author: PGL  Porta Mana
+%% Created: 2022-03-04T07:39:34+0200
+%% Last-Updated: 2022-04-14T18:13:30+0200
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% Decision theory for machine-learning classifiers
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newif\ifarxiv
+\arxivfalse
+\iftrue\pdfmapfile{+classico.map}\fi
+\newif\ifafour
+\afourfalse% true = A4, false = A5
+\newif\iftypodisclaim % typographical disclaim on the side
+\typodisclaimtrue
+\newcommand*{\memfontfamily}{zplx}
+\newcommand*{\memfontpack}{newpxtext}
+\documentclass[\ifafour a4paper,12pt,\else a5paper,10pt,\fi%extrafontsizes,%
+onecolumn,oneside,article,%french,italian,german,swedish,latin,
+british%
+]{memoir}
+\newcommand*{\firstdraft}{4 March 2022}
+\newcommand*{\firstpublished}{\firstdraft}
+\newcommand*{\updated}{\ifarxiv***\else\today\fi}
+\newcommand*{\propertitle}{Guessing what's true or choosing what's optimal?\\ {\Large A first-principle approach to the use and evaluation of classifiers}}
+% title uses LARGE; set Large for smaller
+\newcommand*{\pdftitle}{\propertitle}
+\newcommand*{\headtitle}{Guessing truth or choosing optimality?}
+\newcommand*{\pdfauthor}{K. Dirland, A. S. Lundervold, P.G.L.  Porta Mana}
+\newcommand*{\headauthor}{Dirland, Lundervold, Porta Mana}
+\newcommand*{\reporthead}{\ifarxiv\else Open Science Framework \href{https://doi.org/10.31219/osf.io/***}{\textsc{doi}:10.31219/osf.io/***}\fi}% Report number
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%% Calls to packages (uncomment as needed)
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%\usepackage{pifont}
+
+%\usepackage{fontawesome}
+
+\usepackage[T1]{fontenc} 
+\input{glyphtounicode} \pdfgentounicode=1
+
+\usepackage[utf8]{inputenx}
+
+%\usepackage{newunicodechar}
+% \newunicodechar{Ĕ}{\u{E}}
+% \newunicodechar{ĕ}{\u{e}}
+% \newunicodechar{Ĭ}{\u{I}}
+% \newunicodechar{ĭ}{\u{\i}}
+% \newunicodechar{Ŏ}{\u{O}}
+% \newunicodechar{ŏ}{\u{o}}
+% \newunicodechar{Ŭ}{\u{U}}
+% \newunicodechar{ŭ}{\u{u}}
+% \newunicodechar{Ā}{\=A}
+% \newunicodechar{ā}{\=a}
+% \newunicodechar{Ē}{\=E}
+% \newunicodechar{ē}{\=e}
+% \newunicodechar{Ī}{\=I}
+% \newunicodechar{ī}{\={\i}}
+% \newunicodechar{Ō}{\=O}
+% \newunicodechar{ō}{\=o}
+% \newunicodechar{Ū}{\=U}
+% \newunicodechar{ū}{\=u}
+% \newunicodechar{Ȳ}{\=Y}
+% \newunicodechar{ȳ}{\=y}
+
+\newcommand*{\bmmax}{0} % reduce number of bold fonts, before font packages
+\newcommand*{\hmmax}{0} % reduce number of heavy fonts, before font packages
+
+\usepackage{textcomp}
+
+%\usepackage[normalem]{ulem}% package for underlining
+% \makeatletter
+% \def\ssout{\bgroup \ULdepth=-.35ex%\UL@setULdepth
+%  \markoverwith{\lower\ULdepth\hbox
+%    {\kern-.03em\vbox{\hrule width.2em\kern1.2\p@\hrule}\kern-.03em}}%
+%  \ULon}
+% \makeatother
+
+\usepackage{amsmath}
+
+\usepackage{mathtools}
+%\addtolength{\jot}{\jot} % increase spacing in multiline formulae
+\setlength{\multlinegap}{0pt}
+
+%\usepackage{empheq}% automatically calls amsmath and mathtools
+%\newcommand*{\widefbox}[1]{\fbox{\hspace{1em}#1\hspace{1em}}}
+
+%%%% empheq above seems more versatile than these:
+%\usepackage{fancybox}
+%\usepackage{framed}
+
+% \usepackage[misc]{ifsym} % for dice
+% \newcommand*{\diceone}{{\scriptsize\Cube{1}}}
+
+\usepackage{amssymb}
+
+\usepackage{amsxtra}
+
+\usepackage[main=british]{babel}\selectlanguage{british}
+%\newcommand*{\langnohyph}{\foreignlanguage{nohyphenation}}
+\newcommand{\langnohyph}[1]{\begin{hyphenrules}{nohyphenation}#1\end{hyphenrules}}
+
+\usepackage[autostyle=false,autopunct=false,english=british]{csquotes}
+\setquotestyle{british}
+\newcommand*{\defquote}[1]{`\,#1\,'}
+
+% \makeatletter
+% \renewenvironment{quotation}%
+%                {\list{}{\listparindent 1.5em%
+%                         \itemindent    \listparindent
+%                         \rightmargin=1em   \leftmargin=1em
+%                         \parsep        \z@ \@plus\p@}%
+%                 \item[]\footnotesize}%
+%                 {\endlist}
+% \makeatother                
+
+
+\usepackage{amsthm}
+%% from https://tex.stackexchange.com/a/404680/97039
+\makeatletter
+\def\@endtheorem{\endtrivlist}
+\makeatother
+
+\newcommand*{\QED}{\textsc{q.e.d.}}
+\renewcommand*{\qedsymbol}{\QED}
+\theoremstyle{remark}
+\newtheorem{note}{Note}
+\newtheorem*{remark}{Note}
+\newtheoremstyle{innote}{\parsep}{\parsep}{\footnotesize}{}{}{}{0pt}{}
+\theoremstyle{innote}
+\newtheorem*{innote}{}
+
+\usepackage[shortlabels,inline]{enumitem}
+\SetEnumitemKey{para}{itemindent=\parindent,leftmargin=0pt,listparindent=\parindent,parsep=0pt,itemsep=\topsep}
+% \begin{asparaenum} = \begin{enumerate}[para]
+% \begin{inparaenum} = \begin{enumerate*}
+\setlist{itemsep=0pt,topsep=\parsep}
+\setlist[enumerate,2]{label=\alph*.}
+\setlist[enumerate]{label=\arabic*.,leftmargin=1.5\parindent}
+\setlist[itemize]{leftmargin=1.5\parindent}
+\setlist[description]{leftmargin=1.5\parindent}
+% old alternative:
+% \setlist[enumerate,2]{label=\alph*.}
+% \setlist[enumerate]{leftmargin=\parindent}
+% \setlist[itemize]{leftmargin=\parindent}
+% \setlist[description]{leftmargin=\parindent}
+
+\usepackage[babel,theoremfont,largesc]{newpxtext}
+
+% For Baskerville see https://ctan.org/tex-archive/fonts/baskervillef?lang=en
+% and http://mirrors.ctan.org/fonts/baskervillef/doc/baskervillef-doc.pdf
+% \usepackage[p]{baskervillef}
+% \usepackage[varqu,varl,var0]{inconsolata}
+% \usepackage[scale=.95,type1]{cabin}
+% \usepackage[baskerville,vvarbb]{newtxmath}
+% \usepackage[cal=boondoxo]{mathalfa}
+
+
+\usepackage[bigdelims,nosymbolsc%,smallerops % probably arXiv doesn't have it
+]{newpxmath}
+%\useosf
+%\linespread{1.083}%
+%\linespread{1.05}% widely used
+\linespread{1.1}% best for text with maths
+%% smaller operators for old version of newpxmath
+\makeatletter
+\def\re@DeclareMathSymbol#1#2#3#4{%
+    \let#1=\undefined
+    \DeclareMathSymbol{#1}{#2}{#3}{#4}}
+%\re@DeclareMathSymbol{\bigsqcupop}{\mathop}{largesymbols}{"46}
+%\re@DeclareMathSymbol{\bigodotop}{\mathop}{largesymbols}{"4A}
+\re@DeclareMathSymbol{\bigoplusop}{\mathop}{largesymbols}{"4C}
+\re@DeclareMathSymbol{\bigotimesop}{\mathop}{largesymbols}{"4E}
+\re@DeclareMathSymbol{\sumop}{\mathop}{largesymbols}{"50}
+\re@DeclareMathSymbol{\prodop}{\mathop}{largesymbols}{"51}
+\re@DeclareMathSymbol{\bigcupop}{\mathop}{largesymbols}{"53}
+\re@DeclareMathSymbol{\bigcapop}{\mathop}{largesymbols}{"54}
+%\re@DeclareMathSymbol{\biguplusop}{\mathop}{largesymbols}{"55}
+\re@DeclareMathSymbol{\bigwedgeop}{\mathop}{largesymbols}{"56}
+\re@DeclareMathSymbol{\bigveeop}{\mathop}{largesymbols}{"57}
+%\re@DeclareMathSymbol{\bigcupdotop}{\mathop}{largesymbols}{"DF}
+%\re@DeclareMathSymbol{\bigcapplusop}{\mathop}{largesymbolsPXA}{"00}
+%\re@DeclareMathSymbol{\bigsqcupplusop}{\mathop}{largesymbolsPXA}{"02}
+%\re@DeclareMathSymbol{\bigsqcapplusop}{\mathop}{largesymbolsPXA}{"04}
+%\re@DeclareMathSymbol{\bigsqcapop}{\mathop}{largesymbolsPXA}{"06}
+\re@DeclareMathSymbol{\bigtimesop}{\mathop}{largesymbolsPXA}{"10}
+%\re@DeclareMathSymbol{\coprodop}{\mathop}{largesymbols}{"60}
+%\re@DeclareMathSymbol{\varprod}{\mathop}{largesymbolsPXA}{16}
+\makeatother
+%%
+%% With euler font cursive for Greek letters - the [1] means 100% scaling
+\DeclareFontFamily{U}{egreek}{\skewchar\font'177}%
+\DeclareFontShape{U}{egreek}{m}{n}{<-6>s*[1]eurm5 <6-8>s*[1]eurm7 <8->s*[1]eurm10}{}%
+\DeclareFontShape{U}{egreek}{m}{it}{<->s*[1]eurmo10}{}%
+\DeclareFontShape{U}{egreek}{b}{n}{<-6>s*[1]eurb5 <6-8>s*[1]eurb7 <8->s*[1]eurb10}{}%
+\DeclareFontShape{U}{egreek}{b}{it}{<->s*[1]eurbo10}{}%
+\DeclareSymbolFont{egreeki}{U}{egreek}{m}{it}%
+\SetSymbolFont{egreeki}{bold}{U}{egreek}{b}{it}% from the amsfonts package
+\DeclareSymbolFont{egreekr}{U}{egreek}{m}{n}%
+\SetSymbolFont{egreekr}{bold}{U}{egreek}{b}{n}% from the amsfonts package
+% Take also \sum, \prod, \coprod symbols from Euler fonts
+\DeclareFontFamily{U}{egreekx}{\skewchar\font'177}
+\DeclareFontShape{U}{egreekx}{m}{n}{%
+       <-7.5>s*[0.9]euex7%
+    <7.5-8.5>s*[0.9]euex8%
+    <8.5-9.5>s*[0.9]euex9%
+    <9.5->s*[0.9]euex10%
+}{}
+\DeclareSymbolFont{egreekx}{U}{egreekx}{m}{n}
+\DeclareMathSymbol{\sumop}{\mathop}{egreekx}{"50}
+\DeclareMathSymbol{\prodop}{\mathop}{egreekx}{"51}
+\DeclareMathSymbol{\coprodop}{\mathop}{egreekx}{"60}
+\makeatletter
+\def\sum{\DOTSI\sumop\slimits@}
+\def\prod{\DOTSI\prodop\slimits@}
+\def\coprod{\DOTSI\coprodop\slimits@}
+\makeatother
+\input{definegreek.tex}% Greek letters not usually given in LaTeX.
+
+%\usepackage%[scaled=0.9]%
+%{classico}%  Optima as sans-serif font
+\renewcommand\sfdefault{uop}
+\DeclareMathAlphabet{\mathsf}  {T1}{\sfdefault}{m}{sl}
+\SetMathAlphabet{\mathsf}{bold}{T1}{\sfdefault}{b}{sl}
+\newcommand*{\mathte}[1]{\textbf{\textit{\textsf{#1}}}}
+% Upright sans-serif math alphabet
+% \DeclareMathAlphabet{\mathsu}  {T1}{\sfdefault}{m}{n}
+% \SetMathAlphabet{\mathsu}{bold}{T1}{\sfdefault}{b}{n}
+
+% DejaVu Mono as typewriter text
+\usepackage[scaled=0.84]{DejaVuSansMono}
+
+\usepackage{mathdots}
+
+\usepackage[usenames]{xcolor}
+% Tol (2012) colour-blind-, print-, screen-friendly colours, alternative scheme; Munsell terminology
+\definecolor{mypurpleblue}{RGB}{68,119,170}
+\definecolor{myblue}{RGB}{102,204,238}
+\definecolor{mygreen}{RGB}{34,136,51}
+\definecolor{myyellow}{RGB}{204,187,68}
+\definecolor{myred}{RGB}{238,102,119}
+\definecolor{myredpurple}{RGB}{170,51,119}
+\definecolor{mygrey}{RGB}{187,187,187}
+% Tol (2012) colour-blind-, print-, screen-friendly colours; Munsell terminology
+% \definecolor{lbpurple}{RGB}{51,34,136}
+% \definecolor{lblue}{RGB}{136,204,238}
+% \definecolor{lbgreen}{RGB}{68,170,153}
+% \definecolor{lgreen}{RGB}{17,119,51}
+% \definecolor{lgyellow}{RGB}{153,153,51}
+% \definecolor{lyellow}{RGB}{221,204,119}
+% \definecolor{lred}{RGB}{204,102,119}
+% \definecolor{lpred}{RGB}{136,34,85}
+% \definecolor{lrpurple}{RGB}{170,68,153}
+\definecolor{lgrey}{RGB}{221,221,221}
+%\newcommand*\mycolourbox[1]{%
+%\colorbox{mygrey}{\hspace{1em}#1\hspace{1em}}}
+\colorlet{shadecolor}{lgrey}
+
+\usepackage{bm}
+
+\usepackage{microtype}
+
+\usepackage[backend=biber,mcite,%subentry,
+citestyle=authoryear-comp,bibstyle=pglpm-authoryear,autopunct=false,sorting=ny,sortcites=false,natbib=false,maxcitenames=2,maxbibnames=8,minbibnames=8,giveninits=true,uniquename=false,uniquelist=false,maxalphanames=1,block=space,hyperref=true,defernumbers=false,useprefix=true,sortupper=false,language=british,parentracker=false,autocite=footnote]{biblatex}
+\DeclareSortingTemplate{ny}{\sort{\field{sortname}\field{author}\field{editor}}\sort{\field{year}}}
+\iffalse\makeatletter%%% replace parenthesis with brackets
+\newrobustcmd*{\parentexttrack}[1]{%
+  \begingroup
+  \blx@blxinit
+  \blx@setsfcodes
+  \blx@bibopenparen#1\blx@bibcloseparen
+  \endgroup}
+\AtEveryCite{%
+  \let\parentext=\parentexttrack%
+  \let\bibopenparen=\bibopenbracket%
+  \let\bibcloseparen=\bibclosebracket}
+\makeatother\fi
+\DefineBibliographyExtras{british}{\def\finalandcomma{\addcomma}}
+\renewcommand*{\finalnamedelim}{\addspace\amp\space}
+% \renewcommand*{\finalnamedelim}{\addcomma\space}
+\renewcommand*{\textcitedelim}{\addcomma\space}
+% \setcounter{biburlnumpenalty}{1} % to allow url breaks anywhere
+% \setcounter{biburlucpenalty}{0}
+% \setcounter{biburllcpenalty}{1}
+\DeclareDelimFormat{multicitedelim}{\addsemicolon\addspace\space}
+\DeclareDelimFormat{compcitedelim}{\addsemicolon\addspace\space}
+\DeclareDelimFormat{postnotedelim}{\addspace}
+\ifarxiv\else\addbibresource{portamanabib.bib}\fi
+\renewcommand{\bibfont}{\footnotesize}
+%\appto{\citesetup}{\footnotesize}% smaller font for citations
+\defbibheading{bibliography}[\bibname]{\section*{#1}\addcontentsline{toc}{section}{#1}%\markboth{#1}{#1}
+}
+\newcommand*{\citep}{\footcites}
+\newcommand*{\citey}{\footcites}%{\parencites*}
+\newcommand*{\ibid}{\unspace\addtocounter{footnote}{-1}\footnotemark{}}
+%\renewcommand*{\cite}{\parencite}
+%\renewcommand*{\cites}{\parencites}
+\providecommand{\href}[2]{#2}
+\providecommand{\eprint}[2]{\texttt{\href{#1}{#2}}}
+\newcommand*{\amp}{\&}
+% \newcommand*{\citein}[2][]{\textnormal{\textcite[#1]{#2}}%\addtocategory{extras}{#2}
+% }
+\newcommand*{\citein}[2][]{\textnormal{\textcite[#1]{#2}}%\addtocategory{extras}{#2}
+}
+\newcommand*{\citebi}[2][]{\textcite[#1]{#2}%\addtocategory{extras}{#2}
+}
+\newcommand*{\subtitleproc}[1]{}
+\newcommand*{\chapb}{ch.}
+%
+%\def\UrlOrds{\do\*\do\-\do\~\do\'\do\"\do\-}%
+\def\myUrlOrds{\do\0\do\1\do\2\do\3\do\4\do\5\do\6\do\7\do\8\do\9\do\a\do\b\do\c\do\d\do\e\do\f\do\g\do\h\do\i\do\j\do\k\do\l\do\m\do\n\do\o\do\p\do\q\do\r\do\s\do\t\do\u\do\v\do\w\do\x\do\y\do\z\do\A\do\B\do\C\do\D\do\E\do\F\do\G\do\H\do\I\do\J\do\K\do\L\do\M\do\N\do\O\do\P\do\Q\do\R\do\S\do\T\do\U\do\V\do\W\do\X\do\Y\do\Z}%
+\makeatletter
+%\g@addto@macro\UrlSpecials{\do={\newline}}
+\g@addto@macro{\UrlBreaks}{\myUrlOrds}
+\makeatother
+\newcommand*{\arxiveprint}[1]{%
+arXiv \doi{10.48550/arXiv.#1}%
+}
+\newcommand*{\mparceprint}[1]{%
+\href{http://www.ma.utexas.edu/mp_arc-bin/mpa?yn=#1}{mp\_arc:\allowbreak\nolinkurl{#1}}%
+}
+\newcommand*{\haleprint}[1]{%
+\href{https://hal.archives-ouvertes.fr/#1}{\textsc{hal}:\allowbreak\nolinkurl{#1}}%
+}
+\newcommand*{\philscieprint}[1]{%
+\href{http://philsci-archive.pitt.edu/archive/#1}{PhilSci:\allowbreak\nolinkurl{#1}}%
+}
+\newcommand*{\doi}[1]{%
+\href{https://doi.org/#1}{\textsc{doi}:\allowbreak\nolinkurl{#1}}%
+}
+\newcommand*{\biorxiveprint}[1]{%
+bioRxiv \doi{10.1101/#1}%
+}
+\newcommand*{\osfeprint}[1]{%
+Open Science Framework \doi{10.31219/osf.io/#1}%
+}
+
+\usepackage{graphicx}
+
+%\usepackage{wrapfig}
+
+%\usepackage{tikz-cd}
+
+\PassOptionsToPackage{hyphens}{url}\usepackage[hypertexnames=false,pdfencoding=unicode,psdextra]{hyperref}
+
+\usepackage[depth=4]{bookmark}
+\hypersetup{colorlinks=true,bookmarksnumbered,pdfborder={0 0 0.25},citebordercolor={0.2667 0.4667 0.6667},citecolor=mypurpleblue,linkbordercolor={0.6667 0.2 0.4667},linkcolor=myredpurple,urlbordercolor={0.1333 0.5333 0.2},urlcolor=mygreen,breaklinks=true,pdftitle={\pdftitle},pdfauthor={\pdfauthor}}
+% \usepackage[vertfit=local]{breakurl}% only for arXiv
+\providecommand*{\urlalt}{\href}
+
+\usepackage[british]{datetime2}
+\DTMnewdatestyle{mydate}%
+{% definitions
+\renewcommand*{\DTMdisplaydate}[4]{%
+\number##3\ \DTMenglishmonthname{##2} ##1}%
+\renewcommand*{\DTMDisplaydate}{\DTMdisplaydate}%
+}
+\DTMsetdatestyle{mydate}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%% Layout. I do not know on which kind of paper the reader will print the
+%%% paper on (A4? letter? one-sided? double-sided?). So I choose A5, which
+%%% provides a good layout for reading on screen and save paper if printed
+%%% two pages per sheet. Average length line is 66 characters and page
+%%% numbers are centred.
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\ifafour\setstocksize{297mm}{210mm}%{*}% A4
+\else\setstocksize{210mm}{5.5in}%{*}% 210x139.7
+\fi
+\settrimmedsize{\stockheight}{\stockwidth}{*}
+\setlxvchars[\normalfont] %313.3632pt for a 66-characters line
+\setxlvchars[\normalfont]
+% \setlength{\trimtop}{0pt}
+% \setlength{\trimedge}{\stockwidth}
+% \addtolength{\trimedge}{-\paperwidth}
+%\settrims{0pt}{0pt}
+% The length of the normalsize alphabet is 133.05988pt - 10 pt = 26.1408pc
+% The length of the normalsize alphabet is 159.6719pt - 12pt = 30.3586pc
+% Bringhurst gives 32pc as boundary optimal with 69 ch per line
+% The length of the normalsize alphabet is 191.60612pt - 14pt = 35.8634pc
+\ifafour\settypeblocksize{*}{32pc}{1.618} % A4
+%\setulmargins{*}{*}{1.667}%gives 5/3 margins % 2 or 1.667
+\else\settypeblocksize{*}{26pc}{1.618}% nearer to a 66-line newpx and preserves GR
+\fi
+\setulmargins{*}{*}{1}%gives equal margins
+\setlrmargins{*}{*}{*}
+\setheadfoot{\onelineskip}{2.5\onelineskip}
+\setheaderspaces{*}{2\onelineskip}{*}
+\setmarginnotes{2ex}{10mm}{0pt}
+\checkandfixthelayout[nearest]
+%%% End layout
+%% this fixes missing white spaces
+%\pdfmapline{+dummy-space <dummy-space.pfb}
+%\pdfinterwordspaceon% seems to add a white margin to Sumatrapdf
+
+%%% Sectioning
+\newcommand*{\asudedication}[1]{%
+{\par\centering\textit{#1}\par}}
+\newenvironment{acknowledgements}{\section*{Thanks}\addcontentsline{toc}{section}{Thanks}}{\par}
+\makeatletter\renewcommand{\appendix}{\par
+  \bigskip{\centering
+   \interlinepenalty \@M
+   \normalfont
+   \printchaptertitle{\sffamily\appendixpagename}\par}
+  \setcounter{section}{0}%
+  \gdef\@chapapp{\appendixname}%
+  \gdef\thesection{\@Alph\c@section}%
+  \anappendixtrue}\makeatother
+\counterwithout{section}{chapter}
+\setsecnumformat{\upshape\csname the#1\endcsname\quad}
+\setsecheadstyle{\large\bfseries\sffamily%
+\centering}
+\setsubsecheadstyle{\bfseries\sffamily%
+\raggedright}
+%\setbeforesecskip{-1.5ex plus 1ex minus .2ex}% plus 1ex minus .2ex}
+%\setaftersecskip{1.3ex plus .2ex }% plus 1ex minus .2ex}
+%\setsubsubsecheadstyle{\bfseries\sffamily\slshape\raggedright}
+%\setbeforesubsecskip{1.25ex plus 1ex minus .2ex }% plus 1ex minus .2ex}
+%\setaftersubsecskip{-1em}%{-0.5ex plus .2ex}% plus 1ex minus .2ex}
+\setsubsecindent{0pt}%0ex plus 1ex minus .2ex}
+\setparaheadstyle{\bfseries\sffamily%
+\raggedright}
+\setcounter{secnumdepth}{2}
+\setlength{\headwidth}{\textwidth}
+\newcommand{\addchap}[1]{\chapter*[#1]{#1}\addcontentsline{toc}{chapter}{#1}}
+\newcommand{\addsec}[1]{\section*{#1}\addcontentsline{toc}{section}{#1}}
+\newcommand{\addsubsec}[1]{\subsection*{#1}\addcontentsline{toc}{subsection}{#1}}
+\newcommand{\addpara}[1]{\paragraph*{#1.}\addcontentsline{toc}{subsubsection}{#1}}
+\newcommand{\addparap}[1]{\paragraph*{#1}\addcontentsline{toc}{subsubsection}{#1}}
+
+%%% Headers, footers, pagestyle
+\copypagestyle{manaart}{plain}
+\makeheadrule{manaart}{\headwidth}{0.5\normalrulethickness}
+\makeoddhead{manaart}{%
+{\footnotesize%\sffamily%
+\scshape\headauthor}}{}{{\footnotesize\sffamily%
+\headtitle}}
+\makeoddfoot{manaart}{}{\thepage}{}
+\newcommand*\autanet{\includegraphics[height=\heightof{M}]{autanet.pdf}}
+\definecolor{mygray}{gray}{0.333}
+\iftypodisclaim%
+\ifafour\newcommand\addprintnote{\begin{picture}(0,0)%
+\put(245,149){\makebox(0,0){\rotatebox{90}{\tiny\color{mygray}\textsf{This
+            document is designed for screen reading and
+            two-up printing on A4 or Letter paper}}}}%
+\end{picture}}% A4
+\else\newcommand\addprintnote{\begin{picture}(0,0)%
+\put(176,112){\makebox(0,0){\rotatebox{90}{\tiny\color{mygray}\textsf{This
+            document is designed for screen reading and
+            two-up printing on A4 or Letter paper}}}}%
+\end{picture}}\fi%afourtrue
+\makeoddfoot{plain}{}{\makebox[0pt]{\thepage}\addprintnote}{}
+\else
+\makeoddfoot{plain}{}{\makebox[0pt]{\thepage}}{}
+\fi%typodisclaimtrue
+\makeoddhead{plain}{\scriptsize\reporthead}{}{}
+% \copypagestyle{manainitial}{plain}
+% \makeheadrule{manainitial}{\headwidth}{0.5\normalrulethickness}
+% \makeoddhead{manainitial}{%
+% \footnotesize\sffamily%
+% \scshape\headauthor}{}{\footnotesize\sffamily%
+% \headtitle}
+% \makeoddfoot{manaart}{}{\thepage}{}
+
+\pagestyle{manaart}
+
+\setlength{\droptitle}{-3.9\onelineskip}
+\pretitle{\begin{center}\LARGE\sffamily%
+\bfseries}
+\posttitle{\bigskip\end{center}}
+
+\makeatletter\newcommand*{\atf}{\includegraphics[totalheight=\heightof{@}]{atblack.png}}\makeatother
+\providecommand{\affiliation}[1]{\textsl{\textsf{\footnotesize #1}}}
+\providecommand{\epost}[1]{\texttt{\footnotesize\textless#1\textgreater}}
+\providecommand{\email}[2]{\href{mailto:#1ZZ@#2 ((remove ZZ))}{#1\protect\atf#2}}
+%\providecommand{\email}[2]{\href{mailto:#1@#2}{#1@#2}}
+
+\preauthor{\vspace{-0.5\baselineskip}\begin{center}
+\normalsize\sffamily%
+\lineskip  0.5em}
+\postauthor{\par\end{center}}
+\predate{\DTMsetdatestyle{mydate}\begin{center}\footnotesize}
+\postdate{\end{center}\vspace{-\medskipamount}}
+
+\setfloatadjustment{figure}{\footnotesize}
+\captiondelim{\quad}
+\captionnamefont{\footnotesize\sffamily%
+}
+\captiontitlefont{\footnotesize}
+%\firmlists*
+\midsloppy
+% handling orphan/widow lines, memman.pdf
+% \clubpenalty=10000
+% \widowpenalty=10000
+% \raggedbottom
+% Downes, memman.pdf
+\clubpenalty=9996
+\widowpenalty=9999
+\brokenpenalty=4991
+\predisplaypenalty=10000
+\postdisplaypenalty=1549
+\displaywidowpenalty=1602
+\raggedbottom
+
+\paragraphfootnotes
+\setlength{\footmarkwidth}{2ex}
+% \threecolumnfootnotes
+%\setlength{\footmarksep}{0em}
+\footmarkstyle{\textsuperscript{%\color{myred}
+\scriptsize\bfseries#1}~}
+%\footmarkstyle{\textsuperscript{\color{myred}\scriptsize\bfseries#1}~}
+%\footmarkstyle{\textsuperscript{[#1]}~}
+
+\selectlanguage{british}\frenchspacing
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%% Paper's details
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\title{\propertitle}
+\author{%
+\hspace*{\stretch{1}}%
+%% uncomment if additional authors present
+\parbox{0.3\linewidth}%\makebox[0pt][c]%
+{\protect\centering K. Dirland\\%
+\footnotesize\epost{\email{***}{***}}}%
+\hspace*{\stretch{1}}%
+\parbox{0.3\linewidth}%\makebox[0pt][c]%
+{\protect\centering A. S. Lundervold\\%
+\footnotesize\epost{\email{***}{***}}}%
+\hspace*{\stretch{1}}%
+\parbox{0.3\linewidth}%\makebox[0pt][c]%
+{\protect\centering P.G.L.  Porta Mana  \href{https://orcid.org/0000-0002-6070-0784}{\protect\includegraphics[scale=0.16]{orcid_32x32.png}}\\\footnotesize\epost{\email{pgl}{portamana.org}}}%
+% Mohn Medical Imaging and Visualization Centre, Dept of Computer science, Electrical Engineering and Mathematical Sciences, Western Norway University of Applied Sciences, Bergen, Norway
+%% uncomment if additional authors present
+% \hspace*{\stretch{1}}%
+% \parbox{0.5\linewidth}%\makebox[0pt][c]%
+% {\protect\centering ***\\%
+% \footnotesize\epost{\email{***}{***}}}%
+\hspace*{\stretch{1}}%
+\\\scriptsize(or any permutation thereof)
+}
+
+%\date{Draft of \today\ (first drafted \firstdraft)}
+\date{\textbf{Draft}. \firstpublished; updated \updated}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%% Macros @@@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% Common ones - uncomment as needed
+%\providecommand{\nequiv}{\not\equiv}
+%\providecommand{\coloneqq}{\mathrel{\mathop:}=}
+%\providecommand{\eqqcolon}{=\mathrel{\mathop:}}
+%\providecommand{\varprod}{\prod}
+\newcommand*{\de}{\partialup}%partial diff
+\newcommand*{\pu}{\piup}%constant pi
+\newcommand*{\delt}{\deltaup}%Kronecker, Dirac
+%\newcommand*{\eps}{\varepsilonup}%Levi-Civita, Heaviside
+%\newcommand*{\riem}{\zetaup}%Riemann zeta
+%\providecommand{\degree}{\textdegree}% degree
+%\newcommand*{\celsius}{\textcelsius}% degree Celsius
+%\newcommand*{\micro}{\textmu}% degree Celsius
+\newcommand*{\I}{\mathrm{i}}%imaginary unit
+\newcommand*{\e}{\mathrm{e}}%Neper
+\newcommand*{\di}{\mathrm{d}}%differential
+%\newcommand*{\Di}{\mathrm{D}}%capital differential
+%\newcommand*{\planckc}{\hslash}
+%\newcommand*{\avogn}{N_{\textrm{A}}}
+%\newcommand*{\NN}{\bm{\mathrm{N}}}
+%\newcommand*{\ZZ}{\bm{\mathrm{Z}}}
+%\newcommand*{\QQ}{\bm{\mathrm{Q}}}
+\newcommand*{\RR}{\bm{\mathrm{R}}}
+%\newcommand*{\CC}{\bm{\mathrm{C}}}
+%\newcommand*{\nabl}{\bm{\nabla}}%nabla
+%\DeclareMathOperator{\lb}{lb}%base 2 log
+%\DeclareMathOperator{\tr}{tr}%trace
+%\DeclareMathOperator{\card}{card}%cardinality
+%\DeclareMathOperator{\im}{Im}%im part
+%\DeclareMathOperator{\re}{Re}%re part
+%\DeclareMathOperator{\sgn}{sgn}%signum
+%\DeclareMathOperator{\ent}{ent}%integer less or equal to
+%\DeclareMathOperator{\Ord}{O}%same order as
+%\DeclareMathOperator{\ord}{o}%lower order than
+%\newcommand*{\incr}{\triangle}%finite increment
+\newcommand*{\defd}{\coloneqq}
+\newcommand*{\defs}{\eqqcolon}
+%\newcommand*{\Land}{\bigwedge}
+%\newcommand*{\Lor}{\bigvee}
+%\newcommand*{\lland}{\DOTSB\;\land\;}
+%\newcommand*{\llor}{\DOTSB\;\lor\;}
+\newcommand*{\limplies}{\mathbin{\Rightarrow}}%implies
+%\newcommand*{\suchthat}{\mid}%{\mathpunct{|}}%such that (eg in sets)
+%\newcommand*{\with}{\colon}%with (list of indices)
+%\newcommand*{\mul}{\times}%multiplication
+%\newcommand*{\inn}{\cdot}%inner product
+\newcommand*{\dotv}{\mathord{\,\cdot\,}}%variable place
+%\newcommand*{\comp}{\circ}%composition of functions
+%\newcommand*{\con}{\mathbin{:}}%scal prod of tensors
+%\newcommand*{\equi}{\sim}%equivalent to 
+\renewcommand*{\asymp}{\simeq}%equivalent to 
+%\newcommand*{\corr}{\mathrel{\hat{=}}}%corresponds to
+%\providecommand{\varparallel}{\ensuremath{\mathbin{/\mkern-7mu/}}}%parallel (tentative symbol)
+\renewcommand*{\le}{\leqslant}%less or equal
+\renewcommand*{\ge}{\geqslant}%greater or equal
+%\DeclarePairedDelimiter\clcl{[}{]}
+%\DeclarePairedDelimiter\clop{[}{[}
+%\DeclarePairedDelimiter\opcl{]}{]}
+%\DeclarePairedDelimiter\opop{]}{[}
+\DeclarePairedDelimiter\abs{\lvert}{\rvert}
+%\DeclarePairedDelimiter\norm{\lVert}{\rVert}
+\DeclarePairedDelimiter\set{\{}{\}} %}
+%\DeclareMathOperator{\pr}{P}%probability
+\newcommand*{\p}{\mathrm{p}}%probability
+\renewcommand*{\P}{\mathrm{P}}%probability
+\newcommand*{\E}{\mathrm{E}}
+%% The "\:" space is chosen to correctly separate inner binary and external rels
+\renewcommand*{\|}[1][]{\nonscript\:#1\vert\nonscript\:\mathopen{}}
+%\DeclarePairedDelimiterX{\cp}[2]{(}{)}{#1\nonscript\:\delimsize\vert\nonscript\:\mathopen{}#2}
+%\DeclarePairedDelimiterX{\ct}[2]{[}{]}{#1\nonscript\;\delimsize\vert\nonscript\:\mathopen{}#2}
+%\DeclarePairedDelimiterX{\cs}[2]{\{}{\}}{#1\nonscript\:\delimsize\vert\nonscript\:\mathopen{}#2}
+%\newcommand*{\+}{\lor}
+%\renewcommand{\*}{\land}
+%% symbol = for equality statements within probabilities
+%% from https://tex.stackexchange.com/a/484142/97039
+% \newcommand*{\eq}{\mathrel{\!=\!}}
+% \let\texteq\=
+% \renewcommand*{\=}{\TextOrMath\texteq\eq}
+% \newcommand*{\eq}[1][=]{\mathrel{\!#1\!}}
+\newcommand*{\mo}[1][=]{\mathrel{\mkern-3.5mu#1\mkern-3.5mu}}
+%\newcommand*{\moo}[1][=]{\mathrel{\!#1\!}}
+%\newcommand*{\mo}[1][=]{\mathord{#1}}
+%\newcommand*{\mo}[1][=]{\mathord{\,#1\,}}
+%%
+\newcommand*{\sect}{\S}% Sect.~
+\newcommand*{\sects}{\S\S}% Sect.~
+\newcommand*{\chap}{ch.}%
+\newcommand*{\chaps}{chs}%
+\newcommand*{\bref}{ref.}%
+\newcommand*{\brefs}{refs}%
+%\newcommand*{\fn}{fn}%
+\newcommand*{\eqn}{eq.}%
+\newcommand*{\eqns}{eqs}%
+\newcommand*{\fig}{fig.}%
+\newcommand*{\figs}{figs}%
+\newcommand*{\vs}{{vs}}
+\newcommand*{\eg}{{e.g.}}
+\newcommand*{\etc}{{etc.}}
+\newcommand*{\ie}{{i.e.}}
+%\newcommand*{\ca}{{c.}}
+\newcommand*{\foll}{{ff.}}
+%\newcommand*{\viz}{{viz}}
+\newcommand*{\cf}{{cf.}}
+%\newcommand*{\Cf}{{Cf.}}
+%\newcommand*{\vd}{{v.}}
+\newcommand*{\etal}{{et al.}}
+%\newcommand*{\etsim}{{et sim.}}
+%\newcommand*{\ibid}{{ibid.}}
+%\newcommand*{\sic}{{sic}}
+%\newcommand*{\id}{\mathte{I}}%id matrix
+%\newcommand*{\nbd}{\nobreakdash}%
+%\newcommand*{\bd}{\hspace{0pt}}%
+%\def\hy{-\penalty0\hskip0pt\relax}
+%\newcommand*{\labelbis}[1]{\tag*{(\ref{#1})$_\text{r}$}}
+%\newcommand*{\mathbox}[2][.8]{\parbox[t]{#1\columnwidth}{#2}}
+%\newcommand*{\zerob}[1]{\makebox[0pt][l]{#1}}
+\newcommand*{\tprod}{\mathop{\textstyle\prod}\nolimits}
+\newcommand*{\tsum}{\mathop{\textstyle\sum}\nolimits}
+%\newcommand*{\tint}{\begingroup\textstyle\int\endgroup\nolimits}
+%\newcommand*{\tland}{\mathop{\textstyle\bigwedge}\nolimits}
+%\newcommand*{\tlor}{\mathop{\textstyle\bigvee}\nolimits}
+%\newcommand*{\sprod}{\mathop{\textstyle\prod}}
+%\newcommand*{\ssum}{\mathop{\textstyle\sum}}
+%\newcommand*{\sint}{\begingroup\textstyle\int\endgroup}
+%\newcommand*{\sland}{\mathop{\textstyle\bigwedge}}
+%\newcommand*{\slor}{\mathop{\textstyle\bigvee}}
+%\newcommand*{\T}{^\transp}%transpose
+%%\newcommand*{\QEM}%{\textnormal{$\Box$}}%{\ding{167}}
+%\newcommand*{\qem}{\leavevmode\unskip\penalty9999 \hbox{}\nobreak\hfill
+%\quad\hbox{\QEM}}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%% Custom macros for this file @@@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\definecolor{notecolour}{RGB}{68,170,153}
+%\newcommand*{\puzzle}{\maltese}
+\newcommand*{\puzzle}{{\fontencoding{U}\fontfamily{fontawesometwo}\selectfont\symbol{225}}}
+\newcommand*{\wrench}{{\fontencoding{U}\fontfamily{fontawesomethree}\selectfont\symbol{114}}}
+\newcommand*{\pencil}{{\fontencoding{U}\fontfamily{fontawesometwo}\selectfont\symbol{210}}}
+\newcommand{\mynote}[1]{ {\color{notecolour}#1}}
+
+\newcommand*{\widebar}[1]{{\mkern1.5mu\skew{2}\overline{\mkern-1.5mu#1\mkern-1.5mu}\mkern 1.5mu}}
+
+% \newcommand{\explanation}[4][t]{%\setlength{\tabcolsep}{-1ex}
+% %\smash{
+% \begin{tabular}[#1]{c}#2\\[0.5\jot]\rule{1pt}{#3}\\#4\end{tabular}}%}
+% \newcommand*{\ptext}[1]{\text{\small #1}}
+\DeclareMathOperator*{\argmax}{arg\,max}
+\newcommand*{\dob}{degree of belief}
+\newcommand*{\dobs}{degrees of belief}
+\newcommand*{\ml}{machine-learning}
+\newcommand*{\Fs}{F_{\textrm{s}}}
+\newcommand*{\fs}{f_{\textrm{s}}}
+\newcommand*{\uF}{\bar{F}}
+\newcommand*{\uf}{\bar{f}}
+\newcommand*{\za}{\hat{0}}
+\newcommand*{\zb}{\hat{1}}
+\newcommand*{\U}{\mathrm{u}}
+\newcommand*{\UU}{\mathrm{U}}
+\newcommand*{\eu}{\bar{\U}}
+\newcommand*{\nd}{n_{\textrm{d}}}
+\newcommand*{\nc}{n_{\textrm{c}}}
+\newcommand*{\Po}{\mathord{+}}
+\newcommand*{\Ne}{\mathord{-}}
+\newcommand*{\tp}{\textrm{tp}}
+\newcommand*{\fp}{\textrm{fp}}
+\newcommand*{\fn}{\textrm{fn}}
+\newcommand*{\tn}{\textrm{tn}}
+\newcommand*{\itemyes}{{\fontencoding{U}\fontfamily{pzd}\selectfont\symbol{51}}}
+\newcommand*{\itemno}{{\fontencoding{U}\fontfamily{pzd}\selectfont\symbol{55}}}
+
+
+%%% Custom macros end @@@
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%% Beginning of document
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%\firmlists
+\begin{document}
+\captiondelim{\quad}\captionnamefont{\footnotesize}\captiontitlefont{\footnotesize}
+\selectlanguage{british}\frenchspacing
+\maketitle
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%% Abstract
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\abstractrunin
+\abslabeldelim{}
+\renewcommand*{\abstractname}{}
+\setlength{\absleftindent}{0pt}
+\setlength{\absrightindent}{0pt}
+\setlength{\abstitleskip}{-\absparindent}
+\begin{abstract}\labelsep 0pt%
+  \noindent ***abstract***
+% \\\noindent\emph{\footnotesize Note: Dear Reader
+%     \amp\ Peer, this manuscript is being peer-reviewed by you. Thank you.}
+% \par%\\[\jot]
+% \noindent
+% {\footnotesize PACS: ***}\qquad%
+% {\footnotesize MSC: ***}%
+%\qquad{\footnotesize Keywords: ***}
+\end{abstract}
+\selectlanguage{british}\frenchspacing
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%% Epigraph
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% \asudedication{\small ***}
+% \vspace{\bigskipamount}
+% \setlength{\epigraphwidth}{.7\columnwidth}
+% %\epigraphposition{flushright}
+% \epigraphtextposition{flushright}
+% %\epigraphsourceposition{flushright}
+% \epigraphfontsize{\footnotesize}
+% \setlength{\epigraphrule}{0pt}
+% %\setlength{\beforeepigraphskip}{0pt}
+% %\setlength{\afterepigraphskip}{0pt}
+% \epigraph{\emph{text}}{source}
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%% BEGINNING OF MAIN TEXT
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\mynote{\scriptsize\wrench [Luca] The two main points of the paper are about
+  \begin{itemize}
+  \item Deriving correct probabilities for classes by a simple, low-cost Bayesian analysis: from the confusion matrix, for \ml\ algorithms that only output class labels; and from the continuous output (\eg\ last layer or softmax in deep nets), for algorithms that can provide some kind of continuous score.
+  \item Implement decision-theory principles: (1) in the algorithm, so that it yields the \emph{optimal} class label, (2) in the categorization of valuation scores, (3) in calculating valuation scores.
+  \end{itemize}
+  Maybe it'd be best to address these two points in two papers with subtitles \enquote{I. \ldots} and \enquote{II. \ldots}, for a neater presentation. The two points depend on each other, though: to show the improvements by the Bayesian analysis we use the valuation scores of the second point; to implement decision theory in the algorithm we need the probabilities from the first point.
+
+  Let me know your thoughts about this.
+}
+
+
+\section{Valuation metrics, amounts of data, inferences, and decisions}
+\label{sec:intro}
+
+In comparing, evaluating, and using \ml\ classifiers we face a number of questions and issues; some are well-known, others are rarely discussed:
+
+\begin{enumerate}[label=\textbf{\textsf{i\arabic*}},ref=\textbf{\textsf{i\arabic*}},itemsep=\parsep]
+  
+\item\label{item:metrics}\textsf{\textbf{Choice of valuation metric.}}\enspace When we have to evaluate and compare different classifying algorithms or different hyperparameter values for one algorithm, we are avalanched by a choice of possible evaluation metrics: accuracy, area under curve, $F_{1}$-measure, mean square contingency \autocites[denoted \enquote{$r$} there]{yule1912} also known as Matthews correlation coefficient \autocites{matthews1975}[\sect~31 p.~183]{fisher1925_r1963}, precision, recall, sensitivity, specificity, and many others \autocites{sammutetal2011_r2017}[see also the analysis in ][]{goodmanetal1954,goodmanetal1959,goodmanetal1963,goodmanetal1972b}. Only vague guidelines are usually given to face this choice. Typically one computes several of such scores and hopes that they will lead to similar ranking.
+
+\item\label{item:rationale}\textsf{\textbf{Rationale and consistency.}}\enspace Most or all of such metrics were proposed only on intuitive grounds, from the exploration of specific problems and relying on tacit assumptions, then heedlessly applied to new problems. The Matthews correlation coefficient, for example, relies on several assumptions of gaussianity \autocites[\sect~31 p.~183 first paragraph]{fisher1925_r1963}, which for instance do not apply to skewed population distributions \autocites{jenietal2013,zhu2020}. The area under the receiver-operating-characteristic curve is heavily affected by values of false-positive and false-negative frequencies, as well as by misclassification costs, that have nothing to do with those of the specific application of the classifier \autocites{bakeretal2001,loboetal2008}. The $F_{1}$-measure implicitly gives correct classifications a weight that depends on their frequency or probability \autocites{handetal2018}; such dependence amounts to saying, for example, \enquote*{this class is rare, \emph{therefore} its correct classification leads to high gains}, which is a form of scarcity cognitive bias \autocites{camereretal1989,kimetal1999,mittoneetal2009}.
+
+  We are therefore led to ask: are there valuation metrics that can be proven, from first principles, to be free from biases and unnecessary assumptions?
+
+\item\label{item:class_imbal}\textsf{\textbf{Class imbalance.}}\enspace  If our sample data are more numerous for one class than for another -- a common predicament in medical applications -- we must face the \enquote{class-imbalance problem}: the classifier ends up classifying all data as belonging to the more numerous class \autocites{sammutetal2011_r2017,provost2000}, which may be an undesirable action if the misclassification of cases from the less numerous class entails high losses. \mynote{\wrench\ discussion and refs about cost-sensitive learning}
+  
+  
+\item\label{item:optimal_true}\textsf{\textbf{Optimality vs truth.}}\enspace  Our ultimate purpose in classification is often the choice of a specific course of action among several possible ones, rather than a simple guess of the correct class. This is especially true in medical applications. A clinician does not simply tell a patient \enquote*{you will probably not contract the disease}, but has to decide among dismissal or different kinds of preventive treatment \autocites{soxetal1988_r2013,huninketal2001_r2014}.
+
+  In other words, our problem is often not \emph{to guess the probable true class}, but \emph{to make the optimal choice}.
+
+  The two problems are not equivalent when classification takes place under uncertainty. For example, some test results may indicate a very low probability that a patient has a disease, or in other words that \emph{the class \enquote{healthy} is very probably true}. Yet the clinician may decide to give the patient some kind of treatment, that is, to behave \emph{as if the patient belonged to the class \enquote{ill}}, on the grounds that the treatment would cure the disease if present and only cause mild discomfort if the patient is healthy, and that the disease would have dangerous consequences if present and untreated. In this example the most probable class is \enquote{healthy}, but the optimal classification is \enquote{ill}.
+
+This point of view has profound potential implications for the training of our algorithm: it means that its training targets ought to be the \emph{optimal} class labels under that particular uncertain situation, not the \emph{true} class labels. But how could such optimality be determined? -- Luckily we shall see that no such change in the training process is necessary.
+
+\item\label{item:no_probs}\textsf{\textbf{Probability.}}\enspace  It is difficult to assess sensible probabilities for the possible classes. Some \ml\ algorithms only output a class label. Others, including deep networks, output real numbers that, even if normalized and usually called \enquote{probabilities}, cannot be reliably interpreted as proper probabilities, that is, degrees of belief or frequencies in the population of interest \autocites{mackay1992d,galetal2016} conditional on the information given as input to the classifier (this is why we used the qualifier \enquote{sensible}). Algorithms that internally do perform probabilistic calculations, such as naive-Bayes or logistic-regression classifiers \autocites[\sect~3.5, \chap~8]{murphy2012}[\sects~8.2, 4.3]{bishop2006}[\chap~10, \sect~17.4]{barber2007_r2020}, unfortunately rest on probabilistic assumptions -- independence and particular shapes of distributions, for example -- that are often unrealistic (and their consistency with the specific application is rarely checked).
+
+\end{enumerate}
+\mynote{\puzzle\ possible additional issue: should we use the algorithm in a \enquote{discriminative} or \enquote{generative} way?}
+
+
+\medskip
+
+All the issues above are manifestly connected: they involve considerations of importance, gain, loss, and of uncertainty.
+
+In the present work we show how issues~\ref{item:metrics}--\ref{item:optimal_true} are all solved at once by using the principles of \emph{Decision Theory}. Decision theory gives a logically and mathematically self-consistent procedure to catalogue all possible valuation metrics, to make optimal choices under uncertainty, and to evaluate and compare the performance of several decision algorithms. Most important, we show that implementing decision-theoretic procedures in a \ml\ classifier does not require any changes in current training practices \mynote{(\puzzle\ possibly it may even make procedures like under- or over-sampling unnecessary!)}, is computationally inexpensive, and takes place downstream after the output of the classifier.
+
+The use of decision theory requires sensible probabilities for the possible classes, which brings us to issue~\ref{item:no_probs} above. In the present work we also present and use a computationally inexpensive way of calculating these probabilities from the ordinary output of a \ml\ classifier, both for classifiers such as \mynote{\puzzle\ example here} that can only output a class label, and for classifiers that can output some sort of continuous score.
+
+\mynote{\wrench\ Write here a summary or outlook of the rest of the paper and a summary of results:  
+\begin{itemize*}
+\item The admissible valuation metrics for a binary
+  classifier form a two-dimensional family; that is, the choice of a specific
+  metric corresponds to the choice of two numbers. Such choice is
+  problem-dependent and cannot be given a priori.
+\item Admissible metrics are only those that can be
+  expressed as a linear function of the elements of the
+  population-normalized confusion matrix. Metrics such as the
+  $F_{1}$-measure or the Matthews correlation coefficient are therefore inadmissible
+\end{itemize*}
+}
+
+
+
+\section{Brief overview of decision theory}
+\label{sec:decision_theory}
+
+\subsection{References}
+\label{sec:dt_refs}
+
+Here we give a brief overview of decision theory. We only focus on the notions relevant to the applications to be discussed later, and simply state the rules of the theory. These rules are quite intuitive, but it must be remarked that they are constructed in order to be logically and mathematically self-consistent: see the following references. For a presentation of decision theory from the point of view of artificial intelligence and machine learning see \textcite[\chap~15]{russelletal1995_r2022}. Simple introductions are given by \textcite{jeffrey1965,north1968,raiffa1968_r1970}, and a discussion of its foundations and history by \textcite{steeleetal2015_r2020}. For more thorough expositions see \textcite{raiffaetal1961_r2000,berger1980_r1985,savage1954_r1972}; and \textcite{soxetal1988_r2013,huninketal2001_r2014} for a medical perspective.
+
+\subsection{Decisions and classes}
+\label{sec:dt_dec_classes}
+
+Decision theory makes a distinction between
+\begin{itemize}
+\item the possible situations we are uncertain about, in our case the possible classes;
+\item the possible decisions we can make.
+\end{itemize}
+This distinction is important, as argued under issue~\ref{item:optimal_true}; in some cases even the number of classes and the number of decisions differ. This distinction prevents the appearance of various cognitive biases \autocites{kahnemanetal1982_r2008,gilovichetal2002_r2009,kahneman2011}, for example the scarcity bias mentioned in \ref{item:rationale}, or plain wishful thinking: \enquote*{this event is valuable, \emph{therefore} it is more probable}.
+
+\subsection{Utilities and maximization of expected utility}
+\label{sec:dt_utilities}
+
+To each decision we associate several \emph{utilities}, depending on which of the possible classes is actually true. The utility may for instance equal a gain or loss in money, energy, life expectancy, or number of customers, measured in appropriate units; or a in combination of such quantities.
+
+As an example, imagine we are offered to buy a lottery ticket, which may be winning or not. The ticket costs $1$ unit of some monetary currency, and the lottery prize is $11$ units. Our available decisions are whether to buy the ticket or not. We have four utilities, representing the total change in our money after the lottery, displayed in this self-explanatory table:
+\begin{center}
+  \begin{tabular}{rcc}
+    &\texttt{\small win}&
+    \texttt{\small lose}
+    % \parbox[b]{\widthof{winning}}{\centering\small\texttt{not\\winning}}
+    \\[0.5\jot]
+    \texttt{\small buy}&$+10$&$-1$\\
+    \texttt{\small not-buy}&$0$&$0$
+  \end{tabular}
+\end{center}
+
+We denote $\U(d\|c)$ the utility of decision $d$ if class $c$ is true, or  \enquote{the utility of $d$ given $c$}, or \enquote{the utility of $d$ conditional on $c$}. One utility from the lottery example is $\U(\texttt{\small buy} \| \texttt{\small lose}) = -1$. If we have $\nd$ available decisions and $\nc$ possible classes, the utilities can be collected in a \emph{utility matrix} $\mathte{U} \equiv (U_{dc})$ having $\nd$ rows and $\nc$ columns. The utility matrix for the lottery is
+\begin{equation}
+  \label{eq:utmatr_lottery}
+  \mathte{U} =
+  \begin{pmatrix}
+    +10 & -1 \\ 0 & 0
+  \end{pmatrix} \ .
+\end{equation}
+
+If we know which class is true, the optimal decision is the one having maximal utility among those conditional on the true class. If we are uncertain about which class is true, decision theory states that the optimal decision is the one having maximal \emph{expected} utility, denoted $\eu(d)$ and defined as the expected value of the utility of decision $d$ with respect to the probabilities of the various classes. For binary classification
+\begin{equation}
+  \label{eq:exp_utility}
+  \eu(d) \defd \U(d \| c_{1})\ \p(c_{1}) + \U(d \| c_{2})\ \p(c_{2})
+\end{equation}
+where $\p(c_{1})$ and $\p(c_{2}) \equiv 1 - \p(c_{1})$ are the probabilities of classes $c_{1}$ and $c_{2}$. The $\nd$ expected utilities are therefore given by the matrix product of the utility matrix times the column matrix of probabilities.
+
+For instance, if the ticket above has a 20\% probability of winning and 80\% of losing, that is $\p(\texttt{\small win}) = 0.2$ and $\p(\texttt{\small lose}) = 0.8$, then our two decisions have expected utilities
+\begin{equation}
+  \label{eq:exp_utilities_lottery}
+  \begin{aligned}
+    \eu(\texttt{\small buy}) &= +10\cdot 0.2 - 1\cdot 0.8 = +1.2 \ ,\\
+    \eu(\texttt{\small not-buy}) &= 0\cdot 0.2 + 0\cdot 0.8 = 0 \ .
+  \end{aligned}
+\end{equation}
+The optimal choice is to buy the ticket, that is, to classify the ticket \emph{as if} it belonged to class \texttt{win}, even if it most probably belongs to class \texttt{lose}. (Note that the utility of money is usually not equal to the amount of money, the relationship between the two being somewhat logarithmic \autocites[\eg][pp.~203--204]{north1968}[\chap~4]{raiffa1968_r1970}.)
+
+\subsection{Space of utility matrices}
+\label{sec:dt_space_util}
+
+How are utilities determined? They are obviously problem-specific and cannot be given by the theory (which would otherwise be a model rather than a theory). Utilities can be  obvious in decision problems involving gain or losses of concrete quantities such as money or energy. In medical problems they can correspond to life expectancy and quality of life; see for example \textcite{soxetal1988_r2013} for a discussion of how such health factors are transformed into utilities. Decision theory, in the subfield of \emph{utility theory}, gives rules that guarantee the mutual consistency of a set of utilities. In the present work we shall not worry about such rules, in order not to complicate the discussion: they should be approximately satisfied if the utilities of a problem have been carefully chosen. For simple introductions to utility theory see \textcite[\sect~15.2]{russelletal1995_r2022}, \textcite[pp.~201--205]{north1968}, and the references given at the beginning of the present section.
+
+It is nevertheless clear that every decision problem is completely determined by a set of $\nd \cdot \nc$ utilities. Actually if we change the elements of the utility matrix of a decision problem by a common additive constant or by a common positive multiplicative constant, then that decision problem is unchanged, in the sense that we reach the same decision by maximizing expected utility with the new utility matrix, given the same probabilities. This is evident from \eqn~\eqref{eq:exp_utility}: all expected utilities change by the same additive constant or the same positive factor, and therefore their ordering does not change. After all, an additive constant or a positive factor represents only changes in the zero or the measurement unit of our utility. Such changes should not affect a decision problem. The fact that, indeed, they do not, is another example of the logical consistency of decision theory.
+
+Let us call \emph{equivalent} two utility matrices that differ only by a constant additive term or by a positive factor or both. Inequivalent utility matrices represent inequivalent decision problems. Thus \emph{all decision problems with $\nd$ decisions and $\nc$ classes are catalogued by\; $\nd \nc - 2$\; parameters} (the set of such problems has the topology of an $(\nd\nc-1)$-dimensional sphere). In the case of binary classification this means 2 parameters.
+
+\subsection{Actual utility yield}
+\label{sec:dt_utility_yield}
+
+The utility matrix is not only the basis for making optimal decisions by means of expected-utility maximization. It also provides the metric to rank a set of decisions already made -- for example on a test set -- by some algorithm, if we know the corresponding true classes. Suppose we have $N$ test instances, in which each class $c$ occurs $N_{c}$ times, so that $\sum_{c} N_{c} = N$. A decision algorithm made decision $d$ when the true class was $c$ a number $M_{dc}$ of times. These numbers form the confusion matrix $(M_{dc})$ of the algorithm's output. The numbers $M_{dc}$ are must satisfy the constraints $\sum_{d} M_{dc} = N_{c}$ for each $c$.
+
+For given decision $d$ and class $c$, in each of the $M_{dc}$ instances the algorithm yielded a utility $U_{dc}$. The actual average utility yield in the test set is then
+\begin{equation}
+  \label{eq:utility_gained}
+ \frac{1}{N} \sum_{dc} U_{dc}\, M_{dc} \ .
+\end{equation}
+It is convenient to consider the average utility yield, rather than the total utility yield (without the $1/N$ factor), because if we shift the zero or change the measurement unity of our utilities then the yield changes in the same way.
+
+
+
+% The utility matrix is not only the basis for making optimal decisions by means of expected-utility maximization. It also provides the metric to rank a set of decisions already made -- for example on a test set -- by some algorithm, if we know the corresponding true classes. Suppose we have $N$ test instances, in which each class $c$ occurs $N_{c}$ times, so that $\sum_{c} N_{c} = N$. A decision algorithm made decision $d$ when the true class was $c$ a number $M_{dc}$ of times. These numbers form the confusion matrix $(M_{dc})$ of the algorithm's output. The numbers $M_{dc}$ are not all independent: they must satisfy the constraints
+% \begin{equation}
+%   \label{eq:sum_frequencies}
+%   \sum_{d} M_{dc} = N_{c} \quad\text{for each class $c$} \ .
+% \end{equation}
+% The test output of the decision algorithm is therefore characterized by $(\nd-1)\nc$ independent numbers. We can take these to be the first $\nd-1$ rows of the confusion matrix, so that for the last row we have
+% \begin{equation}
+%   \label{eq:lastrow_conf_matrix}
+%   M_{\nd c} = N_{c} - \sum_{d=1}^{\nd - 1} M_{dc}
+%   \quad\text{for each class $c$} \ .
+% \end{equation}
+% In binary classification for example, where $\nd=\nc=2$, the two independent numbers are often taken to be the \enquote{true positives} and \enquote{false positives} (the axes of the receiver-operating-characteristic plot).
+
+% For given decision $d$ and class $c$, in each of the $M_{dc}$ instances the algorithm yielded a utility $U_{dc}$. The actual total utility gained in the test set is then
+% \begin{equation}
+%   \label{eq:utility_gained}
+%   \sum_{d=1}^{\nd}\sum_{c=1}^{\nc} U_{dc}\, M_{dc}
+%   \quad\text{or}\quad
+%   \sum_{d=1}^{\nd  - 1}\sum_{c=1}^{\nc} (U_{dc} - U_{\nd c})\, M_{dc}
+%   + \sum_{c=1}^{\nc} U_{\nd c}\,N_{c}
+%    \ ,
+%   % \sum_{d=1}^{\nd}\sum{c=1}^{\nc} U_{dc}\, M_{dc}
+%   % \sum_{d=1}^{\nd-1}\sum{c=1}^{\nc} U_{dc}\, M_{dc}
+%   % + \sum_{c=1}^{\nc} U_{\nd c}\,M_{\nd c}
+%   % \sum_{d=1}^{\nd-1}\sum{c=1}^{\nc} U_{dc}\, M_{dc}
+%   % + \sum_{c=1}^{\nc} U_{\nd c}\,(N_{c} - \sum_{d=1}^{\nd-1}M_{d c})
+%   % \sum_{d=1}^{\nd-1}\sum{c=1}^{\nc} U_{dc}\, M_{dc}
+%   % + \sum_{c=1}^{\nc} U_{\nd c}\,N_{c}
+%   % - \sum_{c=1}^{\nc}\sum_{d=1}^{\nd-1} U_{\nd c}\,M_{dc})
+% \end{equation}
+% the second expression being in terms of the independent elements of the confusion matrix. We can also consider the average gained utility per test instance:
+% \begin{equation}
+%   \label{eq:avg_utility_gained}
+%   \sum_{d=1}^{\nd}\sum_{c=1}^{\nc} U_{dc}\, \frac{M_{dc}}{N}
+%   \quad\text{or}\quad
+%   \sum_{d=1}^{\nd  - 1}\sum_{c=1}^{\nc} (U_{dc} - U_{\nd c})\, \frac{M_{dc}}{N}
+%   + \sum_{c=1}^{\nc} U_{\nd c}\,\frac{N_{c}}{N} \ .
+% \end{equation}
+
+% [Don't know whether to include the following discussion, it may not have substantial import in this work]
+% Formulae~\eqref{eq:utility_gained} or \eqref{eq:avg_utility_gained} show that the performance and ranking of several decision algorithm depend on the values of the utility matrix $(U_{dc})$, and that changes in the zero or measurement unit of the utilities do not affect such raking, as it should intuitively be the case. Note, however, that two \emph{in}equivalent utility matrices can also lead to the same ranking, \emph{provided the frequencies $N_{c}$ of the classes are not changed}. If we add a different constant term to each column of the utility matrix, these terms disappear within the parentheses of formulae~\eqref{eq:utility_gained} and \eqref{eq:avg_utility_gained} and only contribute a total constant term in the remaining sum. This happens because the performance depends not only on the utility but also on the relative proportions of classes.
+
+
+It may not be amiss to emphasize that the \emph{proportions $N_{c}$ of classes in the test set should be representative of the proportions that will be encountered in the real application}. Otherwise the test-set results would misleading or even opposite to what the real performance will be. In the lottery example with utility matrix~\eqref{eq:exp_utilities_lottery}, suppose we have an algorithm that always makes the decision \texttt{buy} and another algorithm that always decides \texttt{not-buy}. In  real instances of such lotteries the class \texttt{win} occurs 1\% of the time, and \texttt{lose}, 99\%. In a real application the first algorithm would thus yield $-0.89$, a loss, on average at each instance, and the second $0$. The second algorithm is actually best. Suppose we test these algorithms on a test set where the two classes appear 50\%/50\% instead. On this test set the first algorithm will yield $4.5$ on average, the second $0$. Thus according to the test the first algorithm is best -- a wrong conclusion.
+
+\bigskip
+
+The summary of decision theory just given suffices to address issues~\ref{item:metrics}--\ref{item:optimal_true}.
+
+\section{Classification from the point of view of decision theory}
+\label{sec:classification_decision}
+
+In using \ml\ classifiers one typically considers situations where the set of available decisions and the set of possible classes have some kind of natural correspondence and equal in number. In a \enquote{cat vs dog} image classification, for example, the classes are \enquote{cat} and \enquote{dog}, and the decisions could be \enquote{put into folder Cats} vs \enquote{put into folder Dogs}. In a medical application the classes could be \enquote{ill} and \enquote{healthy} and the decisions \enquote{treat} vs \enquote{dismiss}. In the following when we speak of \enquote{classification} we mean a \emph{decision} problem of this kind. The number of decisions thus equals that of classes: $\nd=\nc$.
+
+\mynote{\puzzle\ For simplicity we will focus on binary classification, $\nd=\nc=2$, but the discussion generalizes to multi-class problems in an obvious way.}
+
+
+\subsection{Choice of valuation metric, rationale and consistency (issues~\ref{item:metrics}, \ref{item:rationale})}
+\label{sec:choice_valuation}
+
+According to decision theory, a classification problem requires the specification of a utility matrix $(U_{dc})$. We saw in \sect~\ref{sec:dt_utility_yield} that the utility matrix should also be used in evaluating the decisions made by one or more classification algorithms in a test set with $N$ datapoints. Each algorithm gives rise to a confusion matrix $(M_{dc})$, containing the number $M_{dc}$ of times the algorithm made decision $d$ when the true class was $c$.
+
+The  average utility obtained by an algorithm on the test set is
+\begin{equation}
+  \label{eq:utility_testset}
+  \frac{1}{N}\sum_{cd} U_{dc}\, M_{dc} \ .
+\end{equation}
+This expressions is a linear combination of the confusion-matrix elements. Besides the factor $1/N$, the coefficients of the linear combination depend only on the utility matrix $(U_{dc})$.
+
+If we are comparing several classifiers \emph{on the same test set}, we can multiply the expression above by a generic positive function of the class frequencies, $a(N_{c})$, and also add a generic function of the class frequencies, $b(N_{c})$. These operations corresponds to changes in the zero and  measurement unit of the utilities by amounts which depend on the class frequencies. Since the class frequencies are independent of the algorithms, these changes are the same for all algorithms and do not affect their final ranking. Note, however, that if we were to compare utilities obtained on different test sets then such changes dependent on class frequencies would not be allowed.
+
+We thus find the following important result according to decision theory: \emph{A valuation metric should be a \textbf{linear combination} of the elements of the confusion matrix, possibly multiplied by a positive function of the class frequencies of the test set and with an additional term also depending only on the class frequencies. The coefficients of the linear combination are problem-specific and \textbf{cannot depend on the confusion-matrix elements}.} In formulae, the metric should have the form
+\begin{equation}
+  \label{eq:general_valuation_metric}
+  a(N_{c})\, \sum_{cd} x_{dc}\, M_{dc} +  b(N_{c})
+\end{equation}
+for some coefficients $x_{dc}$ and functions $a(\dotv)>0$,\; $b(\dotv)$.
+
+Let us see what this means in the case of binary classification. The decisions and classes are both typically denoted as positive \enquote{$\Po$} and negative \enquote{$\Ne$}, and we speak of the number of \enquote{true positives}, \enquote{false positives}, and so on, so that
+\begin{equation*}
+  M_{\Po\Po} \equiv M_{\tp}, \quad
+  M_{\Po\Ne} \equiv M_{\fp}, \quad
+  M_{\Ne\Po} \equiv M_{\fn}, \quad
+  M_{\Ne\Ne} \equiv M_{\tn} \ .
+\end{equation*}
+Accordingly we denote the elements of the utility matrix as
+\begin{equation*}
+  U_{\Po\Po} \equiv U_{\tp}, \quad
+  U_{\Po\Ne} \equiv U_{\fp}, \quad
+  U_{\Ne\Po} \equiv U_{\fn}, \quad
+  U_{\Ne\Ne} \equiv U_{\tn} \ .
+\end{equation*}
+With this notation, decision theory says that a valuation metric for this test set should have the following general form
+\begin{equation}
+  \label{eq:utility_testset_binary}
+  a(N_{\Po},N_{\Ne})\,
+  (x_{\tp}\, M_{\tp} + x_{\fp}\, M_{\fp} +
+ x_{\fn}\, M_{\fn} + x_{\tn}\, M_{\tn}) +
+  b(N_{\Po},N_{\Ne}) \ .
+\end{equation}
+for particular values of the coefficients $x_{\tp}, x_{\fp}, x_{\fn}, x_{\tn}$ and particular functions $a(\dotv)>0$ and $b(\dotv)$. Let us examine some common valuation metrics from the point of view of this requirement.
+
+\begin{itemize}
+\item[\itemyes] \emph{Accuracy:} $(M_{\tp}+M_{\tn})/N$. It is a particular case of formula~\eqref{eq:utility_testset_binary} with $x_{\tp}=x_{\tn}=1$,\; $x_{\fp}=x_{\fn}=0$,\; $a(N_{\Po},N_{\Ne})=1/(N_{\Po}+N_{\Ne})$,\; $b(\dotv)=0$. It corresponds to using the utility matrix $\begin{psmallmatrix} 1&0\\0&1 \end{psmallmatrix}$.
+  
+\item[\itemno] \emph{Precision:} $M_{\tp}/(M_{\tp}+M_{\fp})$. It cannot be written as a linear combination of the confusion-matrix elements.
+
+\item[\itemno] \emph{$F_{1}$-measure:} $2 M_{\tp}/(2M_{\tp} + M_{\fp} + M_{\fn})$. It cannot be written as a linear combination of the confusion-matrix elements.
+
+\item[\itemno] \emph{Matthews correlation coefficient:} $\frac{M_{\tp}\, M_{\tn} - M_{\fp}\, M_{\fn}}{\sqrt{(M_{\tp}+M_{\fp})(M_{\tn}+M_{\fn})N_{\Po}N_{\Ne}}}$. It cannot be written as a linear combination of the confusion-matrix elements.
+
+\item[\itemyes] \emph{True-positive rate:} $M_{\tp}/N_{\Po}$. It is  formula~\eqref{eq:utility_testset_binary} with $x_{\tp}=1$, all other $x_{\dotso}=0$, $a(N_{\Po},N_{\Ne})=1/N_{\Po}$, and $b(\dotv)=0$. It corresponds to using the utility matrix $\begin{psmallmatrix} 1&0\\0&0 \end{psmallmatrix}$. 
+
+\item[\itemyes] \emph{True-negative rate:} $M_{\tn}/N_{\Ne}$. Analogous to true-positive rate.
+
+\item[\itemno] \emph{Balanced accuracy:} $(N_{\Ne}\,M_{\tp} + N_{\Po}\, M_{\tn})/(2 N_{\Po}N_{\Ne})$. Despite being an average of two metrics (true-positive and true-negative rate) that agree with formula~\eqref{eq:utility_testset_binary}, it is not an instance of that formula. The reason is that the two averaged metrics involve different $a(\dotv)$ functions.
+\end{itemize}
+
+We see that many popular validation metrics, those marked by \enquote{\itemno} above, do not comply with decision theory. Their formulae involve an interdependence of utilities and probabilities which hides some forms of cognitive biases.
+\mynote{\wrench\ Very important: we should preferably add an example to illustrate this.}
+
+
+
+% According to decision theory, a classification problem requires the specification of a utility matrix $(U_{dc})$. We saw in \sect~\ref{sec:dt_utility_yield} that the utility matrix should also be used in evaluating the decisions made by one or more classification algorithms in a test set with $N$ datapoints. Each algorithm gives rise to a confusion matrix $(M_{dc})$, containing the number $M_{dc}$ of times the algorithm made decision $d$ when the true class was $c$. We saw that the total and average utilities obtained by the classifier algorithm on the test set are, in terms of the independent components of the confusion matrix,
+% \begin{equation}
+%   \label{eq:utility_testset}
+%   \begin{aligned}
+% %  \sum_{d=1}^{\nd}\sum_{c=1}^{\nc} U_{dc}\, M_{dc}
+% \text{\small total:}&\quad  \sum_{d=1}^{\nd  - 1}\sum_{c=1}^{\nc} (U_{dc} - U_{\nd c})\, M_{dc}
+%   + \sum_{c=1}^{\nc} U_{\nd c}\,N_{c}
+%    \\
+%   % \sum_{d=1}^{\nd}\sum_{c=1}^{\nc} U_{dc}\, \frac{M_{dc}}{N}
+% \text{\small average:}&\quad  \sum_{d=1}^{\nd  - 1}\sum_{c=1}^{\nc} (U_{dc} - U_{\nd c})\, \frac{M_{dc}}{N}
+%   + \sum_{c=1}^{\nc} U_{\nd c}\,\frac{N_{c}}{N} \ .
+%   \end{aligned}
+% \end{equation}
+
+% The expressions above are a linear combination of the elements in the first $\nd-1$ rows of the confusion matrix $(M_{dc})$, possibly normalized to the total number of test data, plus a term independent of the confusion matrix. The coefficients of the linear combination depend only on the utility matrix $(U_{dc})$, the additive term also depends on the frequencies of the classes.
+
+% We thus find the following important result according to decision theory: \emph{A valuation metric should be a \textbf{linear combination} of the independent elements of the confusion matrix, possibly normalized to the number of test data. The coefficients of the linear combination are problem-specific and \textbf{cannot depend on the confusion matrix}, nor on the frequencies of the classes.}
+
+% Let us see what this means in the case of binary classification. The decisions and classes are typically both denoted as positive \enquote{$\Po$} and negative \enquote{$\Ne$}, and we speak of the number of \enquote{true positives}, \enquote{false positives}, and so on, so that
+% \begin{equation*}
+%   M_{\Po\Po} \equiv M_{\tp}, \quad
+%   M_{\Po\Ne} \equiv M_{\fp}, \quad
+%   M_{\Ne\Po} \equiv M_{\fn}, \quad
+%   M_{\Ne\Ne} \equiv M_{\tn} \ .
+% \end{equation*}
+% Accordingly we denote the elements of the utility matrix as
+% \begin{equation*}
+%   U_{\Po\Po} \equiv U_{\tp}, \quad
+%   U_{\Po\Ne} \equiv U_{\fp}, \quad
+%   U_{\Ne\Po} \equiv U_{\fn}, \quad
+%   U_{\Ne\Ne} \equiv U_{\tn} \ .
+% \end{equation*}
+% With this notation, formulae~\eqref{eq:utility_testset} take the general form
+% \begin{equation}
+%   \label{eq:utility_testset_binary}
+%   \begin{aligned}
+%     \text{\small total:}&\quad
+%                           x_{\tp}\, M_{\tp} + x_{\fp}\, M_{\fp} +
+%                           (y_{\Po}\, N_{\Po} + y_{\Ne}\, N_{\Ne})
+%     \\
+%     \text{\small average:}&\quad
+%                             x_{\tp}\, \frac{M_{\tp}}{N} + x_{\fp}\, \frac{M_{\fp}}{N} +
+%                             \Bigl(y_{\Po}\, \frac{N_{\Po}}{N} + y_{\Ne}\, \frac{N_{\Ne}}{N}\Bigr) \ .
+%   \end{aligned}
+% \end{equation}
+
+% A valuation metric consistent with decision theory must take one of the forms above for particular values of the coefficients $x_{\tp}, x_{\fp}, y_{\Po}, y_{\Ne}$. Let us examine some common valuation metrics according to this requirement.
+
+% \begin{itemize}
+% \item[\itemyes] \emph{Accuracy:} $(M_{\tp}-M_{\fp}+N_{\Ne})/N$. It is a particular case of formula~\eqref{eq:utility_testset_binary} with $x_{\tp}=y_{\Ne}=1$, $x_{\fp}=-1$, $y_{\Po}=0$. In fact it corresponds to using a utility matrix equivalent to the identity $\begin{psmallmatrix} 1&0\\0&1 \end{psmallmatrix}$.
+  
+% \item[\itemno] \emph{Precision:} $M_{\tp}/(M_{\tp}+M_{\fp})$.  It cannot be written as a linear expression in $M_{\tp},M_{\fp}$.
+
+% \item[\itemno] \emph{$F_{1}$-measure:} $2 M_{\tp}/(M_{\tp} + M_{\fp} + N_{\Po})$.
+
+% \item[\itemno] \emph{Matthews correlation coefficient:} $\frac{N_{\Ne}\, M_{\tp} - N_{\Po}\, M_{\fp}}{\sqrt{(M_{\tp}+M_{\fp})(N-M_{\tp}-M_{\fp})N_{\Po}N_{\Ne}}}$. It cannot be written as a linear expression in $M_{\tp},M_{\fp}$.
+% \end{itemize}
+% \mynote{\puzzle\ It seems most or all commonly used metrics, except accuracy, do not comply with decision theory!}
+
+\subsection{Probability (issue~\ref{item:no_probs})}
+\label{sec:probability}
+
+We must first address issue~\ref{item:no_probs}, the assessment of sensible probabilities for the possible classes, to be able to address the issues of optimality vs truth~\ref{item:optimal_true} and class imbalance~\ref{item:class_imbal}.
+
+As already mentioned in \sect~\ref{sec:intro}, some \ml\ classifiers only output a class label. Others can output a set of real numbers that are positive, normalized to unity, and bear some qualitative relation to the plausibilities of the classes; but their values cannot be considered as the correct degrees of belief in the classes conditional on the input features. It is these values that we need for decision theory. Determining these probabilities would require an analysis that is computationally unfeasible at present for problems that involve very high-dimensional spaces, such as image classification; in fact if an exact probabilistic analysis were possible we would not be developing \ml\ classifiers in the first place \autocites[\chaps~2, 12]{russelletal1995_r2022}{pearl1988}. \mynote{\puzzle~Maybe useful to add a reminder that probability theory is the \emph{learning} theory par excellence (even if there's no \enquote{learning} in its name)? Its rules are all about making logical updates given new data.} Only particular classifiers such as Bayesian neural networks \autocites{nealetal2006}[\sect~5.7]{bishop2006} output somewhat sensible  probabilities. But we would like to find a solution that can be applied to all commonly used classifiers, without being forced to use specific ones.
+
+% We can therefore only use the true labels for training; and we would like to find a solution that can be applied to all commonly used classifiers, without being forced to recur to Bayesian neural networks \autocites{nealetal2006}[\sect~5.7]{bishop2006} or similar algorithms that are closer to an exact probability calculation.
+
+The solution we propose is \emph{to treat the classifier as a test}, such as any common diagnostic or prognostic test used in medicine for example. We consider its output, discrete or continuous, as a quantity that has some correlation (in the general sense of the word, not the linear Pearson one) with the true class. This correlation can be analysed and quantified with probability theory in a test set and used to calculate a sensible probability for the class given the output of the test -- of the classifier. This analysis needs to be made only once and is computationally cheap, because the classifier output takes values in a discrete or low-dimensional space.
+
+This approach differs from the computationally infeasible one discussed above in that we are calculating the computationally easier probability
+\begin{equation}
+  \label{eq:approach_p_test}
+  \p(\text{\small class} \| \text{\small classifier output})
+\end{equation}
+rather than
+\begin{equation}
+  \label{eq:approach_p_feature}
+  \p(\text{\small class} \| \text{\small feature}) \ .
+\end{equation}
+Note that the former probability is the marginal
+\begin{equation}
+  \label{eq:approach_p_marginal}
+  \p(\text{\small class} \| \text{\small classifier output}) = \sum_{\text{\clap{feature}}} \p(\text{\small class}, \text{\small feature} \| \text{\small classifier output}) \ .
+\end{equation}
+We can thus think of this approach as a marginalization over the possible features, which is necessary because we have no effective access to them. From this point of view we are not calculating \enquote{approximate probabilities}, but exact probabilities conditional on reduced information.
+
+
+
+
+The probability $\p(\text{\small class} \| \text{\small classifier output})$ can be calculated nonparametrically, that is, without making any assumptions such as linearity or normality, besides very mild and reasonable assumptions of continuity.
+
+In this work we actually calculate
+\begin{equation}
+  \p(\text{\small class}, \text{\small feature} \| \text{\small test data})
+  \label{eq:approach_p_joint}
+\end{equation}
+using the versatile computational approach by \textcites{dunsonetal2011}, and obtain the probability~\eqref{eq:approach_p_test} by conditionalization. The calculation requires Monte Carlo sampling \mynote{\pencil\ refs here} but needs to be made only once.
+
+
+
+\subsection{Optimality vs truth (issue~\ref{item:optimal_true})}
+\label{sec:optimality_truth}
+
+According to decision theory a classification algorithm should, at each application, calculate the probabilities $(p_{c\|z})$ for the possible classes, given the feature $z$ provided as input; calculate the expected utility of the available decisions according to \eqn~\eqref{eq:exp_utility}, using the probabilities and the utility matrix; and finally output the decision $d^{*}$ having maximal expected utility:
+\begin{equation}
+  \label{eq:argmax_decision}
+  d^{*} = \argmax_{d}   \sum_{c} U_{dc}\, p_{c\|z} \ .
+\end{equation}
+We assume here that the utilities are given and the same at each application -- the latter assumption could be dropped, however; see the discussion in \sect~\ref{sec:summary_discussion}.
+
+Current common practice with algorithms capable of outputting some sort of probability-like score is simply to output the class $c^{*}$ having highest probability:
+\begin{equation}
+  \label{eq:argmax_probable}
+  c^{*} = \argmax_{c} p_{c\|z} \ .
+\end{equation}
+As discussed in \sect~\ref{sec:intro}, issue~\ref{item:optimal_true}, this means choosing the \emph{most probable} class, not the \emph{optimal} class, and the two are often different, the second being what we typically want. This choice is also the one that would be made with an identity utility matrix $\begin{psmallmatrix} 1&0\\0&1 \end{psmallmatrix}$.
+
+How can we amend current practice for this kind of classifiers, so that they look for optimality rather than truth?
+
+A first idea could be to simply modify the standard output step~\eqref{eq:argmax_probable} into~\eqref{eq:argmax_decision}. It is an easily implementable and computationally cheap modification: we just multiply the probability tuple by a matrix. Such simple modification, however, has a profound implication for the training procedure: we are modifying the algorithm to output the optimal class, and therefore it should also \emph{learn what is optimal}, not what is true: \emph{the targets in the training and validation phases should be the optimal classes, not the true classes}. But optimality depends on the value of sensible probabilities for the specific situation of uncertainty, in this case conditional on the input features. Determining the optimal classes would thus require a probabilistic analysis that is computationally unfeasible at present for problems that involve very high-dimensional spaces, such as image classification -- if an exact probabilistic analysis were possible we would not be developing \ml\ classifiers in the first place \autocites[\chaps~2, 12]{russelletal1995_r2022}{pearl1988}. \mynote{\puzzle~Maybe useful to add a reminder that probability theory is the \emph{learning} theory par excellence (even if there's no \enquote{learning} in its name)? Its rules are all about making logical updates given new data.}
+
+
+
+
+\section{Summary and discussion}
+\label{sec:summary_discussion}
+
+
+\clearpage
+
+
+%%%% examples use empheq
+%   \begin{empheq}[left={\mathllap{\begin{aligned}    \de\yF_{\yc}/\de\yp&=0\text{:} \\
+%         \de\yF_{\yc}/\de\ym&=0\text{:}\\ \de\yF_{\yc}/\de\yl&=0\text{:}\end{aligned}}\qquad}\empheqlbrace]{align}
+%     \label{eq:con_p}
+% %    \de\yF_{\yc}/\de\yp &\equiv
+%     -\ln\yp + \ln\yq + \yl\yM + \ym\yu &=0,\\
+%     \label{eq:con_u}
+% %    \de\yF_{\yc}/\de\ym &\equiv
+%     \yu\yp-1 &=0,\\
+%     \label{eq:con_l}
+%     %\de\yF_{\yc}/\de\yl &\equiv
+%     \yM\yp-\yc &=0.
+%   \end{empheq}
+%%%%
+% \begin{empheq}[box=\widefbox]{equation}
+%   \label{eq:maxent_question}
+%   \p\bigl[\yE{N+1}{k} \bigcond \tsum\yo\yf{N}\in\yA, \yM\bigr] = \mathord{?}
+% \end{empheq}
+
+
+%%\setlength{\intextsep}{0ex}% with wrapfigure
+%%\setlength{\columnsep}{0ex}% with wrapfigure
+%\begin{figure}[p!]% with figure
+%\begin{wrapfigure}{r}{0.4\linewidth} % with wrapfigure
+%  \centering\includegraphics[trim={12ex 0 18ex 0},clip,width=\linewidth]{maxent_saddle.png}\\
+%\caption{caption}\label{fig:comparison_a5}
+%\end{figure}% exp_family_maxent.nb
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%% Acknowledgements
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 
+\iffalse
+\begin{acknowledgements}
+  \ldots to Mari \amp\ Miri for continuous encouragement and affection, and
+  to Buster Keaton and Saitama for filling life with awe and inspiration.
+  To the developers and maintainers of \LaTeX, Emacs, AUC\TeX, Open Science
+  Framework, R, Python, Inkscape, Sci-Hub for making a free and impartial
+  scientific exchange possible.
+  % Our work was supported by the Trond Mohn Research Foundation, grant number BFS2018TMT07
+%\rotatebox{15}{P}\rotatebox{5}{I}\rotatebox{-10}{P}\rotatebox{10}{\reflectbox{P}}\rotatebox{-5}{O}.
+%\sourceatright{\autanet}
+\mbox{}\hfill\autanet
+\end{acknowledgements}
+\fi
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%% Appendices
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 
+%\clearpage
+\bigskip
+\renewcommand*{\appendixpagename}{}
+% \renewcommand*{\appendixname}{Appendix: test2}
+% %\appendixpage
+\appendix
+
+\addsec{Appendix: broader overview of binary classification}
+% \label{sec:test}
+
+Let us consider our binary-classification problem from a general perspective and summarize how it would be approached and solved from first principles\autocites[part~IV]{russelletal1995_r2022} if our computational resources had no constraints.
+
+In our long-term task we will receive \enquote{units} of a specific kind; the units for example could be gadgets, individuals, or investment portfolios. Each new unit will belong to one of two classes, which we can denote $X\mo 0$ and $X\mo 1$; for example they could be \enquote{defective} vs \enquote{non-defective}, \enquote{ill} vs \enquote{healthy}. The class will be unknown to us. For each new unit we shall need to decide among two possible actions, which we can denote $A\mo\za$ and $A\mo\zb$; for example \enquote{discard} vs \enquote{keep}, or \enquote{treat} vs \enquote{dismiss}. The utility of each action depends on the unknown class of the unit; we denote these utilities by $U(A \| X)$. For each new unit we will be able to measure a \enquote{feature} $Z$ of a specific kind common to all units; for example $Z$ could be a set of categorical and real quantities, or an image such as a brain scan. We have a set of units -- our \enquote{sample units} or \enquote{sample data} -- that are somehow \enquote*{representative} of the units we will receive in our long-term task \autocites[for a critical analysis of the sometimes hollow term \enquote{representative sample} see][]{kruskaletal1979,kruskaletal1979b,kruskaletal1979c,kruskaletal1980}. we know both the class and the feature of each of these sample units. Let us denote this sample information by $D$.
+
+According to the principles of decision theory and probability theory, for each new unit we would proceed as follows:
+\begin{enumerate}[label=\arabic*.]
+\item Assign probabilities to the two possible values of the unit's class, given the value of the unit's feature $Z\mo z$, our sample data $D$, and any other available information:
+  \begin{equation}
+    \p(X\mo 0 \| Z\mo z, D), \qquad \p(X\mo 1 \| Z\mo z,D) \equiv 1- \p(X\mo 0 \| Z\mo z,D) \ ,
+  \end{equation}
+  according to the rules of the probability calculus.
+\item Calculate the expected utilities $\eu$ of the two possible actions:
+  \begin{equation}
+    \begin{aligned}
+      \eu(\za) &\defd U(\za \| X\mo 0) \ 
+                 \p(X\mo 0 \| Z\mo z, D) + U(\za \| X\mo 1) \ 
+                 \p(X\mo 1 \| Z\mo z, D)
+      \\
+      \eu(\zb) &\defd U(\zb \| X\mo 0) \ 
+                 \p(X\mo 0 \| Z\mo z, D) + U(\zb \| X\mo 1) \ 
+                 \p(X\mo 1 \| Z\mo z, D)
+    \end{aligned}
+\end{equation}
+  and choose the action having maximal expected utility.
+\end{enumerate}
+
+\medskip
+
+How is the probability $\p(X \| Z\mo z, D)$ determined by the probability calculus? Here is a simplified, intuitive picture. First consider the case where the feature $Z$ can only assume a small number of possible values, so that many units can in principle have the same value of $Z$.
+
+Consider the collection of all units having $Z\mo z$ that we received in the past and will receive in the future. Among them, a proportion $F(X\mo 0 \| Z\mo z)$ belong to class $0$, and a proportion $1 - F(X\mo 0 \| Z\mo z) \equiv F(X\mo 1 \| Z\mo z)$ to class $1$. For example these two proportions could be 74\% and 26\%. Our present unit with $Z\mo z$ is a member of this collection. The probability $\p(X\mo 0 \| Z\mo z)$ that our unit belongs to class $0$, given that its feature has value $z$, is then intuitively equal to the proportion $F(X\mo 0 \| Z\mo z)$. Analogously for $X\mo 1$.
+
+The problem is that we do not know the proportion $F(X\mo 0 \| Z\mo z)$. However, we expect it to be roughly equal to the analogous proportion seen in our sample data; let us denote the latter by $\Fs(X\mo 0 \| Z\mo z)$:
+\begin{equation}
+  \label{eq:approx_repres}
+  F(X\mo 0 \| Z\mo z) \sim \Fs(X\mo 0 \| Z\mo z) \ .
+\end{equation}
+this is indeed what we mean by saying that our sample data are \enquote{representative} of the future units. Later we shall discuss the case in which such representativeness is of different kinds. We expect the discrepancy between $F(X\mo 0 \| Z\mo z)$ and $\Fs(X\mo 0 \| Z\mo z)$ to be smaller, the larger the number of sample data. Vice versa we expect it to be larger, the smaller the number of sample data.
+
+If $Z$ can assume a continuum of values, as is the case for a brain scan for example, then the collection of units having $Z\mo z$ is more difficult to imagine. In this case each unit will be unique in its feature value -- no two brains are exactly alike.
+
+
+
+
+\mynote{\medskip\hrule old text below}
+
+Given the unit's feature $Z$ we will assign probabilities to the possible values of the unit's class:  according to the rules of the probability calculus.
+
+As mentioned in \sect~\ref{sec:decision_theory}, a decision problem under uncertainty is conceptually divided into two steps 
+
+The Suppose we have a population of units or individuals characterized by a possibly multidimensional variable $Z$ and a binary variable $X \in \set{0,1}$. Different joint combinations of $(X,Z)$ values can appear in this population. Denote by $F(X\mo x, Z\mo z)$, or more simply $F(x, z)$ when there is no confusion, the number of individuals having specific joint values $(X\mo x, Z\mo z)$. This is the absolute frequency of the values $(x,z)$. We can also count the number of individuals having a specific value of $Z\mo z$, regardless of $X$; this is the marginal absolute frequency $F(z)$. It is easy to see that
+\begin{equation}
+  \label{eq:marginal_prob}
+  F(z) = F(X\mo 0, z) + F(X\mo 1, z) \equiv \sum_{x} F(x,z)\ .
+\end{equation}
+Analogously for $F(x)$.
+
+Select only the subpopulation of individuals that have a specific value $Z\mo z$. In this subpopulation, the \emph{proportion} of individuals having a specific value $X\mo x$ is $f(x\| Z\mo z)$. This is the conditional relative frequency of $x$ given that $z$. It is easy to see that
+\begin{equation}
+  \label{eq:cond_prob}
+  f(x \| z) = \frac{F(x,z)}{F(z)} \ .
+\end{equation}
+
+Now suppose that we know all these statistics about this population. An
+individual coming from this population is presented to us. We measure its
+$Z$ and obtain the value $z$. What could be the value of $X$ for this
+individual? We know that among all individuals having $Z\mo z$ (and the
+individual before us is one of them) a proportion $f(x \| z)$ has $X\mo x$.
+Thus we can say that there is a probability $f(x \| z)$ that our individual
+has $X\mo x$. And this is all we can say if we only know $Z$.
+
+\medskip
+
+For this individual we must choose among two actions $\set{a, b}$. The
+utility of performing action $a$ if the individual has $X\mo x$, and given
+any other known circumstances, is $U(a \| x)$; similarly for $b$. If we
+knew the value of $X$, say $X\mo 0$, we would simply choose the action
+leading to maximal utility:
+\begin{equation}
+  \label{eq:choice_ex}
+  \begin{aligned}
+    &\text{if}\quad U(a \| X\mo 0) > U(b \| X\mo 0) \quad\text{then choose action $a$},
+\\
+      &\text{if}\quad U(a \| X\mo 0) < U(b \| X\mo 0) \quad\text{then choose action $b$},
+\\&\text{else}\quad\text{it does not matter which action is chosen}.
+  \end{aligned}
+\end{equation}
+But we do not know the actual value of $X$. We have probabilities for the
+possible values of $X$ given that $Z\mo z$ for our individual. Since $X$ is
+uncertain, the final utilities of the two actions are also uncertain; but we can
+calculate their \emph{expected} values $\bar{U}(a \| Z \mo z)$ and
+$\bar{U}(b \| Z \mo z)$:
+\begin{equation}
+  \label{eq:expe_util}
+  \begin{aligned}
+    &\bar{U}(a \| z) \defd
+    U(a \| X\mo 0)\ f(X\mo 0 \| z) + U(a \| X\mo 1)\ f(X\mo 1 \| z) \ ,
+    \\
+    &\bar{U}(b \| z) \defd
+    U(b \| X\mo 0)\ f(X\mo 0 \| z) + U(b \| X\mo 1)\ f(X\mo 1 \| z) \ .
+\end{aligned}
+\end{equation}
+Decision theory shows that the optimal action is the one having the maximal
+expected utility. Our choice therefore proceeds as follows:
+\begin{equation}
+  \label{eq:choice_uncertain}
+  \begin{aligned}
+    &\text{if}\quad \bar{U}(a \| z) > \bar{U}(b \| z) \quad\text{then choose action $a$},
+\\
+      &\text{if}\quad \bar{U}(a \| z) < \bar{U}(b \| z) \quad\text{then choose action $b$},
+\\&\text{else}\quad\text{it does not matter which action is chosen}.
+  \end{aligned}
+\end{equation}
+
+\medskip
+
+The decision procedure just discussed is very simple and does not need any machine-learning algorithms. It could be implemented in a simple algorithm that takes as input the full statistics $F(X,Z)$ of the population, the utilities, and yields an output according to~\eqref{eq:choice_uncertain}.
+
+Our main problem is that the full statistics $F(X,Z)$ is almost universally not known. Typically we only have the statistics $\Fs(X,Z)$ of a sample of individuals that come from the population of interest or from populations that are somewhat related to the one of interest. This is where probability theory steps in. It allows us to assign probabilities to all the possible statistics $F(X,Z)$. From these probabilities we can calculate the \emph{expected} value $\uf(x \| z)$ of the conditional frequencies $f(x \| z)$. Decision theory says that the expected value $\uf(x \| z)$ should then be used, in this uncertain case, in \eqn~\eqref{eq:expe_util} in place of the unknown $f(x \| z)$. The decision procedure~\eqref{eq:choice_uncertain} can then be used again.
+
+Probability theory says that in this particular situation the probability of a particular possible statistics $F(X,Z)$ is the product of two factors having intuitive interpretations:
+\begin{itemize}
+\item the probability of observing the statistics $\Fs(X,Z)$ of our data sample, assuming the full statistics to be $F(X,Z)$. With some combinatorics it can be shown that this probability is proportional to
+  \begin{equation}
+    \label{eq:likelihood_relentropy}
+%    \exp\biggl[\sum_{X,Z}\Fs(X,Z) \ln \frac{\Fs(X,Z)}{F(X,Z)}\biggr]
+    \exp\biggl[\sum_{X,Z}\Fs(X,Z) \ln F(X,Z)\biggr]
+  \end{equation}
+  The argument of the exponential is the cross-entropy between $\Fs(X,Z)$ and $F(X,Z)$; this is the reason of its appearance in the loss function used for classifiers \autocites{bridle1990,mackay1992d}.
+
+  This factor tells us how much the possible statistics \emph{fit} the sample data; it gives more weight to statistics with a better fit.
+  
+\item the probability of the full statistics $F(X,Z)$ for reasons not present in the data, for example because of physical laws, biological plausibility, or similar.
+
+This factor tells us whether the possible statistics should be favourably considered, or maybe even discarded instead, for reasons that go beyond the data we have seen; in other words, whether the hypothetical statistics would \emph{generalize} well beyond the sample data.  
+\end{itemize}
+The final probability comes from the balance between these \enquote{fit} and \enquote{generalization} factors. Note that the first factor becomes more important as the sample size and therefore $\Fs(X,Z)$ increases; the sample data eventually determine what the most probable statistics is, if the sample is large enough.
+
+A similar probabilistic reasoning applies if our sample data come not from
+the population of interest but from a population having at least the same
+\emph{conditional} frequencies of as the one of interest, either
+$f(X \| Z)$ or $f(Z \| X)$. The latter case must be examined with care when
+our purpose is to guess $X$ from $Z$. In this case we cannot use the
+conditional frequencies $\fs(X \| Z)$ that appear in the data to obtain the
+expected value $\uf(X \| Z)$: they could be completely different from the
+ones of the population of interest. We must instead use the sample
+conditional frequencies $\fs(Z \| X)$ to obtain the expected value
+$\uf(Z \| X)$, and then combine the latter with an appropriate probability
+$P(X)$ through Bayes's theorem:
+\begin{equation}
+  \label{eq:bayes_app}
+  \frac{\uf(Z \| X)\ P(X)}{\sum_{X} \uf(Z \| X)\ P(X)} \ .
+\end{equation}
+The probability $P(X)$ cannot be obtained from the data, but requires a separate study or survey. In medical applications, where $X$ represents for example the presence or absence of a disease, the probability $P(X)$ is the base rate of the disease. Direct use of $\fs(X \| Z)$ from the data instead of \eqref{eq:bayes_app} is the \enquote{base-rate fallacy} \autocites[\sect~12.5]{russelletal1995_r2022}{axelsson2000,jennyetal2018}.
+
+
+
+
+In supervised learning the classifier is trained to learn the most probable $f(X \| Z)$ from the data. The training finds the $f(X \| Z)$ that most closely fits the conditional frequency $\fs(X \| Z)$ of the sampled data; this roughly corresponds to maximizing the first factor \eqref{eq:likelihood_relentropy} described above. The architecture and the parameter regularizer of the classifier play the role of the second factor.
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%% Bibliography
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 
+\renewcommand*{\finalnamedelim}{\addcomma\space}
+\defbibnote{prenote}{{\footnotesize (\enquote{de $X$} is listed under D,
+    \enquote{van $X$} under V, and so on, regardless of national
+    conventions.)\par}}
+% \defbibnote{postnote}{\par\medskip\noindent{\footnotesize% Note:
+%     \arxivp \mparcp \philscip \biorxivp}}
+
+\printbibliography[prenote=prenote%,postnote=postnote
+]
+
+\end{document}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%% Cut text (won't be compiled)
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 
+
+\mynote{\scriptsize\puzzle\ [Luca] I find it very difficult to structure the paper: there seems to be issues at several levels in the development and use of binary classifiers (and classifiers in general) within machine-learning.
+
+  Here are some relevant points:
+  \begin{itemize}
+  \item There should be a distinction between \enquote{inference} (or forecast, prediction, guess) and \enquote{decision} (or action, choice). In particular, the possible situations we may be uncertain about and the possible decisions available may be completely different things. A clinician, for example, may be uncertain about \enquote{cancer} vs \enquote{non-cancer}, while the choices are about \enquote{drug treatment 1} vs \enquote{drug treatment 2} vs \enquote{surgery}.
+
+  \item Probability theory \amp\ decision theory say that in order to make self-consistent decision we need two things: (a) the probabilities for the possible situations, (b) the utilities of the decisions given each possible situation.
+
+  \item A useful \ml\ algorithm should therefore give us one of two things:
+\begin{itemize}
+\item either the \emph{probabilities} of the uncertain situations
+  (\enquote{cancer} vs \enquote{non-cancer} in the example above),
+\item or the final decision (\enquote{drug treatment 1} vs \enquote{drug
+    treatment 2} vs \enquote{surgery} in the example above).
+\end{itemize}
+Current \ml\ classifiers do not give us either: the output in the example
+above would be \enquote{cancer} vs \enquote{non-cancer}, often without
+probabilities.
+
+\item So there are two possible solutions to the problem above:
+  \begin{itemize}
+  \item We must build a classifier that outputs probabilities. The 0--1
+    outputs of current classifiers cannot properly interpreted as
+    probabilities, for various reasons.
+  \item We must build a classifier that output \emph{decisions}: so not
+    \enquote{cancer} vs \enquote{non-cancer}, but \enquote{drug treatment
+      1} vs \etc.
+  \end{itemize}
+
+\end{itemize}
+}
+
+
+\mynote{[\puzzle\ maybe the following discussion is unnecessary:]
+  
+Several conventions can be used to fix the two redundant degrees of freedom. We can choose them in such a way that the smallest utility is 0 and the largest is 1; this is achieved by subtracting the value of the smallest utility from all elements of the utility matrix and then dividing them by the value of the largest minus the smallest; in symbols
+\begin{equation}
+  \label{eq:standardize1}
+  U_{cd} \mapsto \frac{U_{cd} - \min(U_{cd})}{\max(U_{cd}) - \min(U_{cd})} \ .
+\end{equation}
+In the lottery example this leads to
+\begin{equation}
+  \label{eq:standardize1_lottery}
+  \begin{pmatrix}
+    +10 & -1 \\ 0 & 0
+  \end{pmatrix} \mapsto
+    \begin{pmatrix}
+    1 & 0 \\ 1/11 & 1/11
+  \end{pmatrix} \ .
+\end{equation}
+Another convention is to choose them in such a way that the smallest utility is 0 and the sum of all utilities is 1; this is achieved by the transformation
+\begin{equation}
+  \label{eq:standardize2}
+  U_{cd} \mapsto
+  \frac{U_{cd} - \min(U_{cd})}{\sum_{cd}U_{cd} - \nd\nc\min(U_{cd})} \ .
+\end{equation}
+In the lottery example this leads to
+\begin{equation}
+  \label{eq:standardize1_lottery}
+  \begin{pmatrix}
+    +10 & -1 \\ 0 & 0
+  \end{pmatrix} \mapsto
+    \begin{pmatrix}
+    11/13 & 0 \\ 1/13 & 1/13
+  \end{pmatrix} \ .
+\end{equation}
+}
+
+
+
+%%% Local Variables: 
+%%% mode: LaTeX
+%%% TeX-PDF-mode: t
+%%% TeX-master: t
+%%% End: 
