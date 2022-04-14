@@ -1,7 +1,7 @@
 \pdfoutput=1
 %% Author: PGL  Porta Mana
 %% Created: 2015-05-01T20:53:34+0200
-%% Last-Updated: 2022-04-13T17:25:15+0200
+%% Last-Updated: 2022-04-14T13:02:05+0200
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \newif\ifarxiv
 \arxivfalse
@@ -260,7 +260,7 @@ british%
 \usepackage{microtype}
 
 \usepackage[backend=biber,mcite,%subentry,
-citestyle=authoryear-comp,bibstyle=pglpm-authoryear,autopunct=false,sorting=ny,sortcites=false,natbib=false,maxcitenames=2,maxbibnames=8,minbibnames=8,giveninits=true,uniquename=false,uniquelist=false,maxalphanames=1,block=space,hyperref=true,defernumbers=false,useprefix=true,sortupper=false,language=british,parentracker=false]{biblatex}
+citestyle=authoryear-comp,bibstyle=pglpm-authoryear,autopunct=false,sorting=ny,sortcites=false,natbib=false,maxcitenames=2,maxbibnames=8,minbibnames=8,giveninits=true,uniquename=false,uniquelist=false,maxalphanames=1,block=space,hyperref=true,defernumbers=false,useprefix=true,sortupper=false,language=british,parentracker=false,autocite=footnote]{biblatex}
 \DeclareSortingTemplate{ny}{\sort{\field{sortname}\field{author}\field{editor}}\sort{\field{year}}}
 \iffalse\makeatletter%%% replace parenthesis with brackets
 \newrobustcmd*{\parentexttrack}[1]{%
@@ -789,16 +789,16 @@ In comparing, evaluating, and using \ml\ classifiers we face a number of questio
 
 \begin{enumerate}[label=\textbf{\textsf{i\arabic*}},ref=\textbf{\textsf{i\arabic*}},itemsep=\parsep]
   
-\item\label{item:metrics}\textsf{\textbf{Choice of valuation metric.}}\enspace When we have to evaluate and compare different classifying algorithms or different hyperparameter values for one algorithm, we are avalanched by a choice of possible evaluation metrics: accuracy, area under curve, $F_{1}$-measure, mean square contingency \citep[denoted \enquote{$r$} there]{yule1912} also known as Matthews correlation coefficient \citep{matthews1975}[\sect~31 p.~183]{fisher1925_r1963}, precision, recall, sensitivity, specificity, and many others \citep{sammutetal2011_r2017}[see also the analysis in ][]{goodmanetal1954,goodmanetal1959,goodmanetal1963,goodmanetal1972b}. Only vague guidelines are usually given to face this choice. Typically one computes several of such scores and hopes that they will lead to similar ranking.
+\item\label{item:metrics}\textsf{\textbf{Choice of valuation metric.}}\enspace When we have to evaluate and compare different classifying algorithms or different hyperparameter values for one algorithm, we are avalanched by a choice of possible evaluation metrics: accuracy, area under curve, $F_{1}$-measure, mean square contingency \autocites[denoted \enquote{$r$} there]{yule1912} also known as Matthews correlation coefficient \autocites{matthews1975}[\sect~31 p.~183]{fisher1925_r1963}, precision, recall, sensitivity, specificity, and many others \autocites{sammutetal2011_r2017}[see also the analysis in ][]{goodmanetal1954,goodmanetal1959,goodmanetal1963,goodmanetal1972b}. Only vague guidelines are usually given to face this choice. Typically one computes several of such scores and hopes that they will lead to similar ranking.
 
-\item\label{item:rationale}\textsf{\textbf{Rationale and consistency.}}\enspace Most or all of such metrics were proposed only on intuitive grounds, from the exploration of specific problems and relying on tacit assumptions, then heedlessly applied to new problems. The Matthews correlation coefficient, for example, relies on several assumptions of gaussianity \citep[\sect~31 p.~183 first paragraph]{fisher1925_r1963}, which for instance do not apply to skewed population distributions \citep{jenietal2013,zhu2020}. The area under the receiver-operating-characteristic curve is heavily affected by values of false-positive and false-negative frequencies, as well as by misclassification costs, that have nothing to do with those of the specific application of the classifier \citep{bakeretal2001,loboetal2008}. The $F_{1}$-measure implicitly gives correct classifications a weight that depends on their frequency or probability \citep{handetal2018}; such dependence amounts to saying, for example, \enquote*{this class is rare, \emph{therefore} its correct classification leads to high gains}, which is a form of scarcity cognitive bias \citep{camereretal1989,kimetal1999,mittoneetal2009}.
+\item\label{item:rationale}\textsf{\textbf{Rationale and consistency.}}\enspace Most or all of such metrics were proposed only on intuitive grounds, from the exploration of specific problems and relying on tacit assumptions, then heedlessly applied to new problems. The Matthews correlation coefficient, for example, relies on several assumptions of gaussianity \autocites[\sect~31 p.~183 first paragraph]{fisher1925_r1963}, which for instance do not apply to skewed population distributions \autocites{jenietal2013,zhu2020}. The area under the receiver-operating-characteristic curve is heavily affected by values of false-positive and false-negative frequencies, as well as by misclassification costs, that have nothing to do with those of the specific application of the classifier \autocites{bakeretal2001,loboetal2008}. The $F_{1}$-measure implicitly gives correct classifications a weight that depends on their frequency or probability \autocites{handetal2018}; such dependence amounts to saying, for example, \enquote*{this class is rare, \emph{therefore} its correct classification leads to high gains}, which is a form of scarcity cognitive bias \autocites{camereretal1989,kimetal1999,mittoneetal2009}.
 
   We are therefore led to ask: are there valuation metrics that can be proven, from first principles, to be free from biases and unnecessary assumptions?
 
-\item\label{item:class_imbal}\textsf{\textbf{Class imbalance.}}\enspace  If our sample data are more numerous for one class than for another -- a common predicament in medical applications -- we must face the \enquote{class-imbalance problem}: the classifier ends up classifying all data as belonging to the more numerous class \citep{sammutetal2011_r2017,provost2000}, which may be an undesirable action if the misclassification of cases from the less numerous class entails high losses. \mynote{\wrench\ discussion and refs about cost-sensitive learning}
+\item\label{item:class_imbal}\textsf{\textbf{Class imbalance.}}\enspace  If our sample data are more numerous for one class than for another -- a common predicament in medical applications -- we must face the \enquote{class-imbalance problem}: the classifier ends up classifying all data as belonging to the more numerous class \autocites{sammutetal2011_r2017,provost2000}, which may be an undesirable action if the misclassification of cases from the less numerous class entails high losses. \mynote{\wrench\ discussion and refs about cost-sensitive learning}
   
   
-\item\label{item:optimal_true}\textsf{\textbf{Optimality vs truth.}}\enspace  Our ultimate purpose in classification is often the choice of a specific course of action among several possible ones, rather than a simple guess of the correct class. This is especially true in medical applications. A clinician does not simply tell a patient \enquote*{you will probably not contract the disease}, but has to decide among dismissal or different kinds of preventive treatment \citep{soxetal1988_r2013,huninketal2001_r2014}.
+\item\label{item:optimal_true}\textsf{\textbf{Optimality vs truth.}}\enspace  Our ultimate purpose in classification is often the choice of a specific course of action among several possible ones, rather than a simple guess of the correct class. This is especially true in medical applications. A clinician does not simply tell a patient \enquote*{you will probably not contract the disease}, but has to decide among dismissal or different kinds of preventive treatment \autocites{soxetal1988_r2013,huninketal2001_r2014}.
 
   In other words, our problem is often not \emph{to guess the probable true class}, but \emph{to make the optimal choice}.
 
@@ -806,7 +806,7 @@ In comparing, evaluating, and using \ml\ classifiers we face a number of questio
 
 This point of view has profound potential implications for the training of our algorithm: it means that its training targets ought to be the \emph{optimal} class labels under that particular uncertain situation, not the \emph{true} class labels. But how could such optimality be determined? -- Luckily we shall see that no such change in the training process is necessary.
 
-\item\label{item:no_probs}\textsf{\textbf{Probability.}}\enspace  It is difficult to assess sensible probabilities for the possible classes. Some \ml\ algorithms only output a class label. Others, including deep networks, output real numbers that, even if normalized, cannot be reliably interpreted as degrees of belief or as frequencies in the population of interest \citep{mackay1992d,galetal2016}. Algorithms that internally do perform probabilistic calculations, such as naive-Bayes or logistic-regression classifiers \citep[\sect~3.5, \chap~8]{murphy2012}[\sects~8.2, 4.3]{bishop2006}[\chap~10, \sect~17.4]{barber2007_r2020}, unfortunately rest on probabilistic assumptions -- independence and particular shapes of distributions, for example -- that are often unrealistic (and their consistency with the specific application is rarely checked).
+\item\label{item:no_probs}\textsf{\textbf{Probability.}}\enspace  It is difficult to assess sensible probabilities for the possible classes. Some \ml\ algorithms only output a class label. Others, including deep networks, output real numbers that, even if normalized, cannot be reliably interpreted as degrees of belief or as frequencies in the population of interest \autocites{mackay1992d,galetal2016}. Algorithms that internally do perform probabilistic calculations, such as naive-Bayes or logistic-regression classifiers \autocites[\sect~3.5, \chap~8]{murphy2012}[\sects~8.2, 4.3]{bishop2006}[\chap~10, \sect~17.4]{barber2007_r2020}, unfortunately rest on probabilistic assumptions -- independence and particular shapes of distributions, for example -- that are often unrealistic (and their consistency with the specific application is rarely checked).
 
 \end{enumerate}
 \mynote{\puzzle\ possible additional issue: should we use the algorithm in a \enquote{discriminative} or \enquote{generative} way?}
@@ -851,7 +851,7 @@ Decision theory makes a distinction between
 \item the possible situations we are uncertain about, in our case the possible classes;
 \item the possible decisions we can make.
 \end{itemize}
-This distinction is important, as argued under issue~\ref{item:optimal_true}; in some cases even the number of classes and the number of decisions differ. This distinction prevents the appearance of various cognitive biases \citep{kahnemanetal1982_r2008,gilovichetal2002_r2009,kahneman2011}, for example the scarcity bias mentioned in \ref{item:rationale}, or plain wishful thinking: \enquote*{this event is valuable, \emph{therefore} it is more probable}.
+This distinction is important, as argued under issue~\ref{item:optimal_true}; in some cases even the number of classes and the number of decisions differ. This distinction prevents the appearance of various cognitive biases \autocites{kahnemanetal1982_r2008,gilovichetal2002_r2009,kahneman2011}, for example the scarcity bias mentioned in \ref{item:rationale}, or plain wishful thinking: \enquote*{this event is valuable, \emph{therefore} it is more probable}.
 
 \subsection{Utilities and maximization of expected utility}
 \label{sec:dt_utilities}
@@ -894,7 +894,7 @@ For instance, if the ticket above has a 20\% probability of winning and 80\% of 
     \eu(\texttt{\small not-buy}) &= 0\cdot 0.2 + 0\cdot 0.8 = 0 \ .
   \end{aligned}
 \end{equation}
-The optimal choice is to buy the ticket, that is, to classify the ticket \emph{as if} it belonged to class \texttt{win}, even if it most probably belongs to class \texttt{lose}. (Note that the utility of money is usually not equal to the amount of money, the relationship between the two being somewhat logarithmic \citep[\eg][pp.~203--204]{north1968}[\chap~4]{raiffa1968_r1970}.)
+The optimal choice is to buy the ticket, that is, to classify the ticket \emph{as if} it belonged to class \texttt{win}, even if it most probably belongs to class \texttt{lose}. (Note that the utility of money is usually not equal to the amount of money, the relationship between the two being somewhat logarithmic \autocites[\eg][pp.~203--204]{north1968}[\chap~4]{raiffa1968_r1970}.)
 
 \subsection{Space of utility matrices}
 \label{sec:dt_space_util}
@@ -1101,6 +1101,13 @@ We see that many popular validation metrics, those marked by \enquote{\itemno} a
 % \end{itemize}
 % \mynote{\puzzle\ It seems most or all commonly used metrics, except accuracy, do not comply with decision theory!}
 
+\subsection{Probability (issue~\ref{item:no_probs})}
+\label{sec:probability}
+
+
+
+
+
 \subsection{Optimality vs truth (issue~\ref{item:optimal_true})}
 \label{sec:optimality_truth}
 
@@ -1120,9 +1127,11 @@ As discussed in \sect~\ref{sec:intro}, issue~\ref{item:optimal_true}, this means
 
 How can we amend current practice for this kind of classifiers, so that they look for optimality rather than truth?
 
-A first idea could be to simply modify the standard output step~\eqref{eq:argmax_probable} into~\eqref{eq:argmax_decision}. It is an easily implementable and computationally cheap modification: we are just multiplying the probability tuple by some matrix. Such simple modification, however, has a profound implication for the training procedure: we are modifying the algorithm to output the optimal class, and therefore it should also \emph{learn what is optimal}, not what is true: \emph{the targets in the training and validation phases should be the \textbf{optimal} classes, not the true classes}. But determining the optimal classes would require a probabilistic analysis that is computationally unfeasible at present for problems that involve very high-dimensional spaces, such as image classification -- if an exact probabilistic analysis were possible we would not be developing \ml\ classifiers in the first place \citep[\chap~12]{russelletal1995_r2022}. \mynote{\puzzle~Maybe useful to add a reminder that probability theory is the \emph{learning} theory par excellence (even if there's no \enquote{learning} in its name)? Its rules are all about making logical updates given new data.}
+A first idea could be to simply modify the standard output step~\eqref{eq:argmax_probable} into~\eqref{eq:argmax_decision}. It is an easily implementable and computationally cheap modification: we just multiply the probability tuple by a matrix. Such simple modification, however, has a profound implication for the training procedure: we are modifying the algorithm to output the optimal class, and therefore it should also \emph{learn what is optimal}, not what is true: \emph{the targets in the training and validation phases should be the optimal classes, not the true classes}. But optimality depends on the value of sensible probabilities for the specific situation of uncertainty, in this case conditional on the input features. Determining the optimal classes would thus require a probabilistic analysis that is computationally unfeasible at present for problems that involve very high-dimensional spaces, such as image classification -- if an exact probabilistic analysis were possible we would not be developing \ml\ classifiers in the first place \autocites[\chaps~2, 12]{russelletal1995_r2022}{pearl1988}. \mynote{\puzzle~Maybe useful to add a reminder that probability theory is the \emph{learning} theory par excellence (even if there's no \enquote{learning} in its name)? Its rules are all about making logical updates given new data.}
 
-Give
+We can therefore only use the true labels for training; and we would like to find a solution that can be applied to all commonly used classifiers, without being forced to recur to Bayesian neural networks \autocites{nealetal2006}[\sect~5.7]{bishop2006} or similar algorithms that are closer to an exact probability calculation.
+
+The solution we propose is to treat the classifier as a \emph{test}: we calculate the probability of the true class
 
 
 
@@ -1192,9 +1201,9 @@ Give
 \addsec{Appendix: broader overview of binary classification}
 % \label{sec:test}
 
-Let us consider our binary-classification problem from a general perspective and summarize how it would be approached and solved from first principles\citep[part~IV]{russelletal1995_r2022} if our computational resources had no constraints.
+Let us consider our binary-classification problem from a general perspective and summarize how it would be approached and solved from first principles\autocites[part~IV]{russelletal1995_r2022} if our computational resources had no constraints.
 
-In our long-term task we will receive \enquote{units} of a specific kind; the units for example could be gadgets, individuals, or investment portfolios. Each new unit will belong to one of two classes, which we can denote $X\mo 0$ and $X\mo 1$; for example they could be \enquote{defective} vs \enquote{non-defective}, \enquote{ill} vs \enquote{healthy}. The class will be unknown to us. For each new unit we shall need to decide among two possible actions, which we can denote $A\mo\za$ and $A\mo\zb$; for example \enquote{discard} vs \enquote{keep}, or \enquote{treat} vs \enquote{dismiss}. The utility of each action depends on the unknown class of the unit; we denote these utilities by $U(A \| X)$. For each new unit we will be able to measure a \enquote{feature} $Z$ of a specific kind common to all units; for example $Z$ could be a set of categorical and real quantities, or an image such as a brain scan. We have a set of units -- our \enquote{sample units} or \enquote{sample data} -- that are somehow \enquote*{representative} of the units we will receive in our long-term task \citep[for a critical analysis of the sometimes hollow term \enquote{representative sample} see][]{kruskaletal1979,kruskaletal1979b,kruskaletal1979c,kruskaletal1980}. we know both the class and the feature of each of these sample units. Let us denote this sample information by $D$.
+In our long-term task we will receive \enquote{units} of a specific kind; the units for example could be gadgets, individuals, or investment portfolios. Each new unit will belong to one of two classes, which we can denote $X\mo 0$ and $X\mo 1$; for example they could be \enquote{defective} vs \enquote{non-defective}, \enquote{ill} vs \enquote{healthy}. The class will be unknown to us. For each new unit we shall need to decide among two possible actions, which we can denote $A\mo\za$ and $A\mo\zb$; for example \enquote{discard} vs \enquote{keep}, or \enquote{treat} vs \enquote{dismiss}. The utility of each action depends on the unknown class of the unit; we denote these utilities by $U(A \| X)$. For each new unit we will be able to measure a \enquote{feature} $Z$ of a specific kind common to all units; for example $Z$ could be a set of categorical and real quantities, or an image such as a brain scan. We have a set of units -- our \enquote{sample units} or \enquote{sample data} -- that are somehow \enquote*{representative} of the units we will receive in our long-term task \autocites[for a critical analysis of the sometimes hollow term \enquote{representative sample} see][]{kruskaletal1979,kruskaletal1979b,kruskaletal1979c,kruskaletal1980}. we know both the class and the feature of each of these sample units. Let us denote this sample information by $D$.
 
 According to the principles of decision theory and probability theory, for each new unit we would proceed as follows:
 \begin{enumerate}[label=\arabic*.]
@@ -1320,7 +1329,7 @@ Probability theory says that in this particular situation the probability of a p
 %    \exp\biggl[\sum_{X,Z}\Fs(X,Z) \ln \frac{\Fs(X,Z)}{F(X,Z)}\biggr]
     \exp\biggl[\sum_{X,Z}\Fs(X,Z) \ln F(X,Z)\biggr]
   \end{equation}
-  The argument of the exponential is the cross-entropy between $\Fs(X,Z)$ and $F(X,Z)$; this is the reason of its appearance in the loss function used for classifiers \citep{bridle1990,mackay1992d}.
+  The argument of the exponential is the cross-entropy between $\Fs(X,Z)$ and $F(X,Z)$; this is the reason of its appearance in the loss function used for classifiers \autocites{bridle1990,mackay1992d}.
 
   This factor tells us how much the possible statistics \emph{fit} the sample data; it gives more weight to statistics with a better fit.
   
@@ -1345,7 +1354,7 @@ $P(X)$ through Bayes's theorem:
   \label{eq:bayes_app}
   \frac{\uf(Z \| X)\ P(X)}{\sum_{X} \uf(Z \| X)\ P(X)} \ .
 \end{equation}
-The probability $P(X)$ cannot be obtained from the data, but requires a separate study or survey. In medical applications, where $X$ represents for example the presence or absence of a disease, the probability $P(X)$ is the base rate of the disease. Direct use of $\fs(X \| Z)$ from the data instead of \eqref{eq:bayes_app} is the \enquote{base-rate fallacy} \citep[\sect~12.5]{russelletal1995_r2022}{axelsson2000,jennyetal2018}.
+The probability $P(X)$ cannot be obtained from the data, but requires a separate study or survey. In medical applications, where $X$ represents for example the presence or absence of a disease, the probability $P(X)$ is the base rate of the disease. Direct use of $\fs(X \| Z)$ from the data instead of \eqref{eq:bayes_app} is the \enquote{base-rate fallacy} \autocites[\sect~12.5]{russelletal1995_r2022}{axelsson2000,jennyetal2018}.
 
 
 
