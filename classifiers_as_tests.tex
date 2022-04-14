@@ -1,7 +1,7 @@
 \pdfoutput=1
 %% Author: PGL  Porta Mana
 %% Created: 2022-04-14T17:18:22+0200
-%% Last-Updated: 2022-04-14T23:03:43+0200
+%% Last-Updated: 2022-04-14T23:22:19+0200
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Probabilities for classifier outputs
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -813,8 +813,7 @@ We can thus think of this approach as a marginalization over the possible featur
 
 There are indeed many parallels in the way diagnostic tests and \ml\ classifiers are devised and work. Consider for example a  flu test. Having a specific kind of flu means that a large number of agents of a specific virus are present and replicating in one's body. These agents cannot be simply seen by visual inspection. Instead we devise some kind of biochemical mechanism that creates a correlation between the presence of the viral agents and some more easily measurable quantity; in simple cases just the colour on some display for example. Such correlation is often statistical, even if it can be strong. When we train a \ml\ classifier we are creating a  statistical correlation between features of a particular kind and a discrete or continuous quantity: the classifier's output.
 
-In the case of the diagnostic test we do not take its output at face value. Its application on a test set of cases gives us a table of joint statistics -- the contingency table -- between the test's output and the true situation, say, regarding the presence of the flu.
-
+In the case of the diagnostic test we do not take its output at face value. Its application on a test set of cases gives us a table of joint statistics -- a so-called contingency table \autocites{fienberg1980_r2007,mostelleretal1983_r2013}, similar to a confusion matrix -- between the test's output and the true situation, say, regarding the presence of the flu. It is from this contingency table that we derive the \emph{probability} of the virus's presence, given the test result. Analogously we can use the statistics of the application of \ml\ classifier on a test set to derive the probability of a class, given the classifier output. This can be seamlessly done for both a discrete and a continuous output.
 
 
 The probability $\p(\text{\small class} \| \text{\small classifier output})$ can be calculated nonparametrically, that is, without making any assumptions such as linearity or normality, besides very mild and reasonable assumptions of continuity.
@@ -826,6 +825,13 @@ In this work we actually calculate
 \end{equation}
 using the versatile computational approach by \textcites{dunsonetal2011}, and obtain the probability~\eqref{eq:approach_p_test} by conditionalization. The calculation requires Monte Carlo sampling \mynote{\pencil\ refs here} but needs to be made only once.
 
+This point of view has the following advantages:
+\begin{itemize}
+\item It does not require any changes of the standard training procedures.
+\item It yields not only the probability, but also a measure of how much this probability could change if we collected more test data (the \enquote{probability of the probability}, so to speak).
+\item It allows us to use the classifier both in a discriminative and generative way. That is, we can use either $\p(\text{\small class} \| \text{\small classifier output})$, or $\p(\text{\small classifier output} \| \text{\small class})$ in conjunction with Bayes's theorem. The latter approach enables us to avoid possible base-rate fallacies \autocites[\sect~12.5]{russelletal1995_r2022}{axelsson2000,jennyetal2018}.
+\item 
+\end{itemize}
 
 
 \mynote{\puzzle\ possible additional issue: should we use the algorithm in a \enquote{discriminative} or \enquote{generative} way?}
