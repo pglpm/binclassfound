@@ -1,7 +1,7 @@
 \pdfoutput=1
 %% Author: PGL  Porta Mana
 %% Created: 2022-04-14T17:18:22+0200
-%% Last-Updated: 2022-04-14T23:41:47+0200
+%% Last-Updated: 2022-04-15T01:11:46+0200
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Probabilities for classifier outputs
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -830,6 +830,7 @@ This point of view has the following advantages:
 \item It does not require any changes of the standard training procedures.
 \item It is easily implemented as an additional low-cost computation of a function at the end of the classifier's output.
 \item For one classifier, the assessment of this function needs to be done only once.
+\item It does not make any assumptions such as linearity or gaussianity, except for the (unavoidable) assumption of continuity \mynote{\wrench\ need to explain this better}
 \item It yields not only the probability distribution for the classes, but also a measure of how much this distribution could change if we collected more test data (the \enquote{probability of the probability}, so to speak).
 \item It allows us to use the classifier both in a discriminative and generative way. That is, we can use either\; $\p(\text{\small class} \| \text{\small classifier output})$, or\; $\p(\text{\small classifier output} \| \text{\small class})$\; in conjunction with Bayes's theorem. The latter approach enables us to avoid possible base-rate fallacies \autocites[\sect~12.5]{russelletal1995_r2022}{axelsson2000,jennyetal2018}.
 \item It can be seamlessly integrated with a utility matrix to compute the optimal class, as shown in the companion work \mynote{\pencil}.
