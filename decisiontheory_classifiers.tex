@@ -1,7 +1,7 @@
 \pdfoutput=1
 %% Author: PGL  Porta Mana
 %% Created: 2022-03-04T07:39:34+0200
-%% Last-Updated: 2022-04-14T18:13:30+0200
+%% Last-Updated: 2022-04-14T22:18:44+0200
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Decision theory for machine-learning classifiers
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -21,7 +21,7 @@ british%
 \newcommand*{\firstdraft}{4 March 2022}
 \newcommand*{\firstpublished}{\firstdraft}
 \newcommand*{\updated}{\ifarxiv***\else\today\fi}
-\newcommand*{\propertitle}{Guessing what's true or choosing what's optimal?\\ {\Large A first-principle approach to the use and evaluation of classifiers}}
+\newcommand*{\propertitle}{Guessing what's true or choosing what's optimal?\\ {\Large A first-principle approach to use and evaluation of classifiers}}
 % title uses LARGE; set Large for smaller
 \newcommand*{\pdftitle}{\propertitle}
 \newcommand*{\headtitle}{Guessing truth or choosing optimality?}
@@ -741,7 +741,7 @@ Open Science Framework \doi{10.31219/osf.io/#1}%
 \setlength{\absrightindent}{0pt}
 \setlength{\abstitleskip}{-\absparindent}
 \begin{abstract}\labelsep 0pt%
-  \noindent ***abstract***
+  \noindent \mynote{\pencil}
 % \\\noindent\emph{\footnotesize Note: Dear Reader
 %     \amp\ Peer, this manuscript is being peer-reviewed by you. Thank you.}
 % \par%\\[\jot]
@@ -808,10 +808,7 @@ In comparing, evaluating, and using \ml\ classifiers we face a number of questio
 
 This point of view has profound potential implications for the training of our algorithm: it means that its training targets ought to be the \emph{optimal} class labels under that particular uncertain situation, not the \emph{true} class labels. But how could such optimality be determined? -- Luckily we shall see that no such change in the training process is necessary.
 
-\item\label{item:no_probs}\textsf{\textbf{Probability.}}\enspace  It is difficult to assess sensible probabilities for the possible classes. Some \ml\ algorithms only output a class label. Others, including deep networks, output real numbers that, even if normalized and usually called \enquote{probabilities}, cannot be reliably interpreted as proper probabilities, that is, degrees of belief or frequencies in the population of interest \autocites{mackay1992d,galetal2016} conditional on the information given as input to the classifier (this is why we used the qualifier \enquote{sensible}). Algorithms that internally do perform probabilistic calculations, such as naive-Bayes or logistic-regression classifiers \autocites[\sect~3.5, \chap~8]{murphy2012}[\sects~8.2, 4.3]{bishop2006}[\chap~10, \sect~17.4]{barber2007_r2020}, unfortunately rest on probabilistic assumptions -- independence and particular shapes of distributions, for example -- that are often unrealistic (and their consistency with the specific application is rarely checked).
-
 \end{enumerate}
-\mynote{\puzzle\ possible additional issue: should we use the algorithm in a \enquote{discriminative} or \enquote{generative} way?}
 
 
 \medskip
@@ -1103,45 +1100,8 @@ We see that many popular validation metrics, those marked by \enquote{\itemno} a
 % \end{itemize}
 % \mynote{\puzzle\ It seems most or all commonly used metrics, except accuracy, do not comply with decision theory!}
 
-\subsection{Probability (issue~\ref{item:no_probs})}
-\label{sec:probability}
-
-We must first address issue~\ref{item:no_probs}, the assessment of sensible probabilities for the possible classes, to be able to address the issues of optimality vs truth~\ref{item:optimal_true} and class imbalance~\ref{item:class_imbal}.
-
-As already mentioned in \sect~\ref{sec:intro}, some \ml\ classifiers only output a class label. Others can output a set of real numbers that are positive, normalized to unity, and bear some qualitative relation to the plausibilities of the classes; but their values cannot be considered as the correct degrees of belief in the classes conditional on the input features. It is these values that we need for decision theory. Determining these probabilities would require an analysis that is computationally unfeasible at present for problems that involve very high-dimensional spaces, such as image classification; in fact if an exact probabilistic analysis were possible we would not be developing \ml\ classifiers in the first place \autocites[\chaps~2, 12]{russelletal1995_r2022}{pearl1988}. \mynote{\puzzle~Maybe useful to add a reminder that probability theory is the \emph{learning} theory par excellence (even if there's no \enquote{learning} in its name)? Its rules are all about making logical updates given new data.} Only particular classifiers such as Bayesian neural networks \autocites{nealetal2006}[\sect~5.7]{bishop2006} output somewhat sensible  probabilities. But we would like to find a solution that can be applied to all commonly used classifiers, without being forced to use specific ones.
-
-% We can therefore only use the true labels for training; and we would like to find a solution that can be applied to all commonly used classifiers, without being forced to recur to Bayesian neural networks \autocites{nealetal2006}[\sect~5.7]{bishop2006} or similar algorithms that are closer to an exact probability calculation.
-
-The solution we propose is \emph{to treat the classifier as a test}, such as any common diagnostic or prognostic test used in medicine for example. We consider its output, discrete or continuous, as a quantity that has some correlation (in the general sense of the word, not the linear Pearson one) with the true class. This correlation can be analysed and quantified with probability theory in a test set and used to calculate a sensible probability for the class given the output of the test -- of the classifier. This analysis needs to be made only once and is computationally cheap, because the classifier output takes values in a discrete or low-dimensional space.
-
-This approach differs from the computationally infeasible one discussed above in that we are calculating the computationally easier probability
-\begin{equation}
-  \label{eq:approach_p_test}
-  \p(\text{\small class} \| \text{\small classifier output})
-\end{equation}
-rather than
-\begin{equation}
-  \label{eq:approach_p_feature}
-  \p(\text{\small class} \| \text{\small feature}) \ .
-\end{equation}
-Note that the former probability is the marginal
-\begin{equation}
-  \label{eq:approach_p_marginal}
-  \p(\text{\small class} \| \text{\small classifier output}) = \sum_{\text{\clap{feature}}} \p(\text{\small class}, \text{\small feature} \| \text{\small classifier output}) \ .
-\end{equation}
-We can thus think of this approach as a marginalization over the possible features, which is necessary because we have no effective access to them. From this point of view we are not calculating \enquote{approximate probabilities}, but exact probabilities conditional on reduced information.
 
 
-
-
-The probability $\p(\text{\small class} \| \text{\small classifier output})$ can be calculated nonparametrically, that is, without making any assumptions such as linearity or normality, besides very mild and reasonable assumptions of continuity.
-
-In this work we actually calculate
-\begin{equation}
-  \p(\text{\small class}, \text{\small feature} \| \text{\small test data})
-  \label{eq:approach_p_joint}
-\end{equation}
-using the versatile computational approach by \textcites{dunsonetal2011}, and obtain the probability~\eqref{eq:approach_p_test} by conditionalization. The calculation requires Monte Carlo sampling \mynote{\pencil\ refs here} but needs to be made only once.
 
 
 
