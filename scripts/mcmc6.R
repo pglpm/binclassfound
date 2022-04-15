@@ -1,6 +1,6 @@
 ## Author: PGL  Porta Mana
 ## Created: 2022-01-06T11:29:42+0100
-## Last-Updated: 2022-04-09T12:24:21+0200
+## Last-Updated: 2022-04-09T12:50:44+0200
 ################
 ## Calculation of joint probability for class & classifier-output
 ################
@@ -46,15 +46,15 @@ library('nimble')
 seed <- 707
 baseversion <- 'testmcmc1_'
 nclusters <- 16L
-niter <- 1024L
-niter0 <- 1024L
-thin <- 1L
+niter <- 1024L*4L
+niter0 <- 2048L
+thin <- 4L
 nstages <- 2L
 ncheckprobs1 <- 16L
 ncheckprobs2 <- 8L
 maincov <- 'class'
 family <- 'Palatino'
-ndata <- 2048L
+ndata <- 4096L
 posterior <- TRUE
 ##
 

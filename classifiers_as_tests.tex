@@ -1,7 +1,7 @@
 \pdfoutput=1
 %% Author: PGL  Porta Mana
 %% Created: 2022-04-14T17:18:22+0200
-%% Last-Updated: 2022-04-15T01:11:46+0200
+%% Last-Updated: 2022-04-15T22:08:16+0200
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Probabilities for classifier outputs
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -811,9 +811,24 @@ Note that the former probability is the marginal
 \end{equation}
 We can thus think of this approach as a marginalization over the possible features, which is necessary because we have no effective access to them. From this point of view we are not calculating \enquote{approximate probabilities}, but exact probabilities conditional on reduced information.
 
-There are indeed many parallels in the way diagnostic tests and \ml\ classifiers are devised and work. Consider for example a  flu test. Having a specific kind of flu means that a large number of agents of a specific virus are present and replicating in one's body. These agents cannot be simply seen by visual inspection. Instead we devise some kind of biochemical mechanism that creates a correlation between the presence of the viral agents and some more easily measurable quantity; in simple cases just the colour on some display for example. Such correlation is often statistical, even if it can be strong. When we train a \ml\ classifier we are creating a  statistical correlation between features of a particular kind and a discrete or continuous quantity: the classifier's output.
+There are indeed many parallels in the way \ml\ classifiers and diagnostic tests, a flu test for example, are devised and work. For both, in principle we would like to assess some situation -- class, pathological condition -- by means of its correlation (which includes deterministic dependence as a limiting case) with a set of variables that is either very complex or not easily observable -- features, presence of replicating viral agents:
+\[
+  \text{situation} \leftrightarrow \text{complicated variables}
+\]
+We devise an auxiliary variable -- output, test result -- to be correlated with both the situation and the difficult set of variables:
+\[
+  \begin{aligned}
+    \text{situation} &\leftrightarrow \text{complicated variables}
+    \\[-\jot]
+\mathrel{\mathrlap{\nwarrow}\mkern-5mu\searrow}&\hphantom{{}\:\text{aux variable}}\mathrel{\mathrlap{\nearrow}\mkern-5mu\swarrow}
+\\[-2.5\jot] &{}\:\text{aux variable}
+  \end{aligned}
+\]
+so that we can now assess the situation by observing the more easily accessible auxiliary variable. The correlation of the auxiliary variable is achieved by the training process in the case of the \ml\ algorithm, and by exploiting biochemical processes or reactions in the case of the flu test.
 
-In the case of the diagnostic test we do not take its output at face value. Its application on a test set of cases gives us a table of joint statistics -- a so-called contingency table \autocites{fienberg1980_r2007,mostelleretal1983_r2013}, similar to a confusion matrix -- between the test's output and the true situation, say, regarding the presence of the flu. It is from this contingency table that we derive the \emph{probability} of the virus's presence, given the test result. Analogously we can use the statistics of the application of \ml\ classifier on a test set to derive the probability of a class, given the classifier output. This can be seamlessly done for both a discrete and a continuous output.
+% Consider for example a flu test. Having a specific kind of flu means that a large number of agents of a specific virus are present and replicating in one's body. These agents cannot be simply seen by visual inspection. Instead we devise some kind of biochemical mechanism that creates a correlation between the presence of the viral agents and some more easily measurable quantity; in simple cases just the colour on some display for example. Such correlation is often statistical, even if it can be strong. When we train a \ml\ classifier we are creating a statistical correlation between features of a particular kind and a discrete or continuous quantity: the classifier's output.
+
+In the case of the diagnostic test we do not take its output at face value. Its application on a test set of cases gives us a table of joint statistics -- a so-called contingency table \autocites{fienberg1980_r2007,mostelleretal1983_r2013}, akin to a confusion matrix -- between the test's output and the true situation, say, regarding the presence of the flu. It is from this contingency table that we derive the \emph{probability} of the virus's presence, given the test result. Analogously we can use the statistics of the application of \ml\ classifier on a test set to derive the probability of a class, given the classifier output. This can be seamlessly done for both a discrete and a continuous output.
 
 
 The probability $\p(\text{\small class} \| \text{\small classifier output})$ can be calculated nonparametrically, that is, without making any assumptions such as linearity or normality, besides very mild and reasonable assumptions of continuity.
