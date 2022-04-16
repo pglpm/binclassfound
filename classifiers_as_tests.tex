@@ -1,7 +1,7 @@
 \pdfoutput=1
 %% Author: PGL  Porta Mana
 %% Created: 2022-04-14T17:18:22+0200
-%% Last-Updated: 2022-04-16T18:12:58+0200
+%% Last-Updated: 2022-04-16T18:40:19+0200
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Probabilities for classifier outputs
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -932,7 +932,7 @@ In our specific inference problem, where no time trends are assumed to exist in 
   \label{eq:prob_is_expe_freq}
   \p(c_{0}, x_{0}) = \int\! F(c_{0}, x_{0})\ \wf(F)\ \di F \ .
 \end{equation}
-This formula is the so-called de~Finetti theorem \autocites[\chap~4]{bernardoetal1994_r2000}{dawid2013,definetti1929,definetti1937}. It is derived from first principles but can be intuitively interpreted: We are considering every possible long-run frequency distribution $F(\dotv, \dotv)$, giving it a weight $\wf(F)$, and then taking the weighted sum of all such distributions. The result is still a distribution, and its value at $(c_{0}, x_{0})$ is the probability of this datapoint.
+This formula is de~Finetti's theorem \autocites[\chap~4]{bernardoetal1994_r2000}{dawid2013,definetti1929,definetti1937}. It is derived from first principles but can be intuitively interpreted: We are considering every possible long-run frequency distribution $F(\dotv, \dotv)$, giving it a weight $\wf(F)$, and then taking the weighted sum of all such distributions. The result is still a distribution, and its value at $(c_{0}, x_{0})$ is the probability of this datapoint.
 
 The weight $\wf(F)$ -- a probability density -- given to a frequency distribution $F$ is proportional to two factors:
 \begin{equation}
@@ -943,10 +943,10 @@ The weight $\wf(F)$ -- a probability density -- given to a frequency distributio
 \item The first factor (\enquote{likelihood}) $\wfo(F)$ quantifies how well $F$ \emph{fits} known data of the same kind; in our case the sample data $D$. It is simply proportional to how frequent the known data would be, according to $F$:
   \begin{equation}
     \label{eq:factor_likelihood}
-F(D) \equiv    F(c_{1}, x_{1})\ F(c_{2}, x_{2})\ \dotsm\ F(c_{M}, x_{M}) \ .
+F(D) = F(c_{1}, x_{1})\ F(c_{2}, x_{2})\ \dotsm\ F(c_{M}, x_{M}) \ .
   \end{equation}
 
-\item The second factor (\enquote{prior}) quantifies how well $F$ \emph{generalizes} beyond the data we have seen, owing to reasons such as physical or biological constraints for example. In our case we expect $F$ to be somewhat smooth in $X$ when this variable is continuous\mynote{\wrench\ add a picture -- a sample from the prior over $F$ -- to illustrate the expected range of smoothness}. No assumptions are made about $F$ when $X$ is discrete.
+\item The second factor (\enquote{prior}) $\wfo(F)$ quantifies how well $F$ \emph{generalizes} beyond the data we have seen, owing to reasons such as physical or biological constraints for example. In our case we expect $F$ to be somewhat smooth in $X$ when this variable is continuous\mynote{\wrench\ add a picture -- a sample from the prior over $F$ -- to illustrate the expected range of smoothness}. No assumptions are made about $F$ when $X$ is discrete.
 \end{itemize}
 The proportionality constant in \eqn~\eqref{eq:weight_F_two_factors} is simply the integral $\int F(D)\, \wfo(F)\, \di F$ ensuring that $\wf(F)$ is normalized.
 
