@@ -1,7 +1,7 @@
 \pdfoutput=1
 %% Author: PGL  Porta Mana
 %% Created: 2022-04-14T17:18:22+0200
-%% Last-Updated: 2022-04-15T22:08:16+0200
+%% Last-Updated: 2022-04-16T12:10:44+0200
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Probabilities for classifier outputs
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -805,26 +805,55 @@ rather than
   \p(\text{\small class} \| \text{\small feature}) \ .
 \end{equation}
 Note that the former probability is the marginal
-\begin{equation}
+\begin{multline}
   \label{eq:approach_p_marginal}
-  \p(\text{\small class} \| \text{\small classifier output}) = \sum_{\text{\clap{feature}}} \p(\text{\small class}, \text{\small feature} \| \text{\small classifier output}) \ .
-\end{equation}
+  \p(\text{\small class} \| \text{\small classifier output}) ={}\\
+  \sum_{\text{\clap{feature}}}
+  \p(\text{\small class} \| \text{\small feature})\ 
+  \p(\text{\small feature} \| \text{\small classifier output}) \ .
+\end{multline}
 We can thus think of this approach as a marginalization over the possible features, which is necessary because we have no effective access to them. From this point of view we are not calculating \enquote{approximate probabilities}, but exact probabilities conditional on reduced information.
 
-There are indeed many parallels in the way \ml\ classifiers and diagnostic tests, a flu test for example, are devised and work. For both, in principle we would like to assess some situation -- class, pathological condition -- by means of its correlation (which includes deterministic dependence as a limiting case) with a set of variables that is either very complex or not easily observable -- features, presence of replicating viral agents:
+There are indeed many parallels in the way \ml\ classifiers and diagnostic tests, a flu test for example, are devised and work. For both, in principle we would like to assess some situational variable -- class, pathological condition -- by means of its correlation (which includes deterministic dependence as a limiting case) with a set of \enquote{difficult} variables that are either very complex or not easily observable -- image's pixels, presence of replicating viral agents~--:
 \[
-  \text{situation} \leftrightarrow \text{complicated variables}
+  \text{situational variable} \leftrightarrow \text{feature variables}
 \]
-We devise an auxiliary variable -- output, test result -- to be correlated with both the situation and the difficult set of variables:
+We devise an auxiliary variable -- output, test result -- to be correlated with the difficult set of variables:
 \[
-  \begin{aligned}
-    \text{situation} &\leftrightarrow \text{complicated variables}
-    \\[-\jot]
-\mathrel{\mathrlap{\nwarrow}\mkern-5mu\searrow}&\hphantom{{}\:\text{aux variable}}\mathrel{\mathrlap{\nearrow}\mkern-5mu\swarrow}
-\\[-2.5\jot] &{}\:\text{aux variable}
-  \end{aligned}
+    \text{situational variable} \leftrightarrow \text{difficult variables}
+    \leftrightarrow \text{aux variable}
 \]
-so that we can now assess the situation by observing the more easily accessible auxiliary variable. The correlation of the auxiliary variable is achieved by the training process in the case of the \ml\ algorithm, and by exploiting biochemical processes or reactions in the case of the flu test.
+% \[
+%   \begin{aligned}
+%     \text{situation} &\leftrightarrow \text{complicated variables}
+%     \\[-\jot]
+% \mathrel{\mathrlap{\nwarrow}\mkern-5mu\searrow}&\hphantom{{}\:\text{aux variable}}\mathrel{\mathrlap{\nearrow}\mkern-5mu\swarrow}
+% \\[-2.5\jot] &{}\:\text{aux variable}
+%   \end{aligned}
+% \]
+so that we can now assess the situational variable by observing the more easily accessible auxiliary variable. The correlation of the auxiliary variable is achieved by the training process in the case of the \ml\ algorithm, and by exploiting biochemical processes or reactions in the case of the flu test. Note that the situational variable is \emph{informationally screened} from the auxiliary variable by the difficult variables. That is, the auxiliary variable does not -- in fact, cannot -- contain any more information about the situational variable than that contained in the difficult variables. This means that the probability relationship between the three variables is as follows:
+\begin{multline}
+  \label{eq:screening}
+  \p\Bigl(
+  \text{\parbox[c]{\widthof{\small situational}}{\centering\small situational\\[-1\jot]variable}}
+  \|[\Big]
+  \text{\parbox[c]{\widthof{\small variable}}{\centering\small aux\\[-1\jot]variable}}
+  \Bigr)
+  ={}\\[\jot]
+\sum_{\mathclap{
+    \text{\parbox[c]{\widthof{\footnotesize variables}}{\centering\footnotesize difficult\\[-1\jot]variables}}
+}}
+\p\Bigr(
+  \text{\parbox[c]{\widthof{\small situational}}{\centering\small situational\\[-1\jot]variable}}
+  \|[\Big]
+  \text{\parbox[c]{\widthof{\small variables}}{\centering\small difficult\\[-1\jot]variables}}
+  \Bigr)  \
+  \p\Bigl(
+  \text{\parbox[c]{\widthof{\small variables}}{\centering\small difficult\\[-1\jot]variables}}
+  \|[\Big]
+  \text{\parbox[c]{\widthof{\small variable}}{\centering\small aux\\[-1\jot]variable}}
+\Bigr)   \ .
+\end{multline}
 
 % Consider for example a flu test. Having a specific kind of flu means that a large number of agents of a specific virus are present and replicating in one's body. These agents cannot be simply seen by visual inspection. Instead we devise some kind of biochemical mechanism that creates a correlation between the presence of the viral agents and some more easily measurable quantity; in simple cases just the colour on some display for example. Such correlation is often statistical, even if it can be strong. When we train a \ml\ classifier we are creating a statistical correlation between features of a particular kind and a discrete or continuous quantity: the classifier's output.
 
