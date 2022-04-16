@@ -1,7 +1,7 @@
 \pdfoutput=1
 %% Author: PGL  Porta Mana
 %% Created: 2022-04-14T17:18:22+0200
-%% Last-Updated: 2022-04-16T17:02:58+0200
+%% Last-Updated: 2022-04-16T18:12:58+0200
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Probabilities for classifier outputs
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -932,7 +932,7 @@ In our specific inference problem, where no time trends are assumed to exist in 
   \label{eq:prob_is_expe_freq}
   \p(c_{0}, x_{0}) = \int\! F(c_{0}, x_{0})\ \wf(F)\ \di F \ .
 \end{equation}
-This formula is the so-called de~Finetti theorem \autocites[\chap~4]{bernardoetal1994_r2000}{dawid2013}. It is derived from first principles but can be intuitively interpreted: We are considering every possible long-run frequency distribution $F(\dotv, \dotv)$, giving it a weight $\wf(F)$, and then taking the weighted sum of all such distributions. The result is still a distribution, and its value at $(c_{0}, x_{0})$ is the probability of this datapoint.
+This formula is the so-called de~Finetti theorem \autocites[\chap~4]{bernardoetal1994_r2000}{dawid2013,definetti1929,definetti1937}. It is derived from first principles but can be intuitively interpreted: We are considering every possible long-run frequency distribution $F(\dotv, \dotv)$, giving it a weight $\wf(F)$, and then taking the weighted sum of all such distributions. The result is still a distribution, and its value at $(c_{0}, x_{0})$ is the probability of this datapoint.
 
 The weight $\wf(F)$ -- a probability density -- given to a frequency distribution $F$ is proportional to two factors:
 \begin{equation}
@@ -951,6 +951,8 @@ F(D) \equiv    F(c_{1}, x_{1})\ F(c_{2}, x_{2})\ \dotsm\ F(c_{M}, x_{M}) \ .
 The proportionality constant in \eqn~\eqref{eq:weight_F_two_factors} is simply the integral $\int F(D)\, \wfo(F)\, \di F$ ensuring that $\wf(F)$ is normalized.
 
 \medskip
+
+
 
 
 The joint probability~\eqref{eq:approach_p_joint} is calculated nonparametrically, that is, without making any assumptions such as linearity or gaussianity, besides very mild and reasonable assumptions of continuity.
