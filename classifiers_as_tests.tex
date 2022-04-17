@@ -1,7 +1,7 @@
 \pdfoutput=1
 %% Author: PGL  Porta Mana
 %% Created: 2022-04-14T17:18:22+0200
-%% Last-Updated: 2022-04-16T19:15:32+0200
+%% Last-Updated: 2022-04-17T12:59:30+0200
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Probabilities for classifier outputs
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -719,7 +719,7 @@ Open Science Framework \doi{10.31219/osf.io/#1}%
 \newcommand*{\itemyes}{{\fontencoding{U}\fontfamily{pzd}\selectfont\symbol{51}}}
 \newcommand*{\itemno}{{\fontencoding{U}\fontfamily{pzd}\selectfont\symbol{55}}}
 \newcommand*{\wf}{w}
-\newcommand*{\wfo}{w_{o}}
+\newcommand*{\wfo}{w_{\textrm{g}}}
 
 %%% Custom macros end @@@
 
@@ -898,7 +898,7 @@ This approach also offers the following advantages:
 
 \medskip
 
-In \sect~\ref{sec:prob_calc} we present the general procedure for the calculation of the probabilities; more technical details are given in appendix~\ref{sec:nonparam_regression_details}. Section~\ref{sec:implem_idea} explains how to augment a classifier's output with the probability calculation. Results of numerical experiments are presented in \sect~\ref{sec:results}.
+In \sect~\ref{sec:prob_calc} we present some notation and the general procedure for the calculation of the probabilities; more technical details are given in appendix~\ref{sec:nonparam_regression_details}. Section~\ref{sec:implem_idea} explains how to augment a classifier's output with the probability calculation. Results of numerical experiments are presented in \sect~\ref{sec:results}.
 
 \mynote{\wrench\ We could show that even if we used a biased test set, the method corrects the bias (provided we know what the bias is).}
 
@@ -906,11 +906,12 @@ In \sect~\ref{sec:prob_calc} we present the general procedure for the calculatio
 \section{Calculation of the probabilities: general procedure}
 \label{sec:prob_calc}
 
-Let us denote the class variable by $C$ and the classifier-output variable by $X$. We assume that $C$ is discrete and finite, its values can be simply renamed $1,2,3,\dotsc$. We assume that $X$ is either discrete and finite (it is isomorphic to $C$ for many classifying algorithms) or a low-dimensional tuple of real variables; a combination of both cases can also be easily accommodated. A pair $(C, X)$ is a datapoint. We assume to have a sample of $M$ datapoints denoted collectively by $D$:
+Let us denote the class variable by $C$ and the classifier-output variable by $X$. We assume that $C$ is discrete and finite, its values can be simply renamed $1,2,3,\dotsc$. We assume that $X$ is either discrete and finite (it is isomorphic to $C$ for many classifying algorithms) or a low-dimensional tuple of real variables; a combination of both cases can also be easily accommodated. We assume to have a sample of $M$ such data pairs denoted collectively by $D$:
 \begin{equation}
   \label{eq:sample_data_notation}
   D \defd \set[\big]{(c_{1}, x_{1}), (c_{2}, x_{2}), \dotsc, (c_{M}, x_{M}) } \ .
 \end{equation}
+We call them \emph{calibration data}. Let us emphasize that these are not pairs of class\,\amp\,feature values, but pairs of class\,\amp\,classifier-output values, obtained as described in \sect~\ref{sec:implem_idea}.
 
 Instead of the conditional probability $\p(\text{\small class} \| \text{\small output})$, that is, $\p(C \| X)$,  we can actually calculate the joint probability
 \begin{equation}
@@ -951,32 +952,75 @@ F(D) = F(c_{1}, x_{1})\ F(c_{2}, x_{2})\ \dotsm\ F(c_{M}, x_{M}) \ .
 \end{itemize}
 The proportionality constant in \eqn~\eqref{eq:weight_F_two_factors} is simply the integral $\smallint F(D)\, \wfo(F)\, \di F$ ensuring that $\wf(F)$ is normalized.
 
-Note that the first factor becomes larger as the number of known data increases. Thus a large amount of data indicating a non-smooth distribution $F$ will override any smoothness preferences embodied in the second factor.
+The first factor becomes larger as the number of known data increases. Thus a large amount of data indicating a non-smooth distribution $F$ will override any smoothness preferences embodied in the second factor. Note that no assumptions about the shape of $F$ -- no gaussians, logistic curves, sigmoids, and so on -- are made in this approach.
 
-\medskip
+The integral in~\eqref{eq:prob_is_expe_freq} is calculated in either of two ways, depending on whether $X$ is discrete or continuous. For $X$ discrete and taking on the same values as the class variable $C$, the integral is over $\RR^{\nc^{2}}$ where $\nc$ is the number of possible classes, and can be done analytically. For $X$ continuous, the integral is numerically approximated by a sum over a representative sample, obtained by Markov-chain Monte Carlo, of distributions $F$ according to the weights~\eqref{eq:weight_F_two_factors}. The error of this approximation can be calculated and made as small as required by increasing the number of Monte Carlo samples.
 
-The expected value~\eqref{eq:prob_is_expe_freq} is numerically approximated by a sum over a sample of distributions $F$ having largest weights, obtained by Markov-chain Monte Carlo sampling. The error of this approximation can be calculated and made as small as required by increasing the number of Monte Carlo samples.
+The expected value~\eqref{eq:prob_is_expe_freq} is calculated for all possible values of $(c_{0}, x_{0})$, obtaining the full joint probability distribution $\p(C, X)$. From this joint distribution we calculate the direct and inverse conditional distributions
+\begin{align}
+  \label{eq:conditional_direct}
+  \p(C \| X) &= \frac{\p(C, X)}{\sum_{C} \p(C, X)} \ , \\
+  \label{eq:conditional_inverse}
+  \p(X \| C) &= \frac{\p(C, X)}{\sum_{X} \p(C, X)} \ .
+\end{align}
+It is very convenient to have both, as discussed in \sect~\ref{sec:biases}.
+
+The conditional distributions above are just matrices when $X$ is discrete. For continuous $X$ they can be regarded as $\nc$ tuples of functions in $X$. We can find convenient approximate expressions, such as polynomial interpolants, for faster numerical implementations of these functions.
+
+The integration procedure for~\eqref{eq:prob_is_expe_freq} also tells us how much the probability distribution $\p(C, X)$ would change if we acquired new data (a sort of \enquote{probability of the probability}).
+
+For further mathematical details see appendix~\ref{sec:nonparam_regression_details}.
+
+\section{Implementation in the classifier output}
+\label{sec:implem_idea}
+
+The implementation of our approach takes place after the training of the classifier has been carried out in the usual way. We assume that a collection of $M$ \emph{test data} were set aside as usual:
+\begin{equation}
+  \label{eq:testdata_features}
+  T \defd \set[\big]{(c_{1}, z_{1}), (c_{2}, z_{2}), \dotsc, (c_{M}, z_{M})} \ ,
+\end{equation}
+where the $c_{i}$ are the true classes and $z_{i}$ the corresponding feature values.
+
+The $M$ feature values $z_{i}$ are given as inputs to the classifier, which produces $M$ corresponding outputs $x_{i}$. We now consider data pairs consisting in the true classes $c_{i}$ and the outputs $x_{i}$: these are the \emph{calibration data} discussed in \sect~\ref{sec:prob_calc}:
+\begin{equation*}
+  D \defd \set[\big]{(c_{1}, x_{1}), (c_{2}, x_{2}), \dotsc, (c_{M}, x_{M}) } \ .
+\end{equation*}
+They are used to find the direct and inverse conditional probability distributions $\p(C \| X)$ and $\p(X \| C)$ as described in \sect~\ref{sec:prob_calc}.
+
+We can finally augment our classifier either in a \enquote{direct} or \enquote{discriminative} way, or an \enquote{inverse} or \enquote{generative} way, by adding one computation step at the end of the classifier's operation:
+\begin{description}
+\item[Direct:] from its output $x_{0}$ we obtain the probability for each class, $\p(c \| x_{0})$.
+\item[Inverse:] from its output $x_{0}$ we obtain the probability of the output itself, conditional on each class, $\p(x_{0} \| c)$. 
+\end{description}
+These $\nc$ probabilities are the final output of the augmented classifier.
+
+In the direct or discriminative case, at each new use of the classifier the output probabilities can be used together with a utility matrix to choose the \emph{optimal} class for that case, as discussed in the companion paper\mynote{\pencil}.
+
+In the inverse or generative case, at each new use of the classifier the probabilities for the classes are obtained via Bayes's theorem:
+\begin{equation}
+  \label{eq:bayes_theorem}
+  \p(c) = \frac{\p(x_{0} \| c)\ B(c)}{\sum_{c} \p(x_{0}\| c)\ B(c)} \ ,
+\end{equation}
+where $B(c)$ is the base rate of class $c$. The probabilities $\p(c)$ can finally be used together with a utility matrix to choose the \emph{optimal} class.
+
+
+
+
+\section{Numerical experiments and results}
+\label{sec:results}
+
+\section{Circumventing biases}
+\label{sec:biases}
+
+
+
+\section{Mathematical details of the nonparametric density regression}
+\label{sec:nonparam_regression_details}
 
 
 The joint probability~\eqref{eq:approach_p_joint} is calculated nonparametrically, that is, without making any assumptions such as linearity or gaussianity, besides very mild and reasonable assumptions of continuity.
 
 using the versatile computational approach by \textcites{dunsonetal2011}, and obtain the probability~\eqref{eq:approach_p_test} by conditionalization. The calculation requires Monte Carlo sampling \mynote{\pencil\ refs here} but needs to be made only once.
-
-
-
-
-
-
-
-\section{Implementation in the classifier output}
-\label{sec:implem_idea}
-
-\section{Numerical experiments and results}
-\label{sec:results}
-
-
-\section{Mathematical details of the nonparametric density regression}
-\label{sec:nonparam_regression_details}
 
 
 \section{Summary and discussion}
