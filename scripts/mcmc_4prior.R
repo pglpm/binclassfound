@@ -1,6 +1,6 @@
 ## Author: PGL  Porta Mana
 ## Created: 2022-04-15T11:48:45+0200
-## Last-Updated: 2022-04-16T22:56:27+0200
+## Last-Updated: 2022-04-16T20:56:41+0200
 ################
 ## Calculation of joint probability for class & classifier-output
 ################
@@ -47,10 +47,10 @@ library('nimble')
 #### End custom setup ####
 
 set.seed(707)
-baseversion <- '_results4'
+baseversion <- '_testprior'
 nclusters <- 20L
 niter <- 1024L # iterations AFTER thinning
-niter0 <- 1024L*4L
+niter0 <- 1024L#*2L
 thin <- 64L
 nstages <- 0L
 ncheckprobs1 <- 16L
@@ -58,9 +58,10 @@ ncheckprobs2 <- 8L
 maincov <- 'class'
 family <- 'Palatino'
 ndata <- 8192L #4096L
-posterior <- TRUE
+posterior <- FALSE
 ##
-stagestart <- 2L # last saved + 1
+## stagestart <- 2L # last saved + 1
+## continue <- paste0('_finalstate-R',baseversion,'_',mcmcseed,'_,'stagestart-1,'-V',length(covNames),'-D',ndata,'-K',nclusters,'-I',niter,'.rds')
 ##
 saveinfofile <- 'variate_info2.csv'
 datafile <- 'softmaxdata_test2_shuffled.csv'
@@ -75,9 +76,6 @@ covMins <- variateinfo$min
 covMaxs <- variateinfo$max
 names(covTypes) <- names(covMins) <- names(covMaxs) <- covNames
 odata <- fread(datafile, sep=',')
-if(exists('stagestart') & stagestart>0){
-    continue <- paste0('_finalstate-R',baseversion,stagestart-1,'-V',length(covNames),'-D',ndata,'-K',nclusters,'-I',niter,'.rds')
-}
 
 #################################
 ## Setup for Monte Carlo sampling
@@ -143,7 +141,7 @@ if(nbcovs>0){
 
 ##
 ##
-if(posterior){
+if(TRUE){
 print('Creating and saving checkpoints')
 checkprobsFile <- paste0(dirname,'/_checkprobs-R',baseversion,'-V',length(covNames),'-D',ndata,'-K',nclusters,'.rds')
 if(exists('continue') && is.character(continue)){
@@ -392,12 +390,12 @@ for(stage in stagestart+(0:nstages)){
         ll <- rep(0, length(ll))}
 
     ##momentstraces <- moments12Samples(parmList)
-if(posterior){
+## if(posterior){
     probCheckprobs <- foreach(apoint=checkprobs, .combine=rbind)%do%{
         samplesF(Y=apoint$y, X=apoint$x, parmList=parmList, inorder=TRUE)
     }
     rownames(probCheckprobs) <- checkprobs[[1]]$names
-    }
+##    }
     ## miqrtraces <- calcSampleMQ(parmList)
     ## medians <- miqrtraces[,,1]
     ## colnames(medians) <- paste0('MEDIAN_', colnames(miqrtraces))
@@ -507,8 +505,8 @@ if(posterior){
             axis(3,at=(log(Ogrid)-tpar['transfM'])/tpar['transfW'],labels=Ogrid,lwd=0,lwd.ticks=1,col.ticks='#bbbbbb80')
         }
         if(avar %in% binaryCovs){
-            plotsamples <- samplesF(Y=Xgrid, parmList=parmList, nfsamples=min(1024,nrow(mcsamples)), inorder=FALSE)
-            histo <- thist(plotsamples[2,])
+            plotsamples <- samplesF(Y=Xgrid, parmList=parmList, nfsamples=nrow(mcsamples), inorder=FALSE)
+            histo <- thist(plotsamples2[1,])
             tplot(histo$breaks, histo$density, col=7, xlab=paste0('P(',avar,' = 1)'), ylab='probability density', ylim=c(0, max(histo$density)), xlim=c(0,1), family=family)
         }
     }

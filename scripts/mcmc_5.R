@@ -1,6 +1,6 @@
 ## Author: PGL  Porta Mana
 ## Created: 2022-04-15T11:48:45+0200
-## Last-Updated: 2022-04-16T22:56:27+0200
+## Last-Updated: 2022-04-17T10:22:26+0200
 ################
 ## Calculation of joint probability for class & classifier-output
 ################
@@ -47,12 +47,12 @@ library('nimble')
 #### End custom setup ####
 
 set.seed(707)
-baseversion <- '_results4'
-nclusters <- 20L
+baseversion <- '_results5'
+nclusters <- 64L
 niter <- 1024L # iterations AFTER thinning
 niter0 <- 1024L*4L
-thin <- 64L
-nstages <- 0L
+thin <- 32L
+nstages <- 3L
 ncheckprobs1 <- 16L
 ncheckprobs2 <- 8L
 maincov <- 'class'
@@ -60,11 +60,11 @@ family <- 'Palatino'
 ndata <- 8192L #4096L
 posterior <- TRUE
 ##
-stagestart <- 2L # last saved + 1
+## stagestart <- 0L # last saved + 1
 ##
 saveinfofile <- 'variate_info2.csv'
 datafile <- 'softmaxdata_test2_shuffled.csv'
-#20 K, 8192 D, 4096 I: 2.13 h
+#64K, 8192D, 1024I: 2.13 h
 
 
 baseversion <- paste0(baseversion,'_',mcmcseed,'_')
@@ -75,7 +75,8 @@ covMins <- variateinfo$min
 covMaxs <- variateinfo$max
 names(covTypes) <- names(covMins) <- names(covMaxs) <- covNames
 odata <- fread(datafile, sep=',')
-if(exists('stagestart') & stagestart>0){
+if(!exists('stagestart')){stagestart <- 0L}
+if(stagestart>0){
     continue <- paste0('_finalstate-R',baseversion,stagestart-1,'-V',length(covNames),'-D',ndata,'-K',nclusters,'-I',niter,'.rds')
 }
 
@@ -122,8 +123,9 @@ source('functions_mcmc.R')
 ## }
 ##
 if(nrcovs>0){
-    medianrcovs <- apply(alldata[1:ndata,..realCovs],2,function(x)median(x, na.rm=TRUE))
-    widthrcovs <- apply(alldata[1:ndata,..realCovs],2,function(x)IQR(x, na.rm=TRUE, type=8))
+    realdata <- c(as.matrix(alldata[1:ndata,..realCovs]))
+    medianrcovs <- apply(alldata[1:ndata,..realCovs],2,function(x)median(realdata, na.rm=TRUE))
+    widthrcovs <- apply(alldata[1:ndata,..realCovs],2,function(x)IQR(realdata, na.rm=TRUE, type=8))
 }
 ##
 if(length(integerCovs)>0){
@@ -137,13 +139,13 @@ if(length(integerCovs)>0){
     }
 }
 ##
-if(nbcovs>0){
-    medianbcovs <- apply(alldata[1:ndata,..binaryCovs],2,function(x)median(x, na.rm=TRUE))
-}
+## if(nbcovs>0){
+##     medianbcovs <- apply(alldata[1:ndata,..binaryCovs],2,function(x)median(x, na.rm=TRUE))
+## }
 
 ##
 ##
-if(posterior){
+if(TRUE){
 print('Creating and saving checkpoints')
 checkprobsFile <- paste0(dirname,'/_checkprobs-R',baseversion,'-V',length(covNames),'-D',ndata,'-K',nclusters,'.rds')
 if(exists('continue') && is.character(continue)){
@@ -343,7 +345,6 @@ print(Sys.time() - timecount)
 ##################################################
 ## Monte Carlo sampler and plots of MC diagnostics
 ##################################################
-if(!exists('stagestart')){stagestart <- 0L}
 for(stage in stagestart+(0:nstages)){
     totalruntime <- Sys.time()
 
@@ -392,7 +393,7 @@ for(stage in stagestart+(0:nstages)){
         ll <- rep(0, length(ll))}
 
     ##momentstraces <- moments12Samples(parmList)
-if(posterior){
+if(TRUE){
     probCheckprobs <- foreach(apoint=checkprobs, .combine=rbind)%do%{
         samplesF(Y=apoint$y, X=apoint$x, parmList=parmList, inorder=TRUE)
     }

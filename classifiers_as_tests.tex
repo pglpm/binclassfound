@@ -1,7 +1,7 @@
 \pdfoutput=1
 %% Author: PGL  Porta Mana
 %% Created: 2022-04-14T17:18:22+0200
-%% Last-Updated: 2022-04-16T18:40:19+0200
+%% Last-Updated: 2022-04-16T19:15:32+0200
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Probabilities for classifier outputs
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -940,7 +940,8 @@ The weight $\wf(F)$ -- a probability density -- given to a frequency distributio
   \wf(F) \propto F(D)\ \wfo(F) \ .
 \end{equation}
 \begin{itemize}
-\item The first factor (\enquote{likelihood}) $\wfo(F)$ quantifies how well $F$ \emph{fits} known data of the same kind; in our case the sample data $D$. It is simply proportional to how frequent the known data would be, according to $F$:
+  
+\item The first factor (\enquote{likelihood}) $F(D)$ quantifies how well $F$ \emph{fits} known data of the same kind, the sample data $D$ in our case. It is simply proportional to how frequent the known data would be, according to $F$:
   \begin{equation}
     \label{eq:factor_likelihood}
 F(D) = F(c_{1}, x_{1})\ F(c_{2}, x_{2})\ \dotsm\ F(c_{M}, x_{M}) \ .
@@ -948,11 +949,13 @@ F(D) = F(c_{1}, x_{1})\ F(c_{2}, x_{2})\ \dotsm\ F(c_{M}, x_{M}) \ .
 
 \item The second factor (\enquote{prior}) $\wfo(F)$ quantifies how well $F$ \emph{generalizes} beyond the data we have seen, owing to reasons such as physical or biological constraints for example. In our case we expect $F$ to be somewhat smooth in $X$ when this variable is continuous\mynote{\wrench\ add a picture -- a sample from the prior over $F$ -- to illustrate the expected range of smoothness}. No assumptions are made about $F$ when $X$ is discrete.
 \end{itemize}
-The proportionality constant in \eqn~\eqref{eq:weight_F_two_factors} is simply the integral $\int F(D)\, \wfo(F)\, \di F$ ensuring that $\wf(F)$ is normalized.
+The proportionality constant in \eqn~\eqref{eq:weight_F_two_factors} is simply the integral $\smallint F(D)\, \wfo(F)\, \di F$ ensuring that $\wf(F)$ is normalized.
+
+Note that the first factor becomes larger as the number of known data increases. Thus a large amount of data indicating a non-smooth distribution $F$ will override any smoothness preferences embodied in the second factor.
 
 \medskip
 
-
+The expected value~\eqref{eq:prob_is_expe_freq} is numerically approximated by a sum over a sample of distributions $F$ having largest weights, obtained by Markov-chain Monte Carlo sampling. The error of this approximation can be calculated and made as small as required by increasing the number of Monte Carlo samples.
 
 
 The joint probability~\eqref{eq:approach_p_joint} is calculated nonparametrically, that is, without making any assumptions such as linearity or gaussianity, besides very mild and reasonable assumptions of continuity.
