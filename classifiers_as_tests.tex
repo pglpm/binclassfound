@@ -1,7 +1,7 @@
 \pdfoutput=1
 %% Author: PGL  Porta Mana
 %% Created: 2022-04-14T17:18:22+0200
-%% Last-Updated: 2022-04-17T12:59:30+0200
+%% Last-Updated: 2022-04-19T16:10:32+0200
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Probabilities for classifier outputs
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -948,7 +948,7 @@ The weight $\wf(F)$ -- a probability density -- given to a frequency distributio
 F(D) = F(c_{1}, x_{1})\ F(c_{2}, x_{2})\ \dotsm\ F(c_{M}, x_{M}) \ .
   \end{equation}
 
-\item The second factor (\enquote{prior}) $\wfo(F)$ quantifies how well $F$ \emph{generalizes} beyond the data we have seen, owing to reasons such as physical or biological constraints for example. In our case we expect $F$ to be somewhat smooth in $X$ when this variable is continuous\mynote{\wrench\ add a picture -- a sample from the prior over $F$ -- to illustrate the expected range of smoothness}. No assumptions are made about $F$ when $X$ is discrete.
+\item The second factor (\enquote{prior}) $\wfo(F)$ quantifies how well $F$ \emph{generalizes} beyond the data we have seen, owing to reasons such as physical or biological constraints for example. In our case we expect $F$ to be somewhat smooth in $X$ when this variable is continuous \autocites[Cf.][]{goodetal1971} \mynote{\wrench\ add a picture -- a sample from the prior over $F$ -- to illustrate the expected range of smoothness}. No assumptions are made about $F$ when $X$ is discrete. 
 \end{itemize}
 The proportionality constant in \eqn~\eqref{eq:weight_F_two_factors} is simply the integral $\smallint F(D)\, \wfo(F)\, \di F$ ensuring that $\wf(F)$ is normalized.
 
