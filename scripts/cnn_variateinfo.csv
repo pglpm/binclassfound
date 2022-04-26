@@ -1,0 +1,4 @@
+variate,type,min,max,transfM,transfW,origvariate
+class,binary,0,1,,,class
+prediction0,double,-Inf,Inf,,,prediction0
+prediction1,double,-Inf,Inf,,,prediction1

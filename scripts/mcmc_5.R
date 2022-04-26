@@ -1,6 +1,6 @@
 ## Author: PGL  Porta Mana
 ## Created: 2022-04-15T11:48:45+0200
-## Last-Updated: 2022-04-17T10:22:26+0200
+## Last-Updated: 2022-04-17T09:57:56+0200
 ################
 ## Calculation of joint probability for class & classifier-output
 ################
@@ -145,7 +145,7 @@ if(length(integerCovs)>0){
 
 ##
 ##
-if(TRUE){
+if(posterior){
 print('Creating and saving checkpoints')
 checkprobsFile <- paste0(dirname,'/_checkprobs-R',baseversion,'-V',length(covNames),'-D',ndata,'-K',nclusters,'.rds')
 if(exists('continue') && is.character(continue)){
@@ -393,7 +393,7 @@ for(stage in stagestart+(0:nstages)){
         ll <- rep(0, length(ll))}
 
     ##momentstraces <- moments12Samples(parmList)
-if(TRUE){
+if(posterior){
     probCheckprobs <- foreach(apoint=checkprobs, .combine=rbind)%do%{
         samplesF(Y=apoint$y, X=apoint$x, parmList=parmList, inorder=TRUE)
     }

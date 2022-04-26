@@ -1,6 +1,6 @@
 ## Author: PGL  Porta Mana
 ## Created: 2022-03-17T14:21:57+0100
-## Last-Updated: 2022-04-15T11:47:32+0200
+## Last-Updated: 2022-04-26T16:52:32+0200
 ################
 ## Exploration of several issues for binary classifiers
 ################
@@ -193,3 +193,109 @@ print('acc true:')
 sum(sapply(1:ncol(pYX),function(x)pYX[which.max(pYgX[,x]),x]))
 print('acc mod:')
 sum(sapply(1:ncol(pYX),function(x)pYX[which.max(pYgX2[,x]),x]))
+
+
+#########################################################
+#########################################################
+#########################################################
+
+
+
+set.seed(707)
+baseversion <- '_presults1'
+nclusters <- 64L
+niter <- 1024L # iterations AFTER thinning
+niter0 <- 1024L*2L
+thin <- 1L
+nstages <- 0L
+ncheckprobs1 <- 16L
+ncheckprobs2 <- 8L
+maincov <- 'class'
+family <- 'Palatino'
+ndata <- 8192L #4096L
+posterior <- TRUE
+##
+## stagestart <- 0L # last saved + 1
+##
+saveinfofile <- 'variate_info2.csv'
+datafile <- 'softmaxdata_test2_shuffled.csv'
+#64K, 8192D, 1024I: 0.5 h
+odata <- fread(datafile, sep=',')
+alldata <- odata[1:ndata, ..covNames]
+source('functions_mcmc.R')
+
+
+## baseversion <- paste0(baseversion,'_',mcmcseed,'_')
+variateinfo <- fread(saveinfofile, sep=',')
+covNames <- variateinfo$variate
+covTypes <- variateinfo$type
+covMins <- variateinfo$min
+covMaxs <- variateinfo$max
+names(covTypes) <- names(covMins) <- names(covMaxs) <- covNames
+
+realCovs <- covNames[covTypes=='double']
+integerCovs <- covNames[covTypes=='integer']
+binaryCovs <- covNames[covTypes=='binary']
+covNames <- c(realCovs, integerCovs, binaryCovs)
+nrcovs <- length(realCovs)
+nicovs <- length(integerCovs)
+nbcovs <- length(binaryCovs)
+ncovs <- length(covNames)
+restcovs <- setdiff(covNames, maincov)
+
+dirname <- '_presults1-V3-D8192-K64-I1024'
+nfromeach <- 2048/128
+mcsamples <- foreach(i=1:128, .combine=rbind)%dopar%{
+    temp <- readRDS(paste0(dirname, '/_mcsamples-R_presults1_',i,'_0-V3-D8192-K64-I2048.rds'))
+    temp[nrow(temp)+1-(nfromeach:1),]
+}
+parmlist <- mcsamples2parmlist(mcsamples)
+
+parmlistb <- mcsamples2parmlist(rbind(
+    readRDS(paste0('_results5_111_-V3-D8192-K64-I1024', '/_mcsamples-R_results5_111_2-V3-D8192-K64-I1024.rds')),
+    readRDS(paste0('_results5_222_-V3-D8192-K64-I1024', '/_mcsamples-R_results5_222_3-V3-D8192-K64-I1024.rds'))
+    ))
+
+condtrace1 <- logsumsamplesF(Y=as.matrix(alldata[,..maincov]), X=as.matrix(alldata[,..restcovs]), parmList=parmlist, inorder=F)
+
+condtrace2 <- logsumsamplesF(Y=as.matrix(alldata[,..restcovs]), X=as.matrix(alldata[,..maincov]), parmList=parmlist, inorder=F)
+
+condtrace1b <- logsumsamplesF(Y=as.matrix(alldata[,..maincov]), X=as.matrix(alldata[,..restcovs]), parmList=parmlistb, inorder=F)
+
+condtrace2b <- logsumsamplesF(Y=as.matrix(alldata[,..restcovs]), X=as.matrix(alldata[,..maincov]), parmList=parmlistb, inorder=F)
+
+
+tplot(y=list(condtrace2,condtrace2b))
+
+
+
+
+orange <- c(-1,1)*ceiling(max(abs(as.matrix(odata[,..realCovs]))))
+
+cseq <- seq(orange[1], orange[2], length.out=128)
+
+
+vpoints <- cbind(output0=rep(cseq, length(cseq)), output1=rep(cseq, each=length(cseq)))
+
+
+pgrid <- samplesF(Y=cbind(class=1), X=vpoints, parmList=parmlist, inorder=F)
+
+mpgrid <- rowMeans(pgrid)
+dim(mpgrid) <- rep(length(cseq), 2)
+##
+image(z=mpgrid, x=cseq, y=cseq, zlim=c(0,1), col=gray.colors(128,start=1,end=0), xlab=realCovs[1], ylab=realCovs[2])
+grid(lty=1,nx=8,ny=8)
+
+spgrid <- apply(pgrid,1,IQR)
+dim(spgrid) <- rep(length(cseq), 2)
+##
+image(z=spgrid, x=cseq, y=cseq, zlim=c(0,1), col=gray.colors(128,start=1,end=0), xlab=realCovs[1], ylab=realCovs[2])
+grid(lty=1,nx=8,ny=8)
+
+
+
+
+cnndata <- fread('modCHEMBL205_predictions_CNN.csv', sep=',')
+rfdata <- fread('modCHEMBL205_predictions_RF.csv', sep=',')
+svmdata <- fread('modCHEMBL205_predictions_SVM.csv', sep=',')
+
