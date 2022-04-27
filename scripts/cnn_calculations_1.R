@@ -1,6 +1,6 @@
 ## Author: PGL  Porta Mana
 ## Created: 2022-03-17T14:21:57+0100
-## Last-Updated: 2022-04-27T16:44:05+0200
+## Last-Updated: 2022-04-27T17:38:45+0200
 ################
 ## Exploration of several issues for binary classifiers
 ################
@@ -130,6 +130,35 @@ ftauR <- oneparmlist$tauR[1,,qorder[1:maxclusters]]
 fprobB <- oneparmlist$probB[1,,qorder[1:maxclusters]]
 
 
+maxclusters <- 2^10
+cincluded <- qorder[1:maxclusters]
+##
+shortparmlist <- list(
+    q=oneparmlist$q[,cincluded, drop=F]/sum(oneparmlist$q[,cincluded]),
+    meanR=oneparmlist$meanR[,,cincluded, drop=F],
+    tauR=oneparmlist$tauR[,,cincluded, drop=F],
+    probI=oneparmlist$probI[,,cincluded, drop=F],
+    sizeI=oneparmlist$sizeI[,,cincluded, drop=F],
+    probB=oneparmlist$probB[,,cincluded, drop=F]
+)
+
+
+ngridpoints <- 16
+orange <- 1.2*c(-1,1)*ceiling(max(abs(as.matrix(odata[,..realCovs]))))
+##
+cseq <- seq(orange[1], orange[2], length.out=ngridpoints)
+##
+vpoints <- cbind(rep(cseq, length(cseq)), rep(cseq, each=length(cseq)))
+colnames(vpoints) <- realCovs
+
+mpgrid <- samplesF(Y=cbind(class=1), X=vpoints, parmList=parmlist, inorder=F)
+##
+mpgrid <- rowMeans(pgrid)
+dim(mpgrid) <- rep(length(cseq), 2)
+##
+
+image(z=mpgrid, x=cseq, y=cseq, zlim=c(0,1), col=gray.colors(128,start=1,end=0), xlab=realCovs[1], ylab=realCovs[2])
+grid(lty=1,nx=8,ny=8)
 
 ##########################################################
 ##########################################################
