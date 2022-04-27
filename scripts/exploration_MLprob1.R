@@ -1,6 +1,6 @@
 ## Author: PGL  Porta Mana
 ## Created: 2022-03-17T14:21:57+0100
-## Last-Updated: 2022-04-26T19:22:15+0200
+## Last-Updated: 2022-04-27T09:14:49+0200
 ################
 ## Exploration of several issues for binary classifiers
 ################
@@ -334,4 +334,11 @@ grid(lty=1,nx=8,ny=8)
 cnndata <- fread('modCHEMBL205_predictions_CNN.csv', sep=',')
 rfdata <- fread('modCHEMBL205_predictions_RF.csv', sep=',')
 svmdata <- fread('modCHEMBL205_predictions_SVM.csv', sep=',')
+
+rfdata <- fread('modCHEMBL205_predictions_RF.csv', sep=',')
+
+rfdata$prediction_int <- as.integer(round(rfdata$prediction * 200))
+max(abs(rfdata$prediction_int-rfdata$prediction*200))
+
+fwrite(rfdata, 'modCHEMBL205_predictions_RF.csv', sep=',')
 

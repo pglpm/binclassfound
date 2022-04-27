@@ -1,6 +1,6 @@
 ## Author: PGL  Porta Mana
 ## Created: 2022-04-15T11:48:45+0200
-## Last-Updated: 2022-04-26T22:24:43+0200
+## Last-Updated: 2022-04-27T07:07:34+0200
 ################
 ## Calculation of joint probability for class & classifier-output
 ## Parallel version
@@ -544,7 +544,7 @@ for(stage in stagestart+(0:nstages)){
         ## if(grepl('^[PDV]', avar)){transf <- function(x){log(abs(x)+1e-12)}
         ## if(grepl('^[PDV]', avar)){transf <- function(x){log(abs(x)+1e-12)}
         ## }else{transf <- identity}
-        tplot(y=transf(traces[,avar])*10/log(10), type='l', lty=1, col=colpalette[avar],
+        tplot(y=transf(traces[,avar])*10/log(10)/ndata, type='l', lty=1, col=colpalette[avar],
                 main=paste0(avar,
                             '\nESS = ', signif(diagnESS[avar], 3),
                             ' | IAT = ', signif(diagnIAT[avar], 3),
@@ -553,7 +553,7 @@ for(stage in stagestart+(0:nstages)){
                             ' | stat: ', diagnStat[avar],
                             ' | burn: ', diagnBurn[avar]
                             ),
-                ylab=paste0(avar,'/dHart'), xlab='step', family=family
+                ylab=paste0(avar,'/(dHart/datum)'), xlab='step', family=family
               #, ylim=range(c(transf(traces[,avar][abs(transf(traces[,avar]))<Inf])))
               )
     }
