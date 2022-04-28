@@ -1,6 +1,6 @@
 ## Author: PGL  Porta Mana
 ## Created: 2022-03-17T14:21:57+0100
-## Last-Updated: 2022-04-28T17:57:54+0200
+## Last-Updated: 2022-04-28T18:29:54+0200
 ################
 ## Exploration of several issues for binary classifiers
 ################
@@ -302,6 +302,57 @@ condtrace2b <- logsumsamplesF(Y=as.matrix(alldata[,..restcovs]), X=as.matrix(all
 
 
 tplot(y=list(condtrace2,condtrace2b))
+
+
+
+xgrid <- seq(0, 1, length.out=256)
+ygrid <- X2Y[['prediction_lnodds']](xgrid)
+##
+vpoints <- cbind(prediction_lnodds=ygrid)
+
+pgrid <- samplesF(Y=cbind(class=0), X=vpoints, parmList=parmList, inorder=F)
+
+qgrid <- apply(pgrid,1,function(x){quantile(x, c(1,7)/8)})
+##
+tplot(x=xgrid, y=rowMeans(pgrid), xlab='RF % output', ylab='probability of class 0', ylim=c(0,1))
+polygon(x=c(xgrid,rev(xgrid)), y=c(qgrid[1,],rev(qgrid[2,])), col=paste0(palette()[1],'40'), border=NA)
+legend('topleft', legend=c(
+                       paste0(paste0(rownames(qgrid),collapse='\u2013'), ' uncertainty')
+                   ),
+       lty=c('solid'), lwd=c(10),
+       col=paste0(palette()[1],c('40')),
+       bty='n', cex=1.25)
+
+
+
+pgrid0 <- samplesF(X=cbind(class=0), Y=vpoints, parmList=parmList, inorder=F)*Xjacobian[['prediction_lnodds']](xgrid)
+##
+qgrid0 <- apply(pgrid0,1,function(x){quantile(x, c(1,7)/8)})
+##
+pgrid1 <- samplesF(X=cbind(class=1), Y=vpoints, parmList=parmList, inorder=F)*Xjacobian[['prediction_lnodds']](xgrid)
+##
+qgrid1 <- apply(pgrid1,1,function(x){quantile(x, c(1,7)/8)})
+##
+
+tplot(x=xgrid, y=cbind(rowMeans(pgrid0),rowMeans(pgrid1)), xlab='RF % output', ylab='probability of output', ylim=c(0,25))
+polygon(x=c(xgrid,rev(xgrid)), y=c(qgrid0[1,],rev(qgrid0[2,])), col=paste0(palette()[1],'40'), border=NA)
+polygon(x=c(xgrid,rev(xgrid)), y=c(qgrid1[1,],rev(qgrid1[2,])), col=paste0(palette()[2],'40'), border=NA)
+legend('topleft', legend=c(
+                      'Conditional on class 0',
+                      'Conditional on class 1',
+                       paste0(paste0(rownames(qgrid),collapse='\u2013'), ' uncertainty')
+                   ),
+       lty=c(1,2,1), lwd=c(3,3,10),
+       col=paste0(palette()[c(1,2,7)],c('','','C0')),
+       bty='n', cex=1.25)
+
+
+
+
+
+
+
+
 
 
 

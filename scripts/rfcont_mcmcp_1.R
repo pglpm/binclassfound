@@ -1,6 +1,6 @@
 ## Author: PGL  Porta Mana
 ## Created: 2022-04-15T11:48:45+0200
-## Last-Updated: 2022-04-28T14:53:06+0200
+## Last-Updated: 2022-04-28T17:26:01+0200
 ################
 ## Calculation of joint probability for class & classifier-output
 ## Parallel version
@@ -53,12 +53,12 @@ library('nimble')
 #### End custom setup ####
 
 set.seed(707)
-baseversion <- '_rfcont_test1'
+baseversion <- '_rfcont_1'
 nclusters <- 64L
-niter <- 1024L # iterations AFTER thinning
+niter <- 1024L*2L # iterations AFTER thinning
 niter0 <- 1024L#*2L
 thin <- 1L
-nstages <- 0L
+nstages <- 1L
 ncheckprobs1 <- 16L
 ncheckprobs2 <- 8L
 maincov <- 'class'
@@ -85,7 +85,7 @@ Xjacobian <- list(
         4*epsi/(1 - (2*epsi*(x-0.5))^2)
     }
 )
-Xrange <- list('prediction_lnodds'=c(0.9,1))
+Xrange <- list('prediction_lnodds'=c(0,1))
 
 
 ## baseversion <- paste0(baseversion,'_',mcmcseed,'_')
@@ -235,8 +235,8 @@ initsFunction <- function(){
         list(# hyperparameters
             meanRmean0=medianrcovs,
             meanRtau0=1/(widthrcovs)^2, # dims = inv. variance
-            tauRrate0=(widthrcovs*0+2.1)^2, # dims = variance
-            tauRshape0=rep(1/4,nrcovs)
+            tauRrate0=(widthrcovs*0+0.65/0.3)^2, # dims = variance
+            tauRshape0=rep(1/4,nrcovs) # min SD value is ~ 0.3 times the one in rate
             ## integrated parameters
 #            meanRtau=1/(widthrcovs/(2*qnorm(3/4)))^2, # dims = inv. variance
 #            tauRrate=(widthrcovs/(2*qnorm(3/4)))^2, # dims = variance
@@ -534,9 +534,9 @@ for(stage in stagestart+(0:nstages)){
         ymax <- quant(apply(plotsamples,2,function(x){quant(x,99/100)}),99/100, na.rm=T)
         ## ymax <- quant(apply(plotsamples,2,max),99/100)
         tplot(x=Xgrid, y=plotsamples, type='l', col=paste0(palette()[7], '44'), lty=1, lwd=2, xlab=avar, ylab='probability density', ylim=c(0, ymax), family=family)#max(plotsamples[plotsamples<df])))
-        if(!any(is.na(tpar))){
-            axis(3,at=(log(Ogrid)-tpar['transfM'])/tpar['transfW'],labels=Ogrid,lwd=0,lwd.ticks=1,col.ticks='#bbbbbb80')
-        }
+        ## if(!any(is.na(tpar))){
+        ##     axis(3,at=(log(Ogrid)-tpar['transfM'])/tpar['transfW'],labels=Ogrid,lwd=0,lwd.ticks=1,col.ticks='#bbbbbb80')
+        ## }
         ## if(avar %in% binaryCovs){
         ##     plotsamples <- samplesF(Y=Xgrid, parmList=parmList, nfsamples=min(1024,nrow(mcsamples)), inorder=FALSE)
         ##     histo <- thist(plotsamples[2,])
