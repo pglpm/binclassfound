@@ -1,6 +1,6 @@
 ## Author: PGL  Porta Mana
 ## Created: 2022-03-17T14:21:57+0100
-## Last-Updated: 2022-04-27T09:14:49+0200
+## Last-Updated: 2022-04-28T13:06:56+0200
 ################
 ## Exploration of several issues for binary classifiers
 ################
@@ -85,7 +85,7 @@ dt  <- as.data.table(read.csv('modCHEMBL205_predictions_CNN.csv',header=TRUE,sep
 
 
 nsamples <- as.integer(2^16)
-tausamples <- -log10(rgamma(n=nsamples, shape=1/4, rate=1/10^2))/2
+tausamples <- -log10(rgamma(n=nsamples, shape=1/4, rate=1/0.6^2))/2
 qt <- quantile(tausamples, (1:3)/4)
 ##
 his <- thist(tausamples)
@@ -339,6 +339,15 @@ rfdata <- fread('modCHEMBL205_predictions_RF.csv', sep=',')
 
 rfdata$prediction_int <- as.integer(round(rfdata$prediction * 200))
 max(abs(rfdata$prediction_int-rfdata$prediction*200))
+
+fwrite(rfdata, 'modCHEMBL205_predictions_RF.csv', sep=',')
+
+
+rfdata <- fread('modCHEMBL205_predictions_RF.csv', sep=',')
+
+shrink <- function(x){(x-0.5)*(1-2^-10)+0.5}
+
+rfdata$prediction_lnodds <- log(shrink(rfdata$prediction)/(1-shrink(rfdata$prediction)))
 
 fwrite(rfdata, 'modCHEMBL205_predictions_RF.csv', sep=',')
 
