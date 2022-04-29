@@ -1,6 +1,6 @@
 ## Author: PGL  Porta Mana
 ## Created: 2022-03-17T14:21:57+0100
-## Last-Updated: 2022-04-28T18:29:54+0200
+## Last-Updated: 2022-04-29T07:44:34+0200
 ################
 ## Exploration of several issues for binary classifiers
 ################
@@ -346,13 +346,15 @@ legend('topleft', legend=c(
        col=paste0(palette()[c(1,2,7)],c('','','C0')),
        bty='n', cex=1.25)
 
+testj <- rowMeans(samplesF(Y=as.matrix(alldata[]), parmList=parmList, inorder=F))
+testc <- rowMeans(samplesF(Y=as.matrix(alldata[,'class']), parmList=parmList, inorder=F))
+testp <- rowMeans(samplesF(Y=as.matrix(alldata[,'prediction_lnodds']), parmList=parmList, inorder=F))
+##
+testcp <- rowMeans(samplesF(Y=as.matrix(alldata[,'class']), X=as.matrix(alldata[,'prediction_lnodds']), parmList=parmList, inorder=F))
+testpc <- rowMeans(samplesF(X=as.matrix(alldata[,'class']), Y=as.matrix(alldata[,'prediction_lnodds']), parmList=parmList, inorder=F))
 
-
-
-
-
-
-
+max(abs((testcp-testj/testp)/(testcp+testj/testp)))
+max(abs((testpc-testj/testc)/(testpc+testj/testc)))
 
 
 
