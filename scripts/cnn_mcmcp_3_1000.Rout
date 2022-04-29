@@ -1,0 +1,79 @@
+During startup - Warning message:
+Setting LC_CTYPE=en_GB.UTF-8 failed 
+[1] "MCMC seed = 1000"
+Loading required package: future
+Loading required package: rngtools
+[1] "availableCores:"
+system 
+     8 
+[1] "availableCores-multicore:"
+system 
+     1 
+nimble version 0.12.2 is loaded.
+For more information on NIMBLE and a User Manual,
+please visit https://R-nimble.org.
+
+Attaching package: 'nimble'
+
+The following object is masked from 'package:future':
+
+    values
+
+The following object is masked from 'package:data.table':
+
+    cube
+
+The following object is masked from 'package:stats':
+
+    simulate
+
+          used (Mb) gc trigger  (Mb) max used  (Mb)
+Ncells 1835080 98.1    3449401 184.3  2077011 111.0
+Vcells 2248585 17.2    8388608  64.0  5662542  43.3
+Defining model
+Building model
+Setting data and initial values
+Running calculate on model
+  [Note] Any error reports that follow may simply reflect missing values in model variables.
+Checking model sizes and dimensions
+  [Note] This model is not fully initialized. This is not an error.
+         To see which variables are not initialized, use model$initializeInfo().
+         For more information on model initialization, see help(modelInitialization).
+Compiling
+  [Note] This may take a minute.
+  [Note] Use 'showCompilerOutput = TRUE' to see C++ compilation details.
+          used  (Mb) gc trigger  (Mb) max used  (Mb)
+Ncells 2636188 140.8    4553145 243.2  4553145 243.2
+Vcells 4716805  36.0   10146329  77.5  8388169  64.0
+===== Monitors =====
+thin = 1: meanR, probB, q, tauR
+thin2 = 1: C
+===== Samplers =====
+===== Monitors =====
+thin = 1: meanR, probB, q, tauR
+thin2 = 1: C
+===== Samplers =====
+conjugate sampler (321)
+  - meanR[]  (128 elements)
+  - tauR[]  (128 elements)
+  - probB[]  (64 elements)
+  - q[1:64] 
+categorical sampler (3589)
+  - C[]  (3589 elements)
+Compiling
+  [Note] This may take a minute.
+  [Note] Use 'showCompilerOutput = TRUE' to see C++ compilation details.
+           used  (Mb) gc trigger  (Mb) max used  (Mb)
+Ncells  3991566 213.2    6775568 361.9  6775568 361.9
+Vcells 20961959 160.0   37389395 285.3 31320716 239.0
+[1] "Setup time:"
+Time difference of 2.74556 mins
+[1] "==== STAGE 0 ===="
+Running chain 1 ...
+|-------------|-------------|-------------|-------------|
+|-------------------------------------------------------|
+[1] "MCMC time:"
+Time difference of 5.955359 mins
+[1] "OCCUPIED CLUSTERS: 10 OF 64"
+[1] "Total runtime:"
+Time difference of 8.822294 mins

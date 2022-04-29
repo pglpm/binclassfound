@@ -1,6 +1,6 @@
 ## Author: PGL  Porta Mana
 ## Created: 2022-03-17T14:21:57+0100
-## Last-Updated: 2022-04-29T13:52:45+0200
+## Last-Updated: 2022-04-29T15:34:23+0200
 ################
 ## Exploration of several issues for binary classifiers
 ################
@@ -150,10 +150,12 @@ dirname <- '_rfcont_1-V2-D3588-K64-I1024'
 
 npar <- 16
 ntotal <- 1024*4
+nskip <- 4
 parmlist <- mcsamples2parmlist(
     foreach(i=1:npar, .combine=rbind)%dopar%{
         temp <- readRDS(paste0(dirname, '/_mcsamples-R_rfcont_1_',i,'_0-V2-D3588-K64-I1024.rds'))
-        temp[nrow(temp)+1-((ntotal/npar):1),]
+        if(any(is.na(nrow(temp)+1-rev(seq(1,nrow(temp),by=nskip)[1:(ntotal/npar)])))){print('WARNING! not enough points')}
+        temp[nrow(temp)+1-rev(seq(1,nrow(temp),by=nskip)[1:(ntotal/npar)]),]
 }
 )
 
@@ -256,7 +258,7 @@ pgrid <- samplesF(Y=cbind(class=1), X=vpoints, parmList=shortparmlist, inorder=F
 ##
 ## qgrid <- apply(pgrid,1,function(x){quantile(x, c(1,7)/8)})
 ##
-tplot(x=xgrid, y=pgrid, xlab='RF % output', ylab='probability of class 1', ylim=c(0,1))
+tplot(x=xgrid, y=1-pgrid, xlab='RF % output', ylab='probability of class 1', ylim=c(0,1))
 ## polygon(x=c(xgrid,rev(xgrid)), y=c(qgrid[1,],rev(qgrid[2,])), col=paste0(palette()[1],'40'), border=NA)
 ## legend('topleft', legend=c(
 ##                        paste0(paste0(rownames(qgrid),collapse='\u2013'), ' uncertainty')

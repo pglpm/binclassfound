@@ -1,6 +1,6 @@
 ## Author: PGL  Porta Mana
 ## Created: 2022-04-15T11:48:45+0200
-## Last-Updated: 2022-04-29T09:36:48+0200
+## Last-Updated: 2022-04-29T15:07:26+0200
 ################
 ## Calculation of joint probability for class & classifier-output
 ## Parallel version
@@ -53,12 +53,12 @@ library('nimble')
 #### End custom setup ####
 
 set.seed(707)
-baseversion <- '_rfcont_1'
+baseversion <- '_cnn_3test'
 nclusters <- 64L
-niter <- 1024L # iterations AFTER thinning
-niter0 <- 1024L
+niter <- 1024L*2L # iterations AFTER thinning
+niter0 <- 1024L*1L
 thin <- 1L
-nstages <- 1L
+nstages <- 0L
 ## ncheckprobs1 <- 16L
 ## ncheckprobs2 <- 8L
 maincov <- 'class'
@@ -68,24 +68,24 @@ posterior <- TRUE
 ##
 ## stagestart <- 0L # last saved + 1
 ##
-saveinfofile <- 'rfcont_variateinfo.csv'
-datafile <- 'modCHEMBL205_predictions_RF.csv'
+saveinfofile <- 'cnn_variateinfo.csv'
+datafile <- 'modCHEMBL205_predictions_CNN.csv'
 #64K, 3588D, 1024I: 7 min + 3 min
-X2Y <- list(
-    'prediction_lnodds'=function(x){
-        epsi <- 1 - 2^-10
-        x <- 0.5 + (x-0.5)*epsi
-        log(x/(1-x))
-    }
-)
-Xjacobian <- list(
-    'prediction_lnodds'=function(x){
-        epsi <- 1 - 2^-10
-        x <- 0.5 + (x-0.5)*epsi
-        4*epsi/(1 - (2*epsi*(x-0.5))^2)
-    }
-)
-Xrange <- list('prediction_lnodds'=c(0,1))
+## X2Y <- list(
+##     'prediction_lnodds'=function(x){
+##         epsi <- 1 - 2^-10
+##         x <- 0.5 + (x-0.5)*epsi
+##         log(x/(1-x))
+##     }
+## )
+## Xjacobian <- list(
+##     'prediction_lnodds'=function(x){
+##         epsi <- 1 - 2^-10
+##         x <- 0.5 + (x-0.5)*epsi
+##         4*epsi/(1 - (2*epsi*(x-0.5))^2)
+##     }
+## )
+## Xrange <- list('prediction_lnodds'=c(0,1))
 
 
 ## baseversion <- paste0(baseversion,'_',mcmcseed,'_')
@@ -235,7 +235,7 @@ initsFunction <- function(){
         list(# hyperparameters
             meanRmean0=medianrcovs,
             meanRtau0=1/(widthrcovs)^2, # dims = inv. variance
-            tauRrate0=(widthrcovs*0+0.65/0.3)^2, # dims = variance
+            tauRrate0=(widthrcovs/8)^2, # dims = variance
             tauRshape0=rep(1/4,nrcovs) # min SD value is ~ 0.3 times the one in rate
             ## integrated parameters
 #            meanRtau=1/(widthrcovs/(2*qnorm(3/4)))^2, # dims = inv. variance
