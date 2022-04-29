@@ -1,6 +1,6 @@
 ## Author: PGL  Porta Mana
 ## Created: 2022-03-17T14:21:57+0100
-## Last-Updated: 2022-04-29T15:34:23+0200
+## Last-Updated: 2022-04-29T17:34:46+0200
 ################
 ## Exploration of several issues for binary classifiers
 ################
@@ -300,6 +300,18 @@ fwrite(data.table(w=c(shortparmlist$q),
 
 
 
+## Allocation period 2022.1 (2022-04-01 - 2022-10-01)
+## Accounting updated 2022-04-29 17:33:20
+## ============================================
+## Account                            Cpu hours
+## --------------------------------------------
+## nn8050k  Quota (pri)                14000.00
+## nn8050k  Quota (nonpri)                 0.00
+## nn8050k  Used                        3257.52
+## nn8050k  Running                        0.00
+## nn8050k  Pending                       40.00
+## nn8050k  Available                  10702.48
+## ============================================
 
 
 

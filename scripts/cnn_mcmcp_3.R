@@ -1,6 +1,6 @@
 ## Author: PGL  Porta Mana
 ## Created: 2022-04-15T11:48:45+0200
-## Last-Updated: 2022-04-29T15:07:26+0200
+## Last-Updated: 2022-04-29T17:32:29+0200
 ################
 ## Calculation of joint probability for class & classifier-output
 ## Parallel version
@@ -53,12 +53,12 @@ library('nimble')
 #### End custom setup ####
 
 set.seed(707)
-baseversion <- '_cnn_3test'
+baseversion <- '_cnn_3'
 nclusters <- 64L
 niter <- 1024L*2L # iterations AFTER thinning
-niter0 <- 1024L*1L
+niter0 <- 1024L*2L
 thin <- 1L
-nstages <- 0L
+nstages <- 1L
 ## ncheckprobs1 <- 16L
 ## ncheckprobs2 <- 8L
 maincov <- 'class'
@@ -70,7 +70,7 @@ posterior <- TRUE
 ##
 saveinfofile <- 'cnn_variateinfo.csv'
 datafile <- 'modCHEMBL205_predictions_CNN.csv'
-#64K, 3588D, 1024I: 7 min + 3 min
+#64K, 3589D, 1024I: 10 min + 3 min
 ## X2Y <- list(
 ##     'prediction_lnodds'=function(x){
 ##         epsi <- 1 - 2^-10
