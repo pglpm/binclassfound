@@ -1,0 +1,77 @@
+During startup - Warning message:
+Setting LC_CTYPE=en_GB.UTF-8 failed 
+[1] "MCMC seed = 1"
+Loading required package: future
+Loading required package: rngtools
+[1] "availableCores:"
+system 
+     8 
+[1] "availableCores-multicore:"
+system 
+     1 
+nimble version 0.12.2 is loaded.
+For more information on NIMBLE and a User Manual,
+please visit https://R-nimble.org.
+
+Attaching package: 'nimble'
+
+The following object is masked from 'package:future':
+
+    values
+
+The following object is masked from 'package:data.table':
+
+    cube
+
+The following object is masked from 'package:stats':
+
+    simulate
+
+          used (Mb) gc trigger  (Mb) max used  (Mb)
+Ncells 1831737 97.9    3449417 184.3  1972906 105.4
+Vcells 2229539 17.1    8388608  64.0  5662542  43.3
+Warning message:
+In dir.create(dirname) : '_rf_test1-V2-D3588-K64-I1024' already exists
+Defining model
+Building model
+Setting data and initial values
+Running calculate on model
+  [Note] Any error reports that follow may simply reflect missing values in model variables.
+Checking model sizes and dimensions
+  [Note] This model is not fully initialized. This is not an error.
+         To see which variables are not initialized, use model$initializeInfo().
+         For more information on model initialization, see help(modelInitialization).
+Compiling
+  [Note] This may take a minute.
+  [Note] Use 'showCompilerOutput = TRUE' to see C++ compilation details.
+          used  (Mb) gc trigger  (Mb) max used  (Mb)
+Ncells 2526031 135.0    4555787 243.4  4555787 243.4
+Vcells 3729579  28.5    8388608  64.0  7531943  57.5
+===== Monitors =====
+thin = 1: probB, probI, q, sizeI
+thin2 = 1: C
+===== Samplers =====
+===== Monitors =====
+thin = 1: probB, probI, q, sizeI
+thin2 = 1: C
+===== Samplers =====
+conjugate sampler (129)
+  - probI[]  (64 elements)
+  - probB[]  (64 elements)
+  - q[1:64] 
+categorical sampler (3652)
+  - C[]  (3588 elements)
+  - sizeI[]  (64 elements)
+Compiling
+  [Note] This may take a minute.
+  [Note] Use 'showCompilerOutput = TRUE' to see C++ compilation details.
+           used  (Mb) gc trigger  (Mb) max used  (Mb)
+Ncells  3817194 203.9    6695196 357.6  5545997 296.2
+Vcells 11672263  89.1   21468864 163.8 15433047 117.8
+[1] "Setup time:"
+Time difference of 1.712116 mins
+[1] "==== STAGE 0 ===="
+Running chain 1 ...
+|-------------|-------------|-------------|-------------|
+|
+Execution halted

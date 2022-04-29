@@ -1,0 +1,95 @@
+During startup - Warning message:
+Setting LC_CTYPE=en_GB.UTF-8 failed 
+[1] "MCMC seed = 1"
+Loading required package: future
+Loading required package: rngtools
+[1] "availableCores:"
+system 
+     8 
+[1] "availableCores-multicore:"
+system 
+     1 
+During startup - Warning message:
+Setting LC_CTYPE=en_GB.UTF-8 failed 
+During startup - Warning message:
+Setting LC_CTYPE=en_GB.UTF-8 failed 
+During startup - Warning message:
+Setting LC_CTYPE=en_GB.UTF-8 failed 
+During startup - Warning message:
+Setting LC_CTYPE=en_GB.UTF-8 failed 
+nimble version 0.12.2 is loaded.
+For more information on NIMBLE and a User Manual,
+please visit https://R-nimble.org.
+
+Attaching package: 'nimble'
+
+The following object is masked from 'package:future':
+
+    values
+
+The following object is masked from 'package:data.table':
+
+    cube
+
+The following object is masked from 'package:stats':
+
+    simulate
+
+          used (Mb) gc trigger  (Mb) max used  (Mb)
+Ncells 1864221 99.6    3903285 208.5  2181321 116.5
+Vcells 2302587 17.6    8388608  64.0  7442206  56.8
+Defining model
+Building model
+Setting data and initial values
+Running calculate on model
+  [Note] Any error reports that follow may simply reflect missing values in model variables.
+Checking model sizes and dimensions
+  [Note] This model is not fully initialized. This is not an error.
+         To see which variables are not initialized, use model$initializeInfo().
+         For more information on model initialization, see help(modelInitialization).
+Compiling
+  [Note] This may take a minute.
+  [Note] Use 'showCompilerOutput = TRUE' to see C++ compilation details.
+          used  (Mb) gc trigger  (Mb) max used  (Mb)
+Ncells 2626969 140.3    3903285 208.5  3903285 208.5
+Vcells 4130987  31.6    8388608  64.0  8387464  64.0
+===== Monitors =====
+thin = 1: meanR, probB, q, tauR
+thin2 = 1: C
+===== Samplers =====
+===== Monitors =====
+thin = 1: meanR, probB, q, tauR
+thin2 = 1: C
+===== Samplers =====
+conjugate sampler (193)
+  - meanR[]  (64 elements)
+  - tauR[]  (64 elements)
+  - probB[]  (64 elements)
+  - q[1:64] 
+categorical sampler (3588)
+  - C[]  (3588 elements)
+Compiling
+  [Note] This may take a minute.
+  [Note] Use 'showCompilerOutput = TRUE' to see C++ compilation details.
+           used  (Mb) gc trigger  (Mb) max used  (Mb)
+Ncells  3949091 211.0    7239435 386.7  7239435 386.7
+Vcells 14163588 108.1   25842636 197.2 21929815 167.4
+[1] "Setup time:"
+Time difference of 2.078657 mins
+[1] "==== STAGE 0 ===="
+Running chain 1 ...
+|-------------|-------------|-------------|-------------|
+|-------------------------------------------------------|
+[1] "MCMC time:"
+Time difference of 4.962265 mins
+[1] "OCCUPIED CLUSTERS: 5 OF 64"
+[1] "Total runtime:"
+Time difference of 6.118861 mins
+[1] "==== STAGE 1 ===="
+|-------------|-------------|-------------|-------------|
+|-------------------------------------------------------|
+[1] "MCMC time:"
+Time difference of 5.527602 mins
+[1] "OCCUPIED CLUSTERS: 5 OF 64"
+[1] "Total runtime:"
+Time difference of 6.707098 mins

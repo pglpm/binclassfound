@@ -1,6 +1,6 @@
 ## Author: PGL  Porta Mana
 ## Created: 2022-04-15T11:48:45+0200
-## Last-Updated: 2022-04-28T17:26:01+0200
+## Last-Updated: 2022-04-29T09:48:56+0200
 ################
 ## Calculation of joint probability for class & classifier-output
 ## Parallel version
@@ -39,8 +39,8 @@ if(file.exists("/cluster/home/pglpm/R")){
         plan(sequential)
     }
 }else{
-    ##plan(multisession, workers=6)
-    plan(sequential)
+    plan(multisession, workers=3)
+    ## plan(sequential)
 }
 ## library('LaplacesDemon')
 ## library('extraDistr')
@@ -53,14 +53,14 @@ library('nimble')
 #### End custom setup ####
 
 set.seed(707)
-baseversion <- '_rfcont_1'
+baseversion <- '_rfcont_1b'
 nclusters <- 64L
-niter <- 1024L*2L # iterations AFTER thinning
-niter0 <- 1024L#*2L
+niter <- 1024L # iterations AFTER thinning
+niter0 <- 1024L
 thin <- 1L
 nstages <- 1L
-ncheckprobs1 <- 16L
-ncheckprobs2 <- 8L
+## ncheckprobs1 <- 16L
+## ncheckprobs2 <- 8L
 maincov <- 'class'
 family <- 'Palatino'
 ## ndata <- 8192L #4096L
@@ -70,7 +70,7 @@ posterior <- TRUE
 ##
 saveinfofile <- 'rfcont_variateinfo.csv'
 datafile <- 'modCHEMBL205_predictions_RF.csv'
-#64K, 3589D, 1024I: 9.3 min + 3 min
+#64K, 3588D, 1024I: 7 min + 3 min
 X2Y <- list(
     'prediction_lnodds'=function(x){
         epsi <- 1 - 2^-10
@@ -443,7 +443,7 @@ for(stage in stagestart+(0:nstages)){
     ## colnames(Q3s) <- paste0('Q3_', colnames(miqrtraces))
     ## iqrs <- Q3s - Q1s
     ## colnames(iqrs) <- paste0('IQR_', colnames(miqrtraces))
-    traces <- cbind(loglikelihood=ll, 'sum of direct logprobabilities'=condprobsd, 'sum of inverse logprobabilities'=condprobsi) #medians, iqrs, Q1s, Q3s,
+    traces <- cbind(loglikelihood=ll, 'mean of direct logprobabilities'=condprobsd, 'mean of inverse logprobabilities'=condprobsi)*10/log(10)/ndata #medians, iqrs, Q1s, Q3s,
                     ##do.call(cbind, momentstraces))
     badcols <- foreach(i=1:ncol(traces), .combine=c)%do%{if(all(is.na(traces[,i]))){i}else{NULL}}
     if(!is.null(badcols)){traces <- traces[,-badcols]}
@@ -565,12 +565,12 @@ for(stage in stagestart+(0:nstages)){
     ##
     par(mfrow=c(1,1))
 #    matplot(ll, type='l', col=palette()[3], lty=1, main='LL', ylab='LL', ylim=range(ll[abs(ll)<Inf]))
-        transf <- identity
+        ## transf <- identity
     for(avar in colnames(traces)){
         ## if(grepl('^[PDV]', avar)){transf <- function(x){log(abs(x)+1e-12)}
         ## if(grepl('^[PDV]', avar)){transf <- function(x){log(abs(x)+1e-12)}
         ## }else{transf <- identity}
-        tplot(y=transf(traces[,avar])*10/log(10)/ndata, type='l', lty=1, col=colpalette[avar],
+        tplot(y=traces[,avar], type='l', lty=1, col=colpalette[avar],
                 main=paste0(avar,
                             '\nESS = ', signif(diagnESS[avar], 3),
                             ' | IAT = ', signif(diagnIAT[avar], 3),
@@ -579,7 +579,7 @@ for(stage in stagestart+(0:nstages)){
                             ' | stat: ', diagnStat[avar],
                             ' | burn: ', diagnBurn[avar]
                             ),
-                ylab=paste0(avar,' per datum/dHart'), xlab='step', family=family
+                ylab=paste0(avar,'/dHart'), xlab='step', family=family
               #, ylim=range(c(transf(traces[,avar][abs(transf(traces[,avar]))<Inf])))
               )
     }
