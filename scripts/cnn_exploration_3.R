@@ -1,6 +1,6 @@
 ## Author: PGL  Porta Mana
 ## Created: 2022-03-17T14:21:57+0100
-## Last-Updated: 2022-04-29T22:38:46+0200
+## Last-Updated: 2022-04-30T17:59:49+0200
 ################
 ## Exploration of several issues for binary classifiers
 ################
@@ -160,11 +160,7 @@ parmlist <- mcsamples2parmlist(
 )
 
 
-library('plotly')
 
-fig <- plot_ly(z = ~volcano)
-fig <- fig %>% add_surface()
-fig
 
 xr <- range(unlist(Xrange))
 ##
@@ -172,65 +168,43 @@ cseq <- seq(xr[1], xr[2], length.out=128)
 ##
 vpoints <- cbind(prediction0=rep(cseq, length(cseq)), prediction1=rep(cseq, each=length(cseq)))
 
-pgrid <- samplesF(Y=cbind(class=1), X=vpoints, parmList=parmlist, inorder=F)
+opgrid <- samplesF(Y=cbind(class=1), X=vpoints, parmList=parmlist, inorder=F)
 
-mpgrid <- rowMeans(pgrid)
+mpgrid <- rowMeans(opgrid)
 dim(mpgrid) <- rep(length(cseq), 2)
 
-fig <- plot_ly(z=mpgrid, x=cseq, y=cseq, zlab='test')
-fig <- fig %>% add_surface(colors='Blues') %>%
-  layout(scene = list(xaxis = list(title = "output 0"), yaxis = list(title = "output 1"), zaxis = list(title = "probability of class 1")))
+library('plotly')
+
+fig <- plot_ly(z=t(mpgrid), x=cseq, y=cseq, cmin=0, cmax=1)
+fig <- fig %>% add_surface(colors='Blues')
+fig <- fig %>% layout(scene = list(xaxis = list(title = "output 0"), yaxis = list(title = "output 1"), zaxis = list(title = "probability of class 1", range=c(0,1))), title='original')
+fig
+
+####
+iqrgrid <- apply(pgrid,1,IQR)
+dim(iqrgrid) <- rep(length(cseq), 2)
+
+fig <- plot_ly(z=t(iqrgrid), x=cseq, y=cseq, cmin=0, cmax=1)
+fig <- fig %>% add_surface(colors='Reds')
+fig <- fig %>% layout(scene = list(xaxis = list(title = "output 0"), yaxis = list(title = "output 1"), zaxis = list(title = "interquartile range around probability of class 1", range=c(0,1))))
+fig
+
+####
+q1grid <- apply(pgrid,1,function(x){quantile(x, 1/8)})
+dim(q1grid) <- rep(length(cseq), 2)
+q2grid <- apply(pgrid,1,function(x){quantile(x, 7/8)})
+dim(q2grid) <- rep(length(cseq), 2)
+
+fig <- plot_ly(x=cseq, y=cseq, cmin=0, cmax=1)
+fig <- fig %>% add_surface(z = t(mpgrid), opacity = 0.5, colorscale='Blues')
+fig <- fig %>% add_surface(z = t(q1grid), opacity = 0.5, colorscale='Reds')
+fig <- fig %>% add_surface(z = t(q2grid), opacity = 0.5, colorscale='Reds')
+fig <- fig %>% layout(scene = list(xaxis = list(title = "output 0"), yaxis = list(title = "output 1"), zaxis = list(title = "probability of class 1", range=c(0,1))))
 fig
 
 
-
-vpoints <- cbind(prediction_lnodds=ygrid)
-##
-pgrid <- samplesF(Y=cbind(class=0), X=vpoints, parmList=parmlist, inorder=F)
-##
-qgrid <- apply(pgrid,1,function(x){quantile(x, c(1,7)/8)})
-##
-pdff('rfcont_1_directprob')
-tplot(x=xgrid, y=rowMeans(pgrid), xlab='RF % output', ylab='probability of class 0', ylim=c(0,1), asp=1)
-polygon(x=c(xgrid,rev(xgrid)), y=c(qgrid[1,],rev(qgrid[2,])), col=paste0(palette()[1],'40'), border=NA)
-legend('topleft', legend=c(
-                       paste0(paste0(rownames(qgrid),collapse='\u2013'), ' uncertainty')
-                   ),
-       lty=c('solid'), lwd=c(10),
-       col=paste0(palette()[1],c('40')),
-       bty='n', cex=1.25)
-dev.off()
-
-
-
-pgrid0 <- samplesF(X=cbind(class=0), Y=vpoints, parmList=parmlist, inorder=F)*Xjacobian[['prediction_lnodds']](xgrid)
-##
-qgrid0 <- apply(pgrid0,1,function(x){quantile(x, c(1,7)/8)})
-##
-pgrid1 <- samplesF(X=cbind(class=1), Y=vpoints, parmList=parmlist, inorder=F)*Xjacobian[['prediction_lnodds']](xgrid)
-##
-qgrid1 <- apply(pgrid1,1,function(x){quantile(x, c(1,7)/8)})
-##
-pdff('rfcont_1_inverseprob')
-tplot(x=xgrid, y=cbind(rowMeans(pgrid0),rowMeans(pgrid1)), xlab='RF % output', ylab='probability density of output', ylim=c(0,25))
-polygon(x=c(xgrid,rev(xgrid)), y=c(qgrid0[1,],rev(qgrid0[2,])), col=paste0(palette()[1],'40'), border=NA)
-polygon(x=c(xgrid,rev(xgrid)), y=c(qgrid1[1,],rev(qgrid1[2,])), col=paste0(palette()[2],'40'), border=NA)
-legend('topleft', legend=c(
-                      'Conditional on class 0',
-                      'Conditional on class 1',
-                       paste0(paste0(rownames(qgrid),collapse='\u2013'), ' uncertainty')
-                   ),
-       lty=c(1,2,1), lwd=c(3,3,10),
-       col=paste0(palette()[c(1,2,7)],c('','','C0')),
-       bty='n', cex=1.25)
-dev.off()
-
-
-
-
-
 oneparmlist <- list(
-    q=rbind(c(parmlist$q))/nrow(parmlist$q),
+    q=rbind(c(parmlist$q)), #/nrow(parmlist$q),
     meanR=array(aperm(parmlist$meanR, c(2,1,3)),
                 dim=c(1, dim(parmlist$meanR)[2], length(parmlist$q)),
                 dimnames=dimnames(parmlist$meanR)),
@@ -261,8 +235,10 @@ qorder <- order(c(oneparmlist$q), decreasing=TRUE)
 ## ftauR <- oneparmlist$tauR[1,,qorder[1:maxclusters]]
 ## fprobB <- oneparmlist$probB[1,,qorder[1:maxclusters]]
 ##
-maxclusters <- round(length(oneparmlist$q)/16)
-cincluded <- qorder[1:maxclusters]
+## qselect <- c(oneparmlist$q)[qorder] > 2^-64
+qselect <- 1:(2^17)#(which(cumsum(c(oneparmlist$q)[qorder]) < 1-2^-16)[1])
+maxclusters <- round(length(oneparmlist$q))
+cincluded <- qorder[qselect]
 ##
 shortparmlist <- list(
     q=oneparmlist$q[,cincluded, drop=F]/sum(oneparmlist$q[,cincluded]),
@@ -272,6 +248,36 @@ shortparmlist <- list(
     sizeI=oneparmlist$sizeI[,,cincluded, drop=F],
     probB=oneparmlist$probB[,,cincluded, drop=F]
 )
+
+##
+## shortpgrid <- samplesF(Y=cbind(class=1), X=vpoints, parmList=shortparmlist, inorder=F)
+
+shortpgrid <- foreach(i=1:(nrow(vpoints)/128), .combine=c)%dopar%{
+    samplesF(Y=cbind(class=1), X=vpoints[(i-1)*128+(1:128),], parmList=shortparmlist, inorder=F)
+}
+dim(shortpgrid) <- rep(length(cseq), 2)
+
+
+##
+##
+fig <- plot_ly(z=t(shortpgrid), x=cseq, y=cseq, cmin=0, cmax=1)
+fig <- fig %>% add_surface(colors='Blues')
+fig <- fig %>% layout(scene = list(xaxis = list(title = "output 0"), yaxis = list(title = "output 1"), zaxis = list(title = "probability of class 1", range=c(0,1))), title='approx')
+fig
+
+
+
+
+fwrite(data.table(w=c(shortparmlist$q),
+               p=c(shortparmlist$probB[,1,]),
+               mu0=c(shortparmlist$meanR[,1,]),
+               sigma0=1/sqrt(c(shortparmlist$tauR[,1,])),
+               mu1=c(shortparmlist$meanR[,2,]),
+               sigma1=1/sqrt(c(shortparmlist$tauR[,2,]))
+               ), 'CNN_probabilityfunction2.csv', sep=',')
+
+
+
 ##
 xgrid <- seq(0, 1, length.out=256)
 ygrid <- X2Y[['prediction_lnodds']](xgrid)

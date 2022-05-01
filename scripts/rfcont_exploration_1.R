@@ -1,6 +1,6 @@
 ## Author: PGL  Porta Mana
 ## Created: 2022-03-17T14:21:57+0100
-## Last-Updated: 2022-04-29T17:34:46+0200
+## Last-Updated: 2022-04-30T13:28:46+0200
 ################
 ## Exploration of several issues for binary classifiers
 ################
@@ -165,11 +165,11 @@ ygrid <- X2Y[['prediction_lnodds']](xgrid)
 ##
 vpoints <- cbind(prediction_lnodds=ygrid)
 ##
-pgrid <- samplesF(Y=cbind(class=0), X=vpoints, parmList=parmlist, inorder=F)
+opgrid <- samplesF(Y=cbind(class=1), X=vpoints, parmList=parmlist, inorder=F)
 ##
-qgrid <- apply(pgrid,1,function(x){quantile(x, c(1,7)/8)})
+qgrid <- apply(opgrid,1,function(x){quantile(x, c(1,7)/8)})
 ##
-tplot(x=xgrid, y=rowMeans(pgrid), xlab='RF % output', ylab='probability of class 0', ylim=c(0,1))
+tplot(x=xgrid, y=rowMeans(opgrid), xlab='RF % output', ylab='probability of class 0', ylim=c(0,1))
 polygon(x=c(xgrid,rev(xgrid)), y=c(qgrid[1,],rev(qgrid[2,])), col=paste0(palette()[1],'40'), border=NA)
 legend('topleft', legend=c(
                        paste0(paste0(rownames(qgrid),collapse='\u2013'), ' uncertainty')
@@ -180,15 +180,15 @@ legend('topleft', legend=c(
 
 
 
-pgrid0 <- samplesF(X=cbind(class=0), Y=vpoints, parmList=parmlist, inorder=F)*Xjacobian[['prediction_lnodds']](xgrid)
+opgrid0 <- samplesF(X=cbind(class=0), Y=vpoints, parmList=parmlist, inorder=F)*Xjacobian[['prediction_lnodds']](xgrid)
 ##
-qgrid0 <- apply(pgrid0,1,function(x){quantile(x, c(1,7)/8)})
+qgrid0 <- apply(opgrid0,1,function(x){quantile(x, c(1,7)/8)})
 ##
-pgrid1 <- samplesF(X=cbind(class=1), Y=vpoints, parmList=parmlist, inorder=F)*Xjacobian[['prediction_lnodds']](xgrid)
+opgrid1 <- samplesF(X=cbind(class=1), Y=vpoints, parmList=parmlist, inorder=F)*Xjacobian[['prediction_lnodds']](xgrid)
 ##
-qgrid1 <- apply(pgrid1,1,function(x){quantile(x, c(1,7)/8)})
+qgrid1 <- apply(opgrid1,1,function(x){quantile(x, c(1,7)/8)})
 ##
-tplot(x=xgrid, y=cbind(rowMeans(pgrid0),rowMeans(pgrid1)), xlab='RF % output', ylab='probability of output', ylim=c(0,25))
+tplot(x=xgrid, y=cbind(rowMeans(opgrid0),rowMeans(opgrid1)), xlab='RF % output', ylab='probability of output', ylim=c(0,25))
 polygon(x=c(xgrid,rev(xgrid)), y=c(qgrid0[1,],rev(qgrid0[2,])), col=paste0(palette()[1],'40'), border=NA)
 polygon(x=c(xgrid,rev(xgrid)), y=c(qgrid1[1,],rev(qgrid1[2,])), col=paste0(palette()[2],'40'), border=NA)
 legend('topleft', legend=c(
@@ -237,8 +237,10 @@ qorder <- order(c(oneparmlist$q), decreasing=TRUE)
 ## ftauR <- oneparmlist$tauR[1,,qorder[1:maxclusters]]
 ## fprobB <- oneparmlist$probB[1,,qorder[1:maxclusters]]
 ##
-maxclusters <- round(length(oneparmlist$q)/16)
-cincluded <- qorder[1:maxclusters]
+## qselect <- c(oneparmlist$q)[qorder] > 2^-32
+qselect <- 1:(which(cumsum(c(oneparmlist$q)[qorder]) > 1-2^-16)[1])
+maxclusters <- round(length(oneparmlist$q))
+cincluded <- qorder[qselect]
 ##
 shortparmlist <- list(
     q=oneparmlist$q[,cincluded, drop=F]/sum(oneparmlist$q[,cincluded]),
@@ -258,7 +260,7 @@ pgrid <- samplesF(Y=cbind(class=1), X=vpoints, parmList=shortparmlist, inorder=F
 ##
 ## qgrid <- apply(pgrid,1,function(x){quantile(x, c(1,7)/8)})
 ##
-tplot(x=xgrid, y=1-pgrid, xlab='RF % output', ylab='probability of class 1', ylim=c(0,1))
+tplot(x=xgrid, y=cbind(rowMeans(opgrid),pgrid), xlab='RF % output', ylab='probability of class 1', ylim=c(0,1))
 ## polygon(x=c(xgrid,rev(xgrid)), y=c(qgrid[1,],rev(qgrid[2,])), col=paste0(palette()[1],'40'), border=NA)
 ## legend('topleft', legend=c(
 ##                        paste0(paste0(rownames(qgrid),collapse='\u2013'), ' uncertainty')
@@ -266,6 +268,14 @@ tplot(x=xgrid, y=1-pgrid, xlab='RF % output', ylab='probability of class 1', yli
 ##        lty=c('solid'), lwd=c(10),
 ##        col=paste0(palette()[1],c('40')),
 ##        bty='n', cex=1.25)
+
+fwrite(data.table(w=c(shortparmlist$q),
+               p=c(shortparmlist$probB),
+               mu=c(shortparmlist$meanR),
+               sigma=1/sqrt(c(shortparmlist$tauR))
+               ), 'RF_probabilityfunction3.csv', sep=',')
+
+
 
 
 
