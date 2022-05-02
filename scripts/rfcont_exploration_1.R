@@ -1,6 +1,6 @@
 ## Author: PGL  Porta Mana
 ## Created: 2022-03-17T14:21:57+0100
-## Last-Updated: 2022-04-30T13:28:46+0200
+## Last-Updated: 2022-05-02T21:37:57+0200
 ################
 ## Exploration of several issues for binary classifiers
 ################
@@ -107,8 +107,7 @@ X2Y <- list(
 Xjacobian <- list(
     'prediction_lnodds'=function(x){
         epsi <- 1 - 2^-10
-        x <- 0.5 + (x-0.5)*epsi
-        4*epsi/(1 - (2*epsi*(x-0.5))^2)
+        4*epsi/(1 - (epsi*(1-2*x))^2)
     }
 )
 Xrange <- list('prediction_lnodds'=c(0,1))
@@ -145,7 +144,6 @@ for(avar in realCovs){
 }
 
 source('functions_mcmc.R')
-
 dirname <- '_rfcont_1-V2-D3588-K64-I1024'
 
 npar <- 16
@@ -165,11 +163,15 @@ ygrid <- X2Y[['prediction_lnodds']](xgrid)
 ##
 vpoints <- cbind(prediction_lnodds=ygrid)
 ##
-opgrid <- samplesF(Y=cbind(class=1), X=vpoints, parmList=parmlist, inorder=F)
+opgrid <- samplesF(Y=cbind(class=0), X=vpoints, parmList=parmlist, inorder=F)
 ##
 qgrid <- apply(opgrid,1,function(x){quantile(x, c(1,7)/8)})
 ##
-tplot(x=xgrid, y=rowMeans(opgrid), xlab='RF % output', ylab='probability of class 0', ylim=c(0,1))
+
+tplot(x=xgrid, y=cbind(rowMeans(opgrid), 1- rowMeans(opgrid)), xlab='RF % output', ylab='probability of class', ylim=c(0,1), lwd=3, family='Palatino')
+legend('top', c('class 0', 'class 1'), lty=c(1,2), col=c(1,2), lwd=3, bty='n')
+
+
 polygon(x=c(xgrid,rev(xgrid)), y=c(qgrid[1,],rev(qgrid[2,])), col=paste0(palette()[1],'40'), border=NA)
 legend('topleft', legend=c(
                        paste0(paste0(rownames(qgrid),collapse='\u2013'), ' uncertainty')

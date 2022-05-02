@@ -1,6 +1,6 @@
 ## Author: PGL  Porta Mana
 ## Created: 2022-05-01T09:38:48+0200
-## Last-Updated: 2022-05-01T15:10:13+0200
+## Last-Updated: 2022-05-02T22:11:14+0200
 ################
 ## Calculations for the papers
 ################
@@ -44,9 +44,9 @@ if(file.exists("/cluster/home/pglpm/R")){
 #### End custom setup ####
 
 ##
-utd <- function(p,a,b,up,dup,un,dun){
-    up*a*p + un*b*(1-p) + (up-dup)*(1-a)*p + (un-dun)*(1-b)*(1-p)
-}
+## utd <- function(p,a,b,up,dup,un,dun){
+##     up*a*p + un*b*(1-p) + (up-dup)*(1-a)*p + (un-dun)*(1-b)*(1-p)
+## }
 ##
 ut <- function(p,a,b,utp,utn,ufp,ufn){
     utp*a*p + utn*b*(1-p) + ufn*(1-a)*p + ufp*(1-b)*(1-p)
@@ -69,6 +69,14 @@ prec <- function(p,a,b){
 ##
 acc <- function(p,a,b){
     a*p+b*(1-p)
+}
+##
+bacc <- function(p,a,b){
+    (a+b)/2
+}
+##
+auc <- function(p,a,b){
+    a/2 + b/2
 }
 
 set.seed(149)
@@ -444,7 +452,9 @@ c(prec(lp,la1,lb1), prec(lp,la2,lb2))
 print('Accs:')
 c(acc(lp,la1,lb1), acc(lp,la2,lb2))
 
-
+##########################################################
+#### candidate for example in paper
+##########################################################
 tp <- 0.5
 ta1 <- 0.74
 tb1 <- 0.28*2
@@ -462,14 +472,11 @@ c(ta1, tb1)
 c(ta2, tb2)
 ##
 print('CM1:')
-matrix(c(ta1*tp,(1-ta1)*tp,
-         (1-tb1)*(1-tp),tb1*(1-tp)), 2,2)
+matrix(c(ta1*tp,(1-ta1)*tp, (1-tb1)*(1-tp),tb1*(1-tp)), 2,2)
 print('CM2:')
-matrix(c(ta2*tp,(1-ta2)*tp,
-         (1-tb2)*(1-tp),tb2*(1-tp)), 2,2)
+matrix(c(ta2*tp,(1-ta2)*tp, (1-tb2)*(1-tp),tb2*(1-tp)), 2,2)
 print('UM:')
-matrix(c(tutp, tufp,
-         tufn, tutn),2,2)
+matrix(c(tutp, tufn, tufp, tutn),2,2)
 ##
 print('utilities:')
 c(ut(tp,ta1,tb1,tutp,tutn,tufp,tufn), ut(tp,ta2,tb2,tutp,tutn,tufp,tufn))
@@ -481,3 +488,143 @@ print('Precs:')
 c(prec(tp,ta1,tb1), prec(tp,ta2,tb2))
 print('Accs:')
 c(acc(tp,ta1,tb1), acc(tp,ta2,tb2))
+print('AUCs:')
+c(auc(tp,ta1,tb1), auc(tp,ta2,tb2))
+##########################################################
+##########################################################
+
+
+
+
+
+##########################################################
+#### With fixed utility matrix
+##########################################################
+set.seed(149)
+nn <- 10^4
+lp <- runif(nn, 0.5, 1)
+la1 <- runif(nn, 0.5, 1)
+lb1 <- runif(nn, 0.5, 1)
+la2 <- runif(nn, 0.5, 1)
+lb2 <- runif(nn, 0.5, 1)
+lutp <- 1
+lutn <- 1
+lufp <- -10
+lufn <- 0
+##
+ut1 <- ut(lp,la1,lb1,lutp,lutn,lufp,lufn)
+ut2 <- ut(lp,la2,lb2,lutp,lutn,lufp,lufn)
+Du <- ut2-ut1
+f1 <- f1score(lp,la1,lb1)
+Df <- -f1score(lp,la1,lb1)+f1score(lp,la2,lb2)
+m1 <- mcc(lp,la1,lb1)
+Dm <- -mcc(lp,la1,lb1)+mcc(lp,la2,lb2)
+pr1 <- prec(lp,la1,lb1)
+Dpr <- -prec(lp,la1,lb1)+prec(lp,la2,lb2)
+ac1 <- acc(lp,la1,lb1)
+Dac <- -acc(lp,la1,lb1)+acc(lp,la2,lb2)
+bac1 <- bacc(lp,la1,lb1)
+pdff(paste0('example_discrepancies_',lutp,'_',lutn,'_',lufp,'_',lufn))
+par(mfcol=c(2,3))
+tplot(x=c(0,1),y=c(0,1),col='white',xticks=NA,yticks=NA,xlab=NA, ylab=NA)
+text(x=0.5,y=0.5,labels=paste0('$TP = ', lutp, '  $FP = ', lufp,
+                               '\n$FN = ', lufn, '  $TN = ', lutn),
+     cex=2.5, family='Palatino')
+#tplot(x=c(0,1),y=c(0,1),col='white',xticks=NA,yticks=NA,xlab=NA, ylab=NA)
+tplot(x=ut1, y=f1, type='p', pch='.', xlab='utility', ylab='F1 score', family='Palatino')
+tplot(x=ut1, y=m1, type='p', pch='.', xlab='utility', ylab='MCC', family='Palatino')
+tplot(x=ut1, y=pr1, type='p', pch='.', xlab='utility', ylab='Precision', family='Palatino')
+tplot(x=ut1, y=ac1, type='p', pch='.', xlab='utility', ylab='Accuracy', family='Palatino')
+tplot(x=ut1, y=bac1, type='p', pch='.', xlab='utility', ylab='Bal. accuracy', family='Palatino')
+dev.off()
+
+
+
+## sele <- which( (ut2 > 0 & ut1 < 0 & Df < 0 & Dm < 0 & Dpr < 0 & Dac < 0) | (ut2 < 0 & ut1 > 0 & Df > 0 & Dm > 0 & Dpr > 0 & Dac > 0) )
+sele <- which(Du<0 & Dpr>0 & Df>0 & Dm>0 & Dac>0)
+length(sele)
+## okpoint <- sele[which.max(abs(Du[sele])+abs(Df[sele])+abs(Dm[sele]) +ldup[sele]+ldun[sele])]
+## okpoint <- sele[which.max(abs(Du[sele])+abs(Df[sele])+abs(Dm[sele])+abs(Dpr[sele])+abs(Dac[sele]) +ldup[sele]+ldun[sele]+lp[sele])]
+okpoint <- sele[which.max(abs(Du[sele])*100+abs(Df[sele])+abs(Dm[sele])+abs(Dpr[sele])+abs(Dac[sele]) +la1[sele]+lb1[sele]+la2[sele]+lb2[sele])]
+##
+lp <- lp[okpoint]
+la1 <- la1[okpoint]
+lb1 <- lb1[okpoint]
+la2 <- la2[okpoint]
+lb2 <- lb2[okpoint]
+##
+Su <- 0
+Xu <- 1
+##
+print('---------------------------------')
+print('P+:')
+lp
+c(la1, lb1)
+c(la2, lb2)
+##
+print('CM1:')
+matrix(c(la1*lp,(1-la1)*lp, (1-lb1)*(1-lp),lb1*(1-lp)), 2,2)
+print('CM2:')
+matrix(c(la2*lp,(1-la2)*lp, (1-lb2)*(1-lp),lb2*(1-lp)), 2,2)
+print('UM:')
+Su+Xu*matrix(c(lutp, lufn, lufp, lutn),2,2)
+##
+print('utilities:')
+Su+Xu*c(ut(lp,la1,lb1,lutp,lutn,lufp,lufn), ut(lp,la2,lb2,lutp,lutn,lufp,lufn))
+print('F1 scores:')
+c(f1score(lp,la1,lb1), f1score(lp,la2,lb2))
+print('MCCs:')
+c(mcc(lp,la1,lb1), mcc(lp,la2,lb2))
+print('Precs:')
+c(prec(lp,la1,lb1), prec(lp,la2,lb2))
+print('Accs:')
+c(acc(lp,la1,lb1), acc(lp,la2,lb2))
+
+
+
+
+##########################################################
+#### With fixed utility matrix & P-probability
+##########################################################
+set.seed(149)
+nn <- 10^4
+pdff(paste0('example_discrepancies_P_',lutp,'_',lutn,'_',lufp,'_',lufn))
+for(i in c(0.5, 0.75, 0.9, 0.99, 0.999)){
+lp <- i # runif(nn, 0.5, 1)
+##
+la1 <- runif(nn, 0.5, 1)
+lb1 <- runif(nn, 0.5, 1)
+la2 <- runif(nn, 0.5, 1)
+lb2 <- runif(nn, 0.5, 1)
+lutp <- 10
+lutn <- 1
+lufp <- 0
+lufn <- 0
+##
+ut1 <- ut(lp,la1,lb1,lutp,lutn,lufp,lufn)
+ut2 <- ut(lp,la2,lb2,lutp,lutn,lufp,lufn)
+Du <- ut2-ut1
+f1 <- f1score(lp,la1,lb1)
+Df <- -f1score(lp,la1,lb1)+f1score(lp,la2,lb2)
+m1 <- mcc(lp,la1,lb1)
+Dm <- -mcc(lp,la1,lb1)+mcc(lp,la2,lb2)
+pr1 <- prec(lp,la1,lb1)
+Dpr <- -prec(lp,la1,lb1)+prec(lp,la2,lb2)
+ac1 <- acc(lp,la1,lb1)
+Dac <- -acc(lp,la1,lb1)+acc(lp,la2,lb2)
+bac1 <- bacc(lp,la1,lb1)
+par(mfcol=c(2,3))
+tplot(x=c(0,1),y=c(0,1),col='white',xticks=NA,yticks=NA,xlab=NA, ylab=NA)
+text(x=0.5,y=0.5,labels=paste0('$TP = ', lutp, '  $FP = ', lufp,
+                               '\n$FN = ', lufn, '  $TN = ', lutn,
+                               '\nPr(P) = ',lp),
+     cex=2.5, family='Palatino')
+#tplot(x=c(0,1),y=c(0,1),col='white',xticks=NA,yticks=NA,xlab=NA, ylab=NA)
+tplot(x=ut1, y=f1, type='p', pch='.', xlab='utility', ylab='F1 score', family='Palatino')
+tplot(x=ut1, y=m1, type='p', pch='.', xlab='utility', ylab='MCC', family='Palatino')
+tplot(x=ut1, y=pr1, type='p', pch='.', xlab='utility', ylab='Precision', family='Palatino')
+tplot(x=ut1, y=ac1, type='p', pch='.', xlab='utility', ylab='Accuracy', family='Palatino')
+tplot(x=ut1, y=bac1, type='p', pch='.', xlab='utility', ylab='Bal. accuracy', family='Palatino')
+}
+dev.off()
+
