@@ -1,6 +1,6 @@
 ## Author: PGL  Porta Mana
 ## Created: 2022-03-17T14:21:57+0100
-## Last-Updated: 2022-05-02T21:37:57+0200
+## Last-Updated: 2022-05-03T08:56:12+0200
 ################
 ## Exploration of several issues for binary classifiers
 ################
@@ -41,59 +41,11 @@ if(file.exists("/cluster/home/pglpm/R")){
 ## pngf <- function(filename,res=300){png(file=paste0(filename,'.png'),height=11.7*1.2,width=16.5,units='in',res=res,pointsize=36)} # to output in pdf format
 ## library('nimble')
 #### End custom setup ####
-## #### FUNCTION TO CALCULATE MUTUAL INFO FROM JOINT DISTRIBUTION
-## ## freqs[S,B] = freq spike count B and stimulus S (one ROW per stimulus)
-## ## The function calculates the conditional frequencies of B|S
-## ## and if requested constructs
-## ## a new joint distribution with equal marginals for S
-## ## Note: don't need to normalize input to mutualinfo
-## mutualinfo <- function(jointFreqs, equalstim=FALSE, base=2L){##in bits by default
-##     if(equalstim){
-##         jointFreqs <- (jointFreqs/rowSums(jointFreqs))/nrow(jointFreqs)
-##     }else{
-##         jointFreqs <- jointFreqs/sum(jointFreqs)
-##     }
-##     jointFreqs[is.na(jointFreqs)] <- 0
-##     jointFreqs <- jointFreqs *
-##         log2(jointFreqs/outer(rowSums(jointFreqs), colSums(jointFreqs)))
-##     sum(jointFreqs[is.finite(jointFreqs)])/log2(base)
-## }
-## mutualinfoX <- function(jointFreqs, pstim1, base=2L){##in bits by default
-##         jointFreqs <- (jointFreqs/rowSums(jointFreqs))*c(1-pstim1, pstim1) # conditionals p(spike|stim) * p(stim)
-##         jointFreqs[is.na(jointFreqs)] <- 0
-##     jointFreqs <- jointFreqs *
-##         log2(jointFreqs/outer(rowSums(jointFreqs), colSums(jointFreqs)))
-##     sum(jointFreqs[is.finite(jointFreqs)])/log2(base)
-## }
-## accmi <- function(mi){0.5 + 0.5 * sqrt(1 - (1 - mi)^(4/3))}
-## entropy <- function(freqs, base=2L){
-##     freqs <- cbind(freqs)
-##     freqs <- t(t(freqs)/colSums(freqs, na.rm=T))
-##     c(entropy=colSums(freqs*log2(1/freqs), na.rm=T)/log2(base))
-## }
-## condpRows <- function(x){
-##     t(t(x)/colSums(x))
-## }
-## condpCols <- function(x){
-##     x/rowSums(x)
-## }
 
 set.seed(707)
 baseversion <- '_rfcont_1'
-## nclusters <- 64L
-## niter <- 1024L # iterations AFTER thinning
-## niter0 <- 1024L
-## thin <- 1L
-## nstages <- 1L
-## ncheckprobs1 <- 16L
-## ncheckprobs2 <- 8L
 maincov <- 'class'
 family <- 'Palatino'
-## ndata <- 8192L #4096L
-## posterior <- TRUE
-##
-## stagestart <- 0L # last saved + 1
-##
 saveinfofile <- 'rfcont_variateinfo.csv'
 datafile <- 'modCHEMBL205_predictions_RF.csv'
 #64K, 3588D, 1024I: 7 min + 3 min
@@ -119,7 +71,7 @@ covMins <- variateinfo$min
 covMaxs <- variateinfo$max
 names(covTypes) <- names(covMins) <- names(covMaxs) <- covNames
 odata <- fread(datafile, sep=',')
-
+##
 realCovs <- covNames[covTypes=='double']
 integerCovs <- covNames[covTypes=='integer']
 binaryCovs <- covNames[covTypes=='binary']
@@ -142,7 +94,7 @@ for(avar in realCovs){
         Xrange[[avar]] <- range(datum, na.rm=T)+c(-1,1)*IQR(datum, type=8, na.rm=T)
     }
 }
-
+##
 source('functions_mcmc.R')
 dirname <- '_rfcont_1-V2-D3588-K64-I1024'
 
@@ -157,7 +109,7 @@ parmlist <- mcsamples2parmlist(
 }
 )
 
-
+## Probability vs output
 xgrid <- seq(0, 1, length.out=256)
 ygrid <- X2Y[['prediction_lnodds']](xgrid)
 ##
@@ -181,7 +133,7 @@ legend('topleft', legend=c(
        bty='n', cex=1.25)
 
 
-
+## Stability of probability
 opgrid0 <- samplesF(X=cbind(class=0), Y=vpoints, parmList=parmlist, inorder=F)*Xjacobian[['prediction_lnodds']](xgrid)
 ##
 qgrid0 <- apply(opgrid0,1,function(x){quantile(x, c(1,7)/8)})
@@ -203,10 +155,7 @@ legend('topleft', legend=c(
        bty='n', cex=1.25)
 
 
-
-
-
-
+## Put all parameters into one list
 oneparmlist <- list(
     q=rbind(c(parmlist$q))/nrow(parmlist$q),
     meanR=array(aperm(parmlist$meanR, c(2,1,3)),
@@ -225,9 +174,24 @@ oneparmlist <- list(
                 dim=c(1, dim(parmlist$probB)[2], length(parmlist$q)),
                 dimnames=dimnames(parmlist$probB))
 )
+##
+qorder <- order(c(oneparmlist$q), decreasing=FALSE)
+shortparmlist <- list(
+    q=oneparmlist$q[,qorder, drop=F]/sum(oneparmlist$q[,qorder]),
+    meanR=oneparmlist$meanR[,,qorder, drop=F],
+    tauR=oneparmlist$tauR[,,qorder, drop=F],
+    probI=oneparmlist$probI[,,qorder, drop=F],
+    sizeI=oneparmlist$sizeI[,,qorder, drop=F],
+    probB=oneparmlist$probB[,,qorder, drop=F]
+)
+fwrite(data.table(w=c(shortparmlist$q),
+               p=c(shortparmlist$probB),
+               mu=c(shortparmlist$meanR),
+               sigma=1/sqrt(c(shortparmlist$tauR))
+               ), 'RF_probabilityfunction_full.csv', sep=',')
 
 
-qorder <- order(c(oneparmlist$q), decreasing=TRUE)
+qorder <- order(c(oneparmlist$q), decreasing=FALSE)
 #qcumsum <- cumsum(qlist[qorder])
 ## qorder <- order(c(oneparmList$q), decreasing=TRUE)
 ## ##
@@ -241,6 +205,7 @@ qorder <- order(c(oneparmlist$q), decreasing=TRUE)
 ##
 ## qselect <- c(oneparmlist$q)[qorder] > 2^-32
 qselect <- 1:(which(cumsum(c(oneparmlist$q)[qorder]) > 1-2^-16)[1])
+
 maxclusters <- round(length(oneparmlist$q))
 cincluded <- qorder[qselect]
 ##

@@ -1,6 +1,6 @@
 ## Author: PGL  Porta Mana
 ## Created: 2022-03-17T14:21:57+0100
-## Last-Updated: 2022-04-30T17:59:49+0200
+## Last-Updated: 2022-05-03T15:40:21+0200
 ################
 ## Exploration of several issues for binary classifiers
 ################
@@ -40,60 +40,13 @@ if(file.exists("/cluster/home/pglpm/R")){
 ## pdff <- function(filename){pdf(file=paste0(filename,'.pdf'),paper='a4r',height=11.7,width=16.5)} # to output in pdf format
 ## pngf <- function(filename,res=300){png(file=paste0(filename,'.png'),height=11.7*1.2,width=16.5,units='in',res=res,pointsize=36)} # to output in pdf format
 ## library('nimble')
+library('plotly')
 #### End custom setup ####
-## #### FUNCTION TO CALCULATE MUTUAL INFO FROM JOINT DISTRIBUTION
-## ## freqs[S,B] = freq spike count B and stimulus S (one ROW per stimulus)
-## ## The function calculates the conditional frequencies of B|S
-## ## and if requested constructs
-## ## a new joint distribution with equal marginals for S
-## ## Note: don't need to normalize input to mutualinfo
-## mutualinfo <- function(jointFreqs, equalstim=FALSE, base=2L){##in bits by default
-##     if(equalstim){
-##         jointFreqs <- (jointFreqs/rowSums(jointFreqs))/nrow(jointFreqs)
-##     }else{
-##         jointFreqs <- jointFreqs/sum(jointFreqs)
-##     }
-##     jointFreqs[is.na(jointFreqs)] <- 0
-##     jointFreqs <- jointFreqs *
-##         log2(jointFreqs/outer(rowSums(jointFreqs), colSums(jointFreqs)))
-##     sum(jointFreqs[is.finite(jointFreqs)])/log2(base)
-## }
-## mutualinfoX <- function(jointFreqs, pstim1, base=2L){##in bits by default
-##         jointFreqs <- (jointFreqs/rowSums(jointFreqs))*c(1-pstim1, pstim1) # conditionals p(spike|stim) * p(stim)
-##         jointFreqs[is.na(jointFreqs)] <- 0
-##     jointFreqs <- jointFreqs *
-##         log2(jointFreqs/outer(rowSums(jointFreqs), colSums(jointFreqs)))
-##     sum(jointFreqs[is.finite(jointFreqs)])/log2(base)
-## }
-## accmi <- function(mi){0.5 + 0.5 * sqrt(1 - (1 - mi)^(4/3))}
-## entropy <- function(freqs, base=2L){
-##     freqs <- cbind(freqs)
-##     freqs <- t(t(freqs)/colSums(freqs, na.rm=T))
-##     c(entropy=colSums(freqs*log2(1/freqs), na.rm=T)/log2(base))
-## }
-## condpRows <- function(x){
-##     t(t(x)/colSums(x))
-## }
-## condpCols <- function(x){
-##     x/rowSums(x)
-## }
 
 set.seed(707)
 baseversion <- '_cnn_3'
-## nclusters <- 64L
-## niter <- 1024L # iterations AFTER thinning
-## niter0 <- 1024L
-## thin <- 1L
-## nstages <- 1L
-## ncheckprobs1 <- 16L
-## ncheckprobs2 <- 8L
 maincov <- 'class'
 family <- 'Palatino'
-## ndata <- 8192L #4096L
-## posterior <- TRUE
-##
-## stagestart <- 0L # last saved + 1
-##
 saveinfofile <- 'cnn_variateinfo.csv'
 datafile <- 'modCHEMBL205_predictions_CNN.csv'
 #64K, 3588D, 1024I: 7 min + 3 min
@@ -112,7 +65,7 @@ datafile <- 'modCHEMBL205_predictions_CNN.csv'
 ##     }
 ## )
 ## Xrange <- list('prediction_lnodds'=c(0,1))
-
+##
 variateinfo <- fread(saveinfofile, sep=',')
 covNames <- variateinfo$variate
 covTypes <- variateinfo$type
@@ -120,7 +73,7 @@ covMins <- variateinfo$min
 covMaxs <- variateinfo$max
 names(covTypes) <- names(covMins) <- names(covMaxs) <- covNames
 odata <- fread(datafile, sep=',')
-
+##
 realCovs <- covNames[covTypes=='double']
 integerCovs <- covNames[covTypes=='integer']
 binaryCovs <- covNames[covTypes=='binary']
@@ -143,9 +96,8 @@ for(avar in realCovs){
         Xrange[[avar]] <- range(datum, na.rm=T)+c(-1,1)*IQR(datum, type=8, na.rm=T)
     }
 }
-
+##
 source('functions_mcmc.R')
-
 dirname <- '_cnn_3-V3-D3589-K64-I2048'
 
 npar <- 16
@@ -160,25 +112,26 @@ parmlist <- mcsamples2parmlist(
 )
 
 
-
-
 xr <- range(unlist(Xrange))
-##
-cseq <- seq(xr[1], xr[2], length.out=128)
+cseq <- seq(xr[1], xr[2], length.out=8)
 ##
 vpoints <- cbind(prediction0=rep(cseq, length(cseq)), prediction1=rep(cseq, each=length(cseq)))
 
-opgrid <- samplesF(Y=cbind(class=1), X=vpoints, parmList=parmlist, inorder=F)
+system.time(opgrid <- samplesF(Y=cbind(class=1), X=vpoints, parmList=parmlist, inorder=F))
+##
+
+system.time(opgrid2 <- samplesFp(Y=cbind(class=1), X=vpoints, batchsize=1024, parmList=parmlist, inorder=F))
+
 
 mpgrid <- rowMeans(opgrid)
 dim(mpgrid) <- rep(length(cseq), 2)
 
-library('plotly')
-
 fig <- plot_ly(z=t(mpgrid), x=cseq, y=cseq, cmin=0, cmax=1)
 fig <- fig %>% add_surface(colors='Blues')
-fig <- fig %>% layout(scene = list(xaxis = list(title = "output 0"), yaxis = list(title = "output 1"), zaxis = list(title = "probability of class 1", range=c(0,1))), title='original')
+fig <- fig %>% layout(scene = list(xaxis = list(title = "output 0"), yaxis = list(title = "output 1"), zaxis = list(title = "probability of class 1", range=c(0,1)), camera = list(projection = list(type = 'orthographic'))), title='original')
 fig
+orca(fig, 'test.pdf')
+
 
 ####
 iqrgrid <- apply(pgrid,1,IQR)
@@ -203,8 +156,9 @@ fig <- fig %>% layout(scene = list(xaxis = list(title = "output 0"), yaxis = lis
 fig
 
 
+## Put all parameters into one list
 oneparmlist <- list(
-    q=rbind(c(parmlist$q)), #/nrow(parmlist$q),
+    q=rbind(c(parmlist$q))/nrow(parmlist$q),
     meanR=array(aperm(parmlist$meanR, c(2,1,3)),
                 dim=c(1, dim(parmlist$meanR)[2], length(parmlist$q)),
                 dimnames=dimnames(parmlist$meanR)),
@@ -221,6 +175,23 @@ oneparmlist <- list(
                 dim=c(1, dim(parmlist$probB)[2], length(parmlist$q)),
                 dimnames=dimnames(parmlist$probB))
 )
+##
+qorder <- order(c(oneparmlist$q), decreasing=FALSE)
+shortparmlist <- list(
+    q=oneparmlist$q[,qorder, drop=F]/sum(oneparmlist$q[,qorder]),
+    meanR=oneparmlist$meanR[,,qorder, drop=F],
+    tauR=oneparmlist$tauR[,,qorder, drop=F],
+    probI=oneparmlist$probI[,,qorder, drop=F],
+    sizeI=oneparmlist$sizeI[,,qorder, drop=F],
+    probB=oneparmlist$probB[,,qorder, drop=F]
+)
+fwrite(data.table(w=c(shortparmlist$q),
+               p=c(shortparmlist$probB),
+               mu0=c(shortparmlist$meanR[,'prediction0',]),
+               sigma0=1/sqrt(c(shortparmlist$tauR[,'prediction0',])),
+               mu1=c(shortparmlist$meanR[,'prediction1',]),
+               sigma1=1/sqrt(c(shortparmlist$tauR[,'prediction1',]))
+               ), 'CNN_probabilityfunction_full.csv', sep=',')
 
 
 qorder <- order(c(oneparmlist$q), decreasing=TRUE)
