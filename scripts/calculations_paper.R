@@ -1,6 +1,6 @@
 ## Author: PGL  Porta Mana
 ## Created: 2022-05-01T09:38:48+0200
-## Last-Updated: 2022-05-04T16:28:00+0200
+## Last-Updated: 2022-05-04T17:49:42+0200
 ################
 ## Calculations for the papers
 ################
@@ -688,32 +688,122 @@ pdff(paste0('example_discrepancies_all'))
 posi <- (Du > 0 & Df > 0) | (Du < 0 & Df < 0)
 tplot(x=Du[posi], y=Df[posi], type='p', pch='.', col=1, xlab='diff. utility', ylab='diff. F1 score', family='Palatino')
 tplot(x=Du[!posi], y=Df[!posi], type='p', pch='.', col=2, xlab='diff. utility', ylab='diff. F1 score', family='Palatino', add=T)
-legend('topleft',legend=signif(sum(posi)/nn,2), bty='n', cex=2)
+legend('topleft',legend=paste0('correctly ranked cases: ',round(sum(posi)/nn*100),'%'), bty='n', cex=1.5)
 ##
 posi <- (Du > 0 & Dm > 0) | (Du < 0 & Dm < 0)
-tplot(x=Du[posi], y=Dm[posi], type='p', pch='.', col=1, xlab='diff. utility', ylab='diff. MMC', family='Palatino')
-tplot(x=Du[!posi], y=Dm[!posi], type='p', pch='.', col=2, xlab='diff. utility', ylab='diff. MMC', family='Palatino', add=T)
-legend('topleft',legend=signif(sum(posi)/nn,2), bty='n', cex=2)
+tplot(x=Du[posi], y=Dm[posi], type='p', pch='.', col=1, xlab='diff. utility', ylab='diff. MCC', family='Palatino')
+tplot(x=Du[!posi], y=Dm[!posi], type='p', pch='.', col=2, xlab='diff. utility', ylab='diff. MCC', family='Palatino', add=T)
+legend('topleft',legend=paste0('correctly ranked cases: ',round(sum(posi)/nn*100),'%'), bty='n', cex=1.5)
 ##
 posi <- (Du > 0 & Dpr > 0) | (Du < 0 & Dpr < 0)
 tplot(x=Du[posi], y=Dpr[posi], type='p', pch='.', col=1, xlab='diff. utility', ylab='diff. Precision', family='Palatino')
 tplot(x=Du[!posi], y=Dpr[!posi], type='p', pch='.', col=2, xlab='diff. utility', ylab='diff. Precision', family='Palatino', add=T)
-legend('topleft',legend=signif(sum(posi)/nn,2), bty='n', cex=2)
+legend('topleft',legend=paste0('correctly ranked cases: ',round(sum(posi)/nn*100),'%'), bty='n', cex=1.5)
 ##
 posi <- (Du > 0 & Dbacc > 0) | (Du < 0 & Dbacc < 0)
 tplot(x=Du[posi], y=Dbacc[posi], type='p', pch='.', col=1, xlab='diff. utility', ylab='diff. Bal. accuracy', family='Palatino')
 tplot(x=Du[!posi], y=Dbacc[!posi], type='p', pch='.', col=2, xlab='diff. utility', ylab='diff. Bal. accuracy', family='Palatino', add=T)
-legend('topleft',legend=signif(sum(posi)/nn,2), bty='n', cex=2)
+legend('topleft',legend=paste0('correctly ranked cases: ',round(sum(posi)/nn*100),'%'), bty='n', cex=1.5)
 ##
 posi <- (Du > 0 & Dacc > 0) | (Du < 0 & Dacc < 0)
 tplot(x=Du[posi], y=Dacc[posi], type='p', pch='.', col=1, xlab='diff. utility', ylab='diff. Accuracy', family='Palatino')
 tplot(x=Du[!posi], y=Dacc[!posi], type='p', pch='.', col=2, xlab='diff. utility', ylab='diff. Accuracy', family='Palatino', add=T)
-legend('topleft',legend=signif(sum(posi)/nn,2), bty='n', cex=2)
+legend('topleft',legend=paste0('correctly ranked cases: ',round(sum(posi)/nn*100),'%'), bty='n', cex=1.5)
 ##
 posi <- (Du > 0 & Duappr > 0) | (Du < 0 & Duappr < 0)
 tplot(x=Du[posi], y=Duappr[posi], type='p', pch='.', col=1, xlab='diff. utility', ylab=paste0('diff. utility with ',round(100*percerror),'% error'), family='Palatino')
 tplot(x=Du[!posi], y=Duappr[!posi], type='p', pch='.', col=2, xlab='diff. utility', ylab=paste0('diff. ',round(100*percerror),'% approx utility'), family='Palatino', add=T)
-legend('topleft',legend=signif(sum(posi)/nn,2), bty='n', cex=2)
+legend('topleft',legend=paste0('correctly ranked cases: ',round(sum(posi)/nn*100),'%'), bty='n', cex=1.5)
+##
+dev.off()
+
+
+
+
+
+###########################################################
+#### With various utility matrices and positive-class probs
+#### case for "better" confusion matrices
+###########################################################
+set.seed(149)
+nn <- 10^5
+lp <- runif(nn, 0.5, 1)
+##
+la1 <- 0.5+0.5*rbeta(10^5, shape1=3, shape2=1)
+lb1 <- 0.5+0.5*rbeta(10^5, shape1=3, shape2=1)
+la2 <- 0.5+0.5*rbeta(10^5, shape1=3, shape2=1)
+lb2 <- 0.5+0.5*rbeta(10^5, shape1=3, shape2=1)
+basetp <- matrix(c(1,0,0,0),2,2)
+basetn <- matrix(c(0,0,0,1),2,2)
+basefpfn <- array(c(0,0,1,0,  0,1,0,0),dim=c(2,2,2))
+sides <- sample(1:2,nn,replace=T)
+convpoints <- LaplacesDemon::rdirichlet(n=nn, alpha=rep(1,3))
+lum <- sapply(1:nn, function(i){
+    temp <- basetp * convpoints[i,1] + basetn * convpoints[i,2] +
+        basefpfn[,,sides[i]] * convpoints[i,3]
+    temp <- temp - min(temp)
+    temp <- temp/max(temp)
+})
+dim(lum) <- c(2,2,nn)
+## testlum <- lapply(1:nn, function(i){
+##     basetp * convpoints[i,1] + basetn * convpoints[i,2] +
+##         basefpfn[,,sides[i]] * convpoints[i,3]
+## }
+## )
+##
+percerror <- 1/4
+lumappr <- sapply(1:nn, function(i){
+    temp <- lum[,,i] + matrix(rnorm(4),2,2)*lum[,,i]*percerror
+})
+dim(lumappr) <- c(2,2,nn)
+##
+ut1 <- sapply(1:nn, function(i){ut(lp[i], la1[i], lb1[i], lum[,,i])})
+ut2 <- sapply(1:nn, function(i){ut(lp[i], la2[i], lb2[i], lum[,,i])})
+Du <- ut2-ut1
+#f1 <- f1score(lp,la1,lb1)
+Df <- -f1score(lp,la1,lb1)+f1score(lp,la2,lb2)
+#m1 <- mcc(lp,la1,lb1)
+Dm <- -mcc(lp,la1,lb1)+mcc(lp,la2,lb2)
+#pr1 <- prec(lp,la1,lb1)
+Dpr <- -prec(lp,la1,lb1)+prec(lp,la2,lb2)
+#ac1 <- acc(lp,la1,lb1)
+Dacc <- -acc(lp,la1,lb1)+acc(lp,la2,lb2)
+Dbacc <- -bacc(lp,la1,lb1)+bacc(lp,la2,lb2)
+##
+Duappr <- sapply(1:nn, function(i){
+    ut(lp[i], la2[i], lb2[i], lumappr[,,i]) - ut(lp[i], la1[i], lb1[i], lumappr[,,i])
+})
+##
+pdff(paste0('example_discrepancies_better'))
+posi <- (Du > 0 & Df > 0) | (Du < 0 & Df < 0)
+tplot(x=Du[posi], y=Df[posi], type='p', pch='.', col=1, xlab='diff. utility', ylab='diff. F1 score', family='Palatino')
+tplot(x=Du[!posi], y=Df[!posi], type='p', pch='.', col=2, xlab='diff. utility', ylab='diff. F1 score', family='Palatino', add=T)
+legend('topleft',legend=paste0('correctly ranked cases: ',round(sum(posi)/nn*100),'%'), bty='n', cex=1.5)
+##
+posi <- (Du > 0 & Dm > 0) | (Du < 0 & Dm < 0)
+tplot(x=Du[posi], y=Dm[posi], type='p', pch='.', col=1, xlab='diff. utility', ylab='diff. MCC', family='Palatino')
+tplot(x=Du[!posi], y=Dm[!posi], type='p', pch='.', col=2, xlab='diff. utility', ylab='diff. MCC', family='Palatino', add=T)
+legend('topleft',legend=paste0('correctly ranked cases: ',round(sum(posi)/nn*100),'%'), bty='n', cex=1.5)
+##
+posi <- (Du > 0 & Dpr > 0) | (Du < 0 & Dpr < 0)
+tplot(x=Du[posi], y=Dpr[posi], type='p', pch='.', col=1, xlab='diff. utility', ylab='diff. Precision', family='Palatino')
+tplot(x=Du[!posi], y=Dpr[!posi], type='p', pch='.', col=2, xlab='diff. utility', ylab='diff. Precision', family='Palatino', add=T)
+legend('topleft',legend=paste0('correctly ranked cases: ',round(sum(posi)/nn*100),'%'), bty='n', cex=1.5)
+##
+posi <- (Du > 0 & Dbacc > 0) | (Du < 0 & Dbacc < 0)
+tplot(x=Du[posi], y=Dbacc[posi], type='p', pch='.', col=1, xlab='diff. utility', ylab='diff. Bal. accuracy', family='Palatino')
+tplot(x=Du[!posi], y=Dbacc[!posi], type='p', pch='.', col=2, xlab='diff. utility', ylab='diff. Bal. accuracy', family='Palatino', add=T)
+legend('topleft',legend=paste0('correctly ranked cases: ',round(sum(posi)/nn*100),'%'), bty='n', cex=1.5)
+##
+posi <- (Du > 0 & Dacc > 0) | (Du < 0 & Dacc < 0)
+tplot(x=Du[posi], y=Dacc[posi], type='p', pch='.', col=1, xlab='diff. utility', ylab='diff. Accuracy', family='Palatino')
+tplot(x=Du[!posi], y=Dacc[!posi], type='p', pch='.', col=2, xlab='diff. utility', ylab='diff. Accuracy', family='Palatino', add=T)
+legend('topleft',legend=paste0('correctly ranked cases: ',round(sum(posi)/nn*100),'%'), bty='n', cex=1.5)
+##
+posi <- (Du > 0 & Duappr > 0) | (Du < 0 & Duappr < 0)
+tplot(x=Du[posi], y=Duappr[posi], type='p', pch='.', col=1, xlab='diff. utility', ylab=paste0('diff. utility with ',round(100*percerror),'% error'), family='Palatino')
+tplot(x=Du[!posi], y=Duappr[!posi], type='p', pch='.', col=2, xlab='diff. utility', ylab=paste0('diff. ',round(100*percerror),'% approx utility'), family='Palatino', add=T)
+legend('topleft',legend=paste0('correctly ranked cases: ',round(sum(posi)/nn*100),'%'), bty='n', cex=1.5)
 ##
 dev.off()
 
