@@ -1,6 +1,6 @@
 ## Author: PGL  Porta Mana
 ## Created: 2022-03-17T14:21:57+0100
-## Last-Updated: 2022-05-03T15:40:21+0200
+## Last-Updated: 2022-05-04T13:35:39+0200
 ################
 ## Exploration of several issues for binary classifiers
 ################
@@ -113,24 +113,24 @@ parmlist <- mcsamples2parmlist(
 
 
 xr <- range(unlist(Xrange))
-cseq <- seq(xr[1], xr[2], length.out=8)
+cseq <- seq(xr[1], xr[2], length.out=128)
 ##
 vpoints <- cbind(prediction0=rep(cseq, length(cseq)), prediction1=rep(cseq, each=length(cseq)))
 
 system.time(opgrid <- samplesF(Y=cbind(class=1), X=vpoints, parmList=parmlist, inorder=F))
 ##
 
-system.time(opgrid2 <- samplesFp(Y=cbind(class=1), X=vpoints, batchsize=1024, parmList=parmlist, inorder=F))
+## system.time(opgrid2 <- samplesFp(Y=cbind(class=1), X=vpoints, batchsize=1024, parmList=parmlist, inorder=F))
 
 
 mpgrid <- rowMeans(opgrid)
 dim(mpgrid) <- rep(length(cseq), 2)
 
 fig <- plot_ly(z=t(mpgrid), x=cseq, y=cseq, cmin=0, cmax=1)
-fig <- fig %>% add_surface(colors='Blues')
+fig <- fig %>% add_surface(colors='Reds')
 fig <- fig %>% layout(scene = list(xaxis = list(title = "output 0"), yaxis = list(title = "output 1"), zaxis = list(title = "probability of class 1", range=c(0,1)), camera = list(projection = list(type = 'orthographic'))), title='original')
 fig
-orca(fig, 'test.pdf')
+orca(fig, 'CNNprobability_vs_output1.pdf')
 
 
 ####
