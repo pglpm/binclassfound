@@ -1,6 +1,6 @@
 ## Author: PGL  Porta Mana
 ## Created: 2022-05-01T09:38:48+0200
-## Last-Updated: 2022-05-04T17:49:42+0200
+## Last-Updated: 2022-05-04T20:00:32+0200
 ################
 ## Calculations for the papers
 ################
@@ -645,7 +645,7 @@ la2 <- runif(nn, 0.5, 1)
 lb2 <- runif(nn, 0.5, 1)
 basetp <- matrix(c(1,0,0,0),2,2)
 basetn <- matrix(c(0,0,0,1),2,2)
-basefpfn <- array(c(0,0,1,0,  0,1,0,0),dim=c(2,2,2))
+basefpfn <- array(c(1/2,1/2,0,0,  0,0,1/2,1/2),dim=c(2,2,2))
 sides <- sample(1:2,nn,replace=T)
 convpoints <- LaplacesDemon::rdirichlet(n=nn, alpha=rep(1,3))
 lum <- sapply(1:nn, function(i){
@@ -735,7 +735,7 @@ la2 <- 0.5+0.5*rbeta(10^5, shape1=3, shape2=1)
 lb2 <- 0.5+0.5*rbeta(10^5, shape1=3, shape2=1)
 basetp <- matrix(c(1,0,0,0),2,2)
 basetn <- matrix(c(0,0,0,1),2,2)
-basefpfn <- array(c(0,0,1,0,  0,1,0,0),dim=c(2,2,2))
+basefpfn <- array(c(1/2,1/2,0,0,  0,0,1/2,1/2),dim=c(2,2,2))
 sides <- sample(1:2,nn,replace=T)
 convpoints <- LaplacesDemon::rdirichlet(n=nn, alpha=rep(1,3))
 lum <- sapply(1:nn, function(i){

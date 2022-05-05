@@ -1,6 +1,6 @@
 ## Author: PGL  Porta Mana
 ## Created: 2022-03-17T14:21:57+0100
-## Last-Updated: 2022-05-04T13:35:39+0200
+## Last-Updated: 2022-05-05T22:40:36+0200
 ################
 ## Exploration of several issues for binary classifiers
 ################
@@ -110,6 +110,20 @@ parmlist <- mcsamples2parmlist(
         temp[nrow(temp)+1-rev(seq(1,nrow(temp),by=nskip)[1:(ntotal/npar)]),]
 }
 )
+
+#########################################################
+## Check of Kjetil's calculations
+#########################################################
+kresults <- fread('CNN_direct_prob.csv', sep=',')
+
+ptest1 <- samplesF(Y=cbind(class=0), X=data.matrix(kresults[,..realCovs]), parmList=parmlist, inorder=F)
+
+mptest1 <- rowMeans(ptest1)
+
+discre <- (abs(mptest1-kresults[,direct_prob_0])/mptest1)
+which.max(discre)
+
+
 
 
 xr <- range(unlist(Xrange))
