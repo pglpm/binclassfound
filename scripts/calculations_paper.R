@@ -1,6 +1,6 @@
 ## Author: PGL  Porta Mana
 ## Created: 2022-05-01T09:38:48+0200
-## Last-Updated: 2022-05-06T15:12:18+0200
+## Last-Updated: 2022-05-06T15:50:01+0200
 ################
 ## Calculations for the papers
 ################
@@ -814,7 +814,7 @@ dev.off()
 #### Search for matrices for paper's example
 ###########################################################
 set.seed(149)
-nn <- 10^5
+nn <- 10^6
 lp <- runif(nn, 0.5, 1)
 ##
 la1 <- runif(nn, 0.5, 1)
@@ -864,6 +864,11 @@ Duappr <- sapply(1:nn, function(i){
 ##
 Drec <- la2-la1
 Dspec <- lb2-lb1
+##
+dcosts <- sapply(1:nn, function(i){
+    min(lum[1,1,i],lum[2,2,i]) - max(lum[1,2,i],lum[2,1,i])
+})
+
 
 select <- (Du>0 & Df<0 & Dm<0 & Dpr<0 & Dacc<0 & Dbacc<0 & Drec<=0 & Dspec<=0) |
     (Du<0 & Df>0 & Dm>0 & Dpr>0 & Dacc>0 & Dbacc>0 & Drec>=0 & Dspec>=0)
@@ -888,22 +893,23 @@ select <- (Du>0 & Df<0 & Dm<0 & Dpr<0 & Dacc<0 & Dbacc<0 & Dspec<=0) |
 sum(select)
 
 
-select <- (Du<0 & Df>0 & Dm>0 & Dpr>0 & Dacc>0 & Dbacc>0 & Drec>0)
+select <- (Du<0 & Df>0 & Dm>0 & Dpr>0 & Dacc>0 & Dbacc>0 & Drec>0 & dcosts>=0)
 sum(select)
 ##
-okpoint <- which.max(abs(Du[select])*100+abs(Df[select])+abs(Dm[select])+abs(Dpr[select])*100+abs(Dacc[select])+abs(Drec[select])/1000+abs(-lb1[select]+lb2[select]))
+okpoint <- which.max(abs(Du[select])*10+abs(Df[select])+abs(Dm[select])+abs(Dpr[select])+abs(Dacc[select])+abs(Drec[select])-50*abs(-lb1[select]+lb2[select])-100*lp[select])
 ##
-tp <- lp[select][okpoint]
-ta1 <- la1[select][okpoint]
-tb1 <- lb1[select][okpoint]
-ta2 <- la2[select][okpoint]
-tb2 <- lb2[select][okpoint]
-tut1 <- ut1[select][okpoint]
-tut2 <- ut2[select][okpoint]
-tum <- lum[,,select][,,okpoint]
+sigf <- 2
+tp <- signif(lp[select][okpoint] ,sigf)
+ta1 <- signif(la1[select][okpoint] ,sigf)
+tb1 <- signif(lb1[select][okpoint] ,sigf)
+ta2 <- signif(la2[select][okpoint] ,sigf)
+tb2 <- signif(lb2[select][okpoint] ,sigf)
+tum <- signif(lum[,,select][,,okpoint] ,sigf)
+tut1 <- ut(tp, ta1, tb1, tum)
+tut2 <- ut(tp, ta2, tb2, tum)
 ##
 Xu <- 100
-Su <- -min(tum[1,1],tum[2,2])*Xu
+Su <- -max(tum[1,2],tum[2,1])*Xu
 ##
 print('---------------------------------')
 print('P+:')
@@ -930,3 +936,5 @@ print('Accs:')
 c(acc(tp,ta1,tb1), acc(tp,ta2,tb2))
 print('Recalls:')
 c(ta1, ta2)
+print('Specificities:')
+c(tb1, tb2)
