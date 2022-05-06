@@ -1,6 +1,6 @@
 ## Author: PGL  Porta Mana
 ## Created: 2022-03-17T14:21:57+0100
-## Last-Updated: 2022-05-03T08:56:12+0200
+## Last-Updated: 2022-05-06T07:37:47+0200
 ################
 ## Exploration of several issues for binary classifiers
 ################
@@ -108,6 +108,27 @@ parmlist <- mcsamples2parmlist(
         temp[nrow(temp)+1-rev(seq(1,nrow(temp),by=nskip)[1:(ntotal/npar)]),]
 }
 )
+
+#########################################################
+## Check of Kjetil's calculations
+#########################################################
+kresults <- fread('RF_direct_prob.csv', sep=',')
+
+
+
+ptest1 <- samplesF(Y=cbind(class=0), X=X2Y[[1]](data.matrix(kresults[,'preds'])), parmList=parmlist, inorder=F)
+
+mptest1 <- rowMeans(ptest1)
+
+discre <- (abs(mptest1-kresults[,probs_class_0])/mptest1)
+which.max(discre)
+
+summary(discre)*100
+#########################################################
+
+
+
+
 
 ## Probability vs output
 xgrid <- seq(0, 1, length.out=256)

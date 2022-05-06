@@ -1,6 +1,6 @@
 ## Author: PGL  Porta Mana
 ## Created: 2022-03-17T14:21:57+0100
-## Last-Updated: 2022-05-05T22:40:36+0200
+## Last-Updated: 2022-05-06T07:30:16+0200
 ################
 ## Exploration of several issues for binary classifiers
 ################
@@ -123,6 +123,8 @@ mptest1 <- rowMeans(ptest1)
 discre <- (abs(mptest1-kresults[,direct_prob_0])/mptest1)
 which.max(discre)
 
+summary(discre)*100
+#########################################################
 
 
 

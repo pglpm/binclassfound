@@ -1,6 +1,6 @@
 ## Author: PGL  Porta Mana
 ## Created: 2022-05-01T09:38:48+0200
-## Last-Updated: 2022-05-04T20:00:32+0200
+## Last-Updated: 2022-05-06T15:12:18+0200
 ################
 ## Calculations for the papers
 ################
@@ -807,3 +807,126 @@ legend('topleft',legend=paste0('correctly ranked cases: ',round(sum(posi)/nn*100
 ##
 dev.off()
 
+
+
+
+###########################################################
+#### Search for matrices for paper's example
+###########################################################
+set.seed(149)
+nn <- 10^5
+lp <- runif(nn, 0.5, 1)
+##
+la1 <- runif(nn, 0.5, 1)
+lb1 <- runif(nn, 0.5, 1)
+la2 <- runif(nn, 0.5, 1)
+lb2 <- runif(nn, 0.5, 1)
+basetp <- matrix(c(1,0,0,0),2,2)
+basetn <- matrix(c(0,0,0,1),2,2)
+basefpfn <- array(c(1/2,1/2,0,0,  0,0,1/2,1/2),dim=c(2,2,2))
+sides <- sample(1:2,nn,replace=T)
+convpoints <- LaplacesDemon::rdirichlet(n=nn, alpha=rep(1,3))
+lum <- sapply(1:nn, function(i){
+    temp <- basetp * convpoints[i,1] + basetn * convpoints[i,2] +
+        basefpfn[,,sides[i]] * convpoints[i,3]
+    temp <- temp - min(temp)
+    temp <- temp/max(temp)
+})
+dim(lum) <- c(2,2,nn)
+## testlum <- lapply(1:nn, function(i){
+##     basetp * convpoints[i,1] + basetn * convpoints[i,2] +
+##         basefpfn[,,sides[i]] * convpoints[i,3]
+## }
+## )
+##
+percerror <- 1/4
+lumappr <- sapply(1:nn, function(i){
+    temp <- lum[,,i] + matrix(rnorm(4),2,2)*lum[,,i]*percerror
+})
+dim(lumappr) <- c(2,2,nn)
+##
+ut1 <- sapply(1:nn, function(i){ut(lp[i], la1[i], lb1[i], lum[,,i])})
+ut2 <- sapply(1:nn, function(i){ut(lp[i], la2[i], lb2[i], lum[,,i])})
+Du <- ut2-ut1
+#f1 <- f1score(lp,la1,lb1)
+Df <- -f1score(lp,la1,lb1)+f1score(lp,la2,lb2)
+#m1 <- mcc(lp,la1,lb1)
+Dm <- -mcc(lp,la1,lb1)+mcc(lp,la2,lb2)
+#pr1 <- prec(lp,la1,lb1)
+Dpr <- -prec(lp,la1,lb1)+prec(lp,la2,lb2)
+#ac1 <- acc(lp,la1,lb1)
+Dacc <- -acc(lp,la1,lb1)+acc(lp,la2,lb2)
+Dbacc <- -bacc(lp,la1,lb1)+bacc(lp,la2,lb2)
+##
+Duappr <- sapply(1:nn, function(i){
+    ut(lp[i], la2[i], lb2[i], lumappr[,,i]) - ut(lp[i], la1[i], lb1[i], lumappr[,,i])
+})
+##
+Drec <- la2-la1
+Dspec <- lb2-lb1
+
+select <- (Du>0 & Df<0 & Dm<0 & Dpr<0 & Dacc<0 & Dbacc<0 & Drec<=0 & Dspec<=0) |
+    (Du<0 & Df>0 & Dm>0 & Dpr>0 & Dacc>0 & Dbacc>0 & Drec>=0 & Dspec>=0)
+sum(select)
+
+
+
+select <- (Du>0 & Df<0 & Dm<0 & Dpr<0 & Dacc<0 & Dbacc<0) |
+    (Du<0 & Df>0 & Dm>0 & Dpr>0 & Dacc>0 & Dbacc>0)
+sum(select)
+
+select <- (Du>0 & Df<0 & Dm<0 & Dpr<0 & Dacc<0 & Dbacc<0 & Drec<=0 & Dspec<=0) |
+    (Du<0 & Df>0 & Dm>0 & Dpr>0 & Dacc>0 & Dbacc>0 & Drec>=0 & Dspec>=0)
+sum(select)
+
+select <- (Du>0 & Df<0 & Dm<0 & Dpr<0 & Dacc<0 & Dbacc<0 & Drec<0) |
+    (Du<0 & Df>0 & Dm>0 & Dpr>0 & Dacc>0 & Dbacc>0 & Drec>0)
+sum(select)
+
+select <- (Du>0 & Df<0 & Dm<0 & Dpr<0 & Dacc<0 & Dbacc<0 & Dspec<=0) |
+    (Du<0 & Df>0 & Dm>0 & Dpr>0 & Dacc>0 & Dbacc>0 & Dspec>=0)
+sum(select)
+
+
+select <- (Du<0 & Df>0 & Dm>0 & Dpr>0 & Dacc>0 & Dbacc>0 & Drec>0)
+sum(select)
+##
+okpoint <- which.max(abs(Du[select])*100+abs(Df[select])+abs(Dm[select])+abs(Dpr[select])*100+abs(Dacc[select])+abs(Drec[select])/1000+abs(-lb1[select]+lb2[select]))
+##
+tp <- lp[select][okpoint]
+ta1 <- la1[select][okpoint]
+tb1 <- lb1[select][okpoint]
+ta2 <- la2[select][okpoint]
+tb2 <- lb2[select][okpoint]
+tut1 <- ut1[select][okpoint]
+tut2 <- ut2[select][okpoint]
+tum <- lum[,,select][,,okpoint]
+##
+Xu <- 100
+Su <- -min(tum[1,1],tum[2,2])*Xu
+##
+print('---------------------------------')
+print('P+:')
+tp
+c(ta1, tb1)
+c(ta2, tb2)
+##
+print('CM1:')
+matrix(c(ta1*tp,(1-ta1)*tp, (1-tb1)*(1-tp),tb1*(1-tp)), 2,2)
+print('CM2:')
+matrix(c(ta2*tp,(1-ta2)*tp, (1-tb2)*(1-tp),tb2*(1-tp)), 2,2)
+print('UM:')
+Su+Xu*tum
+##
+print('utilities:')
+Su+Xu*c(tut1, tut2)
+print('F1 scores:')
+c(f1score(tp,ta1,tb1), f1score(tp,ta2,tb2))
+print('MCCs:')
+c(mcc(tp,ta1,tb1), mcc(tp,ta2,tb2))
+print('Precs:')
+c(prec(tp,ta1,tb1), prec(tp,ta2,tb2))
+print('Accs:')
+c(acc(tp,ta1,tb1), acc(tp,ta2,tb2))
+print('Recalls:')
+c(ta1, ta2)

@@ -59,3 +59,19 @@ def get_expected_utility(um, m):
     um = np.array(um)
     m = np.array(m)
     np.matmul(um, m)
+
+
+
+def choose_class(x, um):
+    """
+    x = either one number between 0-1, or a (normalized) vector of probabilities
+        if it's one number then we are in a binary classification case
+        and x is the probability of CLASS 0
+    um = utility matrix in the format [[T0,F0],[F1,T1]]
+    """
+    x = np.array(x)
+    if len(x)==1: # it means x is the probability of class 0
+        x = np.concatenate((x, 1-x)) # transform into prob. vector
+    um = np.array(um)
+    utilities = np.matmul(um, x)
+    np.argmax(utilities)
