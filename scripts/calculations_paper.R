@@ -1,6 +1,6 @@
 ## Author: PGL  Porta Mana
 ## Created: 2022-05-01T09:38:48+0200
-## Last-Updated: 2022-05-07T13:17:57+0200
+## Last-Updated: 2022-05-07T18:28:51+0200
 ################
 ## Calculations for the papers
 ################
@@ -1155,7 +1155,7 @@ tb1 <- tcoe1[3]
 ta2 <- tcoe2[2]
 tb2 <- tcoe2[3]
 ##
-tum <- matrix(c(340,-660,240,260),2,2)
+tum <- matrix(c(340/4,-660/4,240,260),2,2)
 tut1 <- ut(tcm1, tum)
 tut2 <- ut(tcm2, tum)
 ##
@@ -1183,7 +1183,252 @@ print('Precs:')
 com(prec(tp,ta1,tb1), prec(tp,ta2,tb2))
 print('Accs:')
 com(acc(tp,ta1,tb1), acc(tp,ta2,tb2))
+print('Bal. accs:')
+com(bacc(tp,ta1,tb1), bacc(tp,ta2,tb2))
 print('Recalls:')
 com(ta1, ta2)
 print('Specificities:')
 com(tb1, tb2)
+
+
+
+
+
+tcm1 <- matrix(c(0.39,0.31,0.14,0.16),2,2)
+tcm2 <- matrix(c(0.38,0.32,0.0,0.3),2,2)
+tcoe1 <- cm2st(tcm1)
+tcoe2 <- cm2st(tcm2)
+tp <- tcoe1[1]
+ta1 <- tcoe1[2]
+tb1 <- tcoe1[3]
+ta2 <- tcoe2[2]
+tb2 <- tcoe2[3]
+##
+tum <- matrix(c(140,-375,200,220),2,2)
+tut1 <- ut(tcm1, tum)
+tut2 <- ut(tcm2, tum)
+##
+print('---------------------------------')
+print('P+:')
+tp
+c(ta1, tb1)
+c(ta2, tb2)
+##
+print('CM1:')
+tcm1
+print('CM2:')
+tcm2
+print('UM:')
+tum
+##
+com <- function(x,y){signif(c(x,y,NA,(y-x)/(x+y)*2*100),4)}
+print('utilities:')
+com(tut1, tut2)
+print('F1 scores:')
+com(f1score(tp,ta1,tb1), f1score(tp,ta2,tb2))
+print('MCCs:')
+com(mcc(tp,ta1,tb1), mcc(tp,ta2,tb2))
+print('Precs:')
+com(prec(tp,ta1,tb1), prec(tp,ta2,tb2))
+print('Accs:')
+com(acc(tp,ta1,tb1), acc(tp,ta2,tb2))
+print('Bal. accs:')
+com(bacc(tp,ta1,tb1), bacc(tp,ta2,tb2))
+print('Recalls:')
+com(ta1, ta2)
+print('Specificities:')
+com(tb1, tb2)
+
+
+
+tcm1 <- matrix(c(0.39,0.31,0.14,0.16),2,2)
+tcm2 <- matrix(c(0.38,0.32,0.0,0.3),2,2)
+tcoe1 <- cm2st(tcm1)
+tcoe2 <- cm2st(tcm2)
+tp <- tcoe1[1]
+ta1 <- tcoe1[2]
+tb1 <- tcoe1[3]
+ta2 <- tcoe2[2]
+tb2 <- tcoe2[3]
+##
+tum <- matrix(c(340*2/4,-660*2/4,240,260),2,2)-38
+tut1 <- ut(tcm1, tum)
+tut2 <- ut(tcm2, tum)
+##
+print('---------------------------------')
+print('P+:')
+tp
+c(ta1, tb1)
+c(ta2, tb2)
+##
+print('CM1:')
+tcm1
+print('CM2:')
+tcm2
+print('UM:')
+tum
+##
+com <- function(x,y){signif(c(x,y,NA,(y-x)/(x+y)*2*100),4)}
+print('utilities:')
+com(tut1, tut2)
+print('F1 scores:')
+com(f1score(tp,ta1,tb1), f1score(tp,ta2,tb2))
+print('MCCs:')
+com(mcc(tp,ta1,tb1), mcc(tp,ta2,tb2))
+print('Precs:')
+com(prec(tp,ta1,tb1), prec(tp,ta2,tb2))
+print('Accs:')
+com(acc(tp,ta1,tb1), acc(tp,ta2,tb2))
+print('Bal. accs:')
+com(bacc(tp,ta1,tb1), bacc(tp,ta2,tb2))
+print('Recalls:')
+com(ta1, ta2)
+print('Specificities:')
+com(tb1, tb2)
+
+tcm1 <- matrix(c(0.39,0.31,0.14,0.16),2,2)
+tcm2 <- matrix(c(0.38,0.32,0.0,0.3),2,2)
+tcoe1 <- cm2st(tcm1)
+tcoe2 <- cm2st(tcm2)
+tp <- tcoe1[1]
+ta1 <- tcoe1[2]
+tb1 <- tcoe1[3]
+ta2 <- tcoe2[2]
+tb2 <- tcoe2[3]
+##
+tum <- matrix(c(340,-660,240+200,260+200),2,2)
+tut1 <- ut(tcm1, tum)
+tut2 <- ut(tcm2, tum)
+##
+print('---------------------------------')
+print('P+:')
+tp
+c(ta1, tb1)
+c(ta2, tb2)
+##
+print('CM1:')
+tcm1
+print('CM2:')
+tcm2
+print('UM:')
+tum
+##
+com <- function(x,y){signif(c(x,y,NA,(y-x)/(x+y)*2*100),4)}
+print('utilities:')
+com(tut1, tut2)
+print('F1 scores:')
+com(f1score(tp,ta1,tb1), f1score(tp,ta2,tb2))
+print('MCCs:')
+com(mcc(tp,ta1,tb1), mcc(tp,ta2,tb2))
+print('Precs:')
+com(prec(tp,ta1,tb1), prec(tp,ta2,tb2))
+print('Accs:')
+com(acc(tp,ta1,tb1), acc(tp,ta2,tb2))
+print('Bal. accs:')
+com(bacc(tp,ta1,tb1), bacc(tp,ta2,tb2))
+print('Recalls:')
+com(ta1, ta2)
+print('Specificities:')
+com(tb1, tb2)
+
+
+
+## > [1] "P+:"
+## > [1] 0.7
+## > [1] 0.5571429 0.5333333
+## > [1] 0.5428571 1.0000000
+## > > [1] "CM1:"
+## >      [,1] [,2]
+## [1,] 0.39 0.14
+## [2,] 0.31 0.16
+## > [1] "CM2:"
+## >      [,1] [,2]
+## [1,] 0.38  0.0
+## [2,] 0.32  0.3
+## > [1] "UM:"
+## >      [,1] [,2]
+## [1,]  340  240
+## [2,] -660  260
+## > > > [1] "utilities:"
+## > [1]    3.2   -4.0     NA 1800.0
+## > [1] "F1 scores:"
+## > [1]  0.6341  0.7037      NA 10.4000
+## > [1] "MCCs:"
+## > [1]   0.08307   0.51250        NA 144.20000
+## > [1] "Precs:"
+## > [1]  0.7358  1.0000      NA 30.4300
+## > [1] "Accs:"
+## > [1]  0.55  0.68    NA 21.14
+## > [1] "Bal. accs:"
+## > [1]  0.5452  0.7714      NA 34.3600
+## > [1] "Recalls:"
+## > [1]  0.5571  0.5429      NA -2.5970
+## > [1] "Specificities:"
+## > [1]  0.5333  1.0000      NA 60.8700
+
+
+## > [1] "P+:"
+## > [1] 0.7
+## > [1] 0.5571429 0.5333333
+## > [1] 0.5428571 1.0000000
+## > > [1] "CM1:"
+## >      [,1] [,2]
+## [1,] 0.39 0.14
+## [2,] 0.31 0.16
+## > [1] "CM2:"
+## >      [,1] [,2]
+## [1,] 0.38  0.0
+## [2,] 0.32  0.3
+## > [1] "UM:"
+## >      [,1] [,2]
+## [1,]  132  202
+## [2,] -368  222
+## > > > [1] "utilities:"
+## > [1]     1.2    -1.0      NA -2200.0
+## > [1] "F1 scores:"
+## > [1]  0.6341  0.7037      NA 10.4000
+## > [1] "MCCs:"
+## > [1]   0.08307   0.51250        NA 144.20000
+## > [1] "Precs:"
+## > [1]  0.7358  1.0000      NA 30.4300
+## > [1] "Accs:"
+## > [1]  0.55  0.68    NA 21.14
+## > [1] "Bal. accs:"
+## > [1]  0.5452  0.7714      NA 34.3600
+## > [1] "Recalls:"
+## > [1]  0.5571  0.5429      NA -2.5970
+## > [1] "Specificities:"
+## > [1]  0.5333  1.0000      NA 60.8700
+
+## > [1] "P+:"
+## > [1] 0.7
+## > [1] 0.5571429 0.5333333
+## > [1] 0.5428571 1.0000000
+## > > [1] "CM1:"
+## >      [,1] [,2]
+## [1,] 0.39 0.14
+## [2,] 0.31 0.16
+## > [1] "CM2:"
+## >      [,1] [,2]
+## [1,] 0.38  0.0
+## [2,] 0.32  0.3
+## > [1] "UM:"
+## >      [,1] [,2]
+## [1,]   85  240
+## [2,] -165  260
+## > > > [1] "utilities:"
+## > [1] 57.2000 57.5000      NA  0.5231
+## > [1] "F1 scores:"
+## > [1]  0.6341  0.7037      NA 10.4000
+## > [1] "MCCs:"
+## > [1]   0.08307   0.51250        NA 144.20000
+## > [1] "Precs:"
+## > [1]  0.7358  1.0000      NA 30.4300
+## > [1] "Accs:"
+## > [1]  0.55  0.68    NA 21.14
+## > [1] "Bal. accs:"
+## > [1]  0.5452  0.7714      NA 34.3600
+## > [1] "Recalls:"
+## > [1]  0.5571  0.5429      NA -2.5970
+## > [1] "Specificities:"
+## > [1]  0.5333  1.0000      NA 60.8700
