@@ -1,6 +1,6 @@
 ## Author: PGL  Porta Mana
 ## Created: 2022-05-01T09:38:48+0200
-## Last-Updated: 2022-05-06T22:36:19+0200
+## Last-Updated: 2022-05-07T13:17:57+0200
 ################
 ## Calculations for the papers
 ################
@@ -23,6 +23,7 @@ library('png')
 library('foreach')
 library('doFuture')
 library('doRNG')
+library('future.apply')
 registerDoFuture()
 print('availableCores:')
 print(availableCores())
@@ -58,6 +59,16 @@ confm <- function(p,a,b){
         matrix(c(p*a, p*(1-a), (1-p)*(1-b), (1-p)*b), 2,2)
     }else{
         aperm(array(c(p*a, p*(1-a), (1-p)*(1-b), (1-p)*b), dim=c(len,2,2)), c(2,3,1))
+    }
+}
+##
+cm2st <- function(cm){
+    if(length(dim(cm))==2){
+        p <- sum(cm[,1])
+        c(p, cm[1,1]/p, cm[2,2]/(1-p))
+    }else{
+        p <- colSums(cm[,1,])
+        rbind(p, cm[1,1,]/p, cm[2,2,]/(1-p))
     }
 }
 ##
@@ -827,8 +838,8 @@ dev.off()
 ###########################################################
 #### Search for matrices for paper's example
 ###########################################################
-set.seed(149)
-nn <- 10^6
+set.seed(941)
+nn <- 10^7
 lp <- runif(nn, 0.5, 1)
 ##
 la1 <- runif(nn, 0.5, 1)
@@ -843,12 +854,21 @@ basetn <- matrix(c(0,0,0,1),2,2)
 basefpfn <- array(c(1/2,1/2,0,0,  0,0,1/2,1/2),dim=c(2,2,2))
 sides <- sample(1:2,nn,replace=T)
 convpoints <- LaplacesDemon::rdirichlet(n=nn, alpha=rep(1,3))
-lum <- sapply(1:nn, function(i){
+## system.time(lum1 <- sapply(1:nn,function(i){
+## #matrix(c(10,1,-10,1),2,2)
+##     temp <- basetp * convpoints[i,1] + basetn * convpoints[i,2] +
+##         basefpfn[,,sides[i]] * convpoints[i,3]
+##     ## temp <- temp - min(temp)
+##     temp <- temp/max(temp)
+## }))
+## dim(lum1) <- c(2,2,nn)
+system.time(lum <- future_sapply(1:nn,function(i){
+#matrix(c(10,1,-10,1),2,2)
     temp <- basetp * convpoints[i,1] + basetn * convpoints[i,2] +
         basefpfn[,,sides[i]] * convpoints[i,3]
-    temp <- temp - min(temp)
+    ## temp <- temp - min(temp)
     temp <- temp/max(temp)
-})
+}))
 dim(lum) <- c(2,2,nn)
 ## testlum <- lapply(1:nn, function(i){
 ##     basetp * convpoints[i,1] + basetn * convpoints[i,2] +
@@ -881,54 +901,64 @@ Dbacc <- -bacc(lp,la1,lb1)+bacc(lp,la2,lb2)
 ##
 Drec <- la2-la1
 Dspec <- lb2-lb1
+## ##
+## dcosts <- apply(lum,3,function(x){min(x[1,1],x[2,2])-max(x[1,2],x[2,1])})
+## ##
+minp <- future_sapply(1:nn,function(i){
+    c(min(lum[1,1,i],lum[2,2,i]), max(lum[1,2,i],lum[2,1,i]))
+})
 ##
-dcosts <- apply(lum,3,function(x){min(x[1,1],x[2,2])-max(x[1,2],x[2,1])})
+ddiff <- minp[1,]-minp[2,]
 ##
-dshifts <- apply(lum,3,function(x){min(x[1,1],x[2,2])}) - ut2
+dshifts <- ut1 - minp[2,]
+## ##
+dshifts2 <- minp[1,] - ut2
 
 
-select <- (Du>0 & Df<0 & Dm<0 & Dpr<0 & Dacc<0 & Dbacc<0 & Drec<=0 & Dspec<=0) |
-    (Du<0 & Df>0 & Dm>0 & Dpr>0 & Dacc>0 & Dbacc>0 & Drec>=0 & Dspec>=0)
+## select <- (Du>0 & Df<0 & Dm<0 & Dpr<0 & Dacc<0 & Dbacc<0 & Drec<=0 & Dspec<=0) |
+##     (Du<0 & Df>0 & Dm>0 & Dpr>0 & Dacc>0 & Dbacc>0 & Drec>=0 & Dspec>=0)
+## sum(select)
+## select <- (Du>0 & Df<0 & Dm<0 & Dpr<0 & Dacc<0 & Dbacc<0) |
+##     (Du<0 & Df>0 & Dm>0 & Dpr>0 & Dacc>0 & Dbacc>0)
+## sum(select)
+## select <- (Du>0 & Df<0 & Dm<0 & Dpr<0 & Dacc<0 & Dbacc<0 & Drec<=0 & Dspec<=0) |
+##     (Du<0 & Df>0 & Dm>0 & Dpr>0 & Dacc>0 & Dbacc>0 & Drec>=0 & Dspec>=0)
+## sum(select)
+## select <- (Du>0 & Df<0 & Dm<0 & Dpr<0 & Dacc<0 & Dbacc<0 & Drec<0) |
+##     (Du<0 & Df>0 & Dm>0 & Dpr>0 & Dacc>0 & Dbacc>0 & Drec>0)
+## sum(select)
+## select <- (Du>0 & Df<0 & Dm<0 & Dpr<0 & Dacc<0 & Dbacc<0 & Dspec<=0) |
+##     (Du<0 & Df>0 & Dm>0 & Dpr>0 & Dacc>0 & Dbacc>0 & Dspec>=0)
+## sum(select)
+
+
+select <- (2*Du/(ut1+ut2) < -0.1 & Df>0 & Dm>0 & Dpr>0 & Dacc>0 & Dbacc>0 & (Drec>0 | Dspec>0))# & ddiff>0)
 sum(select)
 
-
-
-select <- (Du>0 & Df<0 & Dm<0 & Dpr<0 & Dacc<0 & Dbacc<0) |
-    (Du<0 & Df>0 & Dm>0 & Dpr>0 & Dacc>0 & Dbacc>0)
-sum(select)
-
-select <- (Du>0 & Df<0 & Dm<0 & Dpr<0 & Dacc<0 & Dbacc<0 & Drec<=0 & Dspec<=0) |
-    (Du<0 & Df>0 & Dm>0 & Dpr>0 & Dacc>0 & Dbacc>0 & Drec>=0 & Dspec>=0)
-sum(select)
-
-select <- (Du>0 & Df<0 & Dm<0 & Dpr<0 & Dacc<0 & Dbacc<0 & Drec<0) |
-    (Du<0 & Df>0 & Dm>0 & Dpr>0 & Dacc>0 & Dbacc>0 & Drec>0)
-sum(select)
-
-select <- (Du>0 & Df<0 & Dm<0 & Dpr<0 & Dacc<0 & Dbacc<0 & Dspec<=0) |
-    (Du<0 & Df>0 & Dm>0 & Dpr>0 & Dacc>0 & Dbacc>0 & Dspec>=0)
-sum(select)
-
-
-select <- (Du<0 & Df>0 & Dm>0 & Dpr>0 & Dacc>0 & Dbacc>0 & Drec>0 & dcosts>=0 & dshifts>=0)
-sum(select)
 ##
-okpoint <- which.max(abs(Du[select])*10+abs(Df[select])+abs(Dm[select])+abs(Dpr[select])+abs(Dacc[select])+abs(Drec[select])-20*abs(-lb1[select]+lb2[select])-100*lp[select])
+okpoint <- which.max(abs(Du[select])*0+abs(Df[select])+abs(Dm[select])+abs(Dpr[select])+abs(Dacc[select])+abs(Drec[select])-10*2*((Drec[select]>0)*abs(-lb1[select]+lb2[select])/(lb1[select]+lb2[select])+(Dspec[select]>0)*abs(-la1[select]+la2[select])/(la1[select]+la2[select]))-0*lp[select])
+
 ##
-sigf <- 2
+okpoint <- which.max(abs(Du[select])*0+abs(Df[select])+abs(Dm[select])+abs(Dpr[select])+abs(Dacc[select])+abs(Drec[select])-10*2*((Drec[select]>0)*abs(-lb1[select]+lb2[select])+(Dspec[select]>0)*abs(-la1[select]+la2[select]))-0*lp[select])
+
+okpoint <- which.max(abs(Du[select])*0+abs(Df[select])+abs(Dm[select])+abs(Dpr[select])+abs(Dacc[select])+abs(Drec[select])+1000*2*((Drec[select]>0)*abs(lb2[select])+(Dspec[select]>0)*abs(la2[select]))-0*lp[select])
+
+##okpoint <- 2649
+sigf <- 3
 tp <- signif(lp[select][okpoint] ,sigf)
 ta1 <- la1[select][okpoint]
 tb1 <- lb1[select][okpoint]
-tcm1 <- signif(confm(tp,ta1,tb1),2)
+tcm1 <- round(confm(tp,ta1,tb1),sigf)
 ta2 <- la2[select][okpoint]
 tb2 <- lb2[select][okpoint]
-tcm2 <- signif(confm(tp,ta2,tb2),sigf)
-tum <- signif(lum[,,select][,,okpoint] ,sigf)
-tut1 <- ut(tcm1, tum)
-tut2 <- ut(tcm2, tum)
+tcm2 <- round(confm(tp,ta2,tb2),sigf)
 ##
 Xu <- 1000
-Su <- signif(-(tut1*1/4+tut2*3/4)*Xu,sigf)
+Su <- -139# round(-(tut1*1/4+tut2*3/4)*Xu, 0)
+tum <- signif(round(Su+Xu*lum[,,select][,,okpoint] ,0),sigf)
+#tum <- matrix(c(10,0,-600,450),2,2)
+tut1 <- ut(tcm1, tum)
+tut2 <- ut(tcm2, tum)
 ##
 print('---------------------------------')
 print('P+:')
@@ -941,11 +971,11 @@ tcm1
 print('CM2:')
 tcm2
 print('UM:')
-Su+Xu*tum
+tum
 ##
-com <- function(x,y){signif(c(x,y,NA,abs((x-y)/(x+y))*2*100),3)}
+com <- function(x,y){signif(c(x,y,NA,(y-x)/(x+y)*2*100),3)}
 print('utilities:')
-Su+Xu*com(tut1, tut2)
+com(tut1, tut2)
 print('F1 scores:')
 com(f1score(tp,ta1,tb1), f1score(tp,ta2,tb2))
 print('MCCs:')
@@ -958,7 +988,6 @@ print('Recalls:')
 com(ta1, ta2)
 print('Specificities:')
 com(tb1, tb2)
-
 
 ## [1] "P+:"
 ## > [1] 0.51
@@ -990,3 +1019,171 @@ com(tb1, tb2)
 ## > [1] 0.55 0.97
 ## > [1] "Specificities:"
 ## > [1] 0.84 0.82
+
+
+tcm1 <- matrix(c(0.28,0.23,0.08,0.41),2,2)
+tcm2 <- matrix(c(0.49,0.02,0.09,0.40),2,2)
+tcoe1 <- cm2st(tcm1)
+tcoe2 <- cm2st(tcm2)
+tp <- tcoe1[1]
+ta1 <- tcoe1[2]
+tb1 <- tcoe1[3]
+ta2 <- tcoe2[2]
+tb2 <- tcoe2[3]
+##
+tum <- matrix(c(-105,-135,-625,275),2,2)
+tut1 <- ut(tcm1, tum)
+tut2 <- ut(tcm2, tum)
+##
+print('---------------------------------')
+print('P+:')
+tp
+c(ta1, tb1)
+c(ta2, tb2)
+##
+print('CM1:')
+tcm1
+print('CM2:')
+tcm2
+print('UM:')
+tum
+##
+com <- function(x,y){signif(c(x,y,NA,(y-x)/(x+y)*2*100),4)}
+print('utilities:')
+com(tut1, tut2)
+print('F1 scores:')
+com(f1score(tp,ta1,tb1), f1score(tp,ta2,tb2))
+print('MCCs:')
+com(mcc(tp,ta1,tb1), mcc(tp,ta2,tb2))
+print('Precs:')
+com(prec(tp,ta1,tb1), prec(tp,ta2,tb2))
+print('Accs:')
+com(acc(tp,ta1,tb1), acc(tp,ta2,tb2))
+print('Recalls:')
+com(ta1, ta2)
+print('Specificities:')
+com(tb1, tb2)
+
+
+## > [1] "P+:"
+## > [1] 0.88
+## > [1] 0.5193395 0.8032112
+## > [1] 0.9997283 0.7758837
+## > > [1] "CM1:"
+## >      [,1] [,2]
+## [1,] 0.46 0.02
+## [2,] 0.42 0.10
+## > [1] "CM2:"
+## >      [,1] [,2]
+## [1,] 0.88 0.03
+## [2,] 0.00 0.09
+## > [1] "UM:"
+## >      [,1] [,2]
+## [1,]  -92  -95
+## [2,]  -95  900
+## > > > [1] "utilities:"
+## > [1]    5.88   -2.81      NA -566.00
+## > [1] "F1 scores:"
+## > [1]  0.672  0.985     NA 37.800
+## > [1] "MCCs:"
+## > [1]   0.210   0.866      NA 122.000
+## > [1] "Precs:"
+## > [1] 0.951 0.970    NA 2.030
+## > [1] "Accs:"
+## > [1]  0.553  0.973     NA 55.000
+## > [1] "Recalls:"
+## > [1]  0.519  1.000     NA 63.200
+## > [1] "Specificities:"
+## > [1]  0.803  0.776     NA -3.460
+## [1,]    3  -59
+## [2,]    0   41
+## > > [1] "utilities:"
+## > [1] 13.0915 12.7541
+## > [1] "F1 scores:"
+## > [1] 0.6456439 0.9052978
+## > [1] "MCCs:"
+## > [1] 0.4064416 0.8009273
+## > [1] "Precs:"
+## > [1] 0.7815548 0.8486876
+## > [1] "Accs:"
+## > [1] 0.6921 0.8965
+## > [1] "Recalls:"
+## > [1] 0.55 0.97
+## > [1] "Specificities:"
+## > [1] 0.84 0.82
+
+
+## > [1] "P+:"
+## > [1] 0.7
+## > [1] 0.5519250 0.5186422
+## > [1] 0.5433391 0.9922608
+## > > [1] "CM1:"
+## >      [,1] [,2]
+## [1,] 0.39 0.14
+## [2,] 0.31 0.16
+## > [1] "CM2:"
+## >      [,1] [,2]
+## [1,] 0.38  0.0
+## [2,] 0.32  0.3
+## > [1] "UM:"
+## >      [,1] [,2]
+## [1,]  340  240
+## [2,] -660  260
+## > > > [1] "utilities:"
+## > [1]    3.2   -4.0     NA 1800.0
+## > [1] "F1 scores:"
+## > [1]  0.628  0.703     NA 11.200
+## > [1] "MCCs:"
+## > [1]   0.0648   0.5050       NA 155.0000
+## > [1] "Precs:"
+## > [1]  0.728  0.994     NA 30.900
+## > [1] "Accs:"
+## > [1]  0.542  0.678     NA 22.300
+## > [1] "Recalls:"
+## > [1]  0.552  0.543     NA -1.570
+## > [1] "Specificities:"
+## > [1]  0.519  0.992     NA 62.700
+
+
+tcm1 <- matrix(c(0.39,0.31,0.14,0.16),2,2)
+tcm2 <- matrix(c(0.38,0.32,0.0,0.3),2,2)
+tcoe1 <- cm2st(tcm1)
+tcoe2 <- cm2st(tcm2)
+tp <- tcoe1[1]
+ta1 <- tcoe1[2]
+tb1 <- tcoe1[3]
+ta2 <- tcoe2[2]
+tb2 <- tcoe2[3]
+##
+tum <- matrix(c(340,-660,240,260),2,2)
+tut1 <- ut(tcm1, tum)
+tut2 <- ut(tcm2, tum)
+##
+print('---------------------------------')
+print('P+:')
+tp
+c(ta1, tb1)
+c(ta2, tb2)
+##
+print('CM1:')
+tcm1
+print('CM2:')
+tcm2
+print('UM:')
+tum
+##
+com <- function(x,y){signif(c(x,y,NA,(y-x)/(x+y)*2*100),4)}
+print('utilities:')
+com(tut1, tut2)
+print('F1 scores:')
+com(f1score(tp,ta1,tb1), f1score(tp,ta2,tb2))
+print('MCCs:')
+com(mcc(tp,ta1,tb1), mcc(tp,ta2,tb2))
+print('Precs:')
+com(prec(tp,ta1,tb1), prec(tp,ta2,tb2))
+print('Accs:')
+com(acc(tp,ta1,tb1), acc(tp,ta2,tb2))
+print('Recalls:')
+com(ta1, ta2)
+print('Specificities:')
+com(tb1, tb2)
