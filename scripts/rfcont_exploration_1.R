@@ -1,6 +1,6 @@
 ## Author: PGL  Porta Mana
 ## Created: 2022-03-17T14:21:57+0100
-## Last-Updated: 2022-05-09T16:19:55+0200
+## Last-Updated: 2022-05-09T22:17:13+0200
 ################
 ## Exploration of several issues for binary classifiers
 ################
@@ -141,7 +141,7 @@ comparescores <- function(trueclass, output, prob, um=diag(2)){
         sum(trueclass==0 & output<0.5) + sum(trueclass==0 & output==0.5)/2,
         sum(trueclass==1 & output>0.5) + sum(trueclass==1 & output==0.5)/2,
         sum(trueclass==1 & output<0.5) + sum(trueclass==1 & output==0.5)/2
-    ), 2, 2)/nn
+    ), 2, 2)
     ##
     rawchoices <- apply(um %*% rbind(output,1-output)
                    , 2, maxdraw)
@@ -151,7 +151,7 @@ comparescores <- function(trueclass, output, prob, um=diag(2)){
         sum(trueclass==0 & rawchoices==1),
         sum(trueclass==1 & rawchoices==0),
         sum(trueclass==1 & rawchoices==1)
-    ), 2, 2)/nn
+    ), 2, 2)
     ##
     choices <- apply(um %*% rbind(prob,1-prob)
                    , 2, maxdraw)
@@ -161,26 +161,49 @@ comparescores <- function(trueclass, output, prob, um=diag(2)){
         sum(trueclass==0 & choices==1),
         sum(trueclass==1 & choices==0),
         sum(trueclass==1 & choices==1)
-    ), 2, 2)/nn
+    ), 2, 2)
     ##
-    print(rawcm)
-    print(rawcm2)
-    print(bayescm)
+    ## print(rawcm)
+    ## print(rawcm2)
+    ## print(bayescm)
     ##
     c(sum(um * rawcm), sum(um * rawcm2), sum(um * bayescm))
 }
 
 umlist <- lapply(
     list(c(1,0,0,1),
+         c(4,0,0,1),
+         c(32,0,0,1),
+         c(1,0,0,4),
+         c(1,0,0,32),
+         c(1,-1,0,1),
+         c(1,-4,0,1),
+         c(1,-32,0,1),
+         c(1,0,-1,1),
+         c(1,0,-4,1),
+         c(1,0,-32,1)),
+    function(x){
+        x <- x-min(x)
+        x <- x/max(x)
+        matrix(x,2,2)
+    }
+)
+
+umlist <- lapply(
+    list(c(1,0,0,1),
+         c(1,0,-1,1),
+         c(1,-1,0,1),
+         c(10,0,0,1),
+         c(1,0,0,10),
+         c(1,0,-10,1),
+         c(1,-10,0,1),
          c(5,0,0,1),
          c(100,0,0,1),
          c(1,0,0,5),
          c(1,0,0,100),
-         c(1,-1,0,1),
          c(1,-5,0,1),
-         c(1,-100,0,1),
-         c(1,0,-1,1),
          c(1,0,-5,1),
+         c(1,-100,0,1),
          c(1,0,-100,1)),
     function(x){
         x <- x-min(x)
@@ -191,12 +214,37 @@ umlist <- lapply(
 
 results <- t(sapply(umlist, function(um){
     comparescores(kresults$class, kresults$pred_0, mptest1, um=um)
-}))
-colnames(results) <- c('standard', 'output_um', 'bayesaugm_um')
+}))/length(trueclass)
+colnames(results) <- c('raw', 'out', 'bayes')
 ##
-cbind(results,apply(results,1,which.max))
+
+cbind(results,t(apply(results,1,function(x){
+    mx <- max(x)
+    c(x-mx)/mx*100
+}
+)))
+
+cbind(results[,c(1,3)],t(apply(results[,c(1,3)],1,function(x){
+    mx <- max(x)
+    c(x-mx)/mx*100
+}
+)))
 
 
+cbind(kscores[,c('score_RF_output','score_RF_bayesian')],t(apply(kscores[,c('score_RF_output','score_RF_bayesian')],1,function(x){
+    mx <- max(x)
+    c(x-mx)/mx*100
+}
+)))
+
+
+kscores <- fread('scores_utility_matrix.csv',sep=',')
+
+
+
+cbind(results[,'raw'], kscores[,score_RF_output], results[,'raw']- kscores[,score_RF_output])*length(trueclass)
+
+cbind(results[,'bayes'], kscores[,score_RF_bayesian], results[,'bayes']- kscores[,score_RF_bayesian])*length(trueclass)
 
 
 #########################################################
