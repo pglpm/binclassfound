@@ -1,6 +1,6 @@
 ## Author: PGL  Porta Mana
 ## Created: 2022-05-01T09:38:48+0200
-## Last-Updated: 2022-05-08T13:14:45+0200
+## Last-Updated: 2022-05-09T14:42:46+0200
 ################
 ## Calculations for the papers
 ################
@@ -105,6 +105,11 @@ bacc <- function(p,a,b){
 ##
 auc <- function(p,a,b){
     a/2 + b/2
+}
+##
+kri <- function(p,a,b){
+    raccu <- ((p*a+(1-p)*(1-b) + p)/2)^2 + (((1-p)*b+p*(1-a) + (1-p))/2)^2
+    ((acc(p,a,b) + 1)/2 - raccu)/(1-raccu)
 }
 
 
@@ -1446,6 +1451,8 @@ print('Accs:')
 com(acc(tp,ta1,tb1), acc(tp,ta2,tb2))
 print('Bal. accs:')
 com(bacc(tp,ta1,tb1), bacc(tp,ta2,tb2))
+print('Krippendorff alphas:')
+com(kri(tp,ta1,tb1), kri(tp,ta2,tb2))
 print('Recalls:')
 com(ta1, ta2)
 print('Specificities:')
@@ -1464,7 +1471,7 @@ tb1 <- tcoe1[3]
 ta2 <- tcoe2[2]
 tb2 <- tcoe2[3]
 ##
-tum <- matrix(c(340,-660,240,260),2,2)/100+6.6
+tum <- matrix(c(340,-660,240,260),2,2)
 tut1 <- ut(tcm1, tum)
 tut2 <- ut(tcm2, tum)
 ##
@@ -1655,6 +1662,8 @@ com(tb1, tb2)
 ## > [1]  0.55  0.68    NA 21.14
 ## > [1] "Bal. accs:"
 ## > [1]  0.5452  0.7714      NA 34.3600
+## > [1] "Krippendorff alphas:"
+## > [1]  0.5249  0.6779      NA 25.4500
 ## > [1] "Recalls:"
 ## > [1]  0.5571  0.5429      NA -2.5970
 ## > [1] "Specificities:"

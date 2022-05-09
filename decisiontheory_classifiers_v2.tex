@@ -1,7 +1,7 @@
 \pdfoutput=1
 %% Author: PGL  Porta Mana
 %% Created: 2022-03-04T07:39:34+0200
-%% Last-Updated: 2022-05-09T11:13:56+0200
+%% Last-Updated: 2022-05-09T13:46:54+0200
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Decision theory for machine-learning classifiers
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -877,9 +877,15 @@ Taking the sum of the products of the gains above by the respective percentages 
 
 The story above bring forth well-known issues of common evaluation procedures for machine-learning classifiers:
 \begin{enumerate}[label=(\arabic*)]
-\item We are faced by an avalanche of possible evaluation metrics to use, and it is not clear which one is most compelling. In the story above one could argue that the true-positive rate was the appropriate metric, in view of the great difference in the consequences of correct or wrong classification of class 0, as compared with that of class 1. But at which point does this reasoning fail? For example, if the gains for class 1 (second column of the matrix~\eqref{eq:utility_example}) had been $210\,\text{\texteuro}$ and $290\,\text{\texteuro}$ instead of $240\,\text{\texteuro}$ and $260\,\text{\texteuro}$, then a simple calculation shows that classifier B would have actually led to the best average revenue:  $5.0\,\text{\texteuro/component}$, vs only $3.8\,\text{\texteuro/component}$ for classifier A.
+\item We are faced by an avalanche of possible evaluation metrics to use. Often it is not clear which one is most compelling. In the story above one could argue that the true-positive rate was the appropriate metric, in view of the great difference in the consequences of correct or wrong classification of class 0, as compared with that of class 1. But at which point does this qualitative reasoning fail? For example, if the gains for class 1 (second column of the matrix~\eqref{eq:utility_example}) had been $210\,\text{\texteuro}$ and $290\,\text{\texteuro}$ instead of $240\,\text{\texteuro}$ and $260\,\text{\texteuro}$, then a simple calculation shows that classifier B would have actually led to the best average revenue:  $5.0\,\text{\texteuro/component}$, vs only $3.8\,\text{\texteuro/component}$ for classifier A.
+
+\item A classifier favoured by the majority of available metrics can still turn out \emph{not} to be the best one in practice.
 
 \item 
+  
+\item What is the rationale behind the mathematical form of the different metrics?
+
+  
 \end{enumerate}
 
 

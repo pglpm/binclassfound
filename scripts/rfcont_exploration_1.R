@@ -1,6 +1,6 @@
 ## Author: PGL  Porta Mana
 ## Created: 2022-03-17T14:21:57+0100
-## Last-Updated: 2022-05-06T07:37:47+0200
+## Last-Updated: 2022-05-09T16:19:55+0200
 ################
 ## Exploration of several issues for binary classifiers
 ################
@@ -47,7 +47,7 @@ baseversion <- '_rfcont_1'
 maincov <- 'class'
 family <- 'Palatino'
 saveinfofile <- 'rfcont_variateinfo.csv'
-datafile <- 'modCHEMBL205_predictions_RF.csv'
+datafile <- 'RF_bayesian_prob_test2.csv'
 #64K, 3588D, 1024I: 7 min + 3 min
 X2Y <- list(
     'prediction_lnodds'=function(x){
@@ -109,14 +109,105 @@ parmlist <- mcsamples2parmlist(
 }
 )
 
+
 #########################################################
-## Check of Kjetil's calculations
+## Check of Kjetil's calculations test set 2
+#########################################################
+kresults <- fread('RF_bayesian_prob_test2.csv', sep=',')
+
+X <- X2Y[[1]](data.matrix(kresults[,'pred_0']))
+colnames(X) <- realCovs
+
+ptest1 <- samplesF(Y=cbind(class=0), X=X, parmList=parmlist, inorder=F)
+
+mptest1 <- rowMeans(ptest1)
+
+discre <- (abs(mptest1-kresults[,prob_0])/mptest1)
+which.max(discre)
+
+summary(discre)*100
+testhis <- thist(log10(discre));tplot(x=testhis$mids, y=testhis$density)
+#########################################################
+
+tplot(x=kresults$pred_0, y=mptest1, type='p')
+
+maxdraw <- function(x){ (if(x[1]==x[2]){sample(0:1,1)}else{which.max(x)-1}) }
+
+comparescores <- function(trueclass, output, prob, um=diag(2)){
+    nn <- length(trueclass)
+    ##
+    rawcm <- matrix(c(
+        sum(trueclass==0 & output>0.5) + sum(trueclass==0 & output==0.5)/2,
+        sum(trueclass==0 & output<0.5) + sum(trueclass==0 & output==0.5)/2,
+        sum(trueclass==1 & output>0.5) + sum(trueclass==1 & output==0.5)/2,
+        sum(trueclass==1 & output<0.5) + sum(trueclass==1 & output==0.5)/2
+    ), 2, 2)/nn
+    ##
+    rawchoices <- apply(um %*% rbind(output,1-output)
+                   , 2, maxdraw)
+    ##
+    rawcm2 <- matrix(c(
+        sum(trueclass==0 & rawchoices==0),
+        sum(trueclass==0 & rawchoices==1),
+        sum(trueclass==1 & rawchoices==0),
+        sum(trueclass==1 & rawchoices==1)
+    ), 2, 2)/nn
+    ##
+    choices <- apply(um %*% rbind(prob,1-prob)
+                   , 2, maxdraw)
+    ##
+    bayescm <- matrix(c(
+        sum(trueclass==0 & choices==0),
+        sum(trueclass==0 & choices==1),
+        sum(trueclass==1 & choices==0),
+        sum(trueclass==1 & choices==1)
+    ), 2, 2)/nn
+    ##
+    print(rawcm)
+    print(rawcm2)
+    print(bayescm)
+    ##
+    c(sum(um * rawcm), sum(um * rawcm2), sum(um * bayescm))
+}
+
+umlist <- lapply(
+    list(c(1,0,0,1),
+         c(5,0,0,1),
+         c(100,0,0,1),
+         c(1,0,0,5),
+         c(1,0,0,100),
+         c(1,-1,0,1),
+         c(1,-5,0,1),
+         c(1,-100,0,1),
+         c(1,0,-1,1),
+         c(1,0,-5,1),
+         c(1,0,-100,1)),
+    function(x){
+        x <- x-min(x)
+        x <- x/max(x)
+        matrix(x,2,2)
+    }
+)
+
+results <- t(sapply(umlist, function(um){
+    comparescores(kresults$class, kresults$pred_0, mptest1, um=um)
+}))
+colnames(results) <- c('standard', 'output_um', 'bayesaugm_um')
+##
+cbind(results,apply(results,1,which.max))
+
+
+
+
+#########################################################
+## Check of Kjetil's calculations test set 1
 #########################################################
 kresults <- fread('RF_direct_prob.csv', sep=',')
 
+X <- X2Y[[1]](data.matrix(kresults[,'preds']))
+colnames(X) <- realCovs
 
-
-ptest1 <- samplesF(Y=cbind(class=0), X=X2Y[[1]](data.matrix(kresults[,'preds'])), parmList=parmlist, inorder=F)
+ptest1 <- samplesF(Y=cbind(class=0), X=X, parmList=parmlist, inorder=F)
 
 mptest1 <- rowMeans(ptest1)
 
@@ -124,6 +215,7 @@ discre <- (abs(mptest1-kresults[,probs_class_0])/mptest1)
 which.max(discre)
 
 summary(discre)*100
+testhis <- thist(log10(discre));tplot(x=testhis$mids, y=testhis$density)
 #########################################################
 
 
