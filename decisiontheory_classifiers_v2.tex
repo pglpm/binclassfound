@@ -1,7 +1,7 @@
 \pdfoutput=1
 %% Author: PGL  Porta Mana
 %% Created: 2022-03-04T07:39:34+0200
-%% Last-Updated: 2022-05-07T14:47:30+0200
+%% Last-Updated: 2022-05-09T11:13:56+0200
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Decision theory for machine-learning classifiers
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -718,7 +718,8 @@ Open Science Framework \doi{10.31219/osf.io/#1}%
 \newcommand*{\tn}{\textrm{tn}}
 \newcommand*{\itemyes}{{\fontencoding{U}\fontfamily{pzd}\selectfont\symbol{51}}}
 \newcommand*{\itemno}{{\fontencoding{U}\fontfamily{pzd}\selectfont\symbol{55}}}
-
+\newcommand*{\good}[1]{\ensuremath{\color{mypurpleblue}\bm{#1}}}
+\newcommand*{\bad}[1]{\ensuremath{\color{myredpurple}#1}}
 
 %%% Custom macros end @@@
 
@@ -741,7 +742,7 @@ Open Science Framework \doi{10.31219/osf.io/#1}%
 \setlength{\absrightindent}{0pt}
 \setlength{\abstitleskip}{-\absparindent}
 \begin{abstract}\labelsep 0pt%
-  \noindent \mynote{\pencil}
+  \noindent \mynote{\pencil Abstract to be written}
 % \\\noindent\emph{\footnotesize Note: Dear Reader
 %     \amp\ Peer, this manuscript is being peer-reviewed by you. Thank you.}
 % \par%\\[\jot]
@@ -773,21 +774,14 @@ Open Science Framework \doi{10.31219/osf.io/#1}%
 %%% BEGINNING OF MAIN TEXT
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\mynote{\scriptsize\wrench [Luca] The two main points of the paper are about
-  \begin{itemize}
-  \item Deriving correct probabilities for classes by a simple, low-cost Bayesian analysis: from the confusion matrix, for \ml\ algorithms that only output class labels; and from the continuous output (\eg\ last layer or softmax in deep nets), for algorithms that can provide some kind of continuous score.
-  \item Implement decision-theory principles: (1) in the algorithm, so that it yields the \emph{optimal} class label, (2) in the categorization of valuation scores, (3) in calculating valuation scores.
-  \end{itemize}
-  Maybe it'd be best to address these two points in two papers with subtitles \enquote{I. \ldots} and \enquote{II. \ldots}, for a neater presentation. The two points depend on each other, though: to show the improvements by the Bayesian analysis we use the valuation scores of the second point; to implement decision theory in the algorithm we need the probabilities from the first point.
-
-  Let me know your thoughts about this.
-}
 
 
-\section{Valuation metrics, amounts of data, inferences, and decisions}
+\section{Current issues in evaluation of classifiers}
 \label{sec:intro}
 
-The manager of a factory which produces some kind of electronic component wishes to employ a machine-learning classifier to assess the durability of each component, which determines whether the component will be used in one of two possible kinds of device. The classifier takes some complex features of an electronic component as input, and outputs one of the two labels \enquote{0} for \enquote{short durability}, or \enquote{1} for \enquote{long durability}, depending on the forecast durability.
+\begin{quotation}
+\small
+  The manager of a factory which produces some kind of electronic component wishes to employ a machine-learning classifier to assess the durability of each component, which determines whether the component will be used in one of two possible kinds of device. The classifier should take some complex features of an electronic component as input, and output one of the two labels \enquote{0} for \enquote{short durability}, or \enquote{1} for \enquote{long durability}, depending on the component type.
 
 Two candidate classifiers, let us call them A and B, are trained on available training data. When employed on an evaluation set they yield the following confusion matrices, written in the format
 \begin{equation*}
@@ -805,43 +799,46 @@ Two candidate classifiers, let us call them A and B, are trained on available tr
 and normalized over the total number of evaluation data:
 \begin{align}
   \label{eq:CM_A}
-\text{\small classifier A:}\quad  \begin{bmatrix}
+\text{classifier A:}\quad  \begin{bmatrix}
     0.39 & 0.14 \\ 0.31 & 0.16
   \end{bmatrix}
 \ ,
   \\
   \label{eq:CM_B}
-\text{\small classifier B:}\quad  \begin{bmatrix}
+\text{classifier B:}\quad  \begin{bmatrix}
     0.38 & 0.00 \\ 0.32 & 0.30
   \end{bmatrix}
 \ .
 \end{align}
 These matrices show that the factory produces on average 70\% short- and 30\% long-durability components.
 
-The confusion matrices above lead to the following values of common evaluation metrics for the two classifiers:
+The confusion matrices above lead to the following values of common evaluation metrics for the two classifiers; blue bold indicates the classifier favoured by the metric, red the disfavoured:
 \begin{center}\footnotesize
   \begin{tabular}{lcc}
     Metric & classifier A & classifier B\\
     \hline
-    Accuracy & 0.55 & 0.68 \\
-    Precision & 0.74 & 1.00 \\
-    F1 measure & 0.63 & 0.70 \\
-    Matthews correlation coefficient & 0.08 & 0.51 \\
-    Balanced accuracy & 0.55 & 0.77 \\
-    True-positive rate (recall) & 0.56 & 0.54 \\
-    True-negative rate (specificity) & 0.53 & 1.00
+    Accuracy & \bad{0.55} & \good{0.68} \\
+    Precision & \bad{0.74} & \good{1.00} \\
+    F1 measure & \bad{0.63} & \good{0.70} \\
+    Matthews correlation coefficient & \bad{0.08} & \good{0.51} \\
+    Balanced accuracy & \bad{0.55} & \good{0.77} \\
+    True-positive rate (recall) & \good{0.56} & \bad{0.54} \\
+    True-negative rate (specificity) & \bad{0.53} & \good{1.00}
   \end{tabular}
 \end{center}
-The majority of these metrics favours classifier B, some of them by quite a wide margin. Only the true-positive rate favours classifier A, but only with by relative difference of less than 3\%. Indeed classifier B is able to perfectly classify the long-durability components, and neither classifier is especially good at classifying the short-durability ones. The developers of the classifiers therefore recommend the employment of classifier B.
+The majority of these metrics favours classifier B, some of them by quite a wide margin. Only the true-positive rate favours classifier A, but only by a relative difference of less than 3\%. Indeed classifier B perfectly classifies the long-durability components, and neither classifier is especially good at classifying the short-durability ones. The developers of the classifiers therefore recommend the employment of classifier B.
 
-The factory manager does not fully trust this kind of metrics and decides to employ both classifiers for a trial period, to see which factually leads to the best revenue. The two classifiers are integrated in two separate but otherwise identical parallel production lines. During the trial period the classifiers do indeed yield the exact classification statistics of the confusion matrices~\eqref{eq:CM_A} and \eqref{eq:CM_B} above.
+The factory manager does not fully trust this kind of metrics and decides to employ both classifiers for a trial period, to see which factually leads to the best revenue. The two classifiers are integrated in two separate but otherwise identical parallel production lines.
 
-At the end of the trial period the factory manager finds that the average net gains  per assessed component brought about by the two classifiers are
-\begin{align*}
-  \text{classifier A:}& \quad 3.2\,\text{\texteuro/component,} \\
-  \text{classifier B:}& \quad -4.0\,\text{\texteuro/component.}
-\end{align*}
-That is, classifier B actually led to a \emph{loss} of revenue. The manager therefore decides to employ classifier A, commenting with a smug smile that the developers' recommendation was very poor.
+During the trial period the classifiers perform according to the classification statistics of the confusion matrices~\eqref{eq:CM_A} and \eqref{eq:CM_B} above. At the end of this period the factory manager finds that the average net gains per assessed component brought about by the two classifiers are
+\begin{equation}
+  \label{eq:final_gains}
+\begin{split}
+  \text{classifier A:}& \quad \good{3.2}\,\text{\texteuro/component}\ , \\
+  \text{classifier B:}& \quad \bad{{-4.0}}\,\text{\texteuro/component}\ .
+\end{split}
+\end{equation}
+That is, classifier B actually led to a \emph{loss} of revenue. The manager therefore decides to employ classifier A, commenting with a smug smile that it was wise not to trust the developers' recommendations.
 
 The average gain and loss above are easy to calculate. The final net gains and losses caused by the correct or incorrect classification of one electronic component are as follows:
 \begin{equation}
@@ -857,9 +854,9 @@ The average gain and loss above are easy to calculate. The final net gains and l
       \textit{\parbox{\widthof{\scriptsize true class}}{\centering\scriptsize true class\\$0\hspace{3em}1$}}
     }
 \end{equation}
-The reason behind these values is that short-durability components cause extreme damage (and consequent repair costs and refunds) if used in devices that require long-durability components. Devices that only require short-durability components, however, also work well with long-durability ones (although this is a slight waste of resources).
+The reason behind these values is that short-durability components cause extreme damage (and consequent repair costs and refunds) if used in devices that require long-durability components. Devices that only require short-durability components, on the other hand, also work well with long-durability ones, although slightly less efficiently.
 
-Taking the sum of the products of the gains above by the respective percentages of occurrence -- which are the elements of a confusion matrix -- gives the final average gain. In the present case, the confusion matrices~\eqref{eq:CM_A} and \eqref{eq:CM_B} lead to the amounts found by the manager.
+Taking the sum of the products of the gains above by the respective percentages of occurrence -- which are the elements of the confusion matrix -- yields the final average gain. In the present case, the confusion matrices~\eqref{eq:CM_A} and \eqref{eq:CM_B} lead to the amounts \eqref{eq:final_gains} found by the manager.
 
 
 % TP: 0.37    FP: 0.22
@@ -875,8 +872,15 @@ Taking the sum of the products of the gains above by the respective percentages 
 %     classifier #1 led to a net gain of €12.55/gadget
 %     classifier #2 led to a net gain of €3.45/gadget
 
+\end{quotation}
 
 
+The story above bring forth well-known issues of common evaluation procedures for machine-learning classifiers:
+\begin{enumerate}[label=(\arabic*)]
+\item We are faced by an avalanche of possible evaluation metrics to use, and it is not clear which one is most compelling. In the story above one could argue that the true-positive rate was the appropriate metric, in view of the great difference in the consequences of correct or wrong classification of class 0, as compared with that of class 1. But at which point does this reasoning fail? For example, if the gains for class 1 (second column of the matrix~\eqref{eq:utility_example}) had been $210\,\text{\texteuro}$ and $290\,\text{\texteuro}$ instead of $240\,\text{\texteuro}$ and $260\,\text{\texteuro}$, then a simple calculation shows that classifier B would have actually led to the best average revenue:  $5.0\,\text{\texteuro/component}$, vs only $3.8\,\text{\texteuro/component}$ for classifier A.
+
+\item 
+\end{enumerate}
 
 
 
