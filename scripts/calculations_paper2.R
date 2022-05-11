@@ -1,6 +1,6 @@
 ## Author: PGL  Porta Mana
 ## Created: 2022-05-01T09:38:48+0200
-## Last-Updated: 2022-05-11T20:34:12+0200
+## Last-Updated: 2022-05-11T22:40:54+0200
 ################
 ## Calculations for the papers
 ################
@@ -164,12 +164,23 @@ utilities <- future_apply(cbind(rep(1:lxy,lo*lo), rep(1:(lo*lo),each=lxy)), 1,
                        })
 dim(utilities) <- c(lxy,lo*lo)
 
+reldiff <- function(x){100*diff(x)/mean(x)}
 
-diffscores <- future_sapply(1:ncol(listscores),function(metr){c(outer(listscores[,metr], listscores[,metr], '-'))})
+diffscores <- future_sapply(1:ncol(listscores),
+                            function(metr){200*c( outer(listscores[,metr], listscores[,metr], '-') /
+                                             outer(listscores[,metr], listscores[,metr], '+'))})
+colnames(diffscores) <- colnames(listscores)
 
-diffutilities <- future_sapply(1:lxy,function(i){c(outer(utilities[i,], utilities[i,], '-'))})
+diffutilities <- future_sapply(1:lxy,
+                               function(i){200*c(outer(utilities[i,], utilities[i,], '-')/outer(utilities[i,], utilities[i,], '+'))})
 
-select <- apply(cbind())
+dsselectp <- apply(diffscores,1,function(x){all(x>0)})
+dsselectn <- apply(diffscores,1,function(x){all(x<0)})
+select <- future_apply(diffutilities, 2, function(x){
+    (x>0 & dsselectn) | (x<0 & dsselectp)
+})
+
+dim(select) <- c(lo*lo,lo*lo, lxy)
 
 
 
