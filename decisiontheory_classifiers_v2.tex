@@ -1,7 +1,7 @@
 \pdfoutput=1
 %% Author: PGL  Porta Mana
 %% Created: 2022-03-04T07:39:34+0200
-%% Last-Updated: 2022-05-09T13:46:54+0200
+%% Last-Updated: 2022-05-11T15:32:10+0200
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Decision theory for machine-learning classifiers
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -779,6 +779,11 @@ Open Science Framework \doi{10.31219/osf.io/#1}%
 \section{Current issues in evaluation of classifiers}
 \label{sec:intro}
 
+Let us begin with a short story:
+\begin{center}
+  *\quad*\quad*
+\end{center}
+\vspace{-1em}
 \begin{quotation}
 \small
   The manager of a factory which produces some kind of electronic component wishes to employ a machine-learning classifier to assess the durability of each component, which determines whether the component will be used in one of two possible kinds of device. The classifier should take some complex features of an electronic component as input, and output one of the two labels \enquote{0} for \enquote{short durability}, or \enquote{1} for \enquote{long durability}, depending on the component type.
@@ -844,7 +849,7 @@ The average gain and loss above are easy to calculate. The final net gains and l
 \begin{equation}
   \label{eq:utility_example}
   \rotatebox[origin=c]{90}{
-    \textit{\parbox{\widthof{classifier}}{\centering\scriptsize classifier\\output\\$1\quad 0$}}
+    \textit{\parbox{\widthof{\scriptsize classifier}}{\centering\scriptsize classifier\\output\\$1\quad 0$}}
     }\ 
     \overbracket[0pt]{
       \begin{bmatrix}
@@ -873,15 +878,52 @@ Taking the sum of the products of the gains above by the respective percentages 
 %     classifier #2 led to a net gain of €3.45/gadget
 
 \end{quotation}
+\begin{center}
+  *\quad*\quad*
+\end{center}
 
-
-The story above bring forth well-known issues of common evaluation procedures for machine-learning classifiers:
+The story above brings forth well-known issues of popular evaluation procedures for machine-learning classifiers:
 \begin{enumerate}[label=(\arabic*)]
-\item We are faced by an avalanche of possible evaluation metrics to use. Often it is not clear which one is most compelling. In the story above one could argue that the true-positive rate was the appropriate metric, in view of the great difference in the consequences of correct or wrong classification of class 0, as compared with that of class 1. But at which point does this qualitative reasoning fail? For example, if the gains for class 1 (second column of the matrix~\eqref{eq:utility_example}) had been $210\,\text{\texteuro}$ and $290\,\text{\texteuro}$ instead of $240\,\text{\texteuro}$ and $260\,\text{\texteuro}$, then a simple calculation shows that classifier B would have actually led to the best average revenue:  $5.0\,\text{\texteuro/component}$, vs only $3.8\,\text{\texteuro/component}$ for classifier A.
+\item We are faced by an avalanche of possible evaluation metrics to use. Often it is not clear which is most compelling. In the story above one could argue that the true-positive rate was the appropriate metric, in view of the great difference in the consequences of correct or wrong classification of class 0, as compared with that of class 1. But at which point does this qualitative reasoning fail? Imagine for example that the net gains and losses had been as follows instead:
+\begin{equation}
+  \label{eq:utility_example_2}
+  \rotatebox[origin=c]{90}{
+    \textit{\parbox{\widthof{\scriptsize classifier}}{\centering\scriptsize classifier\\output\\$1\quad 0$}}
+    }\ 
+    \overbracket[0pt]{
+      \begin{bmatrix}
+        340\,\text{\texteuro} & 210\,\text{\texteuro}  \\
+        -660\,\text{\texteuro} & 200\,\text{\texteuro}
+      \end{bmatrix}}^{
+      \textit{\parbox{\widthof{\scriptsize true class}}{\centering\scriptsize true class\\$0\hspace{3em}1$}}
+    } \ .
+\end{equation}
+One could argue that there is still a great difference in the consequences of correct or wrong classification of class 0, as compared with that of class 1, and therefore conclude that the true-positive rate is still the appropriate metric. Yet, a simple calculation shows that classifier B actually leads to the best average revenue in this case: $5.0\,\text{\texteuro/component}$, vs only $3.8\,\text{\texteuro/component}$ for classifier A. So the true-positive rate would \emph{not} be the appropriate metric.
+
 
 \item A classifier favoured by the majority of available metrics can still turn out \emph{not} to be the best one in practice.
 
-\item 
+\item Most popular metrics were introduced by intuitive reasoning, ad hoc mathematical operations, special assumptions (such as gaussianity), and analysis of special cases \autocites[e.g.][around p.~371 for the $F_{1}$-measure]{rijsbergen1974}{matthews1975}[\sect~31 p.~183 for the Matthews correlation coefficient]{fisher1925_r1963}. Unfortunately such derivations do not guarantee generalization to all cases, nor that the derived metric is uniquely determined by basic requirements -- compare instead, for instance, the derivation of the Shannon entropy \autocites{shannon1948}[\sect~3.2]{woodward1953_r1964} as the \emph{unique} metric satisfying a general set of basic requirements for the amount of information.
+  
+\item Suppose that some of the popular metrics identify the best algorithm \enquote{in the majority of cases} -- although it is difficult to statistically define such a majority, and no real statistics have ever been collected for this purpose. Yet, do we expect the end user to simply hope not to fall among the unlucky minority? Is this acceptable? Imagine a story analogous to the one above but in a medical setting. The classes represent tumour types, requiring two different types of intervention. The confusion matrices are the same. Instead of monetary gain or loss, correct or incorrect classification leads to the following expected remaining life lengths for patients in a specific age range:
+\begin{equation}
+  \label{eq:utility_example_medicine}
+  \rotatebox[origin=c]{90}{
+    \textit{\parbox{\widthof{\scriptsize classifier}}{\centering\scriptsize classifier\\output\\$1\quad 0$}}
+    }\ 
+    \overbracket[0pt]{
+      \begin{bmatrix}
+        510\,\text{months} & 460\,\text{months}  \\
+        10\,\text{months} & 470\,\text{months}
+      \end{bmatrix}}^{
+      \textit{\parbox{\widthof{\scriptsize true class}}{\centering\scriptsize true class\\$0\hspace{5em}1$}}
+    } \ .
+  \end{equation}
+  This matrix is equivalent to~\eqref{eq:utility_example} up to a common shift and rescaling of all elements. The value 0 means immediate death. It is easy to see that the metrics are exactly as before, the majority favouring classifier~B. And yet the use of classifier~A leads to a slightly longer expected remaining life than classifier~B.
+
+\item Often it is not possible to deploy all candidate classifiers to observe which factually leads to the best results. Or it may even be unethical: consider situation as the medical one above, where some alternatives may lead to immediate deaths.
+
+
   
 \item What is the rationale behind the mathematical form of the different metrics?
 
