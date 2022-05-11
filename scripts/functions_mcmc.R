@@ -28,6 +28,7 @@ mcsamples2parmlist <- function(mcsamples){
         out <- mcsamples[,grepl(paste0('^',var,'\\['), colnames(mcsamples))]
         if((var=='meanR'||var=='tauR')){
             dim(out) <- c(nrow(mcsamples), nrcovs, nclusters)
+            out <- out
             dimnames(out) <- list(NULL, realCovs, NULL)
         } else if((var=='probI'||var=='sizeI')){
             dim(out) <- c(nrow(mcsamples), nicovs, nclusters)
@@ -43,6 +44,49 @@ mcsamples2parmlist <- function(mcsamples){
     names(parmList) <- parmNames
     parmList
 }
+##
+## Construct a list of parameter samples from the raw MCMC samples; sort weights
+## mcsamples2parmlistsort <- function(mcsamples){
+##     parmNames <- c('q', 'meanR', 'tauR', 'probI', 'sizeI', 'probB')
+##     nclusters <- sum(grepl('^q\\[', colnames(mcsamples)))
+##     out <- mcsamples[,grepl(paste0('^q\\['), colnames(mcsamples)), drop=FALSE]
+##     ordering <- t(apply(out, 1, order))
+##     ##
+##     nrcovs <- sum(grepl('^meanR\\[[^,]*, 1]', colnames(mcsamples)))
+##     if(nrcovs != length(realCovs)){
+##         warning('**WARNING: some problems with real variates**')
+##         }
+##     nicovs <- sum(grepl('^probI\\[[^,]*, 1]', colnames(mcsamples)))
+##     if(nicovs != length(integerCovs)){
+##         warning('**WARNING: some problems with integer variates**')
+##         }
+##     nbcovs <- sum(grepl('^probB\\[[^,]*, 1]', colnames(mcsamples)))
+##     if(nbcovs != length(binaryCovs)){
+##         warning('**WARNING: some problems with binary variates**')
+##         }
+##     ##
+##     parmList <- foreach(var=parmNames)%do%{
+##         out <- mcsamples[,grepl(paste0('^',var,'\\['), colnames(mcsamples))]
+##         if((var=='meanR'||var=='tauR')){
+##             dim(out) <- c(nrow(mcsamples) * nrcovs, nclusters)
+##             out <- t(sapply(seq_len(nrow(out)),function(i){out[i,ordering[i,]]}))
+##             dim(out) <- c(nrow(mcsamples), nrcovs, nclusters)
+##             out <- out
+##             dimnames(out) <- list(NULL, realCovs, NULL)
+##         } else if((var=='probI'||var=='sizeI')){
+##             dim(out) <- c(nrow(mcsamples), nicovs, nclusters)
+##             dimnames(out) <- list(NULL, integerCovs, NULL)
+##         } else if((var=='probB')){
+##             dim(out) <- c(nrow(mcsamples), nbcovs, nclusters)
+##             dimnames(out) <- list(NULL, binaryCovs, NULL)
+##         } else if(var=='q'){
+##             dim(out) <- c(nrow(mcsamples), nclusters)
+##         } else {NULL}
+##             out
+##     }
+##     names(parmList) <- parmNames
+##     parmList
+## }
 ##
 ## Construct a list of parameter samples from the raw MCMC samples for the second monitored set
 finalstate2list <- function(mcsamples){

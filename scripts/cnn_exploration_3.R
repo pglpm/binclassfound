@@ -1,6 +1,6 @@
 ## Author: PGL  Porta Mana
 ## Created: 2022-03-17T14:21:57+0100
-## Last-Updated: 2022-05-06T07:30:16+0200
+## Last-Updated: 2022-05-11T13:01:13+0200
 ################
 ## Exploration of several issues for binary classifiers
 ################
@@ -21,6 +21,7 @@ library('data.table')
 library('png')
 library('foreach')
 library('doFuture')
+library('future.apply')
 library('doRNG')
 registerDoFuture()
 print('availableCores:')
@@ -112,7 +113,308 @@ parmlist <- mcsamples2parmlist(
 )
 
 #########################################################
-## Check of Kjetil's calculations
+## Check of Kjetil's calculations test set 2
+#########################################################
+kresults <- fread('CNN_bayesian_prob_test2.csv', sep=',')
+colnames(kresults)[2:3] <- realCovs
+
+ptest1 <- samplesF(Y=cbind(class=0), X=data.matrix(kresults[,..realCovs]), parmList=parmlist, inorder=F)
+
+mptest1 <- rowMeans(ptest1)
+
+tplot(x=kresults$prob_0, y=mptest1, type='p', xlab='Kjetil',ylab='Luca', pch='+')
+
+discre <- (abs(mptest1-kresults[,prob_0])/mptest1)
+which.max(discre)
+
+summary(discre)*100
+
+#########################################################
+## Comparison of utility scores with & without Bayesian augmentation
+#########################################################
+classseq <- kresults$class
+
+kresults$sigmoid <- apply(kresults[,..realCovs],1,function(x){exp(x[1])/sum(exp(x))})
+
+kscores <- fread('scores_utility_matrix.csv', sep=',')
+
+maxdraw <- function(x){ (if(x[1]==x[2]){-1}else{which.max(x)-1}) }
+##
+uscore <- function(trueclass, prob, um=diag(2), umchoice=um){
+    choices <- apply(umchoice %*% rbind(prob,1-prob), 2, maxdraw)
+    ##
+    cm <- matrix(c(
+        sum(trueclass==0 & choices==0),
+        sum(trueclass==0 & choices==1),
+        sum(trueclass==1 & choices==0),
+        sum(trueclass==1 & choices==1)
+    ), 2, 2) +
+        matrix(c(
+        sum(trueclass==0 & choices==-1),
+        sum(trueclass==0 & choices==-1),
+        sum(trueclass==1 & choices==-1),
+        sum(trueclass==1 & choices==-1)
+    ), 2, 2)/2
+    sum(um * cm)
+}
+##
+comparescores <- function(trueclass, um, output, ...){
+    c(
+        uscore(trueclass, output, um=um, umchoice=diag(2)),
+        sapply(list(...),function(x){uscore(trueclass, x, um)})
+    )
+}
+
+## umlist <- lapply(
+##     list(c(1,0,0,1),
+##          c(4,0,0,1),
+##          c(32,0,0,1),
+##          c(1,0,0,4),
+##          c(1,0,0,32),
+##          c(1,-1,0,1),
+##          c(1,-4,0,1),
+##          c(1,-32,0,1),
+##          c(1,0,-1,1),
+##          c(1,0,-4,1),
+##          c(1,0,-32,1)),
+##     function(x){
+##         x <- x-min(x)
+##         x <- x/max(x)
+##         matrix(x,2,2)
+##     }
+## )
+
+umlist <- lapply(
+    list(c(1,0,0,1),
+         c(1,0,-1,1),
+         c(1,-1,0,1),
+         c(10,0,0,1),
+         c(1,0,0,10),
+         c(1,0,-10,1),
+         c(1,-10,0,1),
+         c(5,0,0,1),
+         c(100,0,0,1),
+         c(1,0,0,5),
+         c(1,0,0,100),
+         c(1,-5,0,1),
+         c(1,0,-5,1),
+         c(1,-100,0,1),
+         c(1,0,-100,1)),
+    function(x){
+        x <- x-min(x)
+        x <- x/max(x)
+        matrix(x,2,2)
+    }
+)
+
+## results1b <- t(sapply(umlist, function(um){
+##     comparescores2(kresults$class, um=um, kresults$sigmoid, kresults$sigmoid, mptest1)
+## }))/length(kresults$class)
+
+## using the full MCMC results
+results1 <- t(sapply(umlist, function(um){
+    comparescores(kresults$class, kresults$sigmoid, mptest1, um=um)
+}))/length(kresults$class)
+colnames(results1) <- c('raw', 'out', 'bayes')
+##
+cbind(results1,t(apply(results1,1,function(x){
+    mx <- max(x)
+    c(x-mx)/mx*100
+}
+)))
+
+## using a reduced set of coefficients
+results2 <- t(sapply(umlist, function(um){
+    comparescores(kresults$class, kresults$sigmoid, kresults$prob_0, um=um)
+}))/length(kresults$class)
+colnames(results2) <- c('raw', 'out', 'bayes')
+##
+cbind(results2,t(apply(results2,1,function(x){
+    mx <- max(x)
+    c(x-mx)/mx*100
+}
+)))
+
+cbind(results[,c(1,3)],t(apply(results[,c(1,3)],1,function(x){
+    mx <- max(x)
+    c(x-mx)/mx*100
+}
+)))
+
+cbind(kscores[,c('score_CNN_output','score_CNN_bayesian')],t(apply(kscores[,c('score_RF_output','score_RF_bayesian')],1,function(x){
+    mx <- max(x)
+    c(x-mx)/mx*100
+}
+)))
+
+cbind(results[,'raw'], kscores[,score_RF_output], results[,'raw']- kscores[,score_RF_output])*length(trueclass)
+
+cbind(results[,'bayes'], kscores[,score_RF_bayesian], results[,'bayes']- kscores[,score_RF_bayesian])*length(trueclass)
+
+
+
+#########################################################
+## Comparison of utility scores with & without Bayesian augmentation
+## for a large number of possible utility matrices
+#########################################################
+
+lo <- 128
+ss <- seq(-1,1,length.out=lo)
+xy <- cbind(rep(ss,lo), rep(ss,each=lo))
+#xy <- xy[xy[,2]<=xy[,1]+1 & xy[,2]>=xy[,1]-1,]
+##tplot(x=xy[,1], y=xy[,2], type='p')
+##
+id <- diag(2)
+utp <- matrix(c(1,0,0,0),2,2)
+utn <- matrix(c(0,0,0,1),2,2)
+ufp <- matrix(c(1,0,1,0),2,2)
+ufn <- matrix(c(1,1,0,0),2,2)
+##
+resultsl <- t(future_apply(xy, 1, function(coo){
+    if(coo[2]<=coo[1]+1 & coo[2]>=coo[1]-1){
+    um <- id + (coo[1]<0)*coo[1]*utn - (coo[1]>0)*coo[1]*utp +
+        (coo[2]>0)*coo[2]*ufp - (coo[2]<0)*coo[2]*ufn
+    ##
+    comparescores(classseq, um=um, kresults$sigmoid, kresults$sigmoid, mptest1)
+    }else{rep(NA,3)}
+}))
+colnames(resultsl) <- c('standard', 'output_as_prob', 'bayes')
+
+reldiff <- round(100*(resultsl[,3] - resultsl[,1])/resultsl[,1],1)
+summary(reldiff)
+maxr <- max(reldiff,na.rm=T)
+lreldiff <- plogis(reldiff)
+##
+rg <- max(abs(lreldiff), na.rm=T)#quantile(lreldiff,7/8, na.rm=T)
+colr <- colorRamp(c('#b2182b','#d6604d','#f4a582','#fddbc7','#f7f7f7','#d1e5f0','#92c5de','#4393c3', '#2166ac'), space='rgb', interpolate='linear')
+cex <- 0.65
+nlevels <- 16
+levels <- seq(0.5,plogis(maxr),length.out=nlevels)
+baseseq <- qlogis(levels)
+pdff('CNN_improv_umspace')
+dim(lreldiff) <- c(lo,lo)
+filled.contour(x=ss, y=ss, z=lreldiff, zlim=c(0.5,1), color.palette=function(n){rgb(colr(seq(0.5,1,length.out=n))/255)}, levels=levels, asp=1,frame=F,axes=F
+               ,key.axes = axis(4, at=levels,
+                               labels=round(baseseq,1),
+                                asp=1)
+               )
+dev.off()
+
+reldiff <- round(100*(resultsl[,3] - resultsl[,1])/resultsl[,1],1)
+summary(reldiff)
+rg <- range(c(0,reldiff))
+groupp <- reldiff>= 0
+groupn <- reldiff < 0
+##
+pdff('improvement_CNN')
+tplot(x=resultsl[groupp,1]/length(classseq), y=reldiff[groupp], type='p', pch=16,cex=1, col=1,
+      xlab='standard method', ylab='% improvement with bayes augmentation', xlim=0:1, ylim=rg)
+if(sum(groupn)>0){
+    tplot(x=resultsl[groupn,1]/length(classseq), y=reldiff[groupn], type='p', pch=16,cex=1, col=2, add=T)
+}
+dev.off()
+sum(groupp)/length(reldiff)
+
+
+
+
+## nn <- 10^4
+## basetp <- matrix(c(1,0,0,0),2,2)
+## basetn <- matrix(c(0,0,0,1),2,2)
+## basefpfn <- array(c(1/2,1/2,0,0,  0,0,1/2,1/2),dim=c(2,2,2))
+## sides <- sample(1:2,nn,replace=T)
+## convpoints <- LaplacesDemon::rdirichlet(n=nn, alpha=rep(1,3))
+## lum <- future_lapply(1:nn,function(i){
+##     temp <- basetp * convpoints[i,1] + basetn * convpoints[i,2] +
+##         basefpfn[,,sides[i]] * convpoints[i,3]
+##     ## temp <- temp - min(temp)
+##     temp <- temp/max(temp)
+## })
+## ##dim(lum) <- c(2,2,nn)
+
+## resultsl <- t(future_sapply(lum, function(um){
+##     comparescores(kresults$class, kresults$sigmoid, mptest1, um=um)
+## }))/length(kresults$class)
+## colnames(resultsl) <- c('raw', 'out', 'bayes')
+
+## reldiff <- (resultsl[,3]-resultsl[,1])/resultsl[,1]*100
+## summary(reldiff)
+## rg <- range(c(0,reldiff))
+## groupp <- reldiff>= 0
+## groupn <- reldiff < 0
+## ##
+## pdff('improvement_CNN')
+## tplot(x=resultsl[groupp,1], y=reldiff[groupp], type='p', pch='.', col=1,
+##       xlab='standard method', ylab='% improvement with bayes augmentation', xlim=0:1, ylim=rg)
+## if(sum(groupn)>0){
+##     tplot(x=resultsl[groupn,1], y=reldiff[groupn], type='p', pch='.', col=2, add=T)
+## }
+## dev.off()
+
+
+#########################################################
+## Comparison of scores for a test set with different
+## proportions of classes
+#########################################################
+classseq <- kresults$class
+
+csubset <- sort(c(which(classseq==1),
+                  sample(which(classseq==0), sum(classseq==1))))
+
+probinv0 <- samplesF(X=cbind(class=0), Y=data.matrix(kresults[csubset,..realCovs]), parmList=parmlist, inorder=F)
+probinv1 <- samplesF(X=cbind(class=1), Y=data.matrix(kresults[csubset,..realCovs]), parmList=parmlist, inorder=F)
+
+mprobinv0 <- rowMeans(probinv0)
+mprobinv1 <- rowMeans(probinv1)
+
+probinvbase <- mprobinv0/(mprobinv0+mprobinv1)
+
+## using the full MCMC results
+resultsbase <- t(sapply(umlist, function(um){
+    comparescores(classseq[csubset], um=um,
+                  kresults$sigmoid[csubset],
+                  kresults$sigmoid[csubset],
+                  mptest1[csubset],
+                  probinvbase)
+}))
+colnames(resultsbase) <- c('standard', 'output_as_prob', 'bayes', 'inverse_bayes')
+
+##
+cbind(resultsbase[,],t(apply(resultsbase[,],1,function(x){
+    mx <- max(x)
+    c(x-mx)/mx*100
+}
+)))
+
+## using the full MCMC results
+results1 <- t(sapply(umlist, function(um){
+    comparescores(kresults$class[csubset], kresults$sigmoid[csubset], probinvbase, um=um)
+}))
+colnames(results1) <- c('raw', 'out', 'bayes')
+##
+cbind(results1[,c(1,3)],t(apply(results1[,c(1,3)],1,function(x){
+    mx <- max(x)
+    c(x-mx)/mx*100
+}
+)))
+
+## using a reduced set of coefficients
+results2 <- t(sapply(umlist, function(um){
+    comparescores(kresults$class, kresults$sigmoid, kresults$prob_0, um=um)
+}))/length(kresults$class)
+colnames(results2) <- c('raw', 'out', 'bayes')
+##
+cbind(results2,t(apply(results2,1,function(x){
+    mx <- max(x)
+    c(x-mx)/mx*100
+}
+)))
+
+
+
+
+#########################################################
+## Check of Kjetil's calculations test set 1
 #########################################################
 kresults <- fread('CNN_direct_prob.csv', sep=',')
 
