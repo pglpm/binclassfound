@@ -1,6 +1,6 @@
 ## Author: PGL  Porta Mana
 ## Created: 2022-05-01T09:38:48+0200
-## Last-Updated: 2022-05-11T18:04:22+0200
+## Last-Updated: 2022-05-11T20:34:12+0200
 ################
 ## Calculations for the papers
 ################
@@ -120,6 +120,175 @@ kri <- function(p,a,b){
 ####################################################################
 
 
+lo <- 8+1
+qq <- seq(0.5,1,length.out=lo)
+abl <- cbind(rep(qq,lo),rep(qq,each=lo))
+pp <- 0.5
+##
+listscores <- t(future_apply(abl, 1, function(ab){
+    c(f1score(pp,ab[1],ab[2]),
+      mcc(pp,ab[1],ab[2]),
+      prec(pp,ab[1],ab[2]),
+      acc(pp,ab[1],ab[2]),
+      bacc(pp,ab[1],ab[2]))
+}))
+colnames(listscores) <- c('F1', 'MCC', 'Prec', 'Acc', 'BalAcc')
+##
+listcm <- future_apply(abl, 1, function(ab){
+    confm(pp,ab[1],ab[2])
+})
+dim(listcm) <- c(2,2,lo*lo)
+
+ss <- seq(-1,1,length.out=lo)
+xy <- cbind(rep(ss,lo), rep(ss,each=lo))
+xy <- xy[xy[,2]<=xy[,1]+1 & xy[,2]>=xy[,1]-1,]
+lxy <- nrow(xy)
+##tplot(x=xy[,1], y=xy[,2], type='p')
+##
+id <- diag(2)
+utp <- matrix(c(1,0,0,0),2,2)
+utn <- matrix(c(0,0,0,1),2,2)
+ufp <- matrix(c(0,0,1,0),2,2)
+ufn <- matrix(c(0,1,0,0),2,2)
+##
+listum <- future_apply(xy, 1, function(ab){
+        id + (ab[1]<0)*ab[1]*utn - (ab[1]>0)*ab[1]*utp +
+        (ab[2]>0)*ab[2]*ufp - (ab[2]<0)*ab[2]*ufn
+})
+dim(listum) <- c(2,2,lxy)
+
+
+utilities <- future_apply(cbind(rep(1:lxy,lo*lo), rep(1:(lo*lo),each=lxy)), 1,
+                       function(ab){
+                           sum(listum[,,ab[1]] * listcm[,,ab[2]])
+                       })
+dim(utilities) <- c(lxy,lo*lo)
+
+
+diffscores <- future_sapply(1:ncol(listscores),function(metr){c(outer(listscores[,metr], listscores[,metr], '-'))})
+
+diffutilities <- future_sapply(1:lxy,function(i){c(outer(utilities[i,], utilities[i,], '-'))})
+
+select <- apply(cbind())
+
+
+
+rgs <- range(diffscores)
+rgu <- range(sapply(1:lxy, function(umn){
+    c(outer(utilities[umn,], utilities[umn,], '-'))
+}))
+for(umn in 1: lxy){
+diffutilities <- c(outer(utilities[umn,], utilities[umn,], '-'))
+##
+agree <- (diffscores>0 & diffutilities>0) | (diffscores<0 & diffutilities<0) | (diffscores==0 & diffutilities==0)
+tplot(x=diffutilities[agree], y=diffscores[agree], type='p', pch=16,cex=0.5, alpha=7/8, col=1, xlim=rgu, ylim=rgs, add=(umn>1))
+tplot(x=diffutilities[!agree], y=diffscores[!agree], type='p', pch='.', col=2, add=T)
+}
+
+
+
+####################################################################
+
+nn <- 64
+qqa <- runif(nn*2, 0.5,1)
+qqb <- runif(nn*2, 0.5,1)
+pp <- 0.5
+##
+listscores <- t(future_apply(cbind(qqa,qqb), 1, function(ab){
+    c(f1score(pp,ab[1],ab[2]),
+      mcc(pp,ab[1],ab[2]),
+      prec(pp,ab[1],ab[2]),
+      acc(pp,ab[1],ab[2]),
+      bacc(pp,ab[1],ab[2]))
+}))
+colnames(listscores) <- c('F1', 'MCC', 'Prec', 'Acc', 'BalAcc')
+
+##
+listcm <- future_apply(cbind(qqa,qqb), 1, function(ab){
+    confm(pp,ab[1],ab[2])
+})
+dim(listcm) <- c(2,2,nn*2)
+
+lou <- round(128*8/6)
+ssa <- runif(lou,-1,1)
+ssb <- runif(lou,-1,1)
+xy <- cbind(ssa,ssb)
+xy <- xy[xy[,2]<=xy[,1]+1 & xy[,2]>=xy[,1]-1,]
+lxy <- nrow(xy)
+##tplot(x=xy[,1], y=xy[,2], type='p')
+##
+id <- diag(2)
+utp <- matrix(c(1,0,0,0),2,2)
+utn <- matrix(c(0,0,0,1),2,2)
+ufp <- matrix(c(0,0,1,0),2,2)
+ufn <- matrix(c(0,1,0,0),2,2)
+##
+listum <- future_apply(xy[1:lxy,], 1, function(ab){
+        id + (ab[1]<0)*ab[1]*utn - (ab[1]>0)*ab[1]*utp +
+        (ab[2]>0)*ab[2]*ufp - (ab[2]<0)*ab[2]*ufn
+})
+dim(listum) <- c(2,2,lxy)
+
+
+utilities <- future_apply(cbind(rep(1:lxy,nn*2), rep(1:(nn*2),each=lxy)), 1,
+                       function(ab){
+                           sum(listum[,,ab[1]] * listcm[,,ab[2]])
+                       })
+dim(utilities) <- c(lxy,nn*2)
+
+metr <- 2
+diffscores <- c(outer(listscores[1:nn,metr], listscores[(nn+1):(nn*2),metr], '-'))
+rgs <- range(diffscores)
+rgu <- range(sapply(1:lxy, function(umn){
+    c(outer(utilities[umn,1:nn], utilities[umn,(nn+1):(nn*2)], '-'))
+}))
+ini <- FALSE
+sumagree <- 0
+for(umn in 1:lxy){
+diffutilities <- c(outer(utilities[umn,1:nn], utilities[umn,(nn+1):(nn*2)], '-'))
+##
+agree <- (diffscores>0 & diffutilities>0) | (diffscores<0 & diffutilities<0) | (diffscores==0 & diffutilities==0)
+tplot(x=diffutilities[agree], y=diffscores[agree], type='p', pch='.',, col=1, xlim=rgu, ylim=rgs, add=ini)
+tplot(x=diffutilities[!agree], y=diffscores[!agree], type='p', pch='.', col=2, add=T)
+ini <- TRUE
+sumagree <- sumagree+sum(agree)
+}
+sumagree/(lxy*nn)
+
+
+
+
+future_apply(xy, 1, function(coo){
+    outer(qq, qq, FUN=function(alpha,beta){
+        
+    })
+})
+
+
+
+test <- future_sapply(1:(lo*lo*lxy), function(i){
+    coo <- xy[(ceiling(i - 1)%%lxy)+1,]
+    alpha <- qq[(ceiling(i/lxy - 1)%%lo)+1]
+    beta <- qq[(ceiling(i/(lxy*lo) - 1)%%lo)+1]
+    ##
+    um <- id + (coo[1]<0)*coo[1]*utn - (coo[1]>0)*coo[1]*utp +
+        (coo[2]>0)*coo[2]*ufp - (coo[2]<0)*coo[2]*ufn
+    ##
+    ut <- sum(um * matrix(c(pp*alpha, pp*(1-alpha), (1-pp)*(1-beta), (1-pp)*beta),2,2))
+
+
+}
+
+
+resultsl <- t(future_apply(xy, 1, function(coo){
+    if(coo[2]<=coo[1]+1 & coo[2]>=coo[1]-1){
+    um <- id + (coo[1]<0)*coo[1]*utn - (coo[1]>0)*coo[1]*utp +
+        (coo[2]>0)*coo[2]*ufp - (coo[2]<0)*coo[2]*ufn
+    ##
+    comparescores(classseq, um=um, kresults$sigmoid, kresults$sigmoid, mptest1)
+    }else{rep(NA,3)}
+}))
+colnames(resultsl) <- c('standard', 'output_as_prob', 'bayes')
 
 
 set.seed(149)
@@ -1523,7 +1692,8 @@ tb1 <- tcoe1[3]
 ta2 <- tcoe2[2]
 tb2 <- tcoe2[3]
 ##
-tum <- matrix(c(340,-660,240,260),2,2)
+addt <- 30
+tum <- matrix(c(340,-660,240-addt,260+addt),2,2)
 tut1 <- ut(tcm1, tum)
 tut2 <- ut(tcm2, tum)
 ##
@@ -1668,6 +1838,44 @@ com(tb1, tb2)
 ## > [1]  0.5571  0.5429      NA -2.5970
 ## > [1] "Specificities:"
 ## > [1]  0.5333  1.0000      NA 60.8700
+## small change:
+## > [1] "P+:"
+## > [1] 0.7
+## > [1] 0.5571429 0.5333333
+## > [1] 0.5428571 1.0000000
+## > > [1] "CM1:"
+## >      [,1] [,2]
+## [1,] 0.39 0.14
+## [2,] 0.31 0.16
+## > [1] "CM2:"
+## >      [,1] [,2]
+## [1,] 0.38  0.0
+## [2,] 0.32  0.3
+## > [1] "UM:"
+## >      [,1] [,2]
+## [1,]  340  210
+## [2,] -660  290
+## > > > [1] "utilities:"
+## > [1]  3.8  5.0   NA 27.0
+## > [1] "F1 scores:"
+## > [1]  0.63  0.70    NA 10.00
+## > [1] "MCCs:"
+## > [1]   0.083   0.510      NA 140.000
+## > [1] "Precs:"
+## > [1]  0.74  1.00    NA 30.00
+## > [1] "Accs:"
+## > [1]  0.55  0.68    NA 21.00
+## > [1] "Bal. accs:"
+## > [1]  0.55  0.77    NA 34.00
+## > [1] "Recalls:"
+## > [1]  0.56  0.54    NA -2.60
+## > [1] "Specificities:"
+## > [1]  0.53  1.00    NA 61.00
+
+
+
+
+
 ##
 ## > [1] "P+:"
 ## > [1] 0.7
