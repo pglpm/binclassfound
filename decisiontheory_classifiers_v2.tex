@@ -1,7 +1,7 @@
 \pdfoutput=1
 %% Author: PGL  Porta Mana
 %% Created: 2022-03-04T07:39:34+0200
-%% Last-Updated: 2022-05-12T14:59:04+0200
+%% Last-Updated: 2022-05-12T15:20:54+0200
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Decision theory for machine-learning classifiers
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -891,7 +891,7 @@ Taking the sum of the products of the gains above by the respective percentages 
 %   *\quad*\quad*
 % \end{center}
 
-\section{Current issues in evaluation of classifiers}
+\section{Issues in the evaluation of classifiers}
 \label{sec:issues}
 
 
@@ -913,7 +913,7 @@ The story above illustrates several well-known issues of current popular evaluat
       \textit{\parbox{\widthof{\scriptsize$0\hspace{4em}1$}}{\centering\scriptsize true class\\$0\hspace{4em}1$}}
     } \ .
 \end{equation}
-One could argue that also this case there is a great economic difference between correct or wrong classification for class~1, as compared with class~0. The true-negative rate should therefore still be the appropriate metric. Yet a simple calculation shows that it is classifier~$\Beta$ which actually leads to the best average revenue in this case: $7.3\,\text{\texteuro/component}$, vs $4.7\,\text{\texteuro/component}$ for classifier $\Alpha$. Hence the true-negative rate is \emph{not} the appropriate metric and our intuitive reasoning failed us here.
+One could argue that also this case there is a great economic difference between correct and wrong classification for class~1, as compared with class~0. The true-negative rate should therefore still be the appropriate metric. Yet a simple calculation shows that in this case it is classifier~$\Beta$ which actually leads to the best average revenue: $7.3\,\text{\texteuro/component}$, vs $4.7\,\text{\texteuro/component}$ for classifier $\Alpha$. Hence the true-negative rate is \emph{not} the appropriate metric and our intuitive reasoning failed us here.
 
 
 \item A classifier favoured by the majority of available metrics can still turn out \emph{not} to be the best one in practice.
@@ -937,13 +937,19 @@ One could argue that also this case there is a great economic difference between
 This matrix is numerically equivalent to~\eqref{eq:utility_example} up to a common additive constant of $335$. The value 0 means immediate death. It is easy to see that the metrics are exactly as is Table~\ref{tab:example_metrics}, the majority favouring classifier~$\Beta$. And yet the use of classifier~$\Alpha$ leads to a more than six-month longer expected remaining life than classifier~$\Beta$.
 
 
-\item Often it is not possible to temporarily deploy all candidate classifiers, as our fictitious manager did, in order to observe which factually leads to the best results. Or it may even be unethical: consider situation as the medical one above, where consequences of incorrect classification may lead to immediate deaths.
+\item Often it is not possible to temporarily deploy all candidate classifiers, as our fictitious manager did, in order to observe which factually leads to the best results. Or it may even be unethical: consider situation as the medical one above, where a classifier may lead to more immediate deaths than another.
 
-\item Finally, all issues listed above are not caused by class imbalance, even though they can become worse for imbalanced data \autocites{jenietal2013,zhu2020}. In our story the two classes were perfectly balanced.
+\item Finally, all issues listed above are not caused by class imbalance (the occurrence of one class with higher frequency than another), even though they can become worse for imbalanced classes \autocites{jenietal2013,zhu2020}. In our story the two classes were perfectly balanced.
   
 \end{enumerate}
 
 \bigskip
+
+But our story also points to a possible solution of all these problems.
+
+The \enquote{metric} that was ultimately relevant to the manager was the average net gain obtained by using one classifier or the other. It could have been easily calculated beforehand upon gathering information about the average gains and losses of correct and incorrect classification, gathered in matrix~\eqref{eq:utility_example}. This procedure turns out to be the one prescribed by \emph{Rational Decision Theory}.
+
+
 
 
 \clearpage
