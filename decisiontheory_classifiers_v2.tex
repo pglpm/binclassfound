@@ -1,7 +1,7 @@
 \pdfoutput=1
 %% Author: PGL  Porta Mana
 %% Created: 2022-03-04T07:39:34+0200
-%% Last-Updated: 2022-05-12T15:20:54+0200
+%% Last-Updated: 2022-05-12T20:09:33+0200
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Decision theory for machine-learning classifiers
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -691,6 +691,9 @@ Open Science Framework \doi{10.31219/osf.io/#1}%
 
 \newcommand*{\widebar}[1]{{\mkern1.5mu\skew{2}\overline{\mkern-1.5mu#1\mkern-1.5mu}\mkern 1.5mu}}
 
+%\newcommand*{\myeuro}{{\fontencoding{U}\fontfamily{eurosym}\selectfont{}\symbol{22}}}
+\usepackage{eurosym}\renewcommand*{\texteuro}{\euro}
+
 % \newcommand{\explanation}[4][t]{%\setlength{\tabcolsep}{-1ex}
 % %\smash{
 % \begin{tabular}[#1]{c}#2\\[0.5\jot]\rule{1pt}{#3}\\#4\end{tabular}}%}
@@ -920,7 +923,9 @@ One could argue that also this case there is a great economic difference between
 
 \item Most popular metrics were introduced by intuitive reasoning, ad hoc mathematical operations, special assumptions (such as gaussianity), and analysis of special cases \autocites[e.g.][around p.~371 for the $F_{1}$-measure]{rijsbergen1974}{matthews1975}[\sect~31 p.~183 for the Matthews correlation coefficient]{fisher1925_r1963}. Unfortunately such derivations do not guarantee generalization to all cases, nor that the derived metric satisfies all basic requirements or that it is uniquely determined by them. By contrast, compare for instance the derivation of the Shannon entropy \autocites{shannon1948}[\sect~3.2]{woodward1953_r1964}[also][]{goodetal1968} as the \emph{unique} metric universally satisfying a set of general, basic requirements for the amount of information; or the derivation of the probability calculus\footnote{\cites{cox1946,fine1973}[\chaps~1--2]{jaynes1994_r2003}. Some literature cites \textcites{halpern1999} as a critique of Cox's proof, but curiously does not cite Halpern's \parencites*{halpern1999b} partial rebuttal of his own critique, as well as the rebuttals by \textcites{snow1998,snow2001}.} as the \emph{unique} set of rules satisfying general desiderata for inductive reasoning, learning, and prediction \autocites{selfetal1987,cheeseman1988}[\chap~12]{russelletal1995_r2022}.
   
-\item Let us assume that some of the popular metrics identify the best algorithm \enquote{in the majority of cases} -- although it is difficult to statistically define such a majority, and no real general statistics have ever been collected to back up such an assumption. Yet, do we expect the end user to simply \emph{hope} not to belong to the unlucky minority? Is this acceptable or even ethical? Imagine a story analogous to the factory one, but in a medical setting instead. The classifiers should distinguish between two tumour types, requiring two different types of medical intervention. The confusion matrices are the same~\eqref{eq:CM_A} and \eqref{eq:CM_B}. Correct or incorrect classification in this case leads to the following expected remaining life lengths for patients in a specific age range:
+\item Let us assume that some of the popular metrics identify the best algorithm \enquote{in the majority of cases} -- although it is difficult to statistically define such a majority, and no real general statistics have ever been collected to back up such an assumption. Yet, do we expect the end user to simply \emph{hope} not to belong to the unlucky minority? Is such uncertainty inevitable?
+
+  We cannot have a cavalier attitude towards this problem: life and death can depend on it. Imagine a story analogous to the factory one, but in a medical setting instead. The classifiers should distinguish between two tumour types, requiring two different types of medical intervention. The confusion matrices are the same~\eqref{eq:CM_A} and \eqref{eq:CM_B}. Correct or incorrect classification in this case leads to the following expected remaining life lengths for patients in a specific age range:
 \begin{equation}
   \label{eq:utility_example_medicine}
   \rotatebox[origin=c]{90}{
@@ -934,20 +939,20 @@ One could argue that also this case there is a great economic difference between
       \textit{\parbox{\widthof{\scriptsize$0\hspace{7em}1$}}{\scriptsize\centering true class\\$0\hspace{7em}1$}}
     } \ .
 \end{equation}
-This matrix is numerically equivalent to~\eqref{eq:utility_example} up to a common additive constant of $335$. The value 0 means immediate death. It is easy to see that the metrics are exactly as is Table~\ref{tab:example_metrics}, the majority favouring classifier~$\Beta$. And yet the use of classifier~$\Alpha$ leads to a more than six-month longer expected remaining life than classifier~$\Beta$.
+This matrix is numerically equivalent to~\eqref{eq:utility_example} up to a common additive constant of $335$, so the final net gains are also simply shifted by this amount. The value 0 means immediate death. It is easy to see that the metrics are exactly as is Table~\ref{tab:example_metrics}, the majority favouring classifier~$\Beta$. And yet the use of classifier~$\Alpha$ leads to a more than six-month longer expected remaining life than classifier~$\Beta$.
 
 
 \item Often it is not possible to temporarily deploy all candidate classifiers, as our fictitious manager did, in order to observe which factually leads to the best results. Or it may even be unethical: consider situation as the medical one above, where a classifier may lead to more immediate deaths than another.
 
 \item Finally, all issues listed above are not caused by class imbalance (the occurrence of one class with higher frequency than another), even though they can become worse for imbalanced classes \autocites{jenietal2013,zhu2020}. In our story the two classes were perfectly balanced.
-  
+
 \end{enumerate}
 
 \bigskip
 
 But our story also points to a possible solution of all these problems.
 
-The \enquote{metric} that was ultimately relevant to the manager was the average net gain obtained by using one classifier or the other. It could have been easily calculated beforehand upon gathering information about the average gains and losses of correct and incorrect classification, gathered in matrix~\eqref{eq:utility_example}. This procedure turns out to be the one prescribed by \emph{Rational Decision Theory}.
+The \enquote{metric} that was ultimately relevant to the manager was the average net gain obtained by using one classifier or the other. It could have been easily calculated beforehand upon gathering information about the average gains and losses of correct and incorrect classification, collected in the matrix~\eqref{eq:utility_example}. This procedure turns out to be the one prescribed by \emph{Rational Decision Theory}.
 
 
 
