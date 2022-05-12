@@ -1,7 +1,7 @@
 \pdfoutput=1
 %% Author: PGL  Porta Mana
 %% Created: 2022-03-04T07:39:34+0200
-%% Last-Updated: 2022-05-11T15:32:10+0200
+%% Last-Updated: 2022-05-12T14:59:04+0200
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Decision theory for machine-learning classifiers
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -718,8 +718,8 @@ Open Science Framework \doi{10.31219/osf.io/#1}%
 \newcommand*{\tn}{\textrm{tn}}
 \newcommand*{\itemyes}{{\fontencoding{U}\fontfamily{pzd}\selectfont\symbol{51}}}
 \newcommand*{\itemno}{{\fontencoding{U}\fontfamily{pzd}\selectfont\symbol{55}}}
-\newcommand*{\good}[1]{\ensuremath{\color{mypurpleblue}\bm{#1}}}
-\newcommand*{\bad}[1]{\ensuremath{\color{myredpurple}#1}}
+\newcommand*{\good}[1]{\ensuremath{{\color{mypurpleblue}\bm{#1}}}}
+\newcommand*{\bad}[1]{\ensuremath{{\color{myredpurple}#1}}}
 
 %%% Custom macros end @@@
 
@@ -774,21 +774,19 @@ Open Science Framework \doi{10.31219/osf.io/#1}%
 %%% BEGINNING OF MAIN TEXT
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+\setcounter{section}{-1}
 
-
-\section{Current issues in evaluation of classifiers}
+\section{An introductory story}
 \label{sec:intro}
 
-Let us begin with a short story:
-\begin{center}
-  *\quad*\quad*
-\end{center}
-\vspace{-1em}
+% \begin{center}
+%   *\quad*\quad*
+% \end{center}
 \begin{quotation}
 \small
-  The manager of a factory which produces some kind of electronic component wishes to employ a machine-learning classifier to assess the durability of each component, which determines whether the component will be used in one of two possible kinds of device. The classifier should take some complex features of an electronic component as input, and output one of the two labels \enquote{0} for \enquote{short durability}, or \enquote{1} for \enquote{long durability}, depending on the component type.
+  The manager of a factory which produces a kind of electronic component wishes to employ a machine-learning classifier to assess the durability of each component, which determines whether the component will be used in one of two possible kinds of device. The classifier should take some complex features of an electronic component as input, and output one of the two labels \enquote{0} for \enquote{long durability}, or \enquote{1} for \enquote{short durability}, depending on the component type.
 
-Two candidate classifiers, let us call them A and B, are trained on available training data. When employed on an evaluation set they yield the following confusion matrices, written in the format
+Two candidate classifiers, let us call them $\Alpha$ and $\Beta$, are trained on available training data. When employed on a separate evaluation set they yield the following confusion matrices, written in the format
 \begin{equation*}
   \rotatebox[origin=c]{90}{
     \textit{\parbox{\widthof{classifier}}{\centering\scriptsize classifier\\output\\$1\quad 0$}}
@@ -802,50 +800,61 @@ Two candidate classifiers, let us call them A and B, are trained on available tr
     }
 \end{equation*}
 and normalized over the total number of evaluation data:
+%% [1,] 0.27 0.15
+%% [2,] 0.23 0.35
+%%
+%% [1,] 0.43 0.18
+%% [2,] 0.07 0.32
 \begin{align}
   \label{eq:CM_A}
-\text{classifier A:}\quad  \begin{bmatrix}
-    0.39 & 0.14 \\ 0.31 & 0.16
+\text{classifier $\Alpha$:}\quad  \begin{bmatrix}
+    0.27 & 0.15 \\ 0.23 & 0.35
   \end{bmatrix}
 \ ,
   \\
   \label{eq:CM_B}
-\text{classifier B:}\quad  \begin{bmatrix}
-    0.38 & 0.00 \\ 0.32 & 0.30
+\text{classifier $\Beta$:}\quad  \begin{bmatrix}
+    0.43 & 0.18 \\ 0.07 & 0.32
   \end{bmatrix}
 \ .
 \end{align}
-These matrices show that the factory produces on average 70\% short- and 30\% long-durability components.
+These matrices show that the factory produces on average 50\% short- and 50\% long-durability components.
 
 The confusion matrices above lead to the following values of common evaluation metrics for the two classifiers; blue bold indicates the classifier favoured by the metric, red the disfavoured:
-\begin{center}\footnotesize
+  %    F1    MCC   Prec    Acc BalAcc    Kri    AUC    Rec   Spec 
+  % 0.59   0.24   0.64   0.62   0.62   0.62   0.62   0.54   0.70
+  % 0.77   0.51   0.70   0.75   0.75   0.75   0.75   0.86   0.64
+\begin{table}[!h]\centering\footnotesize
+  \caption{}\label{tab:example_metrics}
   \begin{tabular}{lcc}
-    Metric & classifier A & classifier B\\
+    Metric & classifier $\Alpha$ & classifier $\Beta$\\
     \hline
-    Accuracy & \bad{0.55} & \good{0.68} \\
-    Precision & \bad{0.74} & \good{1.00} \\
-    F1 measure & \bad{0.63} & \good{0.70} \\
-    Matthews correlation coefficient & \bad{0.08} & \good{0.51} \\
-    Balanced accuracy & \bad{0.55} & \good{0.77} \\
-    True-positive rate (recall) & \good{0.56} & \bad{0.54} \\
-    True-negative rate (specificity) & \bad{0.53} & \good{1.00}
+    Accuracy (also balanced accuracy) & \bad{0.62} & \good{0.75} \\
+    Precision & \bad{0.64} & \good{0.70} \\
+    F1 measure & \bad{0.59} & \good{0.77} \\
+    Matthews correlation coefficient & \bad{0.24} & \good{0.51} \\
+%    Balanced accuracy & \bad{0.62} & \good{0.75} \\
+    True-positive rate (recall) & \good{0.54} & \bad{0.86} \\
+    True-negative rate (specificity) & \bad{0.70} & \good{0.64}
   \end{tabular}
-\end{center}
-The majority of these metrics favours classifier B, some of them by quite a wide margin. Only the true-positive rate favours classifier A, but only by a relative difference of less than 3\%. Indeed classifier B perfectly classifies the long-durability components, and neither classifier is especially good at classifying the short-durability ones. The developers of the classifiers therefore recommend the employment of classifier B.
+\end{table}\FloatBlock
+The majority of these metrics favours classifier $\Beta$, some of them by quite a wide margin. Only the true-negative rate favours classifier $\Alpha$, but only by a relative difference of 9\%. % Indeed classifier $\Beta$ classifies well the short-durability components, and neither classifier is especially good at classifying the short-durability ones.
+
+The developers of the classifiers therefore recommend the employment of classifier $\Beta$.
 
 The factory manager does not fully trust this kind of metrics and decides to employ both classifiers for a trial period, to see which factually leads to the best revenue. The two classifiers are integrated in two separate but otherwise identical parallel production lines.
 
-During the trial period the classifiers perform according to the classification statistics of the confusion matrices~\eqref{eq:CM_A} and \eqref{eq:CM_B} above. At the end of this period the factory manager finds that the average net gains per assessed component brought about by the two classifiers are
+During the trial period the classifiers perform according to the classification statistics of the confusion matrices~\eqref{eq:CM_A} and \eqref{eq:CM_B} above. At the end of this period the factory manager finds that the average net gains per assessed component yielded by the two classifiers are
 \begin{equation}
   \label{eq:final_gains}
 \begin{split}
-  \text{classifier A:}& \quad \good{3.2}\,\text{\texteuro/component}\ , \\
-  \text{classifier B:}& \quad \bad{{-4.0}}\,\text{\texteuro/component}\ .
+  \text{classifier $\Alpha$:}& \quad \good{3.5}\,\text{\texteuro/component}\ , \\
+  \text{classifier $\Beta$:}& \quad \bad{-3.5}\,\text{\texteuro/component}\ .
 \end{split}
 \end{equation}
-That is, classifier B actually led to a \emph{loss} of revenue. The manager therefore decides to employ classifier A, commenting with a smug smile that it was wise not to trust the developers' recommendations.
+That is, classifier $\Beta$ actually led to a \emph{loss} of revenue. The manager therefore decides to employ classifier $\Alpha$, commenting with a smug smile that it is always unwise to trust developers' recommendations.
 
-The average gain and loss above are easy to calculate. The final net gains and losses caused by the correct or incorrect classification of one electronic component are as follows:
+The average gains above are easy to calculate from some additional information. The final net gains caused by the correct or incorrect classification of one electronic component are as follows:
 \begin{equation}
   \label{eq:utility_example}
   \rotatebox[origin=c]{90}{
@@ -853,15 +862,15 @@ The average gain and loss above are easy to calculate. The final net gains and l
     }\ 
     \overbracket[0pt]{
       \begin{bmatrix}
-        340\,\text{\texteuro} & 240\,\text{\texteuro}  \\
-        -660\,\text{\texteuro} & 260\,\text{\texteuro}
+        15\,\text{\texteuro} & -335\,\text{\texteuro}  \\
+        -35\,\text{\texteuro} & 165\,\text{\texteuro}
       \end{bmatrix}}^{
       \textit{\parbox{\widthof{\scriptsize true class}}{\centering\scriptsize true class\\$0\hspace{3em}1$}}
     }
 \end{equation}
-The reason behind these values is that short-durability components cause extreme damage (and consequent repair costs and refunds) if used in devices that require long-durability components. Devices that only require short-durability components, on the other hand, also work well with long-durability ones, although slightly less efficiently.
+The reason behind these values is that short-durability components (class~1) are used in high-end, costly devices; but they cause extreme damage and consequent repair costs and refunds if used in devices that require long-durability components (class~0). Long-durability components are used in low-end, cheaper devices; they cause some damage if used in devices that require short-durability components, but with lower consequent costs.
 
-Taking the sum of the products of the gains above by the respective percentages of occurrence -- which are the elements of the confusion matrix -- yields the final average gain. In the present case, the confusion matrices~\eqref{eq:CM_A} and \eqref{eq:CM_B} lead to the amounts \eqref{eq:final_gains} found by the manager.
+Taking the sum of the products of the gains above by the respective percentages of occurrence -- which are the elements of the confusion matrix -- yields the final average gain. The final average gain yielded by classifier~$\Alpha$, for example, is obtained by multiplying matrices~\eqref{eq:utility_example} and \eqref{eq:CM_A} element-wise, and then taking the overall sum. In the present case, the confusion matrices~\eqref{eq:CM_A} and \eqref{eq:CM_B} lead to the amounts \eqref{eq:final_gains} found by the manager.
 
 
 % TP: 0.37    FP: 0.22
@@ -878,59 +887,75 @@ Taking the sum of the products of the gains above by the respective percentages 
 %     classifier #2 led to a net gain of €3.45/gadget
 
 \end{quotation}
-\begin{center}
-  *\quad*\quad*
-\end{center}
+% \begin{center}
+%   *\quad*\quad*
+% \end{center}
 
-The story above brings forth well-known issues of popular evaluation procedures for machine-learning classifiers:
+\section{Current issues in evaluation of classifiers}
+\label{sec:issues}
+
+
+The story above illustrates several well-known issues of current popular evaluation procedures for machine-learning classifiers:
 \begin{enumerate}[label=(\arabic*)]
-\item We are faced by an avalanche of possible evaluation metrics to use. Often it is not clear which is most compelling. In the story above one could argue that the true-positive rate was the appropriate metric, in view of the great difference in the consequences of correct or wrong classification of class 0, as compared with that of class 1. But at which point does this qualitative reasoning fail? Imagine for example that the net gains and losses had been as follows instead:
+\item We are faced by an avalanche of possible evaluation metrics. Often it is not clear which is the most compelling. In the story above, one could argue that the true-negative rate was the appropriate metric, in view of the great difference in gains between correct and wrong classification for class 1, compared with that for class 0.
+
+  But at which point does this qualitative reasoning fail? Imagine that the net gains had been as follows instead:
 \begin{equation}
   \label{eq:utility_example_2}
   \rotatebox[origin=c]{90}{
-    \textit{\parbox{\widthof{\scriptsize classifier}}{\centering\scriptsize classifier\\output\\$1\quad 0$}}
+    \textit{\parbox{\widthof{\scriptsize classifier}}{\centering\scriptsize classifier\\output\\$1\hspace{1.5em}0$}}
     }\ 
     \overbracket[0pt]{
       \begin{bmatrix}
-        340\,\text{\texteuro} & 210\,\text{\texteuro}  \\
-        -660\,\text{\texteuro} & 200\,\text{\texteuro}
+        45\,\text{\texteuro} & -335\,\text{\texteuro}  \\
+        -65\,\text{\texteuro} & 165\,\text{\texteuro}
       \end{bmatrix}}^{
-      \textit{\parbox{\widthof{\scriptsize true class}}{\centering\scriptsize true class\\$0\hspace{3em}1$}}
+      \textit{\parbox{\widthof{\scriptsize$0\hspace{4em}1$}}{\centering\scriptsize true class\\$0\hspace{4em}1$}}
     } \ .
 \end{equation}
-One could argue that there is still a great difference in the consequences of correct or wrong classification of class 0, as compared with that of class 1, and therefore conclude that the true-positive rate is still the appropriate metric. Yet, a simple calculation shows that classifier B actually leads to the best average revenue in this case: $5.0\,\text{\texteuro/component}$, vs only $3.8\,\text{\texteuro/component}$ for classifier A. So the true-positive rate would \emph{not} be the appropriate metric.
+One could argue that also this case there is a great economic difference between correct or wrong classification for class~1, as compared with class~0. The true-negative rate should therefore still be the appropriate metric. Yet a simple calculation shows that it is classifier~$\Beta$ which actually leads to the best average revenue in this case: $7.3\,\text{\texteuro/component}$, vs $4.7\,\text{\texteuro/component}$ for classifier $\Alpha$. Hence the true-negative rate is \emph{not} the appropriate metric and our intuitive reasoning failed us here.
 
 
 \item A classifier favoured by the majority of available metrics can still turn out \emph{not} to be the best one in practice.
 
-\item Most popular metrics were introduced by intuitive reasoning, ad hoc mathematical operations, special assumptions (such as gaussianity), and analysis of special cases \autocites[e.g.][around p.~371 for the $F_{1}$-measure]{rijsbergen1974}{matthews1975}[\sect~31 p.~183 for the Matthews correlation coefficient]{fisher1925_r1963}. Unfortunately such derivations do not guarantee generalization to all cases, nor that the derived metric is uniquely determined by basic requirements -- compare instead, for instance, the derivation of the Shannon entropy \autocites{shannon1948}[\sect~3.2]{woodward1953_r1964} as the \emph{unique} metric satisfying a general set of basic requirements for the amount of information.
+\item Most popular metrics were introduced by intuitive reasoning, ad hoc mathematical operations, special assumptions (such as gaussianity), and analysis of special cases \autocites[e.g.][around p.~371 for the $F_{1}$-measure]{rijsbergen1974}{matthews1975}[\sect~31 p.~183 for the Matthews correlation coefficient]{fisher1925_r1963}. Unfortunately such derivations do not guarantee generalization to all cases, nor that the derived metric satisfies all basic requirements or that it is uniquely determined by them. By contrast, compare for instance the derivation of the Shannon entropy \autocites{shannon1948}[\sect~3.2]{woodward1953_r1964}[also][]{goodetal1968} as the \emph{unique} metric universally satisfying a set of general, basic requirements for the amount of information; or the derivation of the probability calculus\footnote{\cites{cox1946,fine1973}[\chaps~1--2]{jaynes1994_r2003}. Some literature cites \textcites{halpern1999} as a critique of Cox's proof, but curiously does not cite Halpern's \parencites*{halpern1999b} partial rebuttal of his own critique, as well as the rebuttals by \textcites{snow1998,snow2001}.} as the \emph{unique} set of rules satisfying general desiderata for inductive reasoning, learning, and prediction \autocites{selfetal1987,cheeseman1988}[\chap~12]{russelletal1995_r2022}.
   
-\item Suppose that some of the popular metrics identify the best algorithm \enquote{in the majority of cases} -- although it is difficult to statistically define such a majority, and no real statistics have ever been collected for this purpose. Yet, do we expect the end user to simply hope not to fall among the unlucky minority? Is this acceptable? Imagine a story analogous to the one above but in a medical setting. The classes represent tumour types, requiring two different types of intervention. The confusion matrices are the same. Instead of monetary gain or loss, correct or incorrect classification leads to the following expected remaining life lengths for patients in a specific age range:
+\item Let us assume that some of the popular metrics identify the best algorithm \enquote{in the majority of cases} -- although it is difficult to statistically define such a majority, and no real general statistics have ever been collected to back up such an assumption. Yet, do we expect the end user to simply \emph{hope} not to belong to the unlucky minority? Is this acceptable or even ethical? Imagine a story analogous to the factory one, but in a medical setting instead. The classifiers should distinguish between two tumour types, requiring two different types of medical intervention. The confusion matrices are the same~\eqref{eq:CM_A} and \eqref{eq:CM_B}. Correct or incorrect classification in this case leads to the following expected remaining life lengths for patients in a specific age range:
 \begin{equation}
   \label{eq:utility_example_medicine}
   \rotatebox[origin=c]{90}{
-    \textit{\parbox{\widthof{\scriptsize classifier}}{\centering\scriptsize classifier\\output\\$1\quad 0$}}
+    \textit{\parbox{\widthof{\scriptsize classifier}}{\centering\scriptsize classifier\\output\\$1\hspace{1.5em}0$}}
     }\ 
     \overbracket[0pt]{
       \begin{bmatrix}
-        510\,\text{months} & 460\,\text{months}  \\
-        10\,\text{months} & 470\,\text{months}
+        350\,\text{months} & 0\,\text{months}  \\
+        300\,\text{months} & 500\,\text{months}
       \end{bmatrix}}^{
-      \textit{\parbox{\widthof{\scriptsize true class}}{\centering\scriptsize true class\\$0\hspace{5em}1$}}
+      \textit{\parbox{\widthof{\scriptsize$0\hspace{7em}1$}}{\scriptsize\centering true class\\$0\hspace{7em}1$}}
     } \ .
-  \end{equation}
-  This matrix is equivalent to~\eqref{eq:utility_example} up to a common shift and rescaling of all elements. The value 0 means immediate death. It is easy to see that the metrics are exactly as before, the majority favouring classifier~B. And yet the use of classifier~A leads to a slightly longer expected remaining life than classifier~B.
-
-\item Often it is not possible to deploy all candidate classifiers to observe which factually leads to the best results. Or it may even be unethical: consider situation as the medical one above, where some alternatives may lead to immediate deaths.
+\end{equation}
+This matrix is numerically equivalent to~\eqref{eq:utility_example} up to a common additive constant of $335$. The value 0 means immediate death. It is easy to see that the metrics are exactly as is Table~\ref{tab:example_metrics}, the majority favouring classifier~$\Beta$. And yet the use of classifier~$\Alpha$ leads to a more than six-month longer expected remaining life than classifier~$\Beta$.
 
 
-  
-\item What is the rationale behind the mathematical form of the different metrics?
+\item Often it is not possible to temporarily deploy all candidate classifiers, as our fictitious manager did, in order to observe which factually leads to the best results. Or it may even be unethical: consider situation as the medical one above, where consequences of incorrect classification may lead to immediate deaths.
 
+\item Finally, all issues listed above are not caused by class imbalance, even though they can become worse for imbalanced data \autocites{jenietal2013,zhu2020}. In our story the two classes were perfectly balanced.
   
 \end{enumerate}
 
+\bigskip
 
+
+\clearpage
+
+\bigskip
+\mynote{\hrule
+  
+Old version below
+
+\hrule}
+
+\bigskip
 
 In comparing, evaluating, and using \ml\ classifiers we face a number of questions and issues; some are well-known, others are rarely discussed:
 

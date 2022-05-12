@@ -1,6 +1,6 @@
 ## Author: PGL  Porta Mana
 ## Created: 2022-05-01T09:38:48+0200
-## Last-Updated: 2022-05-12T11:38:07+0200
+## Last-Updated: 2022-05-12T13:04:23+0200
 ################
 ## Calculations for the papers
 ################
@@ -254,9 +254,9 @@ tut1 <- sum(tum*tcm1)
 tut2 <- sum(tum*tcm2)
 tum <- tum*(10^ceiling(-log10(tut2)))
 ##
-tum <- round((tum-min(tum))/2) # medical
-#tum <- round((tum-min(tum))/2) - 335# factory
-## tum <- round((tum+670)/24) # medical setting
+## tum <- round((tum-min(tum))/2) - 335 # factory
+tum <- round((tum-min(tum))/2) - 335 + c(25,-25,0,0)# factory inverse
+##tum <- round((tum-min(tum))/2) # medical
 print('UM')
 tum
 tut1 <- sum(tum*tcm1)
@@ -270,10 +270,10 @@ signif(reldiff(tut1,tut2),2)
 ##
 tsc1 <- allscores(pp, listab[ok['icm1'],])
 print('scores CM1')
-signif(tsc1,3)
+signif(tsc1,2)
 tsc2 <- allscores(pp, listab[ok['icm2'],])
 print('scores CM2')
-signif(tsc2,3)
+signif(tsc2,2)
 print('% Dscores CM1 - CM2')
 signif(reldiff(tsc1,tsc2),2)
 
@@ -302,10 +302,68 @@ signif(diffscores[ok1,],2)
 ## > [1] 2.6e+17
 ## > > > [1] "scores CM1"
 ## >     F1    MCC   Prec    Acc BalAcc    Kri    AUC    Rec   Spec 
-##  0.775  0.513  0.705  0.750  0.750  0.747  0.750  0.860  0.640 
+##   0.77   0.51   0.70   0.75   0.75   0.75   0.75   0.86   0.64 
 ## > > [1] "scores CM2"
 ## >     F1    MCC   Prec    Acc BalAcc    Kri    AUC    Rec   Spec 
-##  0.587  0.243  0.643  0.620  0.620  0.618  0.620  0.540  0.700 
+##   0.59   0.24   0.64   0.62   0.62   0.62   0.62   0.54   0.70 
+## > [1] "% Dscores CM1 - CM2"
+## >     F1    MCC   Prec    Acc BalAcc    Kri    AUC    Rec   Spec 
+##   28.0   71.0    9.2   19.0   19.0   19.0   19.0   46.0   -9.0 
+##
+#### Paper example 1 small change
+## [1] "CM1"
+## >      [,1] [,2]
+## [1,] 0.43 0.18
+## [2,] 0.07 0.32
+## > > [1] "CM2"
+## >      [,1] [,2]
+## [1,] 0.27 0.15
+## [2,] 0.23 0.35
+## > > > > > > > > > > > > > > > > [1] "UM"
+## >      [,1] [,2]
+## [1,]   45 -335
+## [2,]  -65  165
+## > > [1] "utility CM1"
+## > [1] 7.3000 0.6083
+## > > [1] "utility CM2"
+## > [1] 4.7000 0.3917
+## > [1] "% Dutility CM1 - CM2"
+## > [1] 43
+## > > > [1] "scores CM1"
+## >     F1    MCC   Prec    Acc BalAcc    Kri    AUC    Rec   Spec 
+##   0.77   0.51   0.70   0.75   0.75   0.75   0.75   0.86   0.64 
+## > > [1] "scores CM2"
+## >     F1    MCC   Prec    Acc BalAcc    Kri    AUC    Rec   Spec 
+##   0.59   0.24   0.64   0.62   0.62   0.62   0.62   0.54   0.70 
+## > [1] "% Dscores CM1 - CM2"
+## >     F1    MCC   Prec    Acc BalAcc    Kri    AUC    Rec   Spec 
+##   28.0   71.0    9.2   19.0   19.0   19.0   19.0   46.0   -9.0 
+##
+#### Paper example 1 small change II
+## [1] "CM1"
+## >      [,1] [,2]
+## [1,] 0.43 0.18
+## [2,] 0.07 0.32
+## > > [1] "CM2"
+## >      [,1] [,2]
+## [1,] 0.27 0.15
+## [2,] 0.23 0.35
+## > > > > > > > > > > > > > > > > [1] "UM"
+## >      [,1] [,2]
+## [1,]   40 -335
+## [2,]  -60  165
+## > > [1] "utility CM1"
+## > [1] 5.5000 0.4583
+## > > [1] "utility CM2"
+## > [1] 4.500 0.375
+## > [1] "% Dutility CM1 - CM2"
+## > [1] 20
+## > > > [1] "scores CM1"
+## >     F1    MCC   Prec    Acc BalAcc    Kri    AUC    Rec   Spec 
+##   0.77   0.51   0.70   0.75   0.75   0.75   0.75   0.86   0.64 
+## > > [1] "scores CM2"
+## >     F1    MCC   Prec    Acc BalAcc    Kri    AUC    Rec   Spec 
+##   0.59   0.24   0.64   0.62   0.62   0.62   0.62   0.54   0.70 
 ## > [1] "% Dscores CM1 - CM2"
 ## >     F1    MCC   Prec    Acc BalAcc    Kri    AUC    Rec   Spec 
 ##   28.0   71.0    9.2   19.0   19.0   19.0   19.0   46.0   -9.0 
@@ -331,10 +389,10 @@ signif(diffscores[ok1,],2)
 ## > [1] -2.1
 ## > > > [1] "scores CM1"
 ## >     F1    MCC   Prec    Acc BalAcc    Kri    AUC    Rec   Spec 
-##  0.775  0.513  0.705  0.750  0.750  0.747  0.750  0.860  0.640 
+##   0.77   0.51   0.70   0.75   0.75   0.75   0.75   0.86   0.64 
 ## > > [1] "scores CM2"
 ## >     F1    MCC   Prec    Acc BalAcc    Kri    AUC    Rec   Spec 
-##  0.587  0.243  0.643  0.620  0.620  0.618  0.620  0.540  0.700 
+##   0.59   0.24   0.64   0.62   0.62   0.62   0.62   0.54   0.70 
 ## > [1] "% Dscores CM1 - CM2"
 ## >     F1    MCC   Prec    Acc BalAcc    Kri    AUC    Rec   Spec 
 ##   28.0   71.0    9.2   19.0   19.0   19.0   19.0   46.0   -9.0 
