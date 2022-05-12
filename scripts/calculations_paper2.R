@@ -1,6 +1,6 @@
 ## Author: PGL  Porta Mana
 ## Created: 2022-05-01T09:38:48+0200
-## Last-Updated: 2022-05-12T10:17:50+0200
+## Last-Updated: 2022-05-12T11:38:07+0200
 ################
 ## Calculations for the papers
 ################
@@ -117,7 +117,20 @@ kri <- function(p,a,b){
 }
 ##
 reldiff <- function(x,y){200*(x-y)/(x+y)}
-
+##
+allscores <- function(p,ab){
+    out <- c(f1score(pp,ab[1],ab[2]),
+      mcc(pp,ab[1],ab[2]),
+      prec(pp,ab[1],ab[2]),
+      acc(pp,ab[1],ab[2]),
+      bacc(pp,ab[1],ab[2]),
+      kri(pp,ab[1],ab[2]),
+      auc(pp,ab[1],ab[2]),
+      ab[1],
+      ab[2])
+    names(out) <- c('F1', 'MCC', 'Prec', 'Acc', 'BalAcc', 'Kri', 'AUC', 'Rec', 'Spec')
+    out
+}
 
 
 
@@ -146,8 +159,8 @@ listscores <- t(future_apply(listab, 1, function(ab){
 }))
 colnames(listscores) <- c('F1', 'MCC', 'Prec', 'Acc', 'BalAcc')
 
-lo2 <- round((1+1)/0.1) + 1
-ss <- seq(-0.9,0.9,length.out=lo2)
+lo2 <- round((0.9+0.9)/0.1) + 1
+ss <- round(seq(-0.9,0.9,length.out=lo2),2)
 xy <- cbind(rep(ss,lo2), rep(ss,each=lo2))
 xy <- xy[xy[,2]<xy[,1]+1 & xy[,2]>xy[,1]-1,]
 lxy <- nrow(xy)
@@ -205,19 +218,129 @@ dim(selectn) <- c(lo*lo,lo*lo, lxy)
 selectn <- which(selectn, arr.ind=T)
 colnames(selectn) <- c('icm1','icm2','ium')
 
-subsel <- which((listum[1,1,selectn[,'ium']]==listum[2,1,selectn[,'ium']] |
-                          listum[1,2,selectn[,'ium']]==listum[2,2,selectn[,'ium']])
-                  ##       &
-                  ##       !(listcm[1,1,selectn[,2]]==listcm[2,1,selectn[,2]] |
-                  ## listcm[1,2,selectn[,2]]==listcm[2,2,selectn[,2]]) &
-                  ##       !(listcm[1,1,selectn[,1]]==listcm[2,1,selectn[,1]] |
-                  ##         listcm[1,2,selectn[,1]]==listcm[2,2,selectn[,1]])
-                  )
+## subsel <- which((listum[1,1,selectn[,'ium']]==listum[2,1,selectn[,'ium']] |
+##                           listum[1,2,selectn[,'ium']]==listum[2,2,selectn[,'ium']])
+##                   ##       &
+##                   ##       !(listcm[1,1,selectn[,2]]==listcm[2,1,selectn[,2]] |
+##                   ## listcm[1,2,selectn[,2]]==listcm[2,2,selectn[,2]]) &
+##                   ##       !(listcm[1,1,selectn[,1]]==listcm[2,1,selectn[,1]] |
+##                   ##         listcm[1,2,selectn[,1]]==listcm[2,2,selectn[,1]])
+##                   )
+
+subsel <- selectn[which( future_apply(selectn,1,function(it){
+    (min(diag(listum[,,it['ium']])) > 1*sum(listcm[,,it['icm1']]*listum[,,it['ium']])) &
+        abs(reldiff(sum(listcm[,,it['icm1']]*listum[,,it['ium']]), sum(listcm[,,it['icm2']]*listum[,,it['ium']])))>=2
+})),]
+nrow(subsel)
+
+ok <- subsel[which.min(abs(diffscores2[(subsel[,'icm1']-1)*lo^2+subsel[,'icm2'], 'Spec'])),]
+ok1 <- (ok['icm1']-1)*lo^2 + ok['icm2']
+##
+tcm1 <- listcm[,,ok['icm1']]
+print('CM1')
+tcm1
+tcm2 <- listcm[,,ok['icm2']]
+print('CM2')
+tcm2
+tab1 <- listab[ok['icm1'],]
+tab2 <- listab[ok['icm2'],]
+##
+tum <- listum[,,ok['ium']]
+tut1 <- sum(tum*tcm1)
+tut2 <- sum(tum*tcm2)
+##
+tum <- (tum-mean(c(tut1,tut2)))
+tut1 <- sum(tum*tcm1)
+tut2 <- sum(tum*tcm2)
+tum <- tum*(10^ceiling(-log10(tut2)))
+##
+tum <- round((tum-min(tum))/2) # medical
+#tum <- round((tum-min(tum))/2) - 335# factory
+## tum <- round((tum+670)/24) # medical setting
+print('UM')
+tum
+tut1 <- sum(tum*tcm1)
+print('utility CM1')
+signif(tut1/c(1,12),4)
+tut2 <- sum(tum*tcm2)
+print('utility CM2')
+signif(tut2/c(1,12),4)
+print('% Dutility CM1 - CM2')
+signif(reldiff(tut1,tut2),2)
+##
+tsc1 <- allscores(pp, listab[ok['icm1'],])
+print('scores CM1')
+signif(tsc1,3)
+tsc2 <- allscores(pp, listab[ok['icm2'],])
+print('scores CM2')
+signif(tsc2,3)
+print('% Dscores CM1 - CM2')
+signif(reldiff(tsc1,tsc2),2)
+
+signif(listscores[ok['icm1'],],2)
+signif(listscores[ok['icm2'],],2)
+signif(diffscores[ok1,],2)
+
+#### Paper example 1
+## [1] "CM1"
+## >      [,1] [,2]
+## [1,] 0.43 0.18
+## [2,] 0.07 0.32
+## > > [1] "CM2"
+## >      [,1] [,2]
+## [1,] 0.27 0.15
+## [2,] 0.23 0.35
+## > > > > > > > > > > > > > > > > [1] "UM"
+## >      [,1] [,2]
+## [1,]   15 -335
+## [2,]  -35  165
+## > > [1] "utility CM1"
+## > [1] -3.5000 -0.2917
+## > > [1] "utility CM2"
+## > [1] 3.5000 0.2917
+## > [1] "% Dutility CM1 - CM2"
+## > [1] 2.6e+17
+## > > > [1] "scores CM1"
+## >     F1    MCC   Prec    Acc BalAcc    Kri    AUC    Rec   Spec 
+##  0.775  0.513  0.705  0.750  0.750  0.747  0.750  0.860  0.640 
+## > > [1] "scores CM2"
+## >     F1    MCC   Prec    Acc BalAcc    Kri    AUC    Rec   Spec 
+##  0.587  0.243  0.643  0.620  0.620  0.618  0.620  0.540  0.700 
+## > [1] "% Dscores CM1 - CM2"
+## >     F1    MCC   Prec    Acc BalAcc    Kri    AUC    Rec   Spec 
+##   28.0   71.0    9.2   19.0   19.0   19.0   19.0   46.0   -9.0 
+
+#### Paper example 1 medicine
+## [1] "CM1"
+## >      [,1] [,2]
+## [1,] 0.43 0.18
+## [2,] 0.07 0.32
+## > > [1] "CM2"
+## >      [,1] [,2]
+## [1,] 0.27 0.15
+## [2,] 0.23 0.35
+## > > > > > > > > > > > > > > > > [1] "UM"
+## >      [,1] [,2]
+## [1,]  350    0
+## [2,]  300  500
+## > > [1] "utility CM1"
+## > [1] 331.50  27.62
+## > > [1] "utility CM2"
+## > [1] 338.50  28.21
+## > [1] "% Dutility CM1 - CM2"
+## > [1] -2.1
+## > > > [1] "scores CM1"
+## >     F1    MCC   Prec    Acc BalAcc    Kri    AUC    Rec   Spec 
+##  0.775  0.513  0.705  0.750  0.750  0.747  0.750  0.860  0.640 
+## > > [1] "scores CM2"
+## >     F1    MCC   Prec    Acc BalAcc    Kri    AUC    Rec   Spec 
+##  0.587  0.243  0.643  0.620  0.620  0.618  0.620  0.540  0.700 
+## > [1] "% Dscores CM1 - CM2"
+## >     F1    MCC   Prec    Acc BalAcc    Kri    AUC    Rec   Spec 
+##   28.0   71.0    9.2   19.0   19.0   19.0   19.0   46.0   -9.0 
 
 
-ok <- which.min(abs(diffscores2[(subsel[,2]-1)*lo^2+subsel[,1], 'Spec']))
 
-listcm[]
 
 
 
