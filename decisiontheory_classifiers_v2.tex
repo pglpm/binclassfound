@@ -1,7 +1,7 @@
 \pdfoutput=1
 %% Author: PGL  Porta Mana
 %% Created: 2022-03-04T07:39:34+0200
-%% Last-Updated: 2022-05-12T20:09:33+0200
+%% Last-Updated: 2022-05-12T22:38:08+0200
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Decision theory for machine-learning classifiers
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -786,8 +786,7 @@ Open Science Framework \doi{10.31219/osf.io/#1}%
 %   *\quad*\quad*
 % \end{center}
 \begin{quotation}
-\small
-  The manager of a factory which produces a kind of electronic component wishes to employ a machine-learning classifier to assess the durability of each component, which determines whether the component will be used in one of two possible kinds of device. The classifier should take some complex features of an electronic component as input, and output one of the two labels \enquote{0} for \enquote{long durability}, or \enquote{1} for \enquote{short durability}, depending on the component type.
+  \small The manager of a factory which produces a kind of electronic component wishes to employ a machine-learning classifier to assess the durability of each produced component, which determines whether the it will be used in one of two possible kinds of device. The classifier should take some complex features of the component as input, and output one of the two labels \enquote{0} for \enquote{long durability}, or \enquote{1} for \enquote{short durability}, depending on the component type.
 
 Two candidate classifiers, let us call them $\Alpha$ and $\Beta$, are trained on available training data. When employed on a separate evaluation set they yield the following confusion matrices, written in the format
 \begin{equation*}
@@ -871,9 +870,9 @@ The average gains above are easy to calculate from some additional information. 
       \textit{\parbox{\widthof{\scriptsize true class}}{\centering\scriptsize true class\\$0\hspace{3em}1$}}
     }
 \end{equation}
-The reason behind these values is that short-durability components (class~1) are used in high-end, costly devices; but they cause extreme damage and consequent repair costs and refunds if used in devices that require long-durability components (class~0). Long-durability components are used in low-end, cheaper devices; they cause some damage if used in devices that require short-durability components, but with lower consequent costs.
+The reason behind these values is that short-durability components (class~1) provide more power and are used in high-end, costly devices; but they cause extreme damage and consequent repair costs and refunds if used in devices that require long-durability components (class~0). Long-durability components provide less power and are used in low-end, cheaper devices; they cause some damage if used in devices that require short-durability components, but with lower consequent costs.
 
-Taking the sum of the products of the gains above by the respective percentages of occurrence -- which are the elements of the confusion matrix -- yields the final average gain. The final average gain yielded by classifier~$\Alpha$, for example, is obtained by multiplying matrices~\eqref{eq:utility_example} and \eqref{eq:CM_A} element-wise, and then taking the overall sum. In the present case, the confusion matrices~\eqref{eq:CM_A} and \eqref{eq:CM_B} lead to the amounts \eqref{eq:final_gains} found by the manager.
+Taking the sum of the products of the gains above by the respective percentages of occurrence -- that is, the elements of the confusion matrix -- yields the final average gain. The final average gain returned by the use of classifier~$\Alpha$, for example, is obtained by multiplying matrices~\eqref{eq:utility_example} and \eqref{eq:CM_A} element-wise, and then taking the grand sum. In the present case, the confusion matrices~\eqref{eq:CM_A} and \eqref{eq:CM_B} lead to the amounts \eqref{eq:final_gains} found by the manager.
 
 
 % TP: 0.37    FP: 0.22
