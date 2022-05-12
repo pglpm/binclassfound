@@ -1,6 +1,6 @@
 ## Author: PGL  Porta Mana
 ## Created: 2022-05-01T09:38:48+0200
-## Last-Updated: 2022-05-11T22:40:54+0200
+## Last-Updated: 2022-05-12T10:17:50+0200
 ################
 ## Calculations for the papers
 ################
@@ -52,6 +52,10 @@ if(file.exists("/cluster/home/pglpm/R")){
 ## ut <- function(p,a,b,utp,utn,ufp,ufn){
 ##     utp*a*p + utn*b*(1-p) + ufn*(1-a)*p + ufp*(1-b)*(1-p)
 ## }
+##
+confm1 <- function(p,a){
+        matrix(c(p*a[1], p*(1-a[1]), (1-p)*(1-a[2]), (1-p)*a[2]), 2,2)
+}
 ##
 confm <- function(p,a,b){
     len <- length(p)
@@ -111,6 +115,8 @@ kri <- function(p,a,b){
     raccu <- ((p*a+(1-p)*(1-b) + p)/2)^2 + (((1-p)*b+p*(1-a) + (1-p))/2)^2
     ((acc(p,a,b) + 1)/2 - raccu)/(1-raccu)
 }
+##
+reldiff <- function(x,y){200*(x-y)/(x+y)}
 
 
 
@@ -120,12 +126,18 @@ kri <- function(p,a,b){
 ####################################################################
 
 
-lo <- 8+1
-qq <- seq(0.5,1,length.out=lo)
-abl <- cbind(rep(qq,lo),rep(qq,each=lo))
+lo <- round((1-0.54)/0.02) + 1
+qq <- seq(0.54,1,length.out=lo)
+listab <- cbind('Rec'=rep(qq,lo), 'Spec'=rep(qq,each=lo))
 pp <- 0.5
 ##
-listscores <- t(future_apply(abl, 1, function(ab){
+listcm <- future_apply(listab, 1, function(ab){
+    confm1(pp,ab)
+})
+dim(listcm) <- c(2,2,lo*lo)
+
+##
+listscores <- t(future_apply(listab, 1, function(ab){
     c(f1score(pp,ab[1],ab[2]),
       mcc(pp,ab[1],ab[2]),
       prec(pp,ab[1],ab[2]),
@@ -133,15 +145,11 @@ listscores <- t(future_apply(abl, 1, function(ab){
       bacc(pp,ab[1],ab[2]))
 }))
 colnames(listscores) <- c('F1', 'MCC', 'Prec', 'Acc', 'BalAcc')
-##
-listcm <- future_apply(abl, 1, function(ab){
-    confm(pp,ab[1],ab[2])
-})
-dim(listcm) <- c(2,2,lo*lo)
 
-ss <- seq(-1,1,length.out=lo)
-xy <- cbind(rep(ss,lo), rep(ss,each=lo))
-xy <- xy[xy[,2]<=xy[,1]+1 & xy[,2]>=xy[,1]-1,]
+lo2 <- round((1+1)/0.1) + 1
+ss <- seq(-0.9,0.9,length.out=lo2)
+xy <- cbind(rep(ss,lo2), rep(ss,each=lo2))
+xy <- xy[xy[,2]<xy[,1]+1 & xy[,2]>xy[,1]-1,]
 lxy <- nrow(xy)
 ##tplot(x=xy[,1], y=xy[,2], type='p')
 ##
@@ -158,24 +166,62 @@ listum <- future_apply(xy, 1, function(ab){
 dim(listum) <- c(2,2,lxy)
 
 
-utilities <- future_apply(cbind(rep(1:lxy,lo*lo), rep(1:(lo*lo),each=lxy)), 1,
+listutil <- future_apply(cbind(rep(1:lxy,lo*lo), rep(1:(lo*lo),each=lxy)), 1,
                        function(ab){
                            sum(listum[,,ab[1]] * listcm[,,ab[2]])
                        })
-dim(utilities) <- c(lxy,lo*lo)
+dim(listutil) <- c(lxy,lo*lo)
 
-reldiff <- function(x){100*diff(x)/mean(x)}
 
-diffscores <- future_sapply(1:ncol(listscores),
-                            function(metr){200*c( outer(listscores[,metr], listscores[,metr], '-') /
-                                             outer(listscores[,metr], listscores[,metr], '+'))})
+diffscores <- future_sapply(
+    1:ncol(listscores), function(i){
+        200*c( outer(listscores[,i], listscores[,i], '-')/
+               outer(listscores[,i], listscores[,i], '+') )
+    })
 colnames(diffscores) <- colnames(listscores)
+##
+diffscores2 <- future_sapply(
+    1:ncol(listab), function(i){
+        200*c( outer(listab[,i], listab[,i], '-')/
+               outer(listab[,i], listab[,i], '+') )
+    })
+colnames(diffscores2) <- colnames(listab)
 
-diffutilities <- future_sapply(1:lxy,
-                               function(i){200*c(outer(utilities[i,], utilities[i,], '-')/outer(utilities[i,], utilities[i,], '+'))})
+
+diffutilities <- future_sapply(
+    1:lxy, function(i){
+        200*c(outer(listutil[i,], listutil[i,], '-')/
+              outer(listutil[i,], listutil[i,], '+') )
+    })
 
 dsselectp <- apply(diffscores,1,function(x){all(x>0)})
-dsselectn <- apply(diffscores,1,function(x){all(x<0)})
+dsselectp2 <- sapply(1:nrow(diffscores),function(x){all(abs(diffscores[x,])>abs(diffscores2[x,'Spec']))})
+
+selectn <- future_apply(diffutilities, 2, function(x){
+    (x<0 & dsselectp & diffscores2[,'Rec']>0 & dsselectp2) 
+})
+
+dim(selectn) <- c(lo*lo,lo*lo, lxy)
+selectn <- which(selectn, arr.ind=T)
+colnames(selectn) <- c('icm1','icm2','ium')
+
+subsel <- which((listum[1,1,selectn[,'ium']]==listum[2,1,selectn[,'ium']] |
+                          listum[1,2,selectn[,'ium']]==listum[2,2,selectn[,'ium']])
+                  ##       &
+                  ##       !(listcm[1,1,selectn[,2]]==listcm[2,1,selectn[,2]] |
+                  ## listcm[1,2,selectn[,2]]==listcm[2,2,selectn[,2]]) &
+                  ##       !(listcm[1,1,selectn[,1]]==listcm[2,1,selectn[,1]] |
+                  ##         listcm[1,2,selectn[,1]]==listcm[2,2,selectn[,1]])
+                  )
+
+
+ok <- which.min(abs(diffscores2[(subsel[,2]-1)*lo^2+subsel[,1], 'Spec']))
+
+listcm[]
+
+
+
+
 select <- future_apply(diffutilities, 2, function(x){
     (x>0 & dsselectn) | (x<0 & dsselectp)
 })
