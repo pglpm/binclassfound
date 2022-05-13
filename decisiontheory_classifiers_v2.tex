@@ -1,7 +1,7 @@
 \pdfoutput=1
 %% Author: PGL  Porta Mana
 %% Created: 2022-03-04T07:39:34+0200
-%% Last-Updated: 2022-05-13T13:54:58+0200
+%% Last-Updated: 2022-05-13T15:06:04+0200
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Decision theory for machine-learning classifiers
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -687,7 +687,9 @@ Open Science Framework \doi{10.31219/osf.io/#1}%
 \newcommand*{\puzzle}{{\fontencoding{U}\fontfamily{fontawesometwo}\selectfont\symbol{225}}}
 \newcommand*{\wrench}{{\fontencoding{U}\fontfamily{fontawesomethree}\selectfont\symbol{114}}}
 \newcommand*{\pencil}{{\fontencoding{U}\fontfamily{fontawesometwo}\selectfont\symbol{210}}}
-\newcommand{\mynote}[1]{{\footnotesize\color{notecolour}#1}}
+\newcommand{\mynotew}[1]{{\footnotesize\color{notecolour}\wrench\ #1}}
+\newcommand{\mynotep}[1]{{\footnotesize\color{notecolour}\pencil\ #1}}
+\newcommand{\mynoteu}[1]{{\footnotesize\color{notecolour}\puzzle\ #1}}
 
 \newcommand*{\widebar}[1]{{\mkern1.5mu\skew{2}\overline{\mkern-1.5mu#1\mkern-1.5mu}\mkern 1.5mu}}
 
@@ -710,7 +712,7 @@ Open Science Framework \doi{10.31219/osf.io/#1}%
 \newcommand*{\zb}{\hat{1}}
 \newcommand*{\U}{\mathrm{u}}
 \newcommand*{\UU}{\mathrm{U}}
-\newcommand*{\eu}{\bar{\U}}
+\newcommand*{\eu}{\bar{U}}
 \newcommand*{\nd}{n_{\textrm{d}}}
 \newcommand*{\nc}{n_{\textrm{c}}}
 \newcommand*{\Po}{\mathord{+}}
@@ -745,7 +747,7 @@ Open Science Framework \doi{10.31219/osf.io/#1}%
 \setlength{\absrightindent}{0pt}
 \setlength{\abstitleskip}{-\absparindent}
 \begin{abstract}\labelsep 0pt%
-  \noindent \mynote{\pencil Abstract to be written}
+  \noindent \mynotep{Abstract to be written}
 % \\\noindent\emph{\footnotesize Note: Dear Reader
 %     \amp\ Peer, this manuscript is being peer-reviewed by you. Thank you.}
 % \par%\\[\jot]
@@ -900,7 +902,7 @@ Taking the sum of the products of the gains above by the respective percentages 
 
 The story above illustrates several well-known issues of current popular evaluation procedures for machine-learning classifiers:
 \begin{enumerate}%[label=(\roman*)]
-\item We are faced by an avalanche of possible evaluation metrics. Often it is not clear which is the most compelling. In the story above, one could argue that the true-negative rate was the appropriate metric, in view of the great difference in gains between correct and wrong classification for class 1, compared with that for class 0.
+\item We are faced by an avalanche of possible evaluation metrics. Often it is not clear which is the most compelling. In the story above, one could argue that the true-negative rate was the appropriate metric, in view of the great difference in gains between correct and wrong classification for class~1, compared with that for class~0.
 
   But at which point does this qualitative reasoning fail? Imagine that the net gains had been as follows instead:
 \begin{equation}
@@ -921,7 +923,7 @@ One could argue that also this case there is a great economic difference between
 
 \item A classifier favoured by the majority of available metrics can still turn out \emph{not} to be the best one in practice.
 
-\item\label{item:ad_hoc} Most popular metrics were introduced by intuitive reasoning, ad hoc mathematical operations, special assumptions (such as gaussianity\autocites[e.g.][\sect~31 p.~183 for the Matthews correlation coefficient]{fisher1925_r1963}), and analysis of special cases. \mynote{\puzzle\ Possibly add note here about absence of literature} Unfortunately such derivations do not guarantee generalization to all cases, nor that the proposed metric satisfies all basic requirements or that it is uniquely determined by them. By contrast, compare for instance the derivation of the Shannon entropy \autocites{shannon1948}[\sect~3.2]{woodward1953_r1964}[also][]{goodetal1968} as the \emph{unique} metric universally satisfying a set of general, basic requirements for the amount of information; or the derivation of the probability calculus\footnote{\cites{cox1946,fine1973}[\chaps~1--2]{jaynes1994_r2003}. Some literature cites \textcites{halpern1999} as a critique of Cox's proof, but curiously does not cite Halpern's \parencites*{halpern1999b} partial rebuttal of his own critique, as well as the rebuttals by \textcites{snow1998,snow2001}.} as the \emph{unique} set of rules satisfying general desiderata for inductive reasoning, learning, and prediction \autocites{selfetal1987,cheeseman1988}[\chap~12]{russelletal1995_r2022}.
+\item\label{item:ad_hoc} Most popular metrics were introduced by intuitive reasoning, ad hoc mathematical operations, special assumptions (such as gaussianity\autocites[e.g.][\sect~31 p.~183 for the Matthews correlation coefficient]{fisher1925_r1963}), and analysis of special cases. \mynoteu{Possibly add note here about absence of literature} Unfortunately such derivations do not guarantee generalization to all cases, nor that the proposed metric satisfies all basic requirements or that it is uniquely determined by them. By contrast, compare for instance the derivation of the Shannon entropy \autocites{shannon1948}[\sect~3.2]{woodward1953_r1964}[also][]{goodetal1968} as the \emph{unique} metric universally satisfying a set of general, basic requirements for the amount of information; or the derivation of the probability calculus\footnote{\cites{cox1946,fine1973}[\chaps~1--2]{jaynes1994_r2003}. Some literature cites \textcites{halpern1999} as a critique of Cox's proof, but curiously does not cite Halpern's \parencites*{halpern1999b} partial rebuttal of his own critique, as well as the rebuttals by \textcites{snow1998,snow2001}.} as the \emph{unique} set of rules satisfying general desiderata for inductive reasoning, learning, and prediction \autocites{selfetal1987,cheeseman1988}[\chap~12]{russelletal1995_r2022}.
   
 \item\label{item:hope_medical} Let us assume that some of the popular metrics identify the best algorithm \enquote{in the majority of cases} -- although it is difficult to statistically define such a majority, and no real surveys have ever been conducted to back up such an assumption. Yet, do we expect the end user to simply \emph{hope} not to belong to the unlucky minority? Is such uncertainty inevitable?
 
@@ -961,82 +963,28 @@ where the sum extends to all matrix elements.
 
 In the present work we argue that formula~\eqref{eq:expected_utility} is the only acceptable general metric for evaluating and comparing the performance of two or more classifiers, each with its own confusion matrix $(C_{ij})$ collected on relevant test data. The coefficients $U_{ij}$, called \emph{utilities}, are problem-dependent. This formula is the \emph{expected utility} of a classifier having confusion matrix $(C_{ij})$.
 
-Our argument is based on the fact that this formula is prescribed by \emph{Decision Theory}.
+Our argument is based on the fact that this formula is prescribed by \emph{Decision Theory}. \mynotep{\ldots} An overview of decision theory is given in \sect~\ref{sec:decision_theory}.
 
-\mynote{\pencil\ldots}
-
-The expected utility~\eqref{eq:expected_utility} is a linear combination of the confusion-matrix elements, with coefficients independent of the elements themselves. We show that some common metrics such as precision, $F_{1}$-measure, Matthews correlation coefficient, balanced accuracy, Fowlkes-Mallows index \emph{cannot} be written as a linear combination of this kind. This impossibility has two consequences for such a metric. First, it means that the metric is always affected by some kind of cognitive bias. Second, there is \emph{no} classification problem in which the metric correctly ranks the performance of all pairs of classifiers: using such a metric always leaves open the possibility that the evaluation is incorrect \emph{a priori}.
-
-On the other hand, metrics such as accuracy, true-positive rate, true-negative rate can be written in the form~\eqref{eq:expected_utility}. As a consequence, each has a set of classification problems in which it does correctly rank the performance of all pairs of classifiers.
-
-What happens if we are uncertain about the utilities appropriate to a classification problem? We show that this uncertainty still leads to a metric of the form~\eqref{eq:expected_utility}, where the coefficients $U_{ij}$ are the expected values of the possible utility matrices we are uncertain about.
-
-Finally, what happens if the utilities $U_{ij}$ in formula~\eqref{eq:expected_utility} are incorrectly specified? We show that an evaluation using incorrect utilities, even with relative errors as large as 25\%, still leads to a higher amount of correctly ranked classifiers than the use of any other popular metric.
-
-\mynote{\wrench\ Add something on AUC.}
-
-\mynote{\wrench\ Add synopsis of rest of paper.}
+The expected utility~\eqref{eq:expected_utility} is a linear combination of the confusion-matrix elements, with coefficients independent of the elements themselves. We show that some common metrics such as precision, $F_{1}$-measure, Matthews correlation coefficient, balanced accuracy, Fowlkes-Mallows index \emph{cannot} be written as a linear combination of this kind. This impossibility has two consequences for such a metric. First, it means that the metric is always affected by some kind of cognitive bias. Second, there is \emph{no} classification problem in which the metric correctly ranks the performance of all pairs of classifiers: using such a metric always leaves open the possibility that the evaluation is incorrect \emph{a priori}. On the other hand, metrics such as accuracy, true-positive rate, true-negative rate can be written in the form~\eqref{eq:expected_utility}. As a consequence each has a set of classification problems in which it does correctly rank the performance of all pairs of classifiers. We show this in \sect\mynotew{}
 
 
+What happens if we are uncertain about the utilities appropriate to a classification problem? We show in \sect\mynotew{} that this uncertainty still leads to a metric of the form~\eqref{eq:expected_utility}, where the coefficients $U_{ij}$ are the expected values of the possible utility matrices we are uncertain about.
 
+What happens if the utilities $U_{ij}$ in formula~\eqref{eq:expected_utility} are incorrectly specified? We show in \sect\mynotew{} that an evaluation using incorrect utilities, even with relative errors as large as 25\%, still leads to a higher amount of correctly ranked classifiers than the use of any other popular metric.
 
-\clearpage
+\mynotew{Add something on AUC.}
 
-\bigskip
-\mynote{\hrule
-  
-Old version below
+\mynotew{Maybe move following to final discussion} Our ultimate purpose in classification is often the choice of a specific course of action among several possible ones, rather than a simple guess of the correct class. This is especially true in medical applications. A clinician does not simply tell a patient \enquote*{you will probably not contract the disease}, but has to decide among dismissal or different kinds of preventive treatment \autocites{soxetal1988_r2013,huninketal2001_r2014}. In other words, our problem is often not \emph{to guess the probable true class}, but \emph{to make the optimal choice}. The two problems are not equivalent when classification takes place under uncertainty. For example, some test results may indicate a very low probability that a patient has a disease, or in other words that \emph{the class \enquote{healthy} is more probably true} than the class \enquote{ill}. Yet the clinician may decide to give the patient some kind of treatment, that is, to behave \emph{as if the patient belonged to the class \enquote{ill}}, on the grounds that the treatment would cure the disease if present and only cause mild discomfort if the patient is healthy, and that the disease would have dangerous consequences if present and untreated. In this example the most probable class is \enquote{healthy}, but the optimal classification is \enquote{ill}.
 
-\hrule}
+% This point of view has profound potential implications for the training of our algorithm: it means that its training targets ought to be the \emph{optimal} class labels under that particular uncertain situation, not the \emph{true} class labels. But how could such optimality be determined? -- Luckily we shall see that no such change in the training process is necessary.
+
+Most of the issues above are described in the context of binary classification, but they also affect multi-class problems. For simplicity our discussion in the present paper will focus on binary classification. In \sect\mynotew{} we shall discuss how it obviously generalizes beyond the binary case.
 
 \bigskip
 
-In comparing, evaluating, and using \ml\ classifiers we face a number of questions and issues; some are well-known, others are rarely discussed:
-
-\begin{enumerate}[label=\textbf{\textsf{i\arabic*}},ref=\textbf{\textsf{i\arabic*}},itemsep=\parsep]
-  
-\item\label{item:metrics}\textsf{\textbf{Choice of valuation metric.}}\enspace When we have to evaluate and compare different classifying algorithms or different hyperparameter values for one algorithm, we are avalanched by a choice of possible evaluation metrics: accuracy, area under curve, $F_{1}$-measure, mean square contingency \autocites[denoted \enquote{$r$} there]{yule1912} also known as Matthews correlation coefficient \autocites{matthews1975}[\sect~31 p.~183]{fisher1925_r1963}, precision, recall, sensitivity, specificity, and many others \autocites{sammutetal2011_r2017}[see also the analysis in ][]{goodmanetal1954,goodmanetal1959,goodmanetal1963,goodmanetal1972b}. Only vague guidelines are usually given to face this choice. Typically one computes several of such scores and hopes that they will lead to similar ranking.
-
-\item\label{item:rationale}\textsf{\textbf{Rationale and consistency.}}\enspace Most or all of such metrics were proposed only on intuitive grounds, from the exploration of specific problems and relying on tacit assumptions, then heedlessly applied to new problems. The Matthews correlation coefficient, for example, relies on several assumptions of gaussianity \autocites[\sect~31 p.~183 first paragraph]{fisher1925_r1963}, which for instance do not apply to skewed population distributions \autocites{jenietal2013,zhu2020}. The area under the receiver-operating-characteristic curve is heavily affected by values of false-positive and false-negative frequencies, as well as by misclassification costs, that have nothing to do with those of the specific application of the classifier \autocites{bakeretal2001,loboetal2008}. The $F_{1}$-measure implicitly gives correct classifications a weight that depends on their frequency or probability \autocites{handetal2018}; such dependence amounts to saying, for example, \enquote*{this class is rare, \emph{therefore} its correct classification leads to high gains}, which is a form of scarcity cognitive bias \autocites{camereretal1989,kimetal1999,mittoneetal2009}.
-
-  We are therefore led to ask: are there valuation metrics that can be proven, from first principles, to be free from biases and unnecessary assumptions?
-
-\item\label{item:class_imbal}\textsf{\textbf{Class imbalance.}}\enspace  If our sample data are more numerous for one class than for another -- a common predicament in medical applications -- we must face the \enquote{class-imbalance problem}: the classifier ends up classifying all data as belonging to the more numerous class \autocites{sammutetal2011_r2017,provost2000}, which may be an undesirable action if the misclassification of cases from the less numerous class entails high losses. \mynote{\wrench\ discussion and refs about cost-sensitive learning}
-  
-  
-\item\label{item:optimal_true}\textsf{\textbf{Optimality vs truth.}}\enspace  Our ultimate purpose in classification is often the choice of a specific course of action among several possible ones, rather than a simple guess of the correct class. This is especially true in medical applications. A clinician does not simply tell a patient \enquote*{you will probably not contract the disease}, but has to decide among dismissal or different kinds of preventive treatment \autocites{soxetal1988_r2013,huninketal2001_r2014}.
-
-  In other words, our problem is often not \emph{to guess the probable true class}, but \emph{to make the optimal choice}.
-
-  The two problems are not equivalent when classification takes place under uncertainty. For example, some test results may indicate a very low probability that a patient has a disease, or in other words that \emph{the class \enquote{healthy} is very probably true}. Yet the clinician may decide to give the patient some kind of treatment, that is, to behave \emph{as if the patient belonged to the class \enquote{ill}}, on the grounds that the treatment would cure the disease if present and only cause mild discomfort if the patient is healthy, and that the disease would have dangerous consequences if present and untreated. In this example the most probable class is \enquote{healthy}, but the optimal classification is \enquote{ill}.
-
-This point of view has profound potential implications for the training of our algorithm: it means that its training targets ought to be the \emph{optimal} class labels under that particular uncertain situation, not the \emph{true} class labels. But how could such optimality be determined? -- Luckily we shall see that no such change in the training process is necessary.
-
-\end{enumerate}
 
 
-\medskip
-
-All the issues above are manifestly connected: they involve considerations of importance, gain, loss, and of uncertainty.
-
-In the present work we show how issues~\ref{item:metrics}--\ref{item:optimal_true} are all solved at once by using the principles of \emph{Decision Theory}. Decision theory gives a logically and mathematically self-consistent procedure to catalogue all possible valuation metrics, to make optimal choices under uncertainty, and to evaluate and compare the performance of several decision algorithms. Most important, we show that implementing decision-theoretic procedures in a \ml\ classifier does not require any changes in current training practices \mynote{(\puzzle\ possibly it may even make procedures like under- or over-sampling unnecessary!)}, is computationally inexpensive, and takes place downstream after the output of the classifier.
-
-The use of decision theory requires sensible probabilities for the possible classes, which brings us to issue~\ref{item:no_probs} above. In the present work we also present and use a computationally inexpensive way of calculating these probabilities from the ordinary output of a \ml\ classifier, both for classifiers such as \mynote{\puzzle\ example here} that can only output a class label, and for classifiers that can output some sort of continuous score.
-
-\mynote{\wrench\ Write here a summary or outlook of the rest of the paper and a summary of results:  
-\begin{itemize*}
-\item The admissible valuation metrics for a binary
-  classifier form a two-dimensional family; that is, the choice of a specific
-  metric corresponds to the choice of two numbers. Such choice is
-  problem-dependent and cannot be given a priori.
-\item Admissible metrics are only those that can be
-  expressed as a linear function of the elements of the
-  population-normalized confusion matrix. Metrics such as the
-  $F_{1}$-measure or the Matthews correlation coefficient are therefore inadmissible
-\end{itemize*}
-}
-
-
+\mynotew{Add synopsis of rest of paper.}
 
 \section{Brief overview of decision theory}
 \label{sec:decision_theory}
@@ -1044,7 +992,7 @@ The use of decision theory requires sensible probabilities for the possible clas
 \subsection{References}
 \label{sec:dt_refs}
 
-Here we give a brief overview of decision theory. We only focus on the notions relevant to the applications to be discussed later, and simply state the rules of the theory. These rules are quite intuitive, but it must be remarked that they are constructed in order to be logically and mathematically self-consistent: see the following references. For a presentation of decision theory from the point of view of artificial intelligence and machine learning see \textcite[\chap~15]{russelletal1995_r2022}. Simple introductions are given by \textcite{jeffrey1965,north1968,raiffa1968_r1970}, and a discussion of its foundations and history by \textcite{steeleetal2015_r2020}. For more thorough expositions see \textcite{raiffaetal1961_r2000,berger1980_r1985,savage1954_r1972}; and \textcite{soxetal1988_r2013,huninketal2001_r2014} for a medical perspective.
+Here we give a brief overview of decision theory. We only focus on the notions relevant to the problem of evaluating classifiers, and simply state the rules of the theory. These rules are quite intuitive, but it must be remarked that they are constructed in order to be logically and mathematically self-consistent: see the following references. For a presentation of decision theory from the point of view of artificial intelligence and machine learning see \textcite[\chap~15]{russelletal1995_r2022}. Simple introductions are given by \textcite{jeffrey1965,north1968,raiffa1968_r1970}, and a discussion of its foundations and history by \textcite{steeleetal2015_r2020}. For more thorough expositions see \textcite{raiffaetal1961_r2000,berger1980_r1985,savage1954_r1972}; and \textcite{soxetal1988_r2013,huninketal2001_r2014} for a medical perspective.
 
 \subsection{Decisions and classes}
 \label{sec:dt_dec_classes}
@@ -1054,52 +1002,58 @@ Decision theory makes a distinction between
 \item the possible situations we are uncertain about, in our case the possible classes;
 \item the possible decisions we can make.
 \end{itemize}
-This distinction is important, as argued under issue~\ref{item:optimal_true}; in some cases even the number of classes and the number of decisions differ. This distinction prevents the appearance of various cognitive biases \autocites{kahnemanetal1982_r2008,gilovichetal2002_r2009,kahneman2011}, for example the scarcity bias mentioned in \ref{item:rationale}, or plain wishful thinking: \enquote*{this event is valuable, \emph{therefore} it is more probable}.
+This distinction is important, as briefly argued at the end of \sect~\ref{sec:issues}; in some cases even the number of classes and the number of decisions differ. This distinction prevents the appearance of various cognitive biases \autocites{kahnemanetal1982_r2008,gilovichetal2002_r2009,kahneman2011}, for example the scarcity bias mentioned in \ref{item:rationale}, or plain wishful thinking: \enquote*{this event is valuable, \emph{therefore} it is more probable}.
+
+In using \ml\ classifiers one typically considers situations where the set of available decisions and the set of possible classes have some kind of natural correspondence and equal cardinality. In a \enquote{cat vs dog} image classification, for example, the classes are \enquote{cat} and \enquote{dog}, and the decisions could be \enquote{put into folder Cats} vs \enquote{put into folder Dogs}. In a medical application the classes could be \enquote{ill} and \enquote{healthy} and the decisions \enquote{treat} vs \enquote{dismiss}. As already mentioned, for simplicity our discussion and examples focus on binary classification.
+
 
 \subsection{Utilities and maximization of expected utility}
 \label{sec:dt_utilities}
 
-To each decision we associate several \emph{utilities}, depending on which of the possible classes is actually true. The utility may for instance equal a gain or loss in money, energy, life expectancy, or number of customers, measured in appropriate units; or a in combination of such quantities.
+To each decision we associate several \emph{utilities}, depending on which of the possible classes is actually true. The utility may for instance equal a gain or loss in money, energy, number of customers, life expectancy, or quality of life, measured in appropriate units; or a in combination of such quantities. (Note that the utility of money is usually not equal to the amount of money, the relationship between the two being somewhat logarithmic \autocites[\eg][pp.~203--204]{north1968}[\chap~4]{raiffa1968_r1970}.)
 
-As an example, imagine we are offered to buy a lottery ticket, which may be winning or not. The ticket costs $1$ unit of some monetary currency, and the lottery prize is $11$ units. Our available decisions are whether to buy the ticket or not. We have four utilities, representing the total change in our money after the lottery, displayed in this self-explanatory table:
-\begin{center}
-  \begin{tabular}{rcc}
-    &\texttt{\small win}&
-    \texttt{\small lose}
-    % \parbox[b]{\widthof{winning}}{\centering\small\texttt{not\\winning}}
-    \\[0.5\jot]
-    \texttt{\small buy}&$+10$&$-1$\\
-    \texttt{\small not-buy}&$0$&$0$
-  \end{tabular}
-\end{center}
+These utilities can be collected into a \emph{utility matrix} $(U_{ij})$ as shown in formulae~\eqref{eq:utility_example}, \eqref{eq:utility_example_2}, \eqref{eq:utility_example_medicine}.
+% As an example, imagine we are offered to buy a lottery ticket, which may be winning or not. The ticket costs $1$ unit of some monetary currency or goods, and the lottery prize is $11$ units. Our available decisions are whether to buy the ticket or not. We have four utilities, representing the total change in our money after the lottery, displayed in this self-explanatory table:
+% \begin{center}
+%   \begin{tabular}{rcc}
+%     &\texttt{\small win}&
+%     \texttt{\small lose}
+%     % \parbox[b]{\widthof{winning}}{\centering\small\texttt{not\\winning}}
+%     \\[0.5\jot]
+%     \texttt{\small buy}&$+10$&$-1$\\
+%     \texttt{\small not-buy}&$0$&$0$
+%   \end{tabular}
+% \end{center}
+The component $U_{ij}$ is the utility of the decision corresponding to class $i$ if class $j$ is true, or briefly the utility of class $i$ given class $j$.
+% One utility from the lottery example is $\U(\texttt{\small buy} \| \texttt{\small lose}) = -1$. If we have $\nd$ available decisions and $\nc$ possible classes, the utilities can be collected in a \emph{utility matrix} $\mathte{U} \equiv (U_{dc})$ having $\nd$ rows and $\nc$ columns. The utility matrix for the lottery is
+% \begin{equation}
+%   \label{eq:utmatr_lottery}
+%   \mathte{U} =
+%   \begin{pmatrix}
+%     +10 & -1 \\ 0 & 0
+%   \end{pmatrix} \ .
+% \end{equation}
 
-We denote $\U(d\|c)$ the utility of decision $d$ if class $c$ is true, or  \enquote{the utility of $d$ given $c$}, or \enquote{the utility of $d$ conditional on $c$}. One utility from the lottery example is $\U(\texttt{\small buy} \| \texttt{\small lose}) = -1$. If we have $\nd$ available decisions and $\nc$ possible classes, the utilities can be collected in a \emph{utility matrix} $\mathte{U} \equiv (U_{dc})$ having $\nd$ rows and $\nc$ columns. The utility matrix for the lottery is
-\begin{equation}
-  \label{eq:utmatr_lottery}
-  \mathte{U} =
-  \begin{pmatrix}
-    +10 & -1 \\ 0 & 0
-  \end{pmatrix} \ .
-\end{equation}
-
-If we know which class is true, the optimal decision is the one having maximal utility among those conditional on the true class. If we are uncertain about which class is true, decision theory states that the optimal decision is the one having maximal \emph{expected} utility, denoted $\eu(d)$ and defined as the expected value of the utility of decision $d$ with respect to the probabilities of the various classes. For binary classification
+In an individual classification instance, if we know which class is true then the optimal decision is the one having maximal utility among those conditional on the true class. If we are uncertain about which class is true, with probability $p_{j}$ for class $j$ such that $\sum_{j}p_{j}=1$, then decision theory states that the optimal decision is the one having maximal \emph{expected} utility $\eu_{i}$, defined as the expected value of the utility of decision $i$ with respect to the probabilities of the various classes:
 \begin{equation}
   \label{eq:exp_utility}
-  \eu(d) \defd \U(d \| c_{1})\ \p(c_{1}) + \U(d \| c_{2})\ \p(c_{2})
+  \eu_{i} \defd \sum_{j} U_{ij}\ p_{j} \ .
 \end{equation}
-where $\p(c_{1})$ and $\p(c_{2}) \equiv 1 - \p(c_{1})$ are the probabilities of classes $c_{1}$ and $c_{2}$. The $\nd$ expected utilities are therefore given by the matrix product of the utility matrix times the column matrix of probabilities.
+% where $\p(c_{1})$ and $\p(c_{2}) \equiv 1 - \p(c_{1})$ are the probabilities of classes $c_{1}$ and $c_{2}$. The $\nd$ expected utilities are therefore given by the matrix product of the utility matrix times the column matrix of probabilities.
 
-For instance, if the ticket above has a 20\% probability of winning and 80\% of losing, that is $\p(\texttt{\small win}) = 0.2$ and $\p(\texttt{\small lose}) = 0.8$, then our two decisions have expected utilities
-\begin{equation}
-  \label{eq:exp_utilities_lottery}
-  \begin{aligned}
-    \eu(\texttt{\small buy}) &= +10\cdot 0.2 - 1\cdot 0.8 = +1.2 \ ,\\
-    \eu(\texttt{\small not-buy}) &= 0\cdot 0.2 + 0\cdot 0.8 = 0 \ .
-  \end{aligned}
-\end{equation}
-The optimal choice is to buy the ticket, that is, to classify the ticket \emph{as if} it belonged to class \texttt{win}, even if it most probably belongs to class \texttt{lose}. (Note that the utility of money is usually not equal to the amount of money, the relationship between the two being somewhat logarithmic \autocites[\eg][pp.~203--204]{north1968}[\chap~4]{raiffa1968_r1970}.)
+% For instance, if the ticket above has a 20\% probability of winning and 80\% of losing, that is $\p(\texttt{\small win}) = 0.2$ and $\p(\texttt{\small lose}) = 0.8$, then our two decisions have expected utilities
+% \begin{equation}
+%   \label{eq:exp_utilities_lottery}
+%   \begin{aligned}
+%     \eu(\texttt{\small buy}) &= +10\cdot 0.2 - 1\cdot 0.8 = +1.2 \ ,\\
+%     \eu(\texttt{\small not-buy}) &= 0\cdot 0.2 + 0\cdot 0.8 = 0 \ .
+%   \end{aligned}
+% \end{equation}
+% The optimal choice is to buy the ticket, that is, to classify the ticket \emph{as if} it belonged to class \texttt{win}, even if it most probably belongs to class \texttt{lose}.
 
-\mynote{\wrench\ Add note about how (sequential) decision theory was used during World War I; see  \textcites{good1950} around \sect~6.2 }
+\mynotew{Explain that in this paper we focus on the stage at which all decisions have been made\ldots}
+
+\mynotew{Add note about how (sequential) decision theory was used during World War I; see  \textcites{good1950} around \sect~6.2 }
 
 \subsection{Space of utility matrices}
 \label{sec:dt_space_util}
@@ -1173,12 +1127,65 @@ It may not be amiss to emphasize that the \emph{proportions $N_{c}$ of classes i
 
 The summary of decision theory just given suffices to address issues~\ref{item:metrics}--\ref{item:optimal_true}.
 
+
+\clearpage
+
+\bigskip
+\mynotew{\hrule
+  
+Old version below
+
+\hrule}
+
+\bigskip
+
+In comparing, evaluating, and using \ml\ classifiers we face a number of questions and issues; some are well-known, others are rarely discussed:
+
+\begin{enumerate}[label=\textbf{\textsf{i\arabic*}},ref=\textbf{\textsf{i\arabic*}},itemsep=\parsep]
+  
+\item\label{item:metrics}\textsf{\textbf{Choice of valuation metric.}}\enspace When we have to evaluate and compare different classifying algorithms or different hyperparameter values for one algorithm, we are avalanched by a choice of possible evaluation metrics: accuracy, area under curve, $F_{1}$-measure, mean square contingency \autocites[denoted \enquote{$r$} there]{yule1912} also known as Matthews correlation coefficient \autocites{matthews1975}[\sect~31 p.~183]{fisher1925_r1963}, precision, recall, sensitivity, specificity, and many others \autocites{sammutetal2011_r2017}[see also the analysis in ][]{goodmanetal1954,goodmanetal1959,goodmanetal1963,goodmanetal1972b}. Only vague guidelines are usually given to face this choice. Typically one computes several of such scores and hopes that they will lead to similar ranking.
+
+\item\label{item:rationale}\textsf{\textbf{Rationale and consistency.}}\enspace Most or all of such metrics were proposed only on intuitive grounds, from the exploration of specific problems and relying on tacit assumptions, then heedlessly applied to new problems. The Matthews correlation coefficient, for example, relies on several assumptions of gaussianity \autocites[\sect~31 p.~183 first paragraph]{fisher1925_r1963}, which for instance do not apply to skewed population distributions \autocites{jenietal2013,zhu2020}. The area under the receiver-operating-characteristic curve is heavily affected by values of false-positive and false-negative frequencies, as well as by misclassification costs, that have nothing to do with those of the specific application of the classifier \autocites{bakeretal2001,loboetal2008}. The $F_{1}$-measure implicitly gives correct classifications a weight that depends on their frequency or probability \autocites{handetal2018}; such dependence amounts to saying, for example, \enquote*{this class is rare, \emph{therefore} its correct classification leads to high gains}, which is a form of scarcity cognitive bias \autocites{camereretal1989,kimetal1999,mittoneetal2009}.
+
+  We are therefore led to ask: are there valuation metrics that can be proven, from first principles, to be free from biases and unnecessary assumptions?
+
+\item\label{item:class_imbal}\textsf{\textbf{Class imbalance.}}\enspace  If our sample data are more numerous for one class than for another -- a common predicament in medical applications -- we must face the \enquote{class-imbalance problem}: the classifier ends up classifying all data as belonging to the more numerous class \autocites{sammutetal2011_r2017,provost2000}, which may be an undesirable action if the misclassification of cases from the less numerous class entails high losses. \mynotew{discussion and refs about cost-sensitive learning}
+  
+  
+\item\label{item:optimal_true}\textsf{\textbf{Optimality vs truth.}}\enspace  
+\end{enumerate}
+
+
+\medskip
+
+All the issues above are manifestly connected: they involve considerations of importance, gain, loss, and of uncertainty.
+
+In the present work we show how issues~\ref{item:metrics}--\ref{item:optimal_true} are all solved at once by using the principles of \emph{Decision Theory}. Decision theory gives a logically and mathematically self-consistent procedure to catalogue all possible valuation metrics, to make optimal choices under uncertainty, and to evaluate and compare the performance of several decision algorithms. Most important, we show that implementing decision-theoretic procedures in a \ml\ classifier does not require any changes in current training practices \mynoteu{(possibly it may even make procedures like under- or over-sampling unnecessary!)}, is computationally inexpensive, and takes place downstream after the output of the classifier.
+
+The use of decision theory requires sensible probabilities for the possible classes, which brings us to issue~\ref{item:no_probs} above. In the present work we also present and use a computationally inexpensive way of calculating these probabilities from the ordinary output of a \ml\ classifier, both for classifiers such as \mynoteu{example here} that can only output a class label, and for classifiers that can output some sort of continuous score.
+
+\mynotew{Write here a summary or outlook of the rest of the paper and a summary of results:  
+\begin{itemize*}
+\item The admissible valuation metrics for a binary
+  classifier form a two-dimensional family; that is, the choice of a specific
+  metric corresponds to the choice of two numbers. Such choice is
+  problem-dependent and cannot be given a priori.
+\item Admissible metrics are only those that can be
+  expressed as a linear function of the elements of the
+  population-normalized confusion matrix. Metrics such as the
+  $F_{1}$-measure or the Matthews correlation coefficient are therefore inadmissible
+\end{itemize*}
+}
+
+
+
+
 \section{Classification from the point of view of decision theory}
 \label{sec:classification_decision}
 
 In using \ml\ classifiers one typically considers situations where the set of available decisions and the set of possible classes have some kind of natural correspondence and equal in number. In a \enquote{cat vs dog} image classification, for example, the classes are \enquote{cat} and \enquote{dog}, and the decisions could be \enquote{put into folder Cats} vs \enquote{put into folder Dogs}. In a medical application the classes could be \enquote{ill} and \enquote{healthy} and the decisions \enquote{treat} vs \enquote{dismiss}. In the following when we speak of \enquote{classification} we mean a \emph{decision} problem of this kind. The number of decisions thus equals that of classes: $\nd=\nc$.
 
-\mynote{\puzzle\ For simplicity we will focus on binary classification, $\nd=\nc=2$, but the discussion generalizes to multi-class problems in an obvious way.}
+\mynoteu{For simplicity we will focus on binary classification, $\nd=\nc=2$, but the discussion generalizes to multi-class problems in an obvious way.}
 
 
 \subsection{Choice of valuation metric, rationale and consistency (issues~\ref{item:metrics}, \ref{item:rationale})}
@@ -1243,7 +1250,7 @@ for particular values of the coefficients $x_{\tp}, x_{\fp}, x_{\fn}, x_{\tn}$ a
 \end{itemize}
 
 We see that many popular validation metrics, those marked by \enquote{\itemno} above, do not comply with decision theory. Their formulae involve an interdependence of utilities and probabilities which hides some forms of cognitive biases.
-\mynote{\wrench\ Very important: we should preferably add an example to illustrate this.}
+\mynotew{Very important: we should preferably add an example to illustrate this.}
 
 
 
@@ -1304,7 +1311,7 @@ We see that many popular validation metrics, those marked by \enquote{\itemno} a
 
 % \item[\itemno] \emph{Matthews correlation coefficient:} $\frac{N_{\Ne}\, M_{\tp} - N_{\Po}\, M_{\fp}}{\sqrt{(M_{\tp}+M_{\fp})(N-M_{\tp}-M_{\fp})N_{\Po}N_{\Ne}}}$. It cannot be written as a linear expression in $M_{\tp},M_{\fp}$.
 % \end{itemize}
-% \mynote{\puzzle\ It seems most or all commonly used metrics, except accuracy, do not comply with decision theory!}
+% \mynoteu{It seems most or all commonly used metrics, except accuracy, do not comply with decision theory!}
 
 
 
@@ -1330,7 +1337,7 @@ As discussed in \sect~\ref{sec:intro}, issue~\ref{item:optimal_true}, this means
 
 How can we amend current practice for this kind of classifiers, so that they look for optimality rather than truth?
 
-A first idea could be to simply modify the standard output step~\eqref{eq:argmax_probable} into~\eqref{eq:argmax_decision}. It is an easily implementable and computationally cheap modification: we just multiply the probability tuple by a matrix. Such simple modification, however, has a profound implication for the training procedure: we are modifying the algorithm to output the optimal class, and therefore it should also \emph{learn what is optimal}, not what is true: \emph{the targets in the training and validation phases should be the optimal classes, not the true classes}. But optimality depends on the value of sensible probabilities for the specific situation of uncertainty, in this case conditional on the input features. Determining the optimal classes would thus require a probabilistic analysis that is computationally unfeasible at present for problems that involve very high-dimensional spaces, such as image classification -- if an exact probabilistic analysis were possible we would not be developing \ml\ classifiers in the first place \autocites[\chaps~2, 12]{russelletal1995_r2022}{pearl1988}. \mynote{\puzzle~Maybe useful to add a reminder that probability theory is the \emph{learning} theory par excellence (even if there's no \enquote{learning} in its name)? Its rules are all about making logical updates given new data.}
+A first idea could be to simply modify the standard output step~\eqref{eq:argmax_probable} into~\eqref{eq:argmax_decision}. It is an easily implementable and computationally cheap modification: we just multiply the probability tuple by a matrix. Such simple modification, however, has a profound implication for the training procedure: we are modifying the algorithm to output the optimal class, and therefore it should also \emph{learn what is optimal}, not what is true: \emph{the targets in the training and validation phases should be the optimal classes, not the true classes}. But optimality depends on the value of sensible probabilities for the specific situation of uncertainty, in this case conditional on the input features. Determining the optimal classes would thus require a probabilistic analysis that is computationally unfeasible at present for problems that involve very high-dimensional spaces, such as image classification -- if an exact probabilistic analysis were possible we would not be developing \ml\ classifiers in the first place \autocites[\chaps~2, 12]{russelletal1995_r2022}{pearl1988}. \mynoteu{Maybe useful to add a reminder that probability theory is the \emph{learning} theory par excellence (even if there's no \enquote{learning} in its name)? Its rules are all about making logical updates given new data.}
 
 
 
@@ -1445,7 +1452,7 @@ If $Z$ can assume a continuum of values, as is the case for a brain scan for exa
 
 
 
-\mynote{\medskip\hrule old text below}
+\mynotew{\medskip\hrule old text below}
 
 Given the unit's feature $Z$ we will assign probabilities to the possible values of the unit's class:  according to the rules of the probability calculus.
 
@@ -1582,7 +1589,7 @@ In supervised learning the classifier is trained to learn the most probable $f(X
 %%% Cut text (won't be compiled)
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 
 
-\mynote{\scriptsize\puzzle\ [Luca] I find it very difficult to structure the paper: there seems to be issues at several levels in the development and use of binary classifiers (and classifiers in general) within machine-learning.
+\mynoteu{[Luca] I find it very difficult to structure the paper: there seems to be issues at several levels in the development and use of binary classifiers (and classifiers in general) within machine-learning.
 
   Here are some relevant points:
   \begin{itemize}
@@ -1615,7 +1622,7 @@ probabilities.
 }
 
 
-\mynote{[\puzzle\ maybe the following discussion is unnecessary:]
+\mynoteu{[maybe the following discussion is unnecessary:]
   
 Several conventions can be used to fix the two redundant degrees of freedom. We can choose them in such a way that the smallest utility is 0 and the largest is 1; this is achieved by subtracting the value of the smallest utility from all elements of the utility matrix and then dividing them by the value of the largest minus the smallest; in symbols
 \begin{equation}
