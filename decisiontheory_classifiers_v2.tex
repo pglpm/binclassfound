@@ -1,7 +1,7 @@
 \pdfoutput=1
 %% Author: PGL  Porta Mana
 %% Created: 2022-03-04T07:39:34+0200
-%% Last-Updated: 2022-05-12T22:38:08+0200
+%% Last-Updated: 2022-05-13T13:44:42+0200
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Decision theory for machine-learning classifiers
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -687,7 +687,7 @@ Open Science Framework \doi{10.31219/osf.io/#1}%
 \newcommand*{\puzzle}{{\fontencoding{U}\fontfamily{fontawesometwo}\selectfont\symbol{225}}}
 \newcommand*{\wrench}{{\fontencoding{U}\fontfamily{fontawesomethree}\selectfont\symbol{114}}}
 \newcommand*{\pencil}{{\fontencoding{U}\fontfamily{fontawesometwo}\selectfont\symbol{210}}}
-\newcommand{\mynote}[1]{ {\color{notecolour}#1}}
+\newcommand{\mynote}[1]{{\footnotesize\color{notecolour}#1}}
 
 \newcommand*{\widebar}[1]{{\mkern1.5mu\skew{2}\overline{\mkern-1.5mu#1\mkern-1.5mu}\mkern 1.5mu}}
 
@@ -779,7 +779,7 @@ Open Science Framework \doi{10.31219/osf.io/#1}%
 
 \setcounter{section}{-1}
 
-\section{An introductory story}
+\section{Prologue: a short story}
 \label{sec:intro}
 
 % \begin{center}
@@ -822,7 +822,7 @@ and normalized over the total number of evaluation data:
 \end{align}
 These matrices show that the factory produces on average 50\% short- and 50\% long-durability components.
 
-The confusion matrices above lead to the following values of common evaluation metrics for the two classifiers; blue bold indicates the classifier favoured by the metric, red the disfavoured:
+The confusion matrices above lead to the following values of common evaluation metrics\autocites[Balanced accuracy:][]{brodersenetal2010}[$F_{1}$ measure:][]{vanrijsbergen1974}[Matthews correlation coefficient:][]{matthews1975}[Fowlkes-Mallows index:][]{fowlkesetal1983} for the two classifiers; blue bold indicates the classifier favoured by the metric, red the disfavoured:
   %    F1    MCC   Prec    Acc BalAcc    Kri    AUC    Rec   Spec 
   % 0.59   0.24   0.64   0.62   0.62   0.62   0.62   0.54   0.70
   % 0.77   0.51   0.70   0.75   0.75   0.75   0.75   0.86   0.64
@@ -833,14 +833,15 @@ The confusion matrices above lead to the following values of common evaluation m
     \hline
     Accuracy (also balanced accuracy) & \bad{0.62} & \good{0.75} \\
     Precision & \bad{0.64} & \good{0.70} \\
-    F1 measure & \bad{0.59} & \good{0.77} \\
+    $F_{1}$ measure & \bad{0.59} & \good{0.77} \\
     Matthews correlation coefficient & \bad{0.24} & \good{0.51} \\
+    Fowlkes-Mallows index & \bad{0.59} & \good{0.78} \\
 %    Balanced accuracy & \bad{0.62} & \good{0.75} \\
     True-positive rate (recall) & \good{0.54} & \bad{0.86} \\
     True-negative rate (specificity) & \bad{0.70} & \good{0.64}
   \end{tabular}
 \end{table}\FloatBlock
-The majority of these metrics favours classifier $\Beta$, some of them by quite a wide margin. Only the true-negative rate favours classifier $\Alpha$, but only by a relative difference of 9\%. % Indeed classifier $\Beta$ classifies well the short-durability components, and neither classifier is especially good at classifying the short-durability ones.
+The majority of these metrics favours classifier $\Beta$, some of them by quite a wide relative difference. Only the true-negative rate favours classifier $\Alpha$, but only by a relative difference of 9\%. % Indeed classifier $\Beta$ classifies well the short-durability components, and neither classifier is especially good at classifying the short-durability ones.
 
 The developers of the classifiers therefore recommend the employment of classifier $\Beta$.
 
@@ -898,7 +899,7 @@ Taking the sum of the products of the gains above by the respective percentages 
 
 
 The story above illustrates several well-known issues of current popular evaluation procedures for machine-learning classifiers:
-\begin{enumerate}[label=(\arabic*)]
+\begin{enumerate}[label=(\roman*)]
 \item We are faced by an avalanche of possible evaluation metrics. Often it is not clear which is the most compelling. In the story above, one could argue that the true-negative rate was the appropriate metric, in view of the great difference in gains between correct and wrong classification for class 1, compared with that for class 0.
 
   But at which point does this qualitative reasoning fail? Imagine that the net gains had been as follows instead:
@@ -920,11 +921,11 @@ One could argue that also this case there is a great economic difference between
 
 \item A classifier favoured by the majority of available metrics can still turn out \emph{not} to be the best one in practice.
 
-\item Most popular metrics were introduced by intuitive reasoning, ad hoc mathematical operations, special assumptions (such as gaussianity), and analysis of special cases \autocites[e.g.][around p.~371 for the $F_{1}$-measure]{rijsbergen1974}{matthews1975}[\sect~31 p.~183 for the Matthews correlation coefficient]{fisher1925_r1963}. Unfortunately such derivations do not guarantee generalization to all cases, nor that the derived metric satisfies all basic requirements or that it is uniquely determined by them. By contrast, compare for instance the derivation of the Shannon entropy \autocites{shannon1948}[\sect~3.2]{woodward1953_r1964}[also][]{goodetal1968} as the \emph{unique} metric universally satisfying a set of general, basic requirements for the amount of information; or the derivation of the probability calculus\footnote{\cites{cox1946,fine1973}[\chaps~1--2]{jaynes1994_r2003}. Some literature cites \textcites{halpern1999} as a critique of Cox's proof, but curiously does not cite Halpern's \parencites*{halpern1999b} partial rebuttal of his own critique, as well as the rebuttals by \textcites{snow1998,snow2001}.} as the \emph{unique} set of rules satisfying general desiderata for inductive reasoning, learning, and prediction \autocites{selfetal1987,cheeseman1988}[\chap~12]{russelletal1995_r2022}.
+\item\label{item:ad_hoc} Most popular metrics were introduced by intuitive reasoning, ad hoc mathematical operations, special assumptions (such as gaussianity\autocites[e.g.][\sect~31 p.~183 for the Matthews correlation coefficient]{fisher1925_r1963}), and analysis of special cases. \mynote{\puzzle\ Possibly add note here about absence of literature} Unfortunately such derivations do not guarantee generalization to all cases, nor that the proposed metric satisfies all basic requirements or that it is uniquely determined by them. By contrast, compare for instance the derivation of the Shannon entropy \autocites{shannon1948}[\sect~3.2]{woodward1953_r1964}[also][]{goodetal1968} as the \emph{unique} metric universally satisfying a set of general, basic requirements for the amount of information; or the derivation of the probability calculus\footnote{\cites{cox1946,fine1973}[\chaps~1--2]{jaynes1994_r2003}. Some literature cites \textcites{halpern1999} as a critique of Cox's proof, but curiously does not cite Halpern's \parencites*{halpern1999b} partial rebuttal of his own critique, as well as the rebuttals by \textcites{snow1998,snow2001}.} as the \emph{unique} set of rules satisfying general desiderata for inductive reasoning, learning, and prediction \autocites{selfetal1987,cheeseman1988}[\chap~12]{russelletal1995_r2022}.
   
-\item Let us assume that some of the popular metrics identify the best algorithm \enquote{in the majority of cases} -- although it is difficult to statistically define such a majority, and no real general statistics have ever been collected to back up such an assumption. Yet, do we expect the end user to simply \emph{hope} not to belong to the unlucky minority? Is such uncertainty inevitable?
+\item\label{item:hope_medical} Let us assume that some of the popular metrics identify the best algorithm \enquote{in the majority of cases} -- although it is difficult to statistically define such a majority, and no real surveys have ever been conducted to back up such an assumption. Yet, do we expect the end user to simply \emph{hope} not to belong to the unlucky minority? Is such uncertainty inevitable?
 
-  We cannot have a cavalier attitude towards this problem: life and death can depend on it. Imagine a story analogous to the factory one, but in a medical setting instead. The classifiers should distinguish between two tumour types, requiring two different types of medical intervention. The confusion matrices are the same~\eqref{eq:CM_A} and \eqref{eq:CM_B}. Correct or incorrect classification in this case leads to the following expected remaining life lengths for patients in a specific age range:
+  We cannot have a cavalier attitude towards this problem: life and death can depend on it in some machine-learning applications. Imagine a story analogous to the factory one, but in a medical setting instead. The classifiers should distinguish between two tumour types, requiring two different types of medical intervention. The confusion matrices are the same~\eqref{eq:CM_A} and \eqref{eq:CM_B}. Correct or incorrect classification in this case leads to the following expected remaining life lengths for patients in a specific age range:
 \begin{equation}
   \label{eq:utility_example_medicine}
   \rotatebox[origin=c]{90}{
@@ -949,9 +950,32 @@ This matrix is numerically equivalent to~\eqref{eq:utility_example} up to a comm
 
 \bigskip
 
-But our story also points to a possible solution of all these problems.
+But our story also points to a possible solution of all these issues. The \enquote{metric} that ultimately proved to be relevant to the manager was the average net monetary gain obtained by using a classifier. In the medical variation discussed in issue~\ref{item:hope_medical} above it was the average life expectancy.  In either case this \enquote{metric} could have been easily calculated beforehand upon gathering information about the average gains and losses of correct and incorrect classification, collected in the matrix~\eqref{eq:utility_example} or~\eqref{eq:utility_example_medicine}, and combining these with statistics collected in the confusion matrix associated with the classifier. Denoting the former kind matrix by $(U_{ij})$ and the confusion matrix by $(C_{ij})$, this \enquote{metric} would be
+\begin{equation}
+  \label{eq:expected_utility}
+  \sum_{i,j}^{2} U_{ij}\ C_{ij} 
+\end{equation}
+where the sum extends to all matrix elements.
 
-The \enquote{metric} that was ultimately relevant to the manager was the average net gain obtained by using one classifier or the other. It could have been easily calculated beforehand upon gathering information about the average gains and losses of correct and incorrect classification, collected in the matrix~\eqref{eq:utility_example}. This procedure turns out to be the one prescribed by \emph{Rational Decision Theory}.
+\medskip
+
+In the present work we argue that formula~\eqref{eq:expected_utility} is the only acceptable general metric to evaluate and compare the performance of two or more classifiers, each with its own confusion matrix $(C_{ij})$ collected on relevant test data. The coefficients $U_{ij}$, called \emph{utilities}, are problem-dependent. This formula is the \emph{expected utility} of a classifier having confusion matrix $(C_{ij})$.
+
+Our argument is based on the fact that this formula is prescribed by \emph{Decision Theory}.
+
+\mynote{\pencil\ldots}
+
+The expected utility~\eqref{eq:expected_utility} is a linear combination of the confusion-matrix elements, with coefficients independent of the elements themselves. We show that some common metrics such as precision, $F_{1}$-measure, Matthews correlation coefficient, balanced accuracy, Fowlkes-Mallows index \emph{cannot} be written as a linear combination of this kind. This impossibility has two consequences for such a metric. First, it means that the metric is always affected by some kind of cognitive bias. Second, there is \emph{no} classification problem in which the metric correctly ranks the performance of all pairs of classifiers: using such a metric always leaves open the possibility that the evaluation is incorrect \emph{a priori}.
+
+On the other hand, metrics such as accuracy, true-positive rate, true-negative rate can be written in the form~\eqref{eq:expected_utility}. As a consequence, each has a set of classification problems in which it does correctly rank the performance of all pairs of classifiers.
+
+What happens if we are uncertain about the utilities appropriate to a classification problem? We show that this uncertainty still leads to a metric of the form~\eqref{eq:expected_utility}, where the coefficients $U_{ij}$ are the expected values of the possible utility matrices we are uncertain about.
+
+Finally, what happens if the utilities $U_{ij}$ in formula~\eqref{eq:expected_utility} are incorrectly specified? We show that an evaluation using incorrect utilities, even with relative errors as large as 25\%, still leads to a higher amount of correctly ranked classifiers than the use of any other popular metric.
+
+\mynote{\wrench\ Add something on AUC.}
+
+\mynote{\wrench\ Add synopsis of rest of paper.}
 
 
 

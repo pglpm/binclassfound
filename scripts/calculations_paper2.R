@@ -1,6 +1,6 @@
 ## Author: PGL  Porta Mana
 ## Created: 2022-05-01T09:38:48+0200
-## Last-Updated: 2022-05-12T13:04:23+0200
+## Last-Updated: 2022-05-13T10:34:29+0200
 ################
 ## Calculations for the papers
 ################
@@ -111,6 +111,10 @@ auc <- function(p,a,b){
     a/2 + b/2
 }
 ##
+foma <- function(p,a,b){
+    sqrt(prec(p,a,b) * a)
+}
+##
 kri <- function(p,a,b){
     raccu <- ((p*a+(1-p)*(1-b) + p)/2)^2 + (((1-p)*b+p*(1-a) + (1-p))/2)^2
     ((acc(p,a,b) + 1)/2 - raccu)/(1-raccu)
@@ -125,10 +129,11 @@ allscores <- function(p,ab){
       acc(pp,ab[1],ab[2]),
       bacc(pp,ab[1],ab[2]),
       kri(pp,ab[1],ab[2]),
+      foma(pp,ab[1],ab[2]),
       auc(pp,ab[1],ab[2]),
       ab[1],
       ab[2])
-    names(out) <- c('F1', 'MCC', 'Prec', 'Acc', 'BalAcc', 'Kri', 'AUC', 'Rec', 'Spec')
+    names(out) <- c('F1', 'MCC', 'Prec', 'Acc', 'BalAcc', 'Kri', 'Fo-Ma', 'AUC', 'Rec', 'Spec')
     out
 }
 
@@ -254,8 +259,8 @@ tut1 <- sum(tum*tcm1)
 tut2 <- sum(tum*tcm2)
 tum <- tum*(10^ceiling(-log10(tut2)))
 ##
-## tum <- round((tum-min(tum))/2) - 335 # factory
-tum <- round((tum-min(tum))/2) - 335 + c(25,-25,0,0)# factory inverse
+tum <- round((tum-min(tum))/2) - 335 # factory
+## tum <- round((tum-min(tum))/2) - 335 + c(25,-25,0,0)# factory inverse
 ##tum <- round((tum-min(tum))/2) # medical
 print('UM')
 tum
@@ -301,14 +306,14 @@ signif(diffscores[ok1,],2)
 ## > [1] "% Dutility CM1 - CM2"
 ## > [1] 2.6e+17
 ## > > > [1] "scores CM1"
-## >     F1    MCC   Prec    Acc BalAcc    Kri    AUC    Rec   Spec 
-##   0.77   0.51   0.70   0.75   0.75   0.75   0.75   0.86   0.64 
+## >     F1    MCC   Prec    Acc BalAcc    Kri  Fo-Ma    AUC    Rec   Spec 
+##   0.77   0.51   0.70   0.75   0.75   0.75   0.78   0.75   0.86   0.64 
 ## > > [1] "scores CM2"
-## >     F1    MCC   Prec    Acc BalAcc    Kri    AUC    Rec   Spec 
-##   0.59   0.24   0.64   0.62   0.62   0.62   0.62   0.54   0.70 
+## >     F1    MCC   Prec    Acc BalAcc    Kri  Fo-Ma    AUC    Rec   Spec 
+##   0.59   0.24   0.64   0.62   0.62   0.62   0.59   0.62   0.54   0.70 
 ## > [1] "% Dscores CM1 - CM2"
-## >     F1    MCC   Prec    Acc BalAcc    Kri    AUC    Rec   Spec 
-##   28.0   71.0    9.2   19.0   19.0   19.0   19.0   46.0   -9.0 
+## >     F1    MCC   Prec    Acc BalAcc    Kri  Fo-Ma    AUC    Rec   Spec 
+##   28.0   71.0    9.2   19.0   19.0   19.0   28.0   19.0   46.0   -9.0 
 ##
 #### Paper example 1 small change
 ## [1] "CM1"
