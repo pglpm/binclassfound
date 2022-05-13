@@ -1,7 +1,7 @@
 \pdfoutput=1
 %% Author: PGL  Porta Mana
 %% Created: 2022-03-04T07:39:34+0200
-%% Last-Updated: 2022-05-13T13:44:42+0200
+%% Last-Updated: 2022-05-13T13:51:55+0200
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Decision theory for machine-learning classifiers
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -850,10 +850,10 @@ The factory manager does not fully trust this kind of metrics and decides to emp
 During the trial period the classifiers perform according to the classification statistics of the confusion matrices~\eqref{eq:CM_A} and \eqref{eq:CM_B} above. At the end of this period the factory manager finds that the average net gains per assessed component yielded by the two classifiers are
 \begin{equation}
   \label{eq:final_gains}
-\begin{split}
-  \text{classifier $\Alpha$:}& \quad \good{3.5}\,\text{\texteuro/component}\ , \\
-  \text{classifier $\Beta$:}& \quad \bad{-3.5}\,\text{\texteuro/component}\ .
-\end{split}
+\begin{aligned}
+  \text{classifier $\Alpha$:}& & \good{3.5}\,\text{\texteuro/component}&\ , \\
+  \text{classifier $\Beta$:}& &\bad{-3.5}\,\text{\texteuro/component}&\ .
+\end{aligned}
 \end{equation}
 That is, classifier $\Beta$ actually led to a \emph{loss} of revenue. The manager therefore decides to employ classifier $\Alpha$, commenting with a smug smile that it is always unwise to trust developers' recommendations.
 
@@ -864,10 +864,10 @@ The average gains above are easy to calculate from some additional information. 
     \textit{\parbox{\widthof{\scriptsize classifier}}{\centering\scriptsize classifier\\output\\$1\quad 0$}}
     }\ 
     \overbracket[0pt]{
-      \begin{bmatrix}
+      \begin{bmatrix*}[r]
         15\,\text{\texteuro} & -335\,\text{\texteuro}  \\
         -35\,\text{\texteuro} & 165\,\text{\texteuro}
-      \end{bmatrix}}^{
+      \end{bmatrix*}}^{
       \textit{\parbox{\widthof{\scriptsize true class}}{\centering\scriptsize true class\\$0\hspace{3em}1$}}
     }
 \end{equation}
@@ -909,10 +909,10 @@ The story above illustrates several well-known issues of current popular evaluat
     \textit{\parbox{\widthof{\scriptsize classifier}}{\centering\scriptsize classifier\\output\\$1\hspace{1.5em}0$}}
     }\ 
     \overbracket[0pt]{
-      \begin{bmatrix}
+      \begin{bmatrix*}[r]
         45\,\text{\texteuro} & -335\,\text{\texteuro}  \\
         -65\,\text{\texteuro} & 165\,\text{\texteuro}
-      \end{bmatrix}}^{
+      \end{bmatrix*}}^{
       \textit{\parbox{\widthof{\scriptsize$0\hspace{4em}1$}}{\centering\scriptsize true class\\$0\hspace{4em}1$}}
     } \ .
 \end{equation}
@@ -932,10 +932,10 @@ One could argue that also this case there is a great economic difference between
     \textit{\parbox{\widthof{\scriptsize classifier}}{\centering\scriptsize classifier\\output\\$1\hspace{1.5em}0$}}
     }\ 
     \overbracket[0pt]{
-      \begin{bmatrix}
+      \begin{bmatrix*}[r]
         350\,\text{months} & 0\,\text{months}  \\
         300\,\text{months} & 500\,\text{months}
-      \end{bmatrix}}^{
+      \end{bmatrix*}}^{
       \textit{\parbox{\widthof{\scriptsize$0\hspace{7em}1$}}{\scriptsize\centering true class\\$0\hspace{7em}1$}}
     } \ .
 \end{equation}
