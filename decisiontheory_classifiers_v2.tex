@@ -1,7 +1,7 @@
 \pdfoutput=1
 %% Author: PGL  Porta Mana
 %% Created: 2022-03-04T07:39:34+0200
-%% Last-Updated: 2022-05-13T13:51:55+0200
+%% Last-Updated: 2022-05-13T13:54:58+0200
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Decision theory for machine-learning classifiers
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -136,8 +136,8 @@ british%
 % \begin{asparaenum} = \begin{enumerate}[para]
 % \begin{inparaenum} = \begin{enumerate*}
 \setlist{itemsep=0pt,topsep=\parsep}
-\setlist[enumerate,2]{label=\alph*.}
-\setlist[enumerate]{label=\arabic*.,leftmargin=1.5\parindent}
+\setlist[enumerate,2]{label=(\roman*)}
+\setlist[enumerate]{label=(\alph*),leftmargin=1.5\parindent}
 \setlist[itemize]{leftmargin=1.5\parindent}
 \setlist[description]{leftmargin=1.5\parindent}
 % old alternative:
@@ -899,7 +899,7 @@ Taking the sum of the products of the gains above by the respective percentages 
 
 
 The story above illustrates several well-known issues of current popular evaluation procedures for machine-learning classifiers:
-\begin{enumerate}[label=(\roman*)]
+\begin{enumerate}%[label=(\roman*)]
 \item We are faced by an avalanche of possible evaluation metrics. Often it is not clear which is the most compelling. In the story above, one could argue that the true-negative rate was the appropriate metric, in view of the great difference in gains between correct and wrong classification for class 1, compared with that for class 0.
 
   But at which point does this qualitative reasoning fail? Imagine that the net gains had been as follows instead:
@@ -959,7 +959,7 @@ where the sum extends to all matrix elements.
 
 \medskip
 
-In the present work we argue that formula~\eqref{eq:expected_utility} is the only acceptable general metric to evaluate and compare the performance of two or more classifiers, each with its own confusion matrix $(C_{ij})$ collected on relevant test data. The coefficients $U_{ij}$, called \emph{utilities}, are problem-dependent. This formula is the \emph{expected utility} of a classifier having confusion matrix $(C_{ij})$.
+In the present work we argue that formula~\eqref{eq:expected_utility} is the only acceptable general metric for evaluating and comparing the performance of two or more classifiers, each with its own confusion matrix $(C_{ij})$ collected on relevant test data. The coefficients $U_{ij}$, called \emph{utilities}, are problem-dependent. This formula is the \emph{expected utility} of a classifier having confusion matrix $(C_{ij})$.
 
 Our argument is based on the fact that this formula is prescribed by \emph{Decision Theory}.
 
