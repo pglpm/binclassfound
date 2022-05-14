@@ -1,7 +1,7 @@
 \pdfoutput=1
 %% Author: PGL  Porta Mana
 %% Created: 2022-03-04T07:39:34+0200
-%% Last-Updated: 2022-05-13T19:19:17+0200
+%% Last-Updated: 2022-05-14T13:00:45+0200
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Decision theory for machine-learning classifiers
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -21,7 +21,7 @@ british%
 \newcommand*{\firstdraft}{4 March 2022}
 \newcommand*{\firstpublished}{\firstdraft}
 \newcommand*{\updated}{\ifarxiv***\else\today\fi}
-\newcommand*{\propertitle}{Is the evaluation evaluated?\\ {\Large A first-principle approach to use and evaluation of classifiers}}
+\newcommand*{\propertitle}{How is the evaluation evaluated?\\ {\Large A first-principle approach to the evaluation of classifiers}}
 % title uses LARGE; set Large for smaller
 \newcommand*{\pdftitle}{\propertitle}
 \newcommand*{\headtitle}{Is the evaluation evaluated?}
@@ -476,7 +476,7 @@ Open Science Framework \doi{10.31219/osf.io/#1}%
 \providecommand{\email}[2]{\href{mailto:#1ZZ@#2 ((remove ZZ))}{#1\protect\atf#2}}
 %\providecommand{\email}[2]{\href{mailto:#1@#2}{#1@#2}}
 
-\preauthor{\vspace{-0.5\baselineskip}\begin{center}
+\preauthor{\vspace{-0\baselineskip}\begin{center}
 \normalsize\sffamily%
 \lineskip  0.5em}
 \postauthor{\par\end{center}}
@@ -522,8 +522,7 @@ Open Science Framework \doi{10.31219/osf.io/#1}%
 \hspace*{\stretch{1}}%
 %% uncomment if additional authors present
 \parbox{0.3\linewidth}%\makebox[0pt][c]%
-{\protect\centering K. Dyrland\\%
-\footnotesize\epost{\email{***}{***}}}%
+{\protect\centering K. Dyrland \href{https://orcid.org/0000-0002-7674-5733}{\protect\includegraphics[scale=0.16]{orcid_32x32.png}}\\\footnotesize\epost{\email{kjetil.dyrland}{gmail.com}}}%
 \hspace*{\stretch{1}}%
 \parbox{0.3\linewidth}%\makebox[0pt][c]%
 {\protect\centering A. S. Lundervold\\%
@@ -538,7 +537,7 @@ Open Science Framework \doi{10.31219/osf.io/#1}%
 % {\protect\centering ***\\%
 % \footnotesize\epost{\email{***}{***}}}%
 \hspace*{\stretch{1}}%
-\\\scriptsize(or any permutation thereof)
+\\\scriptsize(listed alphabetically)
 }
 
 %\date{Draft of \today\ (first drafted \firstdraft)}
@@ -927,7 +926,7 @@ One could argue that also this case there is a great economic difference between
   
 \item\label{item:hope_medical} Let us assume that some of the popular metrics identify the best algorithm \enquote{in the majority of cases} -- although it is difficult to statistically define such a majority, and no real surveys have ever been conducted to back up such an assumption. Yet, do we expect the end user to simply \emph{hope} not to belong to the unlucky minority? Is such uncertainty inevitable?
 
-  We cannot have a cavalier attitude towards this problem: life and death can depend on it in some machine-learning applications. Imagine a story analogous to the factory one, but in a medical setting instead. The classifiers should distinguish between two tumour types, requiring two different types of medical intervention. The confusion matrices are the same~\eqref{eq:CM_A} and \eqref{eq:CM_B}. Correct or incorrect classification in this case leads to the following expected remaining life lengths for patients in a specific age range:
+  We cannot have a cavalier attitude towards this problem: life and death can depend on it in some machine-learning applications \autocites[cf.][]{howard1980}. Imagine a story analogous to the factory one, but in a medical setting instead. The classifiers should distinguish between two tumour types, requiring two different types of medical intervention. The confusion matrices are the same~\eqref{eq:CM_A} and \eqref{eq:CM_B}. Correct or incorrect classification in this case leads to the following expected remaining life lengths for patients in a specific age range:
 \begin{equation}
   \label{eq:utility_example_medicine}
   \rotatebox[origin=c]{90}{
@@ -955,7 +954,7 @@ This matrix is numerically equivalent to~\eqref{eq:utility_example} up to a comm
 But our story also points to a possible solution of all these issues. The \enquote{metric} that ultimately proved to be relevant to the manager was the average net monetary gain obtained by using a classifier. In the medical variation discussed in issue~\ref{item:hope_medical} above it was the average life expectancy.  In either case this \enquote{metric} could have been easily calculated beforehand upon gathering information about the average gains and losses of correct and incorrect classification, collected in the matrix~\eqref{eq:utility_example} or~\eqref{eq:utility_example_medicine}, and combining these with statistics collected in the confusion matrix associated with the classifier. Denoting the former kind matrix by $(U_{ij})$ and the confusion matrix by $(C_{ij})$, this \enquote{metric} would be
 \begin{equation}
   \label{eq:expected_utility}
-  \sum_{i,j}^{2} U_{ij}\ C_{ij} 
+  \sum_{i,j} U_{ij}\ C_{ij} 
 \end{equation}
 where the sum extends to all matrix elements.
 
@@ -1010,9 +1009,9 @@ In using \ml\ classifiers one typically considers situations where the set of av
 \subsection{Utilities and maximization of expected utility}
 \label{sec:dt_utilities}
 
-To each decision we associate several \emph{utilities}, depending on which of the possible classes is actually true. The utility may for instance equal a gain or loss in money, energy, number of customers, life expectancy, or quality of life, measured in appropriate units; or a in combination of such quantities. (Note that the utility of money is usually not equal to the amount of money, the relationship between the two being somewhat logarithmic \autocites[\eg][pp.~203--204]{north1968}[\chap~4]{raiffa1968_r1970}.)
+To each decision we associate several \emph{utilities}, depending on which of the possible classes is actually true. The utility may for instance equal a gain or loss in money, energy, number of customers, life expectancy, or quality of life, measured in appropriate units; or a in combination of such quantities.
 
-These utilities can be collected into a \emph{utility matrix} $(U_{ij})$ as shown in formulae~\eqref{eq:utility_example}, \eqref{eq:utility_example_2}, \eqref{eq:utility_example_medicine}.
+These utilities are collected into a \emph{utility matrix} $(U_{ij})$ as shown in formulae~\eqref{eq:utility_example}, \eqref{eq:utility_example_2}, \eqref{eq:utility_example_medicine}.
 % As an example, imagine we are offered to buy a lottery ticket, which may be winning or not. The ticket costs $1$ unit of some monetary currency or goods, and the lottery prize is $11$ units. Our available decisions are whether to buy the ticket or not. We have four utilities, representing the total change in our money after the lottery, displayed in this self-explanatory table:
 % \begin{center}
 %   \begin{tabular}{rcc}
@@ -1051,20 +1050,58 @@ In an individual classification instance, if we know which class is true then th
 % \end{equation}
 % The optimal choice is to buy the ticket, that is, to classify the ticket \emph{as if} it belonged to class \texttt{win}, even if it most probably belongs to class \texttt{lose}.
 
-\mynotew{Explain that in this paper we focus on the stage at which all decisions have been made\ldots}
+A very important result in decision theory and game theory is that basic requirements of rational decision-making imply that there \emph{must} be a set of utilities underlying the decisions of a rational agent, and the decisions must obey the rule of maximization of expected utility \autocites[\sect~15.2]{russelletal1995_r2022}[\chaps~2--3]{neumannetal1944_r1955}.
 
-\mynotew{Add note about how (sequential) decision theory was used during World War I; see  \textcites{good1950} around \sect~6.2 }
+This rule is discussed and used in our companion work \mynotep{\ldots}. In the present work we are focusing on the stage where a large number of classifications has already been made by a classifier, for example on a test data set with $N$ data. Denote by $F_{ij}$ the number of instances in which the classifier chose class $i$ and the true class was $j$. Then $(F_{ij})$ is the confusion matrix of the classifier on this particular test set. For all instances in which the classifier chose class $i$ and the true class was $j$, a utility $U_{ij}$ is eventually gained. The total utility yielded by the classifier on the test set is therefore $\sum_{ij} U_{ij}\ F_{ij}$. Dividing by $N$ we obtain the average utility per datum, which can also be written as
+\begin{equation}
+  \label{eq:final_utility}
+  \sum_{ij} U_{ij}\ C_{ij}
+\end{equation}
+where $C_{ij} \defd F_{ij}/N$ is the relative frequency of choice $i$ and true class $j$, and $(C_{ij})$ is the normalized confusion matrix.
 
-\subsection{Space of utility matrices}
+\emph{Formula~\eqref{eq:final_utility} is the natural metric to evaluate and compare the performance of classifiers on a test set}.
+
+Note how the utilities $U_{ij}$ cannot depend on the frequencies $F_{ij}$ or $C_{ij}$. If they did, it would mean that we had waited until \emph{all} classification instances had been made in order to assess the value of each \emph{single} instance. This would be a source of evaluation bias. It would also be an impossible procedure in contexts where the consequence of a single classification is manifest before the next classification is made.
+
+
+How are utilities determined? They are obviously problem-specific and cannot be given by the theory (which would otherwise be a model rather than a theory). Utilities can be obvious in decision problems involving gains or losses of measurable quantities such as money or energy (the utility of money is usually not equal to the amount of money, the relationship between the two being somewhat logarithmic \autocites[\eg][pp.~203--204]{north1968}[\chap~4]{raiffa1968_r1970}). In medical problems they can correspond to life expectancy and quality of life; see for example \textcite[esp. \chap~8]{soxetal1988_r2013} and \textcite[esp. \chap~4]{huninketal2001_r2014} on how such health factors are transformed into utilities.
+
+In some cases the final utility of a single classification instance depends on a sequence of further uncertain events and further decisions. In the story of \sect~\ref{sec:intro}, for instance, the misclassification of a short-durability component as a long-durability one leads the final device to break only in a high fraction of cases, and in such cases the end customer requires a refund in a high fraction of subcases; the refunded amount may even depend on further circumstances. The negative utility $U_{01} = -335\,\text{\texteuro}$ in table~\eqref{eq:utility_example} comes from a statistical average of the losses in all these possible end results. This is the topic of so-called decision networks or influence diagrams \autocites[Besides the general references already given:][\sect~15.5]{russelletal1995_r2022}{howardetal1984b_r2005}. The decision-theory subfield of \emph{utility theory} gives rules that guarantee the mutual consistency of a set of utilities in single decisions or decision networks. For simple introductions to utility theory see \textcite[\sect~15.2]{russelletal1995_r2022}, \textcite[pp.~201--205]{north1968}, and the references given at the beginning of the present section.
+
+In the present work we do not worry about such rules, in order not to complicate the discussion: they should be approximately satisfied if the utilities of a problem have been carefully assessed.
+
+If we modify the elements of a utility matrix by a common additive constant or by a common positive multiplicative constant, then the final utilities yielded by a classifier with a particular confusion matrix are modified by the same constants. The ranking of any set of classifiers will therefore be the same. After all, an additive constant or a positive factor represent only changes in the zero or the measurement unit of our utility scale \autocites[cf.][\sect~15.2.2]{russelletal1995_r2022}. Such changes should not affect a decision problem. The fact that indeed they do not, is another example of the logical consistency of decision theory.
+
+\subsection{Space of utility matrices for binary classification}
 \label{sec:dt_space_util}
 
-How are utilities determined? They are obviously problem-specific and cannot be given by the theory (which would otherwise be a model rather than a theory). Utilities can be  obvious in decision problems involving gain or losses of concrete quantities such as money or energy. In medical problems they can correspond to life expectancy and quality of life; see for example \textcite{soxetal1988_r2013} for a discussion of how such health factors are transformed into utilities. Decision theory, in the subfield of \emph{utility theory}, gives rules that guarantee the mutual consistency of a set of utilities. In the present work we shall not worry about such rules, in order not to complicate the discussion: they should be approximately satisfied if the utilities of a problem have been carefully chosen. For simple introductions to utility theory see \textcite[\sect~15.2]{russelletal1995_r2022}, \textcite[pp.~201--205]{north1968}, and the references given at the beginning of the present section.
+Let us consider a binary classification problem. It is characterized by a matrix of $2\times2$ utilities. Let us suppose that they are not all equal, otherwise the choice of class would be immaterial and the classification problem trivial. We can use the freedom of choosing a zero and measurement unit to bring the utility matrix to a standard form. Let us choose them such that the maximum utility is $1$ and  the minimum utility is $0$ (note that this value can still correspond for example to an actual monetary loss). That is, we are effecting the transformation
+\begin{equation}
+  \label{eq:normalize_utilities}
+  U_{ij} \mapsto \frac{U_{ij} - \min(U_{ij})}{\max(U_{ij}) - \min(U_{ij})} \ .
+\end{equation}
+With this convention it is clear that we only have two degrees of freedom in choosing the utility matrix of a binary classification problem. As a consequence, \emph{the set of possible evaluation metrics for binary classification is two-dimensional}.
 
-\mynotew{Add remark on decision trees.}
+We can represent this space as in \fig~\ref{fig:space_UM}. The centre is the utility matrix which assigns equal maximum utilities to correct classification and equal minimum utilities to incorrect classification; we shall see later that it corresponds to the use of accuracy as evaluation metric. Moving to the left from the centre, the utility for correct classification of class~1 decreases with respect of class~0; vice versa moving to the right. Moving upwards from the centre, the utility for misclassification of class~1 increases; moving downwards, the utility for misclassification of class~0 increases. We have excluded utility matrices in which misclassification has a higher utility than correct classification (although they may occur in some situations); they would appear in the missing the upper-left and lower-right corners.
+\begin{figure}[b]
+  \centering
+  \includegraphics[width=0.5\linewidth]{space_UM2b.pdf}\\
+  \caption{Space of utility matrices for binary classification.}
+  \label{fig:space_UM}
+\end{figure}
 
-It is nevertheless clear that every decision problem is completely determined by a set of $\nd \cdot \nc$ utilities. Actually if we change the elements of the utility matrix of a decision problem by a common additive constant or by a common positive multiplicative constant, then that decision problem is unchanged, in the sense that we reach the same decision by maximizing expected utility with the new utility matrix, given the same probabilities. This is evident from \eqn~\eqref{eq:exp_utility}: all expected utilities change by the same additive constant or the same positive factor, and therefore their ordering does not change. After all, an additive constant or a positive factor represents only changes in the zero or the measurement unit of our utility. Such changes should not affect a decision problem. The fact that, indeed, they do not, is another example of the logical consistency of decision theory.
+For evaluating candidate classifiers for a binary-classification problem we must choose a point from this space.
 
-Let us call \emph{equivalent} two utility matrices that differ only by a constant additive term or by a positive factor or both. Inequivalent utility matrices represent inequivalent decision problems. Thus \emph{all decision problems with $\nd$ decisions and $\nc$ classes are catalogued by\; $\nd \nc - 2$\; parameters} (the set of such problems has the topology of an $(\nd\nc-1)$-dimensional sphere). In the case of binary classification this means 2 parameters.
+
+
+\section{Remarks on the test set}
+\label{sec:test_set}
+
+
+It may not be amiss to emphasize that the \emph{proportions $N_{c}$ of classes in the test set should be representative of the proportions that will be encountered in the real application}. Otherwise the test-set results would misleading or even opposite to what the real performance will be. In the lottery example with utility matrix~\eqref{eq:exp_utilities_lottery}, suppose we have an algorithm that always makes the decision \texttt{buy} and another algorithm that always decides \texttt{not-buy}. In  real instances of such lotteries the class \texttt{win} occurs 1\% of the time, and \texttt{lose}, 99\%. In a real application the first algorithm would thus yield $-0.89$, a loss, on average at each instance, and the second $0$. The second algorithm is actually best. Suppose we test these algorithms on a test set where the two classes appear 50\%/50\% instead. On this test set the first algorithm will yield $4.5$ on average, the second $0$. Thus according to the test the first algorithm is best -- a wrong conclusion.
+
+
+
 
 \subsection{Actual utility yield}
 \label{sec:dt_utility_yield}
@@ -1123,12 +1160,14 @@ It is convenient to consider the average utility yield, rather than the total ut
 % Formulae~\eqref{eq:utility_gained} or \eqref{eq:avg_utility_gained} show that the performance and ranking of several decision algorithm depend on the values of the utility matrix $(U_{dc})$, and that changes in the zero or measurement unit of the utilities do not affect such raking, as it should intuitively be the case. Note, however, that two \emph{in}equivalent utility matrices can also lead to the same ranking, \emph{provided the frequencies $N_{c}$ of the classes are not changed}. If we add a different constant term to each column of the utility matrix, these terms disappear within the parentheses of formulae~\eqref{eq:utility_gained} and \eqref{eq:avg_utility_gained} and only contribute a total constant term in the remaining sum. This happens because the performance depends not only on the utility but also on the relative proportions of classes.
 
 
-It may not be amiss to emphasize that the \emph{proportions $N_{c}$ of classes in the test set should be representative of the proportions that will be encountered in the real application}. Otherwise the test-set results would misleading or even opposite to what the real performance will be. In the lottery example with utility matrix~\eqref{eq:exp_utilities_lottery}, suppose we have an algorithm that always makes the decision \texttt{buy} and another algorithm that always decides \texttt{not-buy}. In  real instances of such lotteries the class \texttt{win} occurs 1\% of the time, and \texttt{lose}, 99\%. In a real application the first algorithm would thus yield $-0.89$, a loss, on average at each instance, and the second $0$. The second algorithm is actually best. Suppose we test these algorithms on a test set where the two classes appear 50\%/50\% instead. On this test set the first algorithm will yield $4.5$ on average, the second $0$. Thus according to the test the first algorithm is best -- a wrong conclusion.
-
 \bigskip
 
 The summary of decision theory just given suffices to address issues~\ref{item:metrics}--\ref{item:optimal_true}.
 
+\section{Discussion}
+\label{sec:discussion}
+
+\mynotep{maybe refer to  \autocites{varoquauxetal2022}}
 
 \clearpage
 
