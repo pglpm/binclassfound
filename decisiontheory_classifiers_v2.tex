@@ -1,7 +1,7 @@
 \pdfoutput=1
 %% Author: PGL  Porta Mana
 %% Created: 2022-03-04T07:39:34+0200
-%% Last-Updated: 2022-05-14T14:27:32+0200
+%% Last-Updated: 2022-05-14T18:32:39+0200
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Decision theory for machine-learning classifiers
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -83,8 +83,8 @@ british%
 %\addtolength{\jot}{\jot} % increase spacing in multiline formulae
 \setlength{\multlinegap}{0pt}
 
-%\usepackage{empheq}% automatically calls amsmath and mathtools
-%\newcommand*{\widefbox}[1]{\fbox{\hspace{1em}#1\hspace{1em}}}
+\usepackage{empheq}% automatically calls amsmath and mathtools
+\newcommand*{\widefbox}[1]{\fbox{\hspace{1em}#1\hspace{1em}}}
 
 %%%% empheq above seems more versatile than these:
 %\usepackage{fancybox}
@@ -1050,19 +1050,7 @@ In an individual classification instance, if we know which class is true then th
 % \end{equation}
 % The optimal choice is to buy the ticket, that is, to classify the ticket \emph{as if} it belonged to class \texttt{win}, even if it most probably belongs to class \texttt{lose}.
 
-A very important result in decision theory and game theory is that basic requirements of rational decision-making imply that there \emph{must} be a set of utilities underlying the decisions of a rational agent, and the decisions must obey the rule of maximization of expected utility \autocites[\sect~15.2]{russelletal1995_r2022}[\chaps~2--3]{neumannetal1944_r1955}.
-
-This rule is discussed and used in our companion work \mynotep{\ldots}. In the present work we are focusing on the stage where a large number of classifications has already been made by a classifier, for example on a test data set with $N$ data. Denote by $F_{ij}$ the number of instances in which the classifier chose class $i$ and the true class was $j$. Then $(F_{ij})$ is the confusion matrix of the classifier on this particular test set. For all instances in which the classifier chose class $i$ and the true class was $j$, a utility $U_{ij}$ is eventually gained. The total utility yielded by the classifier on the test set is therefore $\sum_{ij} U_{ij}\ F_{ij}$. Dividing by $N$ we obtain the average utility per datum, which can also be written as
-\begin{equation}
-  \label{eq:final_utility}
-  \sum_{ij} U_{ij}\ C_{ij}
-\end{equation}
-where $C_{ij} \defd F_{ij}/N$ is the relative frequency of choice $i$ and true class $j$, and $(C_{ij})$ is the normalized confusion matrix.
-
-\emph{Formula~\eqref{eq:final_utility} is the natural metric to evaluate and compare the performance of classifiers on a test set}.
-
-Note how the utilities $U_{ij}$ cannot depend on the frequencies $F_{ij}$ or $C_{ij}$. If they did, it would mean that we had waited until \emph{all} classification instances had been made in order to assess the value of each \emph{single} instance. This would be a source of evaluation bias. It would also be an impossible procedure in contexts where the consequence of a single classification is manifest before the next classification is made.
-
+A very important result in decision theory and game theory is that basic requirements of rational decision-making imply that there \emph{must} be a set of utilities underlying the decisions of a rational agent, and the decisions must obey the rule of \emph{maximization of expected utility} \autocites[\sect~15.2]{russelletal1995_r2022}[\chaps~2--3]{neumannetal1944_r1955}.
 
 How are utilities determined? They are obviously problem-specific and cannot be given by the theory (which would otherwise be a model rather than a theory). Utilities can be obvious in decision problems involving gains or losses of measurable quantities such as money or energy (the utility of money is usually not equal to the amount of money, the relationship between the two being somewhat logarithmic \autocites[\eg][pp.~203--204]{north1968}[\chap~4]{raiffa1968_r1970}). In medical problems they can correspond to life expectancy and quality of life; see for example \textcite[esp. \chap~8]{soxetal1988_r2013} and \textcite[esp. \chap~4]{huninketal2001_r2014} on how such health factors are transformed into utilities.
 
@@ -1070,7 +1058,31 @@ In some cases the final utility of a single classification instance depends on a
 
 In the present work we do not worry about such rules, in order not to complicate the discussion: they should be approximately satisfied if the utilities of a problem have been carefully assessed.
 
-If we modify the elements of a utility matrix by a common additive constant or by a common positive multiplicative constant, then the final utilities yielded by a classifier with a particular confusion matrix are modified by the same constants. The ranking of any set of classifiers will therefore be the same. After all, an additive constant or a positive factor represent only changes in the zero or the measurement unit of our utility scale \autocites[cf.][\sect~15.2.2]{russelletal1995_r2022}. Such changes should not affect a decision problem. The fact that indeed they do not, is another example of the logical consistency of decision theory.
+\section{Evaluation metrics from a decision-theoretic perspective}
+\label{sec:evaluation_metrics}
+
+\subsection{Admissible evaluation metrics for classification problems}
+\label{sec:admissible_metrics}
+
+Maximization of expected utility is the ground rule for rational decision making. We discuss and use it in our companion work \mynotep{\ldots}.
+
+In the present work we are focusing on the stage where a large number of classifications has already been made by a classifier, for example on a test data-set with $N$ data. Denote by $F_{ij}$ the number of instances in which the classifier chose class $i$ and the true class was $j$. Then $(F_{ij})$ is the confusion matrix of the classifier on this particular test set. For all instances in which the classifier chose class $i$ and the true class was $j$, a utility $U_{ij}$ is eventually gained. The total utility yielded by the classifier on the test set is therefore $\sum_{ij} U_{ij}\ F_{ij}$. Dividing by $N$ we obtain the average utility per datum, which can also be written as
+\begin{empheq}[box=\widefbox]{equation}
+  \label{eq:final_utility}
+  \sum_{ij} U_{ij}\ C_{ij}
+\end{empheq}
+where $C_{ij} \defd F_{ij}/N$ is the relative frequency of choice $i$ and true class $j$, and $(C_{ij})$ is the normalized confusion matrix.
+
+\emph{Formula~\eqref{eq:final_utility} is the natural metric to evaluate and compare the performance of classifiers on a test set}.
+
+Note how the utilities $U_{ij}$ cannot depend on the frequencies $F_{ij}$ or $C_{ij}$. If they did, it would mean that we had waited until \emph{all} classification instances had been made in order to assess the value of each \emph{single} instance. This would be a source of evaluation bias. It would also be an impossible procedure in contexts where the consequence of a single classification is manifest before the next classification is made.
+
+If we modify the elements of a utility matrix by a common additive constant or by a common positive multiplicative constant,
+\begin{equation}
+  \label{eq:modify_UM}
+  U_{ij} \mapsto a\ U_{ij} + b \ , \qquad a > 0 \ ,
+\end{equation}
+then the final utilities yielded by a classifier with a particular confusion matrix are modified by the same constants. The ranking of any set of classifiers will therefore be the same. After all, an additive constant or a positive factor represent only changes in the zero or the measurement unit of our utility scale \autocites[cf.][\sect~15.2.2]{russelletal1995_r2022}. Such changes should not affect a decision problem. The fact that indeed they do not, is another example of the logical consistency of decision theory.
 
 \subsection{Space of utility matrices for binary classification}
 \label{sec:dt_space_util}
@@ -1085,17 +1097,105 @@ With this convention it is clear that we only have two degrees of freedom in cho
 \begin{figure}[t]
   \centering
   \includegraphics[width=0.65\linewidth]{space_UM2c.pdf}\\
-  \caption{Space of utility matrices for binary classification.}
+  \caption{Space of utility matrices for binary classification.\mynotew{add axes maybe}}
   \label{fig:space_UM}
 \end{figure}
 We can represent this space as in \fig~\ref{fig:space_UM}. The centre is the utility matrix with equal maximum utilities for correct classification and equal minimum utilities for incorrect classification; we shall see later that it corresponds to the use of accuracy as evaluation metric. Moving to the left from the centre, the utility for correct classification of class~1 decreases with respect of class~0; vice versa moving to the right. Moving upwards from the centre, the utility for misclassification of class~1 increases; moving downwards, the utility for misclassification of class~0 increases. We have excluded utility matrices in which misclassification has a higher utility than correct classification (although they may occur in some situations); they would appear in the missing the upper-left and lower-right corners. Fixing $(x,y)$ axes through the centre of the set, a utility matrix has coordinates
 \begin{equation}
   \label{eq:coords_um}
   \begin{bmatrix}
-    1 - x\ \delt(x < 0) & y\ \delt(y>0) \\
-    -y\ \delt(y<0) & 1 + x\ \delt(x > 0)
+    1 - x\ \delt(x > 0) & y\ \delt(y>0) \\
+    -y\ \delt(y<0) & 1 + x\ \delt(x < 0)
   \end{bmatrix} \ .
 \end{equation}
+
+Note that this representation is \emph{not} meant to reflect any convex or metric properties, however. No metric or distance is defined in the space of utility matrices. Convex combination is defined if we drop the normalization~\eqref{eq:normalize_utilities} and will be discussed in \sect~\mynotep{\ldots}, but it is not correctly reflected in the representation of \fig~\ref{fig:space_UM}.
+
+\subsection{Relationship with common metrics}
+\label{sec:common_metrics}
+
+In \sect~\ref{sec:admissible_metrics} we found that the most general evaluation metric according to decision theory must be a linear combination of the confusion-matrix elements. The coefficients of the linear combination cannot depend on the confusion-matrix elements themselves, because such a dependence would reflect some sort of cognitive bias.
+
+Consider the case in which we are comparing several classifiers \emph{on the same test set} with $N$ data. The frequencies with which the classes occur in this set are fixed and constant for all classifiers under evaluation. These frequencies corresponds to the sums of the columns of any confusion matrix obtained from the test set, written in the format
+\begin{equation*}
+  \rotatebox[origin=c]{90}{
+    \textit{\parbox{\widthof{classifier}}{\centering\scriptsize classifier\\output\\$1\quad 0$}}
+    }\ 
+    \overbracket[0pt]{
+      \begin{bmatrix}
+    \text{\footnotesize True 0} & \text{\footnotesize False 0}\\
+    \text{\footnotesize False 1} & \text{\footnotesize True 1}\\
+      \end{bmatrix}}^{
+      \textit{\parbox{\widthof{\scriptsize true class}}{\centering\scriptsize true class\\$0\hspace{3em}1$}}
+    }
+\end{equation*}
+for a binary-classification problem with classes \enquote{0} and \enquote{1}. Normalizing these frequencies by the number of data $N$ we obtain the relative frequencies $f_{0}$ and $f_{1}$, such that $f_{0} + f_{1} = 1$. (In terms of \enquote{positive} and \enquote{negative} classes, they are the frequencies of true positives and of true negatives.)
+
+Therefore the numbers $N$, $f_{0}$, $f_{1}$ are constants and the same for all classifiers in the present evaluation context.
+
+Recall that given a utility matrix we can always modify its elements by a common positive multiplicative constant $a$ and by a common additive constant $b$, \eqn~\eqref{eq:modify_UM}, because such a modification corresponds to a change of zero and unit of utility measurement. With such a change the evaluation metric~\eqref{eq:final_utility} takes the equivalent form
+\begin{equation}
+  \label{eq:final_utility_modified}
+  \sum_{ij} a\ U_{ij}\ C_{ij} + b
+\end{equation}
+because $\sum_{ij} C_{ij} \equiv 1$.
+
+In the present context $N$, $f_{0}$, $f_{1}$ can be considered constants. We are therefore free to construct $a > 0$ and $b$ from $N$, $f_{0}$, $f_{1}$ in any way we please.
+
+Since we are considering a fixed test set, the 
+
+
+, we can multiply the expression above by a generic positive function of the class frequencies, $a(N_{c})$, and also add a generic function of the class frequencies, $b(N_{c})$. These operations corresponds to changes in the zero and  measurement unit of the utilities by amounts which depend on the class frequencies. Since the class frequencies are independent of the algorithms, these changes are the same for all algorithms and do not affect their final ranking. Note, however, that if we were to compare utilities obtained on different test sets then such changes dependent on class frequencies would not be allowed.
+
+We thus find the following important result according to decision theory: \emph{A valuation metric should be a \textbf{linear combination} of the elements of the confusion matrix, possibly multiplied by a positive function of the class frequencies of the test set and with an additional term also depending only on the class frequencies. The coefficients of the linear combination are problem-specific and \textbf{cannot depend on the confusion-matrix elements}.} In formulae, the metric should have the form
+\begin{equation}
+  \label{eq:general_valuation_metric}
+  a(N_{c})\, \sum_{cd} x_{dc}\, M_{dc} +  b(N_{c})
+\end{equation}
+for some coefficients $x_{dc}$ and functions $a(\dotv)>0$,\; $b(\dotv)$.
+
+Let us see what this means in the case of binary classification. The decisions and classes are both typically denoted as positive \enquote{$\Po$} and negative \enquote{$\Ne$}, and we speak of the number of \enquote{true positives}, \enquote{false positives}, and so on, so that
+\begin{equation*}
+  M_{\Po\Po} \equiv M_{\tp}, \quad
+  M_{\Po\Ne} \equiv M_{\fp}, \quad
+  M_{\Ne\Po} \equiv M_{\fn}, \quad
+  M_{\Ne\Ne} \equiv M_{\tn} \ .
+\end{equation*}
+Accordingly we denote the elements of the utility matrix as
+\begin{equation*}
+  U_{\Po\Po} \equiv U_{\tp}, \quad
+  U_{\Po\Ne} \equiv U_{\fp}, \quad
+  U_{\Ne\Po} \equiv U_{\fn}, \quad
+  U_{\Ne\Ne} \equiv U_{\tn} \ .
+\end{equation*}
+With this notation, decision theory says that a valuation metric for this test set should have the following general form
+\begin{equation}
+  \label{eq:utility_testset_binary}
+  a(N_{\Po},N_{\Ne})\,
+  (x_{\tp}\, M_{\tp} + x_{\fp}\, M_{\fp} +
+ x_{\fn}\, M_{\fn} + x_{\tn}\, M_{\tn}) +
+  b(N_{\Po},N_{\Ne}) \ .
+\end{equation}
+for particular values of the coefficients $x_{\tp}, x_{\fp}, x_{\fn}, x_{\tn}$ and particular functions $a(\dotv)>0$ and $b(\dotv)$. Let us examine some common valuation metrics from the point of view of this requirement.
+
+\begin{itemize}
+\item[\itemyes] \emph{Accuracy:} $(M_{\tp}+M_{\tn})/N$. It is a particular case of formula~\eqref{eq:utility_testset_binary} with $x_{\tp}=x_{\tn}=1$,\; $x_{\fp}=x_{\fn}=0$,\; $a(N_{\Po},N_{\Ne})=1/(N_{\Po}+N_{\Ne})$,\; $b(\dotv)=0$. It corresponds to using the utility matrix $\begin{psmallmatrix} 1&0\\0&1 \end{psmallmatrix}$.
+  
+\item[\itemno] \emph{Precision:} $M_{\tp}/(M_{\tp}+M_{\fp})$. It cannot be written as a linear combination of the confusion-matrix elements.
+
+\item[\itemno] \emph{$F_{1}$-measure:} $2 M_{\tp}/(2M_{\tp} + M_{\fp} + M_{\fn})$. It cannot be written as a linear combination of the confusion-matrix elements.
+
+\item[\itemno] \emph{Matthews correlation coefficient:} $\frac{M_{\tp}\, M_{\tn} - M_{\fp}\, M_{\fn}}{\sqrt{(M_{\tp}+M_{\fp})(M_{\tn}+M_{\fn})N_{\Po}N_{\Ne}}}$. It cannot be written as a linear combination of the confusion-matrix elements.
+
+\item[\itemyes] \emph{True-positive rate:} $M_{\tp}/N_{\Po}$. It is  formula~\eqref{eq:utility_testset_binary} with $x_{\tp}=1$, all other $x_{\dotso}=0$, $a(N_{\Po},N_{\Ne})=1/N_{\Po}$, and $b(\dotv)=0$. It corresponds to using the utility matrix $\begin{psmallmatrix} 1&0\\0&0 \end{psmallmatrix}$. 
+
+\item[\itemyes] \emph{True-negative rate:} $M_{\tn}/N_{\Ne}$. Analogous to true-positive rate.
+
+\item[\itemno] \emph{Balanced accuracy:} $(N_{\Ne}\,M_{\tp} + N_{\Po}\, M_{\tn})/(2 N_{\Po}N_{\Ne})$. Despite being an average of two metrics (true-positive and true-negative rate) that agree with formula~\eqref{eq:utility_testset_binary}, it is not an instance of that formula. The reason is that the two averaged metrics involve different $a(\dotv)$ functions.
+\end{itemize}
+
+We see that many popular validation metrics, those marked by \enquote{\itemno} above, do not comply with decision theory. Their formulae involve an interdependence of utilities and probabilities which hides some forms of cognitive biases.
+\mynotew{Very important: we should preferably add an example to illustrate this.}
 
 
 
@@ -1237,67 +1337,6 @@ In using \ml\ classifiers one typically considers situations where the set of av
 
 \subsection{Choice of valuation metric, rationale and consistency (issues~\ref{item:metrics}, \ref{item:rationale})}
 \label{sec:choice_valuation}
-
-According to decision theory, a classification problem requires the specification of a utility matrix $(U_{dc})$. We saw in \sect~\ref{sec:dt_utility_yield} that the utility matrix should also be used in evaluating the decisions made by one or more classification algorithms in a test set with $N$ datapoints. Each algorithm gives rise to a confusion matrix $(M_{dc})$, containing the number $M_{dc}$ of times the algorithm made decision $d$ when the true class was $c$.
-
-The  average utility obtained by an algorithm on the test set is
-\begin{equation}
-  \label{eq:utility_testset}
-  \frac{1}{N}\sum_{cd} U_{dc}\, M_{dc} \ .
-\end{equation}
-This expressions is a linear combination of the confusion-matrix elements. Besides the factor $1/N$, the coefficients of the linear combination depend only on the utility matrix $(U_{dc})$.
-
-If we are comparing several classifiers \emph{on the same test set}, we can multiply the expression above by a generic positive function of the class frequencies, $a(N_{c})$, and also add a generic function of the class frequencies, $b(N_{c})$. These operations corresponds to changes in the zero and  measurement unit of the utilities by amounts which depend on the class frequencies. Since the class frequencies are independent of the algorithms, these changes are the same for all algorithms and do not affect their final ranking. Note, however, that if we were to compare utilities obtained on different test sets then such changes dependent on class frequencies would not be allowed.
-
-We thus find the following important result according to decision theory: \emph{A valuation metric should be a \textbf{linear combination} of the elements of the confusion matrix, possibly multiplied by a positive function of the class frequencies of the test set and with an additional term also depending only on the class frequencies. The coefficients of the linear combination are problem-specific and \textbf{cannot depend on the confusion-matrix elements}.} In formulae, the metric should have the form
-\begin{equation}
-  \label{eq:general_valuation_metric}
-  a(N_{c})\, \sum_{cd} x_{dc}\, M_{dc} +  b(N_{c})
-\end{equation}
-for some coefficients $x_{dc}$ and functions $a(\dotv)>0$,\; $b(\dotv)$.
-
-Let us see what this means in the case of binary classification. The decisions and classes are both typically denoted as positive \enquote{$\Po$} and negative \enquote{$\Ne$}, and we speak of the number of \enquote{true positives}, \enquote{false positives}, and so on, so that
-\begin{equation*}
-  M_{\Po\Po} \equiv M_{\tp}, \quad
-  M_{\Po\Ne} \equiv M_{\fp}, \quad
-  M_{\Ne\Po} \equiv M_{\fn}, \quad
-  M_{\Ne\Ne} \equiv M_{\tn} \ .
-\end{equation*}
-Accordingly we denote the elements of the utility matrix as
-\begin{equation*}
-  U_{\Po\Po} \equiv U_{\tp}, \quad
-  U_{\Po\Ne} \equiv U_{\fp}, \quad
-  U_{\Ne\Po} \equiv U_{\fn}, \quad
-  U_{\Ne\Ne} \equiv U_{\tn} \ .
-\end{equation*}
-With this notation, decision theory says that a valuation metric for this test set should have the following general form
-\begin{equation}
-  \label{eq:utility_testset_binary}
-  a(N_{\Po},N_{\Ne})\,
-  (x_{\tp}\, M_{\tp} + x_{\fp}\, M_{\fp} +
- x_{\fn}\, M_{\fn} + x_{\tn}\, M_{\tn}) +
-  b(N_{\Po},N_{\Ne}) \ .
-\end{equation}
-for particular values of the coefficients $x_{\tp}, x_{\fp}, x_{\fn}, x_{\tn}$ and particular functions $a(\dotv)>0$ and $b(\dotv)$. Let us examine some common valuation metrics from the point of view of this requirement.
-
-\begin{itemize}
-\item[\itemyes] \emph{Accuracy:} $(M_{\tp}+M_{\tn})/N$. It is a particular case of formula~\eqref{eq:utility_testset_binary} with $x_{\tp}=x_{\tn}=1$,\; $x_{\fp}=x_{\fn}=0$,\; $a(N_{\Po},N_{\Ne})=1/(N_{\Po}+N_{\Ne})$,\; $b(\dotv)=0$. It corresponds to using the utility matrix $\begin{psmallmatrix} 1&0\\0&1 \end{psmallmatrix}$.
-  
-\item[\itemno] \emph{Precision:} $M_{\tp}/(M_{\tp}+M_{\fp})$. It cannot be written as a linear combination of the confusion-matrix elements.
-
-\item[\itemno] \emph{$F_{1}$-measure:} $2 M_{\tp}/(2M_{\tp} + M_{\fp} + M_{\fn})$. It cannot be written as a linear combination of the confusion-matrix elements.
-
-\item[\itemno] \emph{Matthews correlation coefficient:} $\frac{M_{\tp}\, M_{\tn} - M_{\fp}\, M_{\fn}}{\sqrt{(M_{\tp}+M_{\fp})(M_{\tn}+M_{\fn})N_{\Po}N_{\Ne}}}$. It cannot be written as a linear combination of the confusion-matrix elements.
-
-\item[\itemyes] \emph{True-positive rate:} $M_{\tp}/N_{\Po}$. It is  formula~\eqref{eq:utility_testset_binary} with $x_{\tp}=1$, all other $x_{\dotso}=0$, $a(N_{\Po},N_{\Ne})=1/N_{\Po}$, and $b(\dotv)=0$. It corresponds to using the utility matrix $\begin{psmallmatrix} 1&0\\0&0 \end{psmallmatrix}$. 
-
-\item[\itemyes] \emph{True-negative rate:} $M_{\tn}/N_{\Ne}$. Analogous to true-positive rate.
-
-\item[\itemno] \emph{Balanced accuracy:} $(N_{\Ne}\,M_{\tp} + N_{\Po}\, M_{\tn})/(2 N_{\Po}N_{\Ne})$. Despite being an average of two metrics (true-positive and true-negative rate) that agree with formula~\eqref{eq:utility_testset_binary}, it is not an instance of that formula. The reason is that the two averaged metrics involve different $a(\dotv)$ functions.
-\end{itemize}
-
-We see that many popular validation metrics, those marked by \enquote{\itemno} above, do not comply with decision theory. Their formulae involve an interdependence of utilities and probabilities which hides some forms of cognitive biases.
-\mynotew{Very important: we should preferably add an example to illustrate this.}
 
 
 
