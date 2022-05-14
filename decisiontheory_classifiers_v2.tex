@@ -1,7 +1,7 @@
 \pdfoutput=1
 %% Author: PGL  Porta Mana
 %% Created: 2022-03-04T07:39:34+0200
-%% Last-Updated: 2022-05-14T18:32:39+0200
+%% Last-Updated: 2022-05-14T18:47:13+0200
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Decision theory for machine-learning classifiers
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -1080,7 +1080,7 @@ Note how the utilities $U_{ij}$ cannot depend on the frequencies $F_{ij}$ or $C_
 If we modify the elements of a utility matrix by a common additive constant or by a common positive multiplicative constant,
 \begin{equation}
   \label{eq:modify_UM}
-  U_{ij} \mapsto a\ U_{ij} + b \ , \qquad a > 0 \ ,
+  U_{ij} \mapsto a\ U_{ij} + b  \qquad a > 0 \ ,
 \end{equation}
 then the final utilities yielded by a classifier with a particular confusion matrix are modified by the same constants. The ranking of any set of classifiers will therefore be the same. After all, an additive constant or a positive factor represent only changes in the zero or the measurement unit of our utility scale \autocites[cf.][\sect~15.2.2]{russelletal1995_r2022}. Such changes should not affect a decision problem. The fact that indeed they do not, is another example of the logical consistency of decision theory.
 
@@ -1129,18 +1129,23 @@ Consider the case in which we are comparing several classifiers \emph{on the sam
       \textit{\parbox{\widthof{\scriptsize true class}}{\centering\scriptsize true class\\$0\hspace{3em}1$}}
     }
 \end{equation*}
-for a binary-classification problem with classes \enquote{0} and \enquote{1}. Normalizing these frequencies by the number of data $N$ we obtain the relative frequencies $f_{0}$ and $f_{1}$, such that $f_{0} + f_{1} = 1$. (In terms of \enquote{positive} and \enquote{negative} classes, they are the frequencies of true positives and of true negatives.)
+for a binary-classification problem with classes \enquote{0} and \enquote{1}. Normalizing these frequencies by the number of data $N$ we obtain the relative frequencies $f_{0}$ and $f_{1}$ such that $f_{0} + f_{1} = 1$. (In terms of \enquote{positive} and \enquote{negative} classes, they are the frequencies of true positives and of true negatives.)
 
 Therefore the numbers $N$, $f_{0}$, $f_{1}$ are constants and the same for all classifiers in the present evaluation context.
 
 Recall that given a utility matrix we can always modify its elements by a common positive multiplicative constant $a$ and by a common additive constant $b$, \eqn~\eqref{eq:modify_UM}, because such a modification corresponds to a change of zero and unit of utility measurement. With such a change the evaluation metric~\eqref{eq:final_utility} takes the equivalent form
 \begin{equation}
   \label{eq:final_utility_modified}
-  \sum_{ij} a\ U_{ij}\ C_{ij} + b
+ a\ \sum_{ij} \ U_{ij}\ C_{ij} + b
 \end{equation}
 because $\sum_{ij} C_{ij} \equiv 1$.
 
-In the present context $N$, $f_{0}$, $f_{1}$ can be considered constants. We are therefore free to construct $a > 0$ and $b$ from $N$, $f_{0}$, $f_{1}$ in any way we please.
+In the present context $N$, $f_{0}$, $f_{1}$ can be considered constants. We are therefore free to construct $a > 0$ and $b$ from $N$, $f_{0}$, $f_{1}$ in any way we please. Every admissible evaluation metric must thus have the general form
+\begin{empheq}[box=\widefbox]{equation}
+  \label{eq:general_valuation_metric}
+  a(N, f_{0}, f_{1})\ \sum_{ij} U_{ij}\ C_{ij} +  b(N, f_{0}, f_{1})
+\end{empheq}
+
 
 Since we are considering a fixed test set, the 
 
