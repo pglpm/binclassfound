@@ -1,7 +1,7 @@
 \pdfoutput=1
 %% Author: PGL  Porta Mana
 %% Created: 2022-03-04T07:39:34+0200
-%% Last-Updated: 2022-05-14T18:47:13+0200
+%% Last-Updated: 2022-05-14T19:44:01+0200
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Decision theory for machine-learning classifiers
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -1145,6 +1145,8 @@ In the present context $N$, $f_{0}$, $f_{1}$ can be considered constants. We are
   \label{eq:general_valuation_metric}
   a(N, f_{0}, f_{1})\ \sum_{ij} U_{ij}\ C_{ij} +  b(N, f_{0}, f_{1})
 \end{empheq}
+In this formula $(C_{ij})$ is either the raw confusion matrix or the fully-normalized one (grand sum of all entries is unity), since the two differ by a factor $N$ which can be incorporated in the constant $a$. However, \emph{the formula is not valid for row-wise or column-wise normalized confusion matrices}. These kinds of normalizations should not be used \mynotew{Add remark about this in the final summary}
+
 
 
 Since we are considering a fixed test set, the 
