@@ -1,7 +1,7 @@
 \pdfoutput=1
 %% Author: PGL  Porta Mana
 %% Created: 2022-03-04T07:39:34+0200
-%% Last-Updated: 2022-05-14T13:14:22+0200
+%% Last-Updated: 2022-05-14T14:27:32+0200
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Decision theory for machine-learning classifiers
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -1080,11 +1080,11 @@ Let us consider a binary classification problem. It is characterized by a matrix
   \label{eq:normalize_utilities}
   U_{ij} \mapsto \frac{U_{ij} - \min(U_{ij})}{\max(U_{ij}) - \min(U_{ij})} \ .
 \end{equation}
-With this convention it is clear that we only have two degrees of freedom in choosing the utility matrix of a binary classification problem. As a consequence, \emph{the set of possible evaluation metrics for binary classification is two-dimensional}.
+With this convention it is clear that we only have two degrees of freedom in choosing the utility matrix of a binary classification problem. As a consequence, \emph{the space of possible evaluation metrics for binary classification is two-dimensional}. In order to evaluate candidate classifiers for a binary-classification problem we must choose a point from this space.
 
 \begin{figure}[t]
   \centering
-  \includegraphics[width=0.5\linewidth]{space_UM2b.pdf}\\
+  \includegraphics[width=0.65\linewidth]{space_UM2c.pdf}\\
   \caption{Space of utility matrices for binary classification.}
   \label{fig:space_UM}
 \end{figure}
@@ -1097,8 +1097,6 @@ We can represent this space as in \fig~\ref{fig:space_UM}. The centre is the uti
   \end{bmatrix} \ .
 \end{equation}
 
-
-For evaluating candidate classifiers for a binary-classification problem we must choose a point from this space.
 
 
 
