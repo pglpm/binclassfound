@@ -1,7 +1,7 @@
 \pdfoutput=1
 %% Author: PGL  Porta Mana
 %% Created: 2022-03-04T07:39:34+0200
-%% Last-Updated: 2022-05-14T13:00:45+0200
+%% Last-Updated: 2022-05-14T13:14:22+0200
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Decision theory for machine-learning classifiers
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -1082,13 +1082,21 @@ Let us consider a binary classification problem. It is characterized by a matrix
 \end{equation}
 With this convention it is clear that we only have two degrees of freedom in choosing the utility matrix of a binary classification problem. As a consequence, \emph{the set of possible evaluation metrics for binary classification is two-dimensional}.
 
-We can represent this space as in \fig~\ref{fig:space_UM}. The centre is the utility matrix which assigns equal maximum utilities to correct classification and equal minimum utilities to incorrect classification; we shall see later that it corresponds to the use of accuracy as evaluation metric. Moving to the left from the centre, the utility for correct classification of class~1 decreases with respect of class~0; vice versa moving to the right. Moving upwards from the centre, the utility for misclassification of class~1 increases; moving downwards, the utility for misclassification of class~0 increases. We have excluded utility matrices in which misclassification has a higher utility than correct classification (although they may occur in some situations); they would appear in the missing the upper-left and lower-right corners.
-\begin{figure}[b]
+\begin{figure}[t]
   \centering
   \includegraphics[width=0.5\linewidth]{space_UM2b.pdf}\\
   \caption{Space of utility matrices for binary classification.}
   \label{fig:space_UM}
 \end{figure}
+We can represent this space as in \fig~\ref{fig:space_UM}. The centre is the utility matrix with equal maximum utilities for correct classification and equal minimum utilities for incorrect classification; we shall see later that it corresponds to the use of accuracy as evaluation metric. Moving to the left from the centre, the utility for correct classification of class~1 decreases with respect of class~0; vice versa moving to the right. Moving upwards from the centre, the utility for misclassification of class~1 increases; moving downwards, the utility for misclassification of class~0 increases. We have excluded utility matrices in which misclassification has a higher utility than correct classification (although they may occur in some situations); they would appear in the missing the upper-left and lower-right corners. Fixing $(x,y)$ axes through the centre of the set, a utility matrix has coordinates
+\begin{equation}
+  \label{eq:coords_um}
+  \begin{bmatrix}
+    1 - x\ \delt(x < 0) & y\ \delt(y>0) \\
+    -y\ \delt(y<0) & 1 + x\ \delt(x > 0)
+  \end{bmatrix} \ .
+\end{equation}
+
 
 For evaluating candidate classifiers for a binary-classification problem we must choose a point from this space.
 
