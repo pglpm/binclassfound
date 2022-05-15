@@ -1,6 +1,6 @@
 ## Author: PGL  Porta Mana
 ## Created: 2022-05-01T09:38:48+0200
-## Last-Updated: 2022-05-15T16:37:09+0200
+## Last-Updated: 2022-05-15T20:15:45+0200
 ################
 ## Calculations for the papers
 ################
@@ -136,7 +136,20 @@ allscores <- function(p,ab){
     names(out) <- c('F1', 'MCC', 'Prec', 'Acc', 'BalAcc', 'Kri', 'Fo-Ma', 'AUC', 'Rec', 'Spec')
     out
 }
-
+##
+xy2um <- function(ab,ab2=NULL){
+    if(length(ab)==1){ab <- c(ab,ab2)}
+        id + (ab[1]<0)*ab[1]*utn - (ab[1]>0)*ab[1]*utp +
+        (ab[2]>0)*ab[2]*ufp - (ab[2]<0)*ab[2]*ufn
+}
+##
+um2xy <- function(um){
+    um <- um-min(um)
+    um <- um/max(um)
+    x <- -(1-um[2,2])*(um[2,2]<1) + (1-um[1,1])*(um[1,1]<1)
+    y <- -um[2,1]*(um[2,1]>0) + um[1,2]*(um[1,2]>0)
+    c(x,y)
+}
 
 
 
@@ -177,10 +190,7 @@ utn <- matrix(c(0,0,0,1),2,2)
 ufp <- matrix(c(0,0,1,0),2,2)
 ufn <- matrix(c(0,1,0,0),2,2)
 ##
-listum <- future_apply(xy, 1, function(ab){
-        id + (ab[1]<0)*ab[1]*utn - (ab[1]>0)*ab[1]*utp +
-        (ab[2]>0)*ab[2]*ufp - (ab[2]<0)*ab[2]*ufn
-})
+listum <- future_apply(xy, 1, xy2um)
 dim(listum) <- c(2,2,lxy)
 
 
@@ -412,28 +422,38 @@ signif(diffscores[ok1,],2)
 xumpaper <- matrix(c(15,-35,-335,165), 2,2)
 xumpaper <- xumpaper-min(xumpaper)
 xumpaper <- signif(xumpaper/max(xumpaper), 2)
+
+set.seed(149)
+##
+nn <- 10^4
+xum <- diag(2)
+#xum <- xumpaper
+shape1 <- 2
+shape2 <- 1
+inrange <- FALSE
+while(!inrange){
+    wxy <- um2xy(xum)+rnorm(2,0,0.1)
+    inrange <- (wxy[2] <= wxy[1]+1 & wxy[2] >= wxy[1]-1)
+}
+wum <- xy2um(wxy)
+print(wxy)
+print(wum)
 ##
 metrlist <- list('F1-measure'=f1score,
               'MCC'=mcc,
               'Precision'=prec,
-              'Accuracy'=acc,
               'Balanced accuracy'=bacc,
               'Fowlkes-Mallows index'=foma,
+              'Accuracy'=acc,
               'True-positive rate'=function(p,a,b){a},
               'True-negative rate'=function(p,a,b){b},
-              'Utility paper'=function(p,a,b){
+              'utility using 10% incorrect utilities'=function(p,a,b){
                   rowSums(aperm(confm(p,a,b)*
-                                c(xumpaper) ))
+                                c(wum) ))
               })
-xum <- diag(2)#xumpaper
-set.seed(149)
-##
-nn <- 10^4
-shape1 <- 2
-shape2 <- 1
 ##
 lp <- runif(nn,0,1)
-la1 <- 0.5+0.5*rbeta(nn, shape1=2, shape2=1)
+la1 <- 0.5+0.5*rbeta(nn, shape1=shape1, shape2=shape2)
 ## test <- thist(la1);tplot(x=test$breaks, y=test$density)
 ## summary(la1)
 lb1 <- 0.5+0.5*rbeta(nn, shape1=shape1, shape2=shape2)
@@ -454,47 +474,198 @@ for(i in 1:length(metrlist)){
 groupok <- (ldut>0 & ldmetr>0) | (ldut<0 & ldmetr<0)
 tplot(x=list(ldut[groupok],ldut[!groupok]),
       y=list(ldmetr[groupok],ldmetr[!groupok]), type='p', pch=c(20,17),cex=0.5,
+      alpha=0.25,
       xlab='difference in utility', ylab=paste0('difference in ',ylab))
-legend('topleft', legend=sum(groupok)/nn, bty='n')
+    legend('topleft', bty='n', legend=paste0(
+                          'incorrectly ranked pairs: ',
+                          round(100*(1-sum(groupok)/nn)), '%'),
+           cex=1.5)
 }
 dev.off()
 #################################
-
+apap <- 2*c(0.27,0.43)
+bpap <- 2*c(0.35, 0.32)
+lupap <- rowSums(aperm(confm(rep(0.5,2),apap,bpap)*c(xum)))
+lmpap <- metr(rep(0.5,2),apap,bpap)
 set.seed(149)
 ##
-nn <- 10^4
-shape1 <- 2
-shape2 <- 1
 ##
-lp <- runif(nn,0,1)
-la1 <- 0.5+0.5*rbeta(nn, shape1=2, shape2=1)
-## test <- thist(la1);tplot(x=test$breaks, y=test$density)
-## summary(la1)
-lb1 <- 0.5+0.5*rbeta(nn, shape1=shape1, shape2=shape2)
-##
-lcm1 <- confm(lp,la1,lb1)
 ##
 ldut <- rowSums(aperm((lcm1)*c(xum)))
+rgu <- range(ldut)
+allmetr <- sapply(metrlist, function(metr){ metr(lp,la1,lb1) })
+rgm <- apply(allmetr,2,range)
+okb <- c(which.min(colSums((t(allmetr)-rgm[2,])^2)/ncol(allmetr) + (ldut-rgu[1])^2),
+         which.min(colSums((t(allmetr)-rgm[1,])^2)/ncol(allmetr) + (ldut-rgu[2])^2)
+         )
 ##
 ##
-subs <- 1:100
 pdff(paste0('testsingle', paste0(xum,collapse='')))
+exc <- 0
+pchseq <- c(5,0,1,6)
 for(i in 1:length(metrlist)){
     metr <- metrlist[[i]]
     ldmetr <- metr(lp,la1,lb1)
     ylab <- names(metrlist)[i]
-    groupok <- which( outer(ldmetr[subs],ldmetr[subs],'-')*outer(ldut[subs],ldut[subs],'-')<0, arr.ind=T)[1,]
+    if( diff(ldut[okb])*diff(ldmetr[okb]) < 0){
+        ok <- okb
+        pch <- 2
+        col <- 2
+    }else{
+        rgm <- range(ldmetr)
+        ok <- c(which.min((ldmetr-rgm[1])^2 + (ldut-rgu[2])^2),
+                which.min((ldmetr-rgm[2])^2 + (ldut-rgu[1])^2))
+        exc <- exc + 1
+        pch <- pchseq[exc]
+        col <- 2 + exc
+    }
+    ## if(i<=5){
+    ##     ok1 <- ok1b
+    ##     ok2 <- ok2b
+    ##     pch <- 2
+    ## }else{
+    ##     rgm <- range(ldmetr)
+    ##     ok1 <- which.min((ldmetr-rgm[1])^2 + (ldut-rgu[2])^2)
+    ##     ok2 <- which.min((ldmetr-rgm[2])^2 + (ldut-rgu[1])^2)
+    ##     pch <- 5
+    ## }
+    ## diffu <- ldut[1:(nn/2)]-ldut[(nn/2+1):nn]
+    ## diffm <- ldmetr[1:(nn/2)]-ldmetr[(nn/2+1):nn]
+    ## okp <- which( diffu*diffm < 0)[1]
 tplot(x=ldut,
-      y=ldmetr, type='p', pch=20,cex=0.5,
+      y=ldmetr, type='p', pch=20, cex=0.5, alpha=0.25,
       xlab='utility', ylab=ylab)
-tplot(x=ldut[groupok],
-      y=ldmetr[groupok], type='p', pch=0,cex=1.5, col=2,
+tplot(x=rbind(ldut[ok]),
+      y=rbind(ldmetr[ok]), type='p', pch=pch,cex=3, lwd=5, col=col,
       add=T)
 #legend('topleft', legend=sum(groupok)/nn, bty='n')
 }
 dev.off()
 
 
+set.seed(149)
+##
+nn <- 10^4
+xum <- diag(2)
+#xum <- xumpaper
+shape1 <- 2
+shape2 <- 1
+inrange <- FALSE
+while(!inrange){
+    wxy <- um2xy(xum)+rnorm(2,0,0.1)
+    inrange <- (wxy[2] <= wxy[1]+1 & wxy[2] >= wxy[1]-1)
+}
+wum <- xy2um(wxy)
+print(wxy)
+print(wum)
+##
+metrlist <- list('F1-measure'=f1score,
+              'MCC'=mcc,
+              'Precision'=prec,
+              'Balanced accuracy'=bacc,
+              'Fowlkes-Mallows index'=foma,
+              'Accuracy'=acc,
+              'True-positive rate'=function(p,a,b){a},
+              'True-negative rate'=function(p,a,b){b},
+              'utility using 10% incorrect utilities'=function(p,a,b){
+                  rowSums(aperm(confm(p,a,b)*
+                                c(wum) ))
+              })
+##
+lp <- runif(nn,0,1)
+la1 <- 0.5+0.5*rbeta(nn, shape1=shape1, shape2=shape2)
+## test <- thist(la1);tplot(x=test$breaks, y=test$density)
+## summary(la1)
+lb1 <- 0.5+0.5*rbeta(nn, shape1=shape1, shape2=shape2)
+la2 <- 0.5+0.5*rbeta(nn, shape1=shape1, shape2=shape2)
+lb2 <- 0.5+0.5*rbeta(nn, shape1=shape1, shape2=shape2)
+##
+lcm1 <- confm(lp,la1,lb1)
+lcm2 <- confm(lp,la2,lb2)
+##
+ldut <- rowSums(aperm((lcm2-lcm1)*c(xum)))
+##
+##
+pdff(paste0('testdiff', paste0(xum,collapse='')))
+for(i in 1:length(metrlist)){
+    metr <- metrlist[[i]]
+    ldmetr <- metr(lp,la2,lb2)-metr(lp,la1,lb1)
+    ylab <- names(metrlist)[i]
+groupok <- (ldut>0 & ldmetr>0) | (ldut<0 & ldmetr<0)
+tplot(x=list(ldut[groupok],ldut[!groupok]),
+      y=list(ldmetr[groupok],ldmetr[!groupok]), type='p', pch=c(20,17),cex=0.5,
+      alpha=0.25,
+      xlab='difference in utility', ylab=paste0('difference in ',ylab))
+    legend('topleft', bty='n', legend=paste0(
+                          'incorrectly ranked pairs: ',
+                          round(100*(1-sum(groupok)/nn)), '%'),
+           cex=1.5)
+}
+dev.off()
+#################################
+apap <- 2*c(0.27,0.43)
+bpap <- 2*c(0.35, 0.32)
+lupap <- rowSums(aperm(confm(rep(0.5,2),apap,bpap)*c(xum)))
+lmpap <- metr(rep(0.5,2),apap,bpap)
+set.seed(149)
+##
+##
+##
+ldut <- rowSums(aperm((lcm1)*c(xum)))
+rgu <- range(ldut)
+allmetr <- sapply(metrlist, function(metr){ metr(lp,la1,lb1) })
+rgm <- apply(allmetr,2,range)
+okb <- c(which.min(colSums((t(allmetr)-rgm[2,])^2)/ncol(allmetr) + (ldut-rgu[1])^2),
+         which.min(colSums((t(allmetr)-rgm[1,])^2)/ncol(allmetr) + (ldut-rgu[2])^2)
+         )
+##
+##
+pdff(paste0('testsingle', paste0(xum,collapse='')))
+exc <- 0
+pchseq <- c(5,0,1,6)
+for(i in 1:length(metrlist)){
+    metr <- metrlist[[i]]
+    ldmetr <- metr(lp,la1,lb1)
+    ylab <- names(metrlist)[i]
+    if( diff(ldut[okb])*diff(ldmetr[okb]) < 0){
+        ok <- okb
+        pch <- 2
+        col <- 2
+    }else{
+        rgm <- range(ldmetr)
+        ok <- c(which.min((ldmetr-rgm[1])^2 + (ldut-rgu[2])^2),
+                which.min((ldmetr-rgm[2])^2 + (ldut-rgu[1])^2))
+        exc <- exc + 1
+        pch <- pchseq[exc]
+        col <- 2 + exc
+    }
+    ## if(i<=5){
+    ##     ok1 <- ok1b
+    ##     ok2 <- ok2b
+    ##     pch <- 2
+    ## }else{
+    ##     rgm <- range(ldmetr)
+    ##     ok1 <- which.min((ldmetr-rgm[1])^2 + (ldut-rgu[2])^2)
+    ##     ok2 <- which.min((ldmetr-rgm[2])^2 + (ldut-rgu[1])^2)
+    ##     pch <- 5
+    ## }
+    ## diffu <- ldut[1:(nn/2)]-ldut[(nn/2+1):nn]
+    ## diffm <- ldmetr[1:(nn/2)]-ldmetr[(nn/2+1):nn]
+    ## okp <- which( diffu*diffm < 0)[1]
+tplot(x=ldut,
+      y=ldmetr, type='p', pch=20, cex=0.5, alpha=0.25,
+      xlab='utility', ylab=ylab)
+tplot(x=rbind(ldut[ok]),
+      y=rbind(ldmetr[ok]), type='p', pch=pch,cex=3, lwd=5, col=col,
+      add=T)
+#legend('topleft', legend=sum(groupok)/nn, bty='n')
+}
+dev.off()
+
+
+####################################################################
+####################################################################
+####################################################################
 
 
 
