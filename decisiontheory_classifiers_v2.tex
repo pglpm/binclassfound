@@ -1,7 +1,7 @@
 \pdfoutput=1
 %% Author: PGL  Porta Mana
 %% Created: 2022-03-04T07:39:34+0200
-%% Last-Updated: 2022-05-15T12:35:54+0200
+%% Last-Updated: 2022-05-15T15:07:36+0200
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Decision theory for machine-learning classifiers
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -1191,7 +1191,17 @@ Let us examine some common evaluation metrics for binary classification from thi
   \item[\itemno] \emph{Balanced accuracy:} $C_{00}/(2 f_{0}) + C_{11}/(2 f_{1})$. Despite being linear in $C_{00}, C_{11}$ and an average of two metrics (true-positive and true-negative rate) that are instances of formula~\eqref{eq:general_valuation_metric}, it is not an instance of that formula, because the two averaged metrics involve different $a(\dotv)$ functions.
 \end{itemize}
 
-We see that many popular validation metrics, those marked \enquote{\itemno}, do not comply with the principles of decision theory. As discussed in \sect~\ref{sec:decision_theory} this means that their formulae involve an interdependence of utilities and classification frequencies which implies some form of cognitive bias.
+We see that many popular evaluation metrics do not comply with the principles of decision theory. Any such metric suffers from two problems.
+
+First, as discussed in \sect~\ref{sec:decision_theory} the metric involves an interdependence of utilities and classification frequencies, which implies some form of cognitive bias.
+
+Second, the ranking of confusion matrices yielded by the metric does not fully agree with that yielded by any utility matrix -- a full agreement would otherwise imply that the metric could be written in the form~\eqref{eq:general_valuation_metric}. Some confusion matrices will always be incorrectly ranked. Since any rational classification problem must be characterized by some underlying utility matrix, this means that the incompliant metric will always lead to some wrong evaluations.
+
+By contrast, compliant metrics such as the accuracy give completely correct rankings for all pairs of confusion matrices in some specific set of classification problems.
+
+
+
+No matter which utility matrix we choose, the incompliant metric will rank some pairs of confusion matrices in the
 
 \autocites{handetal2018}
 

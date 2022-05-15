@@ -1,6 +1,6 @@
 ## Author: PGL  Porta Mana
 ## Created: 2022-05-01T09:38:48+0200
-## Last-Updated: 2022-05-13T10:34:29+0200
+## Last-Updated: 2022-05-15T16:18:31+0200
 ################
 ## Calculations for the papers
 ################
@@ -401,6 +401,92 @@ signif(diffscores[ok1,],2)
 ## > [1] "% Dscores CM1 - CM2"
 ## >     F1    MCC   Prec    Acc BalAcc    Kri    AUC    Rec   Spec 
 ##   28.0   71.0    9.2   19.0   19.0   19.0   19.0   46.0   -9.0 
+
+
+
+
+##########################################################################
+#### Plot of wrong result of some metrics for some utility matrices
+##########################################################################
+
+xumpaper <- matrix(c(15,-35,-335,165), 2,2)
+xumpaper <- xumpaper-min(xumpaper)
+xumpaper <- signif(xumpaper/max(xumpaper), 2)
+##
+metrlist <- list('F1-measure'=f1score,
+              'MCC'=mcc,
+              'Precision'=prec,
+              'Accuracy'=acc,
+              'Balanced accuracy'=bacc,
+              'Fowlkes-Mallows index'=foma,
+              'True-positive rate'=function(p,a,b){a},
+              'True-negative rate'=function(p,a,b){b},
+              'Utility paper'=function(p,a,b){
+                  rowSums(aperm(confm(p,a,b)*
+                                c(xumpaper) ))
+              })
+xum <- diag(2)#xumpaper
+set.seed(149)
+##
+nn <- 10^4
+shape1 <- 2
+shape2 <- 1
+##
+lp <- runif(nn,0,1)
+la1 <- 0.5+0.5*rbeta(nn, shape1=2, shape2=1)
+## test <- thist(la1);tplot(x=test$breaks, y=test$density)
+## summary(la1)
+lb1 <- 0.5+0.5*rbeta(nn, shape1=shape1, shape2=shape2)
+la2 <- 0.5+0.5*rbeta(nn, shape1=shape1, shape2=shape2)
+lb2 <- 0.5+0.5*rbeta(nn, shape1=shape1, shape2=shape2)
+##
+lcm1 <- confm(lp,la1,lb1)
+lcm2 <- confm(lp,la2,lb2)
+##
+ldut <- rowSums(aperm((lcm2-lcm1)*c(xum)))
+##
+##
+pdff(paste0('testdiff', paste0(xum,collapse='')))
+for(i in 1:length(metrlist)){
+    metr <- metrlist[[i]]
+    ldmetr <- metr(lp,la2,lb2)-metr(lp,la1,lb1)
+    ylab <- names(metrlist)[i]
+groupok <- (ldut>0 & ldmetr>0) | (ldut<0 & ldmetr<0)
+tplot(x=list(ldut[groupok],ldut[!groupok]),
+      y=list(ldmetr[groupok],ldmetr[!groupok]), type='p', pch=c(20,17),cex=0.5,
+      xlab='utility difference', ylab=ylab)
+legend('topleft', legend=sum(groupok)/nn, bty='n')
+}
+dev.off()
+#################################
+set.seed(149)
+##
+nn <- 10^4
+shape1 <- 2
+shape2 <- 1
+##
+lp <- runif(nn,0,1)
+la1 <- 0.5+0.5*rbeta(nn, shape1=2, shape2=1)
+## test <- thist(la1);tplot(x=test$breaks, y=test$density)
+## summary(la1)
+lb1 <- 0.5+0.5*rbeta(nn, shape1=shape1, shape2=shape2)
+##
+lcm1 <- confm(lp,la1,lb1)
+##
+ldut <- rowSums(aperm((lcm1)*c(xum)))
+##
+##
+pdff(paste0('testsingle', paste0(xum,collapse='')))
+for(i in 1:length(metrlist)){
+    metr <- metrlist[[i]]
+    ldmetr <- metr(lp,la1,lb1)
+    ylab <- names(metrlist)[i]
+tplot(x=ldut,
+      y=ldmetr, type='p', pch=20,cex=0.5,
+      xlab='utility', ylab=ylab)
+#legend('topleft', legend=sum(groupok)/nn, bty='n')
+}
+dev.off()
 
 
 
