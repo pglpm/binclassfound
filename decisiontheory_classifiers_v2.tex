@@ -1,7 +1,7 @@
 \pdfoutput=1
 %% Author: PGL  Porta Mana
 %% Created: 2022-03-04T07:39:34+0200
-%% Last-Updated: 2022-05-14T19:44:01+0200
+%% Last-Updated: 2022-05-15T12:19:25+0200
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Decision theory for machine-learning classifiers
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -792,15 +792,15 @@ Open Science Framework \doi{10.31219/osf.io/#1}%
 Two candidate classifiers, let us call them $\Alpha$ and $\Beta$, are trained on available training data. When employed on a separate evaluation set they yield the following confusion matrices, written in the format
 \begin{equation*}
   \rotatebox[origin=c]{90}{
-    \textit{\parbox{\widthof{classifier}}{\centering\scriptsize classifier\\output\\$1\quad 0$}}
-    }\ 
+    \clap{\textit{\parbox{5em}{\centering\scriptsize classifier\\output\\$1\quad 0$}}
+    }}\ 
     \overbracket[0pt]{
       \begin{bmatrix}
     \text{\footnotesize True 0} & \text{\footnotesize False 0}\\
     \text{\footnotesize False 1} & \text{\footnotesize True 1}\\
       \end{bmatrix}}^{
-      \textit{\parbox{\widthof{\scriptsize true class}}{\centering\scriptsize true class\\$0\hspace{3em}1$}}
-    }
+      \clap{\textit{\parbox{6em}{\centering\scriptsize true class\\$0\hspace{3em}1$}}
+    }}
 \end{equation*}
 and normalized over the total number of evaluation data:
 %% [1,] 0.27 0.15
@@ -862,15 +862,15 @@ The average gains above are easy to calculate from some additional information. 
 \begin{equation}
   \label{eq:utility_example}
   \rotatebox[origin=c]{90}{
-    \textit{\parbox{\widthof{\scriptsize classifier}}{\centering\scriptsize classifier\\output\\$1\quad 0$}}
-    }\ 
+    \clap{\textit{\parbox{5em}{\centering\scriptsize classifier\\output\\$1\quad 0$}}
+    }}\ 
     \overbracket[0pt]{
       \begin{bmatrix*}[r]
         15\,\text{\texteuro} & -335\,\text{\texteuro}  \\
         -35\,\text{\texteuro} & 165\,\text{\texteuro}
       \end{bmatrix*}}^{
-      \textit{\parbox{\widthof{\scriptsize true class}}{\centering\scriptsize true class\\$0\hspace{3em}1$}}
-    }
+      \clap{\textit{\parbox{6em}{\centering\scriptsize true class\\$0\hspace{3em}1$}}
+    }}
 \end{equation}
 The reason behind these values is that short-durability components (class~1) provide more power and are used in high-end, costly devices; but they cause extreme damage and consequent repair costs and refunds if used in devices that require long-durability components (class~0). Long-durability components provide less power and are used in low-end, cheaper devices; they cause some damage if used in devices that require short-durability components, but with lower consequent costs.
 
@@ -907,15 +907,15 @@ The story above illustrates several well-known issues of current popular evaluat
 \begin{equation}
   \label{eq:utility_example_2}
   \rotatebox[origin=c]{90}{
-    \textit{\parbox{\widthof{\scriptsize classifier}}{\centering\scriptsize classifier\\output\\$1\hspace{1.5em}0$}}
-    }\ 
+    \clap{\textit{\parbox{5em}{\centering\scriptsize classifier\\output\\$1\hspace{1.5em}0$}}
+    }}\ 
     \overbracket[0pt]{
       \begin{bmatrix*}[r]
         45\,\text{\texteuro} & -335\,\text{\texteuro}  \\
         -65\,\text{\texteuro} & 165\,\text{\texteuro}
       \end{bmatrix*}}^{
-      \textit{\parbox{\widthof{\scriptsize$0\hspace{4em}1$}}{\centering\scriptsize true class\\$0\hspace{4em}1$}}
-    } \ .
+      \clap{\textit{\parbox{6em}{\centering\scriptsize true class\\$0\hspace{4em}1$}}
+    }} \ .
 \end{equation}
 One could argue that also this case there is a great economic difference between correct and wrong classification for class~1, as compared with class~0. The true-negative rate should therefore still be the appropriate metric. Yet a simple calculation shows that in this case it is classifier~$\Beta$ which actually leads to the best average revenue: $7.3\,\text{\texteuro/component}$, vs $4.7\,\text{\texteuro/component}$ for classifier $\Alpha$. Hence the true-negative rate is \emph{not} the appropriate metric and our intuitive reasoning failed us here.
 
@@ -930,15 +930,15 @@ One could argue that also this case there is a great economic difference between
 \begin{equation}
   \label{eq:utility_example_medicine}
   \rotatebox[origin=c]{90}{
-    \textit{\parbox{\widthof{\scriptsize classifier}}{\centering\scriptsize classifier\\output\\$1\hspace{1.5em}0$}}
-    }\ 
+    \clap{\textit{\parbox{5em}{\centering\scriptsize classifier\\output\\$1\hspace{1.5em}0$}}
+    }}\ 
     \overbracket[0pt]{
       \begin{bmatrix*}[r]
         350\,\text{months} & 0\,\text{months}  \\
         300\,\text{months} & 500\,\text{months}
       \end{bmatrix*}}^{
-      \textit{\parbox{\widthof{\scriptsize$0\hspace{7em}1$}}{\scriptsize\centering true class\\$0\hspace{7em}1$}}
-    } \ .
+      \clap{\textit{\parbox{8em}{\scriptsize\centering true class\\$0\hspace{7em}1$}}
+    }} \ .
 \end{equation}
 This matrix is numerically equivalent to~\eqref{eq:utility_example} up to a common additive constant of $335$, so the final net gains are also simply shifted by this amount. The value 0 means immediate death. It is easy to see that the metrics are exactly as is Table~\ref{tab:example_metrics}, the majority favouring classifier~$\Beta$. And yet the use of classifier~$\Alpha$ leads to a more than six-month longer expected remaining life than classifier~$\Beta$.
 
@@ -1001,9 +1001,9 @@ Decision theory makes a distinction between
 \item the possible situations we are uncertain about, in our case the possible classes;
 \item the possible decisions we can make.
 \end{itemize}
-This distinction is important, as briefly argued at the end of \sect~\ref{sec:issues}; in some cases even the number of classes and the number of decisions differ. This distinction prevents the appearance of various cognitive biases \autocites{kahnemanetal1982_r2008,gilovichetal2002_r2009,kahneman2011}, for example the scarcity bias mentioned in \ref{item:rationale}, or plain wishful thinking: \enquote*{this event is valuable, \emph{therefore} it is more probable}.
+This distinction is important because it prevents the appearance of various cognitive biases \autocites{kahnemanetal1982_r2008,gilovichetal2002_r2009,kahneman2011} in evaluating the probabilities and frequencies of the possible situations on the one hand, and the values of our decisions on the other. Examples are the scarcity bias\autocites{camereretal1989,kimetal1999,mittoneetal2009} \enquote*{this class is rare, \emph{therefore} its correct classification must lead to high gains}, and plain wishful thinking: \enquote*{this event leads to high gains, \emph{therefore} it is more probable}.
 
-In using \ml\ classifiers one typically considers situations where the set of available decisions and the set of possible classes have some kind of natural correspondence and equal cardinality. In a \enquote{cat vs dog} image classification, for example, the classes are \enquote{cat} and \enquote{dog}, and the decisions could be \enquote{put into folder Cats} vs \enquote{put into folder Dogs}. In a medical application the classes could be \enquote{ill} and \enquote{healthy} and the decisions \enquote{treat} vs \enquote{dismiss}. As already mentioned, for simplicity our discussion and examples focus on binary classification.
+Often even the number of classes and the number of decisions differ. But in using \ml\ classifiers one typically considers situations where the set of available decisions and the set of possible classes have some kind of natural correspondence and equal cardinality. In a \enquote{cat vs dog} image classification, for example, the classes are \enquote{cat} and \enquote{dog}, and the decisions could be \enquote{put into folder Cats} vs \enquote{put into folder Dogs}. In a medical application the classes could be \enquote{ill} and \enquote{healthy} and the decisions \enquote{treat} vs \enquote{dismiss}. As already mentioned, for simplicity our discussion and examples focus on binary classification.
 
 
 \subsection{Utilities and maximization of expected utility}
@@ -1075,7 +1075,7 @@ where $C_{ij} \defd F_{ij}/N$ is the relative frequency of choice $i$ and true c
 
 \emph{Formula~\eqref{eq:final_utility} is the natural metric to evaluate and compare the performance of classifiers on a test set}.
 
-Note how the utilities $U_{ij}$ cannot depend on the frequencies $F_{ij}$ or $C_{ij}$. If they did, it would mean that we had waited until \emph{all} classification instances had been made in order to assess the value of each \emph{single} instance. This would be a source of evaluation bias. It would also be an impossible procedure in contexts where the consequence of a single classification is manifest before the next classification is made.
+Note how the utilities $U_{ij}$ cannot depend on the frequencies $F_{ij}$ or $C_{ij}$. If they did, it would mean that we had waited until \emph{all} classification instances had been made in order to assess the value of each \emph{single} instance. This would be a source of evaluation bias, such as the scarcity bias mentioned in \sect~\ref{sec:dt_dec_classes}. It would also be an impossible procedure in contexts where the consequence of a single classification is manifest before the next classification is made.
 
 If we modify the elements of a utility matrix by a common additive constant or by a common positive multiplicative constant,
 \begin{equation}
@@ -1114,97 +1114,81 @@ Note that this representation is \emph{not} meant to reflect any convex or metri
 \subsection{Relationship with common metrics}
 \label{sec:common_metrics}
 
-In \sect~\ref{sec:admissible_metrics} we found that the most general evaluation metric according to decision theory must be a linear combination of the confusion-matrix elements. The coefficients of the linear combination cannot depend on the confusion-matrix elements themselves, because such a dependence would reflect some sort of cognitive bias.
+In \sect~\ref{sec:admissible_metrics} we found that the most general evaluation metric according to decision theory must be a linear combination of the confusion-matrix elements. The coefficients of this linear combination cannot depend on the confusion-matrix elements themselves, because such a dependence would reflect some sort of cognitive bias. Which common popular metrics adhere to this mathematical form? We want to answer this question in the binary-classification case and by giving as much allowance as possible in the typical context in which popular metrics are used.
 
-Consider the case in which we are comparing several classifiers \emph{on the same test set} with $N$ data. The frequencies with which the classes occur in this set are fixed and constant for all classifiers under evaluation. These frequencies corresponds to the sums of the columns of any confusion matrix obtained from the test set, written in the format
+Consider the case in which we are comparing several classifiers \emph{on the same test set}. The number of data $N$, and the relative frequencies $f_{0}, f_{1}$ with which the two classes \enquote{$0$}, \enquote{$1$} occur in the test set are fixed and constant for all classifiers under evaluation.
+
+A classifier yields a normalized confusion matrix $(C_{ij})$ which we write in the format
 \begin{equation*}
   \rotatebox[origin=c]{90}{
-    \textit{\parbox{\widthof{classifier}}{\centering\scriptsize classifier\\output\\$1\quad 0$}}
-    }\ 
+    \clap{\textit{\parbox{5em}{\centering\scriptsize classifier\\output\\$1\hspace{1.5em}0$}}
+    }}\ 
     \overbracket[0pt]{
-      \begin{bmatrix}
-    \text{\footnotesize True 0} & \text{\footnotesize False 0}\\
-    \text{\footnotesize False 1} & \text{\footnotesize True 1}\\
+      \begin{bmatrix} C_{00} & C_{01} \\ C_{10} & C_{11}
       \end{bmatrix}}^{
-      \textit{\parbox{\widthof{\scriptsize true class}}{\centering\scriptsize true class\\$0\hspace{3em}1$}}
-    }
+      \clap{\textit{\parbox{6em}{\centering\scriptsize true class\\$0\hspace{3em}1$}}
+    }} \ .
 \end{equation*}
-for a binary-classification problem with classes \enquote{0} and \enquote{1}. Normalizing these frequencies by the number of data $N$ we obtain the relative frequencies $f_{0}$ and $f_{1}$ such that $f_{0} + f_{1} = 1$. (In terms of \enquote{positive} and \enquote{negative} classes, they are the frequencies of true positives and of true negatives.)
 
-Therefore the numbers $N$, $f_{0}$, $f_{1}$ are constants and the same for all classifiers in the present evaluation context.
+Owing to the constraints $C_{00} + C_{10} \equiv f_{0}$ and $C_{01} + C_{11} \equiv f_{1}$ we can always make two elements of the confusion matrix appear or disappear from any formula, replacing them with expressions involving the remaining elements and the class frequencies. To avoid ambiguities in interpreting the functional form of mathematical formulae, let us agree to always express them in terms of $C_{00}$ and $C_{11}$ only, making the replacements $C_{10} = f_{0} - C_{00}$, $C_{01} = f_{1} - C_{11}$ wherever necessary.
 
-Recall that given a utility matrix we can always modify its elements by a common positive multiplicative constant $a$ and by a common additive constant $b$, \eqn~\eqref{eq:modify_UM}, because such a modification corresponds to a change of zero and unit of utility measurement. With such a change the evaluation metric~\eqref{eq:final_utility} takes the equivalent form
+Recall that given a utility matrix we can always modify its elements by a common positive multiplicative constant $a$ and by a common additive constant $b$, \eqn~\eqref{eq:modify_UM}, because such a modification corresponds to a change of unit and zero of the utility scale. With such a modification the evaluation metric~\eqref{eq:final_utility} takes the equivalent form
 \begin{equation}
   \label{eq:final_utility_modified}
  a\ \sum_{ij} \ U_{ij}\ C_{ij} + b
 \end{equation}
-because $\sum_{ij} C_{ij} \equiv 1$.
-
-In the present context $N$, $f_{0}$, $f_{1}$ can be considered constants. We are therefore free to construct $a > 0$ and $b$ from $N$, $f_{0}$, $f_{1}$ in any way we please. Every admissible evaluation metric must thus have the general form
-\begin{empheq}[box=\widefbox]{equation}
-  \label{eq:general_valuation_metric}
-  a(N, f_{0}, f_{1})\ \sum_{ij} U_{ij}\ C_{ij} +  b(N, f_{0}, f_{1})
-\end{empheq}
-In this formula $(C_{ij})$ is either the raw confusion matrix or the fully-normalized one (grand sum of all entries is unity), since the two differ by a factor $N$ which can be incorporated in the constant $a$. However, \emph{the formula is not valid for row-wise or column-wise normalized confusion matrices}. These kinds of normalizations should not be used \mynotew{Add remark about this in the final summary}
-
-
-
-Since we are considering a fixed test set, the 
-
-
-, we can multiply the expression above by a generic positive function of the class frequencies, $a(N_{c})$, and also add a generic function of the class frequencies, $b(N_{c})$. These operations corresponds to changes in the zero and  measurement unit of the utilities by amounts which depend on the class frequencies. Since the class frequencies are independent of the algorithms, these changes are the same for all algorithms and do not affect their final ranking. Note, however, that if we were to compare utilities obtained on different test sets then such changes dependent on class frequencies would not be allowed.
-
-We thus find the following important result according to decision theory: \emph{A valuation metric should be a \textbf{linear combination} of the elements of the confusion matrix, possibly multiplied by a positive function of the class frequencies of the test set and with an additional term also depending only on the class frequencies. The coefficients of the linear combination are problem-specific and \textbf{cannot depend on the confusion-matrix elements}.} In formulae, the metric should have the form
+because $\sum_{ij} C_{ij} \equiv 1$. Writing the sum explicitly and rewriting the elements $C_{10}, C_{01}$ in terms of $C_{00}, C_{11}$ as discussed above, this formula becomes 
 \begin{equation}
-  \label{eq:general_valuation_metric}
-  a(N_{c})\, \sum_{cd} x_{dc}\, M_{dc} +  b(N_{c})
+  \label{eq:final_utility_binary}
+    a\ (U_{00} - U_{10})\ C_{00} \ + \ 
+    a\ (U_{11} - U_{01})\ C_{11} \ + \ 
+    a\ f_{0}\ U_{10} + a\ f_{1}\ U_{01} +  b \ .
 \end{equation}
-for some coefficients $x_{dc}$ and functions $a(\dotv)>0$,\; $b(\dotv)$.
 
-Let us see what this means in the case of binary classification. The decisions and classes are both typically denoted as positive \enquote{$\Po$} and negative \enquote{$\Ne$}, and we speak of the number of \enquote{true positives}, \enquote{false positives}, and so on, so that
-\begin{equation*}
-  M_{\Po\Po} \equiv M_{\tp}, \quad
-  M_{\Po\Ne} \equiv M_{\fp}, \quad
-  M_{\Ne\Po} \equiv M_{\fn}, \quad
-  M_{\Ne\Ne} \equiv M_{\tn} \ .
-\end{equation*}
-Accordingly we denote the elements of the utility matrix as
-\begin{equation*}
-  U_{\Po\Po} \equiv U_{\tp}, \quad
-  U_{\Po\Ne} \equiv U_{\fp}, \quad
-  U_{\Ne\Po} \equiv U_{\fn}, \quad
-  U_{\Ne\Ne} \equiv U_{\tn} \ .
-\end{equation*}
-With this notation, decision theory says that a valuation metric for this test set should have the following general form
+Since in the present context $N, f_{0}, f_{1}$ are constants, we are free to construct the arbitrary constants $a > 0$ and $b$ from them in any way we please:
 \begin{equation}
-  \label{eq:utility_testset_binary}
-  a(N_{\Po},N_{\Ne})\,
-  (x_{\tp}\, M_{\tp} + x_{\fp}\, M_{\fp} +
- x_{\fn}\, M_{\fn} + x_{\tn}\, M_{\tn}) +
-  b(N_{\Po},N_{\Ne}) \ .
+  \label{eq:constants_functions}
+  a = a(N, f_{0}, f_{1}) > 0\ , \qquad
+  b = b(N, f_{0}, f_{1}) \ .
 \end{equation}
-for particular values of the coefficients $x_{\tp}, x_{\fp}, x_{\fn}, x_{\tn}$ and particular functions $a(\dotv)>0$ and $b(\dotv)$. Let us examine some common valuation metrics from the point of view of this requirement.
+We can also use this freedom to include the term $a\ f_{0}\ U_{10} + a\ f_{1}\ U_{01}$ into $b$ in the formula above. We conclude that
+\begin{quote}
+  \emph{an evaluation metric for binary classification complies with decision theory if and only if it can be written in the general form}
+  \begin{equation}
+    \label{eq:general_valuation_metric}
+    a(N, f_{0}, f_{1})\ x\ C_{00} +
+    a(N, f_{0}, f_{1})\ y\  C_{11} +
+    b(N, f_{0}, f_{1})
+  \end{equation}
+  \emph{where $x,y$ are constants that do not depend on $C_{00}, C_{11}, N, f_{0}, f_{1}$, and $a(\dotv)>0$, $b(\dotv)$ are arbitrary functions of $N, f_{0}, f_{1}$ only}.
+\end{quote}
 
+Let us examine some common evaluation metrics for binary classification from this point of view. We write their formulae in terms of $C_{00}, C_{11}$:
 \begin{itemize}
-\item[\itemyes] \emph{Accuracy:} $(M_{\tp}+M_{\tn})/N$. It is a particular case of formula~\eqref{eq:utility_testset_binary} with $x_{\tp}=x_{\tn}=1$,\; $x_{\fp}=x_{\fn}=0$,\; $a(N_{\Po},N_{\Ne})=1/(N_{\Po}+N_{\Ne})$,\; $b(\dotv)=0$. It corresponds to using the utility matrix $\begin{psmallmatrix} 1&0\\0&1 \end{psmallmatrix}$.
+\item[\itemyes] \emph{Accuracy:} $C_{00}+C_{11}$. It is a particular case of formula~\eqref{eq:general_valuation_metric} with $a=1$, $x=y=1$, $b=0$. Indeed it corresponds to the evaluation metric based on the utility matrix $(U_{ij}) = \begin{bsmallmatrix} 1&0\\0&1 \end{bsmallmatrix}$.
   
-\item[\itemno] \emph{Precision:} $M_{\tp}/(M_{\tp}+M_{\fp})$. It cannot be written as a linear combination of the confusion-matrix elements.
+\item[\itemyes] \emph{True-positive rate (recall):} $C_{00}/f_{0}$. It is  formula~\eqref{eq:general_valuation_metric} with $a=1/f_{0}$, $x=1$, $y=0$, $b=0$. It corresponds to using the utility matrix $\begin{bsmallmatrix} 1&0\\0&0 \end{bsmallmatrix}$. 
 
-\item[\itemno] \emph{$F_{1}$-measure:} $2 M_{\tp}/(2M_{\tp} + M_{\fp} + M_{\fn})$. It cannot be written as a linear combination of the confusion-matrix elements.
+\item[\itemyes] \emph{True-negative rate (specificity):} $C_{11}/f_{1}$. We have $a=1/f_{1}$, $x=0$, $y=1$, $b=0$. It corresponds to using the utility matrix $\begin{bsmallmatrix} 0&0\\0&1 \end{bsmallmatrix}$. 
+  
+\item[\itemno] \emph{Precision:} $C_{00}/(C_{00}-C_{11}+f_{1})$. It cannot be written in the form~\eqref{eq:general_valuation_metric}; in fact it is non-linear in $C_{00}, C_{11}$.
 
-\item[\itemno] \emph{Matthews correlation coefficient:} $\frac{M_{\tp}\, M_{\tn} - M_{\fp}\, M_{\fn}}{\sqrt{(M_{\tp}+M_{\fp})(M_{\tn}+M_{\fn})N_{\Po}N_{\Ne}}}$. It cannot be written as a linear combination of the confusion-matrix elements.
+\item[\itemno] \emph{$F_{1}$-measure:} $2 C_{00}/(C_{00} - C_{11} + 1)$. It cannot be written in the form~\eqref{eq:general_valuation_metric}; in fact it is non-linear in $C_{00}, C_{11}$. This also holds for the more general $F_{\beta}$-measures.
 
-\item[\itemyes] \emph{True-positive rate:} $M_{\tp}/N_{\Po}$. It is  formula~\eqref{eq:utility_testset_binary} with $x_{\tp}=1$, all other $x_{\dotso}=0$, $a(N_{\Po},N_{\Ne})=1/N_{\Po}$, and $b(\dotv)=0$. It corresponds to using the utility matrix $\begin{psmallmatrix} 1&0\\0&0 \end{psmallmatrix}$. 
+\item[\itemno] \emph{Matthews correlation coefficient:} $\frac{
+    f_{1}\ C_{00} + f_{0}\ C_{11}}{\sqrt{
+      f_{0}\ f_{1}\ (f_{1} + C_{00} - C_{11})\ (f_{0} + C_{11} - C_{00})
+    }}$. Non-linear in $C_{00}, C_{11}$, it cannot be written in the form~\eqref{eq:general_valuation_metric}.
 
-\item[\itemyes] \emph{True-negative rate:} $M_{\tn}/N_{\Ne}$. Analogous to true-positive rate.
+\item[\itemno] \emph{Fowlkes-Mallows index:} $C_{00}/\sqrt{
+      f_{0}\ (f_{1} + C_{00} - C_{11})}$. Also non-linear in $C_{00}, C_{11}$, it cannot be written in the form~\eqref{eq:general_valuation_metric}.
 
-\item[\itemno] \emph{Balanced accuracy:} $(N_{\Ne}\,M_{\tp} + N_{\Po}\, M_{\tn})/(2 N_{\Po}N_{\Ne})$. Despite being an average of two metrics (true-positive and true-negative rate) that agree with formula~\eqref{eq:utility_testset_binary}, it is not an instance of that formula. The reason is that the two averaged metrics involve different $a(\dotv)$ functions.
+  \item[\itemno] \emph{Balanced accuracy:} $C_{00}/(2 f_{0}) + C_{11}/(2 f_{1})$. Despite being an average of two metrics (true-positive and true-negative rate) that are instances of formula~\eqref{eq:general_valuation_metric}, it is not an instance of that formula, because the two averaged metrics involve different $a(\dotv)$ functions.
 \end{itemize}
 
-We see that many popular validation metrics, those marked by \enquote{\itemno} above, do not comply with decision theory. Their formulae involve an interdependence of utilities and probabilities which hides some forms of cognitive biases.
-\mynotew{Very important: we should preferably add an example to illustrate this.}
+We see that many popular validation metrics, those marked \enquote{\itemno}, do not comply with the principles of decision theory. As discussed in \sect~\ref{sec:decision_theory} this means that their formulae involve an interdependence of utilities and classification frequencies which implies some form of cognitive bias.
 
-
+\autocites{handetal2018}
 
 
 \section{Remarks on the test set}
