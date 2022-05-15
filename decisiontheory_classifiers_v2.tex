@@ -1,7 +1,7 @@
 \pdfoutput=1
 %% Author: PGL  Porta Mana
 %% Created: 2022-03-04T07:39:34+0200
-%% Last-Updated: 2022-05-15T12:19:25+0200
+%% Last-Updated: 2022-05-15T12:27:11+0200
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Decision theory for machine-learning classifiers
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -700,9 +700,16 @@ Open Science Framework \doi{10.31219/osf.io/#1}%
 % \begin{tabular}[#1]{c}#2\\[0.5\jot]\rule{1pt}{#3}\\#4\end{tabular}}%}
 % \newcommand*{\ptext}[1]{\text{\small #1}}
 \DeclareMathOperator*{\argmax}{arg\,max}
-\newcommand*{\dob}{degree of belief}
-\newcommand*{\dobs}{degrees of belief}
+% \newcommand*{\dob}{degree of belief}
+% \newcommand*{\dobs}{degrees of belief}
 \newcommand*{\ml}{machine-learning}
+\newcommand*{\itemyes}{{\fontencoding{U}\fontfamily{pzd}\selectfont\symbol{51}}}
+\newcommand*{\itemno}{{\fontencoding{U}\fontfamily{pzd}\selectfont\symbol{55}}}
+\newcommand*{\good}[1]{\ensuremath{{\color{mypurpleblue}\bm{#1}}}}
+\newcommand*{\bad}[1]{\ensuremath{{\color{myredpurple}#1}}}
+\newcommand*{\cx}{X}
+\newcommand*{\cy}{Y}
+%%
 \newcommand*{\Fs}{F_{\textrm{s}}}
 \newcommand*{\fs}{f_{\textrm{s}}}
 \newcommand*{\uF}{\bar{F}}
@@ -720,10 +727,6 @@ Open Science Framework \doi{10.31219/osf.io/#1}%
 \newcommand*{\fp}{\textrm{fp}}
 \newcommand*{\fn}{\textrm{fn}}
 \newcommand*{\tn}{\textrm{tn}}
-\newcommand*{\itemyes}{{\fontencoding{U}\fontfamily{pzd}\selectfont\symbol{51}}}
-\newcommand*{\itemno}{{\fontencoding{U}\fontfamily{pzd}\selectfont\symbol{55}}}
-\newcommand*{\good}[1]{\ensuremath{{\color{mypurpleblue}\bm{#1}}}}
-\newcommand*{\bad}[1]{\ensuremath{{\color{myredpurple}#1}}}
 
 %%% Custom macros end @@@
 
@@ -1156,20 +1159,20 @@ We can also use this freedom to include the term $a\ f_{0}\ U_{10} + a\ f_{1}\ U
   \emph{an evaluation metric for binary classification complies with decision theory if and only if it can be written in the general form}
   \begin{equation}
     \label{eq:general_valuation_metric}
-    a(N, f_{0}, f_{1})\ x\ C_{00} +
-    a(N, f_{0}, f_{1})\ y\  C_{11} +
+    a(N, f_{0}, f_{1})\ \cx\ C_{00} +
+    a(N, f_{0}, f_{1})\ \cy\  C_{11} +
     b(N, f_{0}, f_{1})
   \end{equation}
-  \emph{where $x,y$ are constants that do not depend on $C_{00}, C_{11}, N, f_{0}, f_{1}$, and $a(\dotv)>0$, $b(\dotv)$ are arbitrary functions of $N, f_{0}, f_{1}$ only}.
+  \emph{where $\cx,\cy$ are constants that do not depend on $C_{00}, C_{11}, N, f_{0}, f_{1}$, and $a(\dotv)>0$, $b(\dotv)$ are arbitrary functions of $N, f_{0}, f_{1}$ only}.
 \end{quote}
 
 Let us examine some common evaluation metrics for binary classification from this point of view. We write their formulae in terms of $C_{00}, C_{11}$:
 \begin{itemize}
-\item[\itemyes] \emph{Accuracy:} $C_{00}+C_{11}$. It is a particular case of formula~\eqref{eq:general_valuation_metric} with $a=1$, $x=y=1$, $b=0$. Indeed it corresponds to the evaluation metric based on the utility matrix $(U_{ij}) = \begin{bsmallmatrix} 1&0\\0&1 \end{bsmallmatrix}$.
+\item[\itemyes] \emph{Accuracy:} $C_{00}+C_{11}$. It is a particular case of formula~\eqref{eq:general_valuation_metric} with $a=1$, $\cx=\cy=1$, $b=0$. Indeed it corresponds to the evaluation metric based on the utility matrix $(U_{ij}) = \begin{bsmallmatrix} 1&0\\0&1 \end{bsmallmatrix}$.
   
-\item[\itemyes] \emph{True-positive rate (recall):} $C_{00}/f_{0}$. It is  formula~\eqref{eq:general_valuation_metric} with $a=1/f_{0}$, $x=1$, $y=0$, $b=0$. It corresponds to using the utility matrix $\begin{bsmallmatrix} 1&0\\0&0 \end{bsmallmatrix}$. 
+\item[\itemyes] \emph{True-positive rate (recall):} $C_{00}/f_{0}$. It is  formula~\eqref{eq:general_valuation_metric} with $a=1/f_{0}$, $\cx=1$, $\cy=0$, $b=0$. It corresponds to using the utility matrix $\begin{bsmallmatrix} 1&0\\0&0 \end{bsmallmatrix}$. 
 
-\item[\itemyes] \emph{True-negative rate (specificity):} $C_{11}/f_{1}$. We have $a=1/f_{1}$, $x=0$, $y=1$, $b=0$. It corresponds to using the utility matrix $\begin{bsmallmatrix} 0&0\\0&1 \end{bsmallmatrix}$. 
+\item[\itemyes] \emph{True-negative rate (specificity):} $C_{11}/f_{1}$. We have $a=1/f_{1}$, $\cx=0$, $\cy=1$, $b=0$. It corresponds to using the utility matrix $\begin{bsmallmatrix} 0&0\\0&1 \end{bsmallmatrix}$. 
   
 \item[\itemno] \emph{Precision:} $C_{00}/(C_{00}-C_{11}+f_{1})$. It cannot be written in the form~\eqref{eq:general_valuation_metric}; in fact it is non-linear in $C_{00}, C_{11}$.
 
