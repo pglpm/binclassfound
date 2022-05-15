@@ -1,7 +1,7 @@
 \pdfoutput=1
 %% Author: PGL  Porta Mana
 %% Created: 2022-03-04T07:39:34+0200
-%% Last-Updated: 2022-05-15T12:27:11+0200
+%% Last-Updated: 2022-05-15T12:35:54+0200
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Decision theory for machine-learning classifiers
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -1166,27 +1166,29 @@ We can also use this freedom to include the term $a\ f_{0}\ U_{10} + a\ f_{1}\ U
   \emph{where $\cx,\cy$ are constants that do not depend on $C_{00}, C_{11}, N, f_{0}, f_{1}$, and $a(\dotv)>0$, $b(\dotv)$ are arbitrary functions of $N, f_{0}, f_{1}$ only}.
 \end{quote}
 
-Let us examine some common evaluation metrics for binary classification from this point of view. We write their formulae in terms of $C_{00}, C_{11}$:
+Let us examine some common evaluation metrics for binary classification from this point of view. We write their formulae in terms of $C_{00}, C_{11}$. The following metrics are particular instances of formula~\eqref{eq:general_valuation_metric}:
 \begin{itemize}
-\item[\itemyes] \emph{Accuracy:} $C_{00}+C_{11}$. It is a particular case of formula~\eqref{eq:general_valuation_metric} with $a=1$, $\cx=\cy=1$, $b=0$. Indeed it corresponds to the evaluation metric based on the utility matrix $(U_{ij}) = \begin{bsmallmatrix} 1&0\\0&1 \end{bsmallmatrix}$.
+\item[\itemyes] \emph{Accuracy:} $C_{00}+C_{11}$. We have $a=1$, $\cx=\cy=1$, $b=0$. Indeed it corresponds to the evaluation metric based on the utility matrix $(U_{ij}) = \begin{bsmallmatrix} 1&0\\0&1 \end{bsmallmatrix}$.
   
-\item[\itemyes] \emph{True-positive rate (recall):} $C_{00}/f_{0}$. It is  formula~\eqref{eq:general_valuation_metric} with $a=1/f_{0}$, $\cx=1$, $\cy=0$, $b=0$. It corresponds to using the utility matrix $\begin{bsmallmatrix} 1&0\\0&0 \end{bsmallmatrix}$. 
+\item[\itemyes] \emph{True-positive rate (recall):} $C_{00}/f_{0}$. Here $a=1/f_{0}$, $\cx=1$, $\cy=0$, $b=0$. It corresponds to using the utility matrix $\begin{bsmallmatrix} 1&0\\0&0 \end{bsmallmatrix}$. 
 
-\item[\itemyes] \emph{True-negative rate (specificity):} $C_{11}/f_{1}$. We have $a=1/f_{1}$, $\cx=0$, $\cy=1$, $b=0$. It corresponds to using the utility matrix $\begin{bsmallmatrix} 0&0\\0&1 \end{bsmallmatrix}$. 
-  
-\item[\itemno] \emph{Precision:} $C_{00}/(C_{00}-C_{11}+f_{1})$. It cannot be written in the form~\eqref{eq:general_valuation_metric}; in fact it is non-linear in $C_{00}, C_{11}$.
+\item[\itemyes] \emph{True-negative rate (specificity):} $C_{11}/f_{1}$. Here $a=1/f_{1}$, $\cx=0$, $\cy=1$, $b=0$. It corresponds to using the utility matrix $\begin{bsmallmatrix} 0&0\\0&1 \end{bsmallmatrix}$. 
+  \end{itemize}
+  The following metrics instead \emph{cannot} be written in the form~\eqref{eq:general_valuation_metric}:
+\begin{itemize}
+\item[\itemno] \emph{Precision:} $C_{00}/(C_{00}-C_{11}+f_{1})$. Non-linear in $C_{00}, C_{11}$.
 
-\item[\itemno] \emph{$F_{1}$-measure:} $2 C_{00}/(C_{00} - C_{11} + 1)$. It cannot be written in the form~\eqref{eq:general_valuation_metric}; in fact it is non-linear in $C_{00}, C_{11}$. This also holds for the more general $F_{\beta}$-measures.
+\item[\itemno] \emph{$F_{1}$-measure:} $2 C_{00}/(C_{00} - C_{11} + 1)$. Non-linear in $C_{00}, C_{11}$. The same is true for the more general $F_{\beta}$-measures.
 
 \item[\itemno] \emph{Matthews correlation coefficient:} $\frac{
-    f_{1}\ C_{00} + f_{0}\ C_{11}}{\sqrt{
+    f_{1}\,C_{00} + f_{0}\,C_{11}}{\sqrt{
       f_{0}\ f_{1}\ (f_{1} + C_{00} - C_{11})\ (f_{0} + C_{11} - C_{00})
-    }}$. Non-linear in $C_{00}, C_{11}$, it cannot be written in the form~\eqref{eq:general_valuation_metric}.
+    }}$. Non-linear in $C_{00}, C_{11}$.
 
 \item[\itemno] \emph{Fowlkes-Mallows index:} $C_{00}/\sqrt{
-      f_{0}\ (f_{1} + C_{00} - C_{11})}$. Also non-linear in $C_{00}, C_{11}$, it cannot be written in the form~\eqref{eq:general_valuation_metric}.
+      f_{0}\ (f_{1} + C_{00} - C_{11})}$. Non-linear in $C_{00}, C_{11}$.
 
-  \item[\itemno] \emph{Balanced accuracy:} $C_{00}/(2 f_{0}) + C_{11}/(2 f_{1})$. Despite being an average of two metrics (true-positive and true-negative rate) that are instances of formula~\eqref{eq:general_valuation_metric}, it is not an instance of that formula, because the two averaged metrics involve different $a(\dotv)$ functions.
+  \item[\itemno] \emph{Balanced accuracy:} $C_{00}/(2 f_{0}) + C_{11}/(2 f_{1})$. Despite being linear in $C_{00}, C_{11}$ and an average of two metrics (true-positive and true-negative rate) that are instances of formula~\eqref{eq:general_valuation_metric}, it is not an instance of that formula, because the two averaged metrics involve different $a(\dotv)$ functions.
 \end{itemize}
 
 We see that many popular validation metrics, those marked \enquote{\itemno}, do not comply with the principles of decision theory. As discussed in \sect~\ref{sec:decision_theory} this means that their formulae involve an interdependence of utilities and classification frequencies which implies some form of cognitive bias.
