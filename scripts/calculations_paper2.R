@@ -1,6 +1,6 @@
 ## Author: PGL  Porta Mana
 ## Created: 2022-05-01T09:38:48+0200
-## Last-Updated: 2022-05-15T20:15:45+0200
+## Last-Updated: 2022-05-15T22:42:54+0200
 ################
 ## Calculations for the papers
 ################
@@ -137,6 +137,12 @@ allscores <- function(p,ab){
     out
 }
 ##
+id <- diag(2)
+utp <- matrix(c(1,0,0,0),2,2)
+utn <- matrix(c(0,0,0,1),2,2)
+ufp <- matrix(c(0,0,1,0),2,2)
+ufn <- matrix(c(0,1,0,0),2,2)
+##
 xy2um <- function(ab,ab2=NULL){
     if(length(ab)==1){ab <- c(ab,ab2)}
         id + (ab[1]<0)*ab[1]*utn - (ab[1]>0)*ab[1]*utp +
@@ -183,12 +189,6 @@ xy <- cbind(rep(ss,lo2), rep(ss,each=lo2))
 xy <- xy[xy[,2]<xy[,1]+1 & xy[,2]>xy[,1]-1,]
 lxy <- nrow(xy)
 ##tplot(x=xy[,1], y=xy[,2], type='p')
-##
-id <- diag(2)
-utp <- matrix(c(1,0,0,0),2,2)
-utn <- matrix(c(0,0,0,1),2,2)
-ufp <- matrix(c(0,0,1,0),2,2)
-ufn <- matrix(c(0,1,0,0),2,2)
 ##
 listum <- future_apply(xy, 1, xy2um)
 dim(listum) <- c(2,2,lxy)
@@ -542,6 +542,12 @@ tplot(x=rbind(ldut[ok]),
 }
 dev.off()
 
+################################################################
+#### Plot of metric values for pairs of confusion matrices and
+#### draws of utility matrices
+################################################################
+
+
 
 set.seed(149)
 ##
@@ -555,9 +561,9 @@ while(!inrange){
     wxy <- um2xy(xum)+rnorm(2,0,0.1)
     inrange <- (wxy[2] <= wxy[1]+1 & wxy[2] >= wxy[1]-1)
 }
-wum <- xy2um(wxy)
-print(wxy)
-print(wum)
+## wum <- xy2um(wxy)
+## print(wxy)
+## print(wum)
 ##
 metrlist <- list('F1-measure'=f1score,
               'MCC'=mcc,
@@ -569,7 +575,7 @@ metrlist <- list('F1-measure'=f1score,
               'True-negative rate'=function(p,a,b){b},
               'utility using 10% incorrect utilities'=function(p,a,b){
                   rowSums(aperm(confm(p,a,b)*
-                                c(wum) ))
+                                c(1) ))
               })
 ##
 lp <- runif(nn,0,1)
@@ -582,11 +588,38 @@ lb2 <- 0.5+0.5*rbeta(nn, shape1=shape1, shape2=shape2)
 ##
 lcm1 <- confm(lp,la1,lb1)
 lcm2 <- confm(lp,la2,lb2)
+
+lxy <- runif(2*round(nn*6/3),-1,1)
+dim(lxy) <- c(round(nn*6/3),2)
+lxy <- lxy[lxy[,2]<lxy[,1]+1 & lxy[,2]>lxy[,1]-1,][1:nn,]
 ##
-ldut <- rowSums(aperm((lcm2-lcm1)*c(xum)))
+wlxy <- t(apply(lxy,1, function(xy){
+    inrange <- FALSE
+    k <- 0
+    while((!inrange) & k<100){
+        k <- k+1
+        xy2 <- xy+rnorm(2,0,0.1)
+        inrange <- (xy2[2] <= xy2[1]+1 & xy2[2] >= xy2[1]-1)
+    }
+    c(xy2,k)}))
+if(max(wlxy[,3])>=99){print('WARNING')}
+wlxy <- wlxy[,1:2]
+
+
+
+lut <- apply(lxy,1,xy2um)
+dim(lut) <- c(2,2,nn)
+##
+ldut <- rowSums(aperm((lcm2-lcm1)*lut))
+##
+lut <- apply(wlxy,1,xy2um)
+dim(lut) <- c(2,2,nn)
+##
+wldut <- rowSums(aperm((lcm2-lcm1)*lut))
+
 ##
 ##
-pdff(paste0('testdiff', paste0(xum,collapse='')))
+pdff(paste0('draws', paste0(xum,collapse='')))
 for(i in 1:length(metrlist)){
     metr <- metrlist[[i]]
     ldmetr <- metr(lp,la2,lb2)-metr(lp,la1,lb1)
@@ -618,6 +651,10 @@ rgm <- apply(allmetr,2,range)
 okb <- c(which.min(colSums((t(allmetr)-rgm[2,])^2)/ncol(allmetr) + (ldut-rgu[1])^2),
          which.min(colSums((t(allmetr)-rgm[1,])^2)/ncol(allmetr) + (ldut-rgu[2])^2)
          )
+
+
+
+
 ##
 ##
 pdff(paste0('testsingle', paste0(xum,collapse='')))
