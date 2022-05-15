@@ -1,6 +1,6 @@
 ## Author: PGL  Porta Mana
 ## Created: 2022-05-01T09:38:48+0200
-## Last-Updated: 2022-05-15T16:18:31+0200
+## Last-Updated: 2022-05-15T16:37:09+0200
 ################
 ## Calculations for the papers
 ################
@@ -454,11 +454,12 @@ for(i in 1:length(metrlist)){
 groupok <- (ldut>0 & ldmetr>0) | (ldut<0 & ldmetr<0)
 tplot(x=list(ldut[groupok],ldut[!groupok]),
       y=list(ldmetr[groupok],ldmetr[!groupok]), type='p', pch=c(20,17),cex=0.5,
-      xlab='utility difference', ylab=ylab)
+      xlab='difference in utility', ylab=paste0('difference in ',ylab))
 legend('topleft', legend=sum(groupok)/nn, bty='n')
 }
 dev.off()
 #################################
+
 set.seed(149)
 ##
 nn <- 10^4
@@ -476,14 +477,19 @@ lcm1 <- confm(lp,la1,lb1)
 ldut <- rowSums(aperm((lcm1)*c(xum)))
 ##
 ##
+subs <- 1:100
 pdff(paste0('testsingle', paste0(xum,collapse='')))
 for(i in 1:length(metrlist)){
     metr <- metrlist[[i]]
     ldmetr <- metr(lp,la1,lb1)
     ylab <- names(metrlist)[i]
+    groupok <- which( outer(ldmetr[subs],ldmetr[subs],'-')*outer(ldut[subs],ldut[subs],'-')<0, arr.ind=T)[1,]
 tplot(x=ldut,
       y=ldmetr, type='p', pch=20,cex=0.5,
       xlab='utility', ylab=ylab)
+tplot(x=ldut[groupok],
+      y=ldmetr[groupok], type='p', pch=0,cex=1.5, col=2,
+      add=T)
 #legend('topleft', legend=sum(groupok)/nn, bty='n')
 }
 dev.off()
