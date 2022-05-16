@@ -1,6 +1,6 @@
 ## Author: PGL  Porta Mana
 ## Created: 2022-05-01T09:38:48+0200
-## Last-Updated: 2022-05-15T22:42:54+0200
+## Last-Updated: 2022-05-16T07:56:05+0200
 ################
 ## Calculations for the papers
 ################
@@ -552,18 +552,9 @@ dev.off()
 set.seed(149)
 ##
 nn <- 10^4
-xum <- diag(2)
-#xum <- xumpaper
 shape1 <- 2
 shape2 <- 1
-inrange <- FALSE
-while(!inrange){
-    wxy <- um2xy(xum)+rnorm(2,0,0.1)
-    inrange <- (wxy[2] <= wxy[1]+1 & wxy[2] >= wxy[1]-1)
-}
-## wum <- xy2um(wxy)
-## print(wxy)
-## print(wum)
+errorum <- 10
 ##
 metrlist <- list('F1-measure'=f1score,
               'MCC'=mcc,
@@ -571,12 +562,8 @@ metrlist <- list('F1-measure'=f1score,
               'Balanced accuracy'=bacc,
               'Fowlkes-Mallows index'=foma,
               'Accuracy'=acc,
-              'True-positive rate'=function(p,a,b){a},
-              'True-negative rate'=function(p,a,b){b},
-              'utility using 10% incorrect utilities'=function(p,a,b){
-                  rowSums(aperm(confm(p,a,b)*
-                                c(1) ))
-              })
+              'True-positive rate (recall)'=function(p,a,b){a},
+              'True-negative rate (specificicy)'=function(p,a,b){b})
 ##
 lp <- runif(nn,0,1)
 la1 <- 0.5+0.5*rbeta(nn, shape1=shape1, shape2=shape2)
@@ -588,7 +575,7 @@ lb2 <- 0.5+0.5*rbeta(nn, shape1=shape1, shape2=shape2)
 ##
 lcm1 <- confm(lp,la1,lb1)
 lcm2 <- confm(lp,la2,lb2)
-
+##
 lxy <- runif(2*round(nn*6/3),-1,1)
 dim(lxy) <- c(round(nn*6/3),2)
 lxy <- lxy[lxy[,2]<lxy[,1]+1 & lxy[,2]>lxy[,1]-1,][1:nn,]
@@ -598,36 +585,70 @@ wlxy <- t(apply(lxy,1, function(xy){
     k <- 0
     while((!inrange) & k<100){
         k <- k+1
-        xy2 <- xy+rnorm(2,0,0.1)
+        xy2 <- xy+rnorm(2,0,errorum/100)
         inrange <- (xy2[2] <= xy2[1]+1 & xy2[2] >= xy2[1]-1)
     }
     c(xy2,k)}))
 if(max(wlxy[,3])>=99){print('WARNING')}
 wlxy <- wlxy[,1:2]
-
-
-
+##
 lut <- apply(lxy,1,xy2um)
 dim(lut) <- c(2,2,nn)
 ##
 ldut <- rowSums(aperm((lcm2-lcm1)*lut))
 ##
-lut <- apply(wlxy,1,xy2um)
-dim(lut) <- c(2,2,nn)
+wlut <- apply(wlxy,1,xy2um)
+dim(wlut) <- c(2,2,nn)
 ##
-wldut <- rowSums(aperm((lcm2-lcm1)*lut))
+wldut <- rowSums(aperm((lcm2-lcm1)*wlut))
+##
+summary(sapply(1:dim(lut)[3],function(i){mean(abs(lut[,,i]-wlut[,,i]))/mean(lut[,,i])}))
+##
 
 ##
-##
-pdff(paste0('draws', paste0(xum,collapse='')))
-for(i in 1:length(metrlist)){
+for(j in 1:3){
+    endi0 <- (j-1)*3+1
+    endi <- j*3
+    pdff(paste0('draws_',j), paper='a4', width=11.7, height=16.5)
+    par(mfrow=c(3,1))
+    par(oma=c(0,0,0,0))
+    for(i in endi0:endi){
+        if(i < length(metrlist)+1){
+            metr <- metrlist[[i]]
+    ldmetr <- metr(lp,la2,lb2)-metr(lp,la1,lb1)
+    ylab <- names(metrlist)[i]
+    } else {
+    ldmetr <- wldut
+    ylab <- paste0('utility, ',errorum,'% incorrect utilities')
+    }
+        groupok <- (ldut>0 & ldmetr>0) | (ldut<0 & ldmetr<0)
+        tplot(x=list(ldut[groupok],ldut[!groupok]), 
+              y=list(ldmetr[groupok],ldmetr[!groupok]), type='p', pch=c(20,17),cex=c(0.5,0.65),
+              alpha=0.5, xlabels=(!(i<endi)),
+              mar=(if(i<endi){c(1, 5.2, 1, 0)}else{c(4.1, 5.2, 1, 0)}),
+              xlab=(if(i<endi){NA}else{'diff. in utility'}),
+              ylab=paste0('diff. in ',ylab))
+        legend('topleft', bty='n', text.col=2, cex=1.5,
+               legend=paste0( round(100*(1-sum(groupok)/nn)),
+                             '% incorrectly ranked pairs'))
+    }
+    dev.off()
+}
+
+pdff(paste0('draws'))
+for(i in 1:(length(metrlist)+1)){
+    if(i < length(metrlist)+1){
     metr <- metrlist[[i]]
     ldmetr <- metr(lp,la2,lb2)-metr(lp,la1,lb1)
     ylab <- names(metrlist)[i]
-groupok <- (ldut>0 & ldmetr>0) | (ldut<0 & ldmetr<0)
-tplot(x=list(ldut[groupok],ldut[!groupok]),
+    } else {
+    ldmetr <- wldut
+    ylab <- paste0('utility using ',errorum,'% incorrect utilities')
+    }
+    groupok <- (ldut>0 & ldmetr>0) | (ldut<0 & ldmetr<0)
+    tplot(x=list(ldut[groupok],ldut[!groupok]),
       y=list(ldmetr[groupok],ldmetr[!groupok]), type='p', pch=c(20,17),cex=0.5,
-      alpha=0.25,
+      alpha=0.5,
       xlab='difference in utility', ylab=paste0('difference in ',ylab))
     legend('topleft', bty='n', legend=paste0(
                           'incorrectly ranked pairs: ',
@@ -635,6 +656,69 @@ tplot(x=list(ldut[groupok],ldut[!groupok]),
            cex=1.5)
 }
 dev.off()
+
+
+
+
+pdff(paste0('draws2'), paper='a4', width=11.7, height=16.5)
+endi <- 5
+par(mfrow=c(endi,1))
+par(oma=c(0,0,0,0))
+for(i in 1:endi){
+    if(i < length(metrlist)+1){
+    metr <- metrlist[[i]]
+    ldmetr <- metr(lp,la2,lb2)-metr(lp,la1,lb1)
+    ylab <- names(metrlist)[i]
+    } else {
+    ldmetr <- wldut
+    ylab <- paste0('utility using ',errorum,'% incorrect utilities')
+    }
+    groupok <- (ldut>0 & ldmetr>0) | (ldut<0 & ldmetr<0)
+    tplot(x=list(ldut[groupok],ldut[!groupok]), 
+      y=list(ldmetr[groupok],ldmetr[!groupok]), type='p', pch=c(20,17),cex=0.5,
+      alpha=0.5, xlabels=(!(i<endi)),
+      mar=(if(i<endi){c(1, 5.2, 1, 0)}else{c(4.1, 5.2, 1, 0)}),
+      xlab=(if(i<endi){NA}else{'difference in utility'}),
+      ylab=paste0('difference in ',ylab))
+    legend('topleft', bty='n', legend=paste0(
+                          'incorrectly ranked pairs: ',
+                          round(100*(1-sum(groupok)/nn)), '%'),
+           cex=1.5)
+}
+dev.off()
+##
+pdff(paste0('draws2b'), paper='a4', width=11.7, height=16.5)
+endi0 <- endi+1
+endi <- length(metrlist)+1
+par(mfrow=c(endi-endi0+1,1))
+par(oma=c(0,0,0,0))
+for(i in endi0:endi){
+    if(i < length(metrlist)+1){
+    metr <- metrlist[[i]]
+    ldmetr <- metr(lp,la2,lb2)-metr(lp,la1,lb1)
+    ylab <- names(metrlist)[i]
+    } else {
+    ldmetr <- wldut
+    ylab <- paste0('utility using ',errorum,'% incorrect utilities')
+    }
+    groupok <- (ldut>0 & ldmetr>0) | (ldut<0 & ldmetr<0)
+    tplot(x=list(ldut[groupok],ldut[!groupok]), 
+      y=list(ldmetr[groupok],ldmetr[!groupok]), type='p', pch=c(20,17),cex=0.5,
+      alpha=0.5, xlabels=(!(i<endi)),
+      mar=(if(i<endi){c(1, 5.2, 1, 0)}else{c(4.1, 5.2, 1, 0)}),
+      xlab=(if(i<endi){NA}else{'difference in utility'}),
+      ylab=paste0('difference in ',ylab))
+    legend('topleft', bty='n', legend=paste0(
+                          'incorrectly ranked pairs: ',
+                          round(100*(1-sum(groupok)/nn)), '%'),
+           cex=1.5)
+}
+dev.off()
+
+
+
+
+
 #################################
 apap <- 2*c(0.27,0.43)
 bpap <- 2*c(0.35, 0.32)
