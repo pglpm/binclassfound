@@ -1,7 +1,7 @@
 \pdfoutput=1
 %% Author: PGL  Porta Mana
 %% Created: 2022-03-04T07:39:34+0200
-%% Last-Updated: 2022-05-16T22:02:47+0200
+%% Last-Updated: 2022-05-16T22:20:13+0200
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Decision theory for machine-learning classifiers
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -24,7 +24,7 @@ british%
 \newcommand*{\propertitle}{How is the evaluation evaluated?\\ {\Large A first-principle approach to the evaluation of classifiers}}
 % title uses LARGE; set Large for smaller
 \newcommand*{\pdftitle}{\propertitle}
-\newcommand*{\headtitle}{Is the evaluation evaluated?}
+\newcommand*{\headtitle}{How is the evaluation evaluated?}
 \newcommand*{\pdfauthor}{K. Dyrland, A. S. Lundervold, P.G.L.  Porta Mana}
 \newcommand*{\headauthor}{Dyrland, Lundervold, Porta Mana}
 \newcommand*{\reporthead}{\ifarxiv\else Open Science Framework \href{https://doi.org/10.31219/osf.io/***}{\textsc{doi}:10.31219/osf.io/***}\fi}% Report number
@@ -1272,6 +1272,31 @@ It may not be amiss to emphasize that the \emph{proportions $N_{c}$ of classes i
 
 
 
+\section{Discussion}
+\label{sec:discussion}
+
+
+\mynotep{Utilities have a more immediate (problem-dependent) interpretation than other measures}
+
+\mynotep{We recommend to avoid metrics not complying with decision theory -- not of the form~\eqref{eq:general_valuation_metric} -- and to try to get an estimate of the utilities involved instead.}
+
+\mynotep{Computationally more convenient (linear operation)}
+
+\mynotep{maybe refer to  \autocites{varoquauxetal2022}}
+
+
+\clearpage
+
+\bigskip
+\mynotew{\hrule
+  
+Pieces from old version below
+
+\hrule}
+
+
+
+
 \subsection{Actual utility yield}
 \label{sec:dt_utility_yield}
 
@@ -1333,22 +1358,9 @@ It is convenient to consider the average utility yield, rather than the total ut
 
 The summary of decision theory just given suffices to address issues~\ref{item:metrics}--\ref{item:optimal_true}.
 
-\mynotep{Utilities have a more immediate (problem-dependent) interpretation than other measures}
 
 
-\section{Discussion}
-\label{sec:discussion}
 
-\mynotep{maybe refer to  \autocites{varoquauxetal2022}}
-
-\clearpage
-
-\bigskip
-\mynotew{\hrule
-  
-Old version below
-
-\hrule}
 
 \bigskip
 
@@ -1496,6 +1508,9 @@ A first idea could be to simply modify the standard output step~\eqref{eq:argmax
 
 \section{Summary and discussion}
 \label{sec:summary_discussion}
+
+\mynotep{maybe refer to  \autocites{varoquauxetal2022}}
+
 
 
 \clearpage
