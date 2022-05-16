@@ -1,7 +1,7 @@
 \pdfoutput=1
 %% Author: PGL  Porta Mana
 %% Created: 2022-03-04T07:39:34+0200
-%% Last-Updated: 2022-05-16T19:17:39+0200
+%% Last-Updated: 2022-05-16T21:17:18+0200
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Decision theory for machine-learning classifiers
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -1199,6 +1199,24 @@ Second, the ranking of confusion matrices yielded by the metric does not fully a
 
 By contrast, compliant metrics such as the accuracy give completely correct rankings for all pairs of confusion matrices in some specific set of classification problems.
 
+The second phenomenon is illustrated in \figs\mynotep{}.
+
+Consider the upper-left plot of \fig~\ref{fig:metrics_vs_utility} as an example. It corresponds to a binary-classification problem with an underlying utility matrix equivalent to the identity $ \begin{bsmallmatrix} 1&0\\0&1 \end{bsmallmatrix} $, and a test set with a balanced number of classes, that is, each class appear with $50\%$ frequency. We select a large number of confusion matrices having this class balance and true-positive and true-negative rates distributed between $1/2$ and $1$ with linearly increasing probabilities. These confusion matrices would thus arise mostly from good classifying algorithms. For each confusion matrix we calculate
+\begin{enumerate}[label=\arabic*.]
+\item its average utility yield, according to the utility matrix $\begin{bsmallmatrix} 1&0\\0&1 \end{bsmallmatrix}$; this number is the actual performance, appropriate to this specific problem, of the corresponding algorithm;
+\item its score according to another metric, in this case the $F_{1}$-measure;
+\end{enumerate}
+and we plot a corresponding point with these two numbers as $x$- and $y$-coordinates.
+This plot thus shows the general statistical relation between the appropriate utility score and the $F_{1}$-measure of this distribution of confusion matrices.
+
+The other three plots in the upper panel of \fig~\ref{fig:metrics_vs_utility} are analogous but for other metrics as $y$-coordinates. The lower panel is analogous to the upper panel, but for an imbalanced-dataset case, with one class appearing with $80\%$ frequency. Finally, \fig~\mynotep{} is analogous to \fig~\ref{fig:metrics_vs_utility} but with an underlying utility matrix equal to $ \begin{bsmallmatrix} 1&0\\0&0 \end{bsmallmatrix} $.
+
+
+
+
+
+
+
 % \setlength{\fboxsep}{0pt}%
 % \setlength{\fboxrule}{0.25pt}%
 \begin{figure}[p]
@@ -1212,7 +1230,6 @@ By contrast, compliant metrics such as the accuracy give completely correct rank
   \label{fig:metrics_vs_utility}
 \end{figure}
 
-No matter which utility matrix we choose, the incompliant metric will rank some pairs of confusion matrices in the
 
 
 
