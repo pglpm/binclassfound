@@ -1,6 +1,6 @@
 ## Author: PGL  Porta Mana
 ## Created: 2022-05-01T09:38:48+0200
-## Last-Updated: 2022-05-16T07:56:05+0200
+## Last-Updated: 2022-05-16T08:01:00+0200
 ################
 ## Calculations for the papers
 ################
@@ -605,6 +605,8 @@ wldut <- rowSums(aperm((lcm2-lcm1)*wlut))
 summary(sapply(1:dim(lut)[3],function(i){mean(abs(lut[,,i]-wlut[,,i]))/mean(lut[,,i])}))
 ##
 
+
+func <- identity#function(x){plogis(x*10)*2-1}
 ##
 for(j in 1:3){
     endi0 <- (j-1)*3+1
@@ -622,9 +624,9 @@ for(j in 1:3){
     ylab <- paste0('utility, ',errorum,'% incorrect utilities')
     }
         groupok <- (ldut>0 & ldmetr>0) | (ldut<0 & ldmetr<0)
-        tplot(x=list(ldut[groupok],ldut[!groupok]), 
-              y=list(ldmetr[groupok],ldmetr[!groupok]), type='p', pch=c(20,17),cex=c(0.5,0.65),
-              alpha=0.5, xlabels=(!(i<endi)),
+        tplot(x=list(func(ldut[groupok]),func(ldut[!groupok])), 
+              y=list(func(ldmetr[groupok]),func(ldmetr[!groupok])), type='p', pch=c(20,17),cex=c(0.5,0.65),
+              alpha=0.66, xlabels=(!(i<endi)),
               mar=(if(i<endi){c(1, 5.2, 1, 0)}else{c(4.1, 5.2, 1, 0)}),
               xlab=(if(i<endi){NA}else{'diff. in utility'}),
               ylab=paste0('diff. in ',ylab))
