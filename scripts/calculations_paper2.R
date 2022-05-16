@@ -1,6 +1,6 @@
 ## Author: PGL  Porta Mana
 ## Created: 2022-05-01T09:38:48+0200
-## Last-Updated: 2022-05-16T20:45:15+0200
+## Last-Updated: 2022-05-16T20:50:10+0200
 ################
 ## Calculations for the papers
 ################
@@ -640,7 +640,7 @@ metrlist <- list('F1-measure'=f1score,
              ##  }
               )
 ##
-lp <- rep(0.8,nn)
+lp <- rep(0.5,nn)
 la1 <- 0.5+0.5*rbeta(nn, shape1=shape1, shape2=shape2)
 ## test <- thist(la1);tplot(x=test$breaks, y=test$density)
 ## summary(la1)
@@ -709,7 +709,7 @@ okbs <- sapply(list(diag(2), matrix(c(1,0,0,0),2,2)), function(xum){
     i2 <- distanc[1,i1]
     c(tocheck[i1], test[[tocheck[i1]]][i2])})
 
-if(p==0.5){
+if(lp[1]==0.5){
     okbs <- matrix(c(1034, 1219, 1454, 4781), 2,2)
 }else if(p==0.8){
     okbs <- matrix(c(138, 4130, 450, 4781))
