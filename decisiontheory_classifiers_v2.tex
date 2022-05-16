@@ -1,7 +1,7 @@
 \pdfoutput=1
 %% Author: PGL  Porta Mana
 %% Created: 2022-03-04T07:39:34+0200
-%% Last-Updated: 2022-05-15T15:07:36+0200
+%% Last-Updated: 2022-05-16T14:18:59+0200
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Decision theory for machine-learning classifiers
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -1199,11 +1199,36 @@ Second, the ranking of confusion matrices yielded by the metric does not fully a
 
 By contrast, compliant metrics such as the accuracy give completely correct rankings for all pairs of confusion matrices in some specific set of classification problems.
 
-
+\begin{figure}[p]
+  \centering
+    \includegraphics[width=\linewidth]{utility_vs_metrics_1001.jpg}\\
+  \caption{Relationship between various metrics and utility}
+  \label{fig:metrics_vs_utility}
+\end{figure}
+\begin{figure}[p]
+  \centering
+    \includegraphics[width=\linewidth]{utility_vs_metrics_15-35-335165.jpg}\\
+  \caption{Relationship between various metrics and utility}
+  \label{fig:metrics_vs_utility}
+\end{figure}
 
 No matter which utility matrix we choose, the incompliant metric will rank some pairs of confusion matrices in the
 
 \autocites{handetal2018}
+
+
+
+\section{Unknown or incorrect utilities}
+\label{sec:unknown_utilities}
+
+\begin{figure}[t]
+  \centering
+    \includegraphics[width=\linewidth]{draws_0.jpg}\\
+  \caption{Relationship between various metrics and utility}
+  \label{fig:metrics_vs_utility}
+\end{figure}
+
+
 
 
 \section{Remarks on the test set}
@@ -1275,6 +1300,9 @@ It is convenient to consider the average utility yield, rather than the total ut
 \bigskip
 
 The summary of decision theory just given suffices to address issues~\ref{item:metrics}--\ref{item:optimal_true}.
+
+
+
 
 \section{Discussion}
 \label{sec:discussion}

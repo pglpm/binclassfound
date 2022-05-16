@@ -1,6 +1,6 @@
 ## Author: PGL  Porta Mana
 ## Created: 2022-05-01T09:38:48+0200
-## Last-Updated: 2022-05-16T08:01:00+0200
+## Last-Updated: 2022-05-16T14:20:25+0200
 ################
 ## Calculations for the papers
 ################
@@ -420,9 +420,9 @@ signif(diffscores[ok1,],2)
 ##########################################################################
 
 xumpaper <- matrix(c(15,-35,-335,165), 2,2)
-xumpaper <- xumpaper-min(xumpaper)
-xumpaper <- signif(xumpaper/max(xumpaper), 2)
-
+## xumpaper <- xumpaper-min(xumpaper)
+## xumpaper <- signif(xumpaper/max(xumpaper), 2)
+##
 set.seed(149)
 ##
 nn <- 10^4
@@ -430,79 +430,131 @@ xum <- diag(2)
 #xum <- xumpaper
 shape1 <- 2
 shape2 <- 1
-inrange <- FALSE
-while(!inrange){
-    wxy <- um2xy(xum)+rnorm(2,0,0.1)
-    inrange <- (wxy[2] <= wxy[1]+1 & wxy[2] >= wxy[1]-1)
-}
-wum <- xy2um(wxy)
-print(wxy)
-print(wum)
+## inrange <- FALSE
+## while(!inrange){
+##     wxy <- um2xy(xum)+rnorm(2,0,0.1)
+##     inrange <- (wxy[2] <= wxy[1]+1 & wxy[2] >= wxy[1]-1)
+## }
+## wum <- xy2um(wxy)
+## print(wxy)
+## print(wum)
 ##
 metrlist <- list('F1-measure'=f1score,
               'MCC'=mcc,
               'Precision'=prec,
               'Balanced accuracy'=bacc,
               'Fowlkes-Mallows index'=foma,
-              'Accuracy'=acc,
               'True-positive rate'=function(p,a,b){a},
               'True-negative rate'=function(p,a,b){b},
-              'utility using 10% incorrect utilities'=function(p,a,b){
-                  rowSums(aperm(confm(p,a,b)*
-                                c(wum) ))
-              })
+              'Accuracy'=acc,
+              'Utility matrix eq. (4)'=function(p,a,b){
+                  rowSums(aperm(confm(p,a,b)* c(xumpaper) ))
+              }
+              )
 ##
 lp <- runif(nn,0,1)
 la1 <- 0.5+0.5*rbeta(nn, shape1=shape1, shape2=shape2)
 ## test <- thist(la1);tplot(x=test$breaks, y=test$density)
 ## summary(la1)
 lb1 <- 0.5+0.5*rbeta(nn, shape1=shape1, shape2=shape2)
-la2 <- 0.5+0.5*rbeta(nn, shape1=shape1, shape2=shape2)
-lb2 <- 0.5+0.5*rbeta(nn, shape1=shape1, shape2=shape2)
+## la2 <- 0.5+0.5*rbeta(nn, shape1=shape1, shape2=shape2)
+## lb2 <- 0.5+0.5*rbeta(nn, shape1=shape1, shape2=shape2)
 ##
 lcm1 <- confm(lp,la1,lb1)
-lcm2 <- confm(lp,la2,lb2)
+## lcm2 <- confm(lp,la2,lb2)
 ##
-ldut <- rowSums(aperm((lcm2-lcm1)*c(xum)))
+## ldut <- rowSums(aperm((lcm2-lcm1)*c(xum)))
 ##
 ##
-pdff(paste0('testdiff', paste0(xum,collapse='')))
-for(i in 1:length(metrlist)){
-    metr <- metrlist[[i]]
-    ldmetr <- metr(lp,la2,lb2)-metr(lp,la1,lb1)
-    ylab <- names(metrlist)[i]
-groupok <- (ldut>0 & ldmetr>0) | (ldut<0 & ldmetr<0)
-tplot(x=list(ldut[groupok],ldut[!groupok]),
-      y=list(ldmetr[groupok],ldmetr[!groupok]), type='p', pch=c(20,17),cex=0.5,
-      alpha=0.25,
-      xlab='difference in utility', ylab=paste0('difference in ',ylab))
-    legend('topleft', bty='n', legend=paste0(
-                          'incorrectly ranked pairs: ',
-                          round(100*(1-sum(groupok)/nn)), '%'),
-           cex=1.5)
-}
-dev.off()
+## pdff(paste0('testdiff', paste0(xum,collapse='')))
+## for(i in 1:length(metrlist)){
+##     metr <- metrlist[[i]]
+##     ldmetr <- metr(lp,la2,lb2)-metr(lp,la1,lb1)
+##     ylab <- names(metrlist)[i]
+## groupok <- (ldut>0 & ldmetr>0) | (ldut<0 & ldmetr<0)
+## tplot(x=list(ldut[groupok],ldut[!groupok]),
+##       y=list(ldmetr[groupok],ldmetr[!groupok]), type='p', pch=c(20,17),cex=0.5,
+##       alpha=0.25,
+##       xlab='difference in utility', ylab=paste0('difference in ',ylab))
+##     legend('topleft', bty='n', legend=paste0(
+##                           'incorrectly ranked pairs: ',
+##                           round(100*(1-sum(groupok)/nn)), '%'),
+##            cex=1.5)
+## }
+## dev.off()
 #################################
-apap <- 2*c(0.27,0.43)
-bpap <- 2*c(0.35, 0.32)
-lupap <- rowSums(aperm(confm(rep(0.5,2),apap,bpap)*c(xum)))
-lmpap <- metr(rep(0.5,2),apap,bpap)
-set.seed(149)
+## apap <- 2*c(0.27,0.43)
+## bpap <- 2*c(0.35, 0.32)
+## lupap <- rowSums(aperm(confm(rep(0.5,2),apap,bpap)*c(xum)))
+## lmpap <- metr(rep(0.5,2),apap,bpap)
+## set.seed(149)
 ##
 ##
 ##
+
+okbs <- sapply(list(diag(2), xumpaper), function(xum){
+    print(xum)
+    excl <- (if(all(xum==diag(2))){8}else{9})
+    ldut <- rowSums(aperm((lcm1)*c(xum)))
+    ##
+    allmetr <- t(sapply(metrlist[-excl], function(metr){ metr(lp,la1,lb1) }))
+    rgm <- apply(allmetr,1,range)
+    allmetr <- (allmetr-rgm[1,])/(2*(rgm[2,]-rgm[1,]))+0.5
+    rgm <- apply(allmetr,1,range)
+    ldut2 <- (ldut-min(ldut))/(2*diff(range(ldut)))+0.5
+    rgu <- range(ldut2)
+    ##    
+    test <- sapply(1:nn, function(i){
+        which(apply(rbind(allmetr-allmetr[,i]<0, ldut2-ldut2[i] > 0), 2, all) |
+              apply(rbind(allmetr-allmetr[,i]>0, ldut2-ldut2[i] < 0), 2, all))
+    })
+    ##
+    tocheck <- which(sapply(test,length)>0)
+    ##
+    distanc <- sapply(tocheck,function(i1){
+        mind <- sapply(test[[i1]],function(i2){
+            min(abs(c(allmetr[,i1]-allmetr[,i2],ldut2[i1]-ldut2[i2])))
+        })
+        c(which.max(mind),max(mind))})
+    ##
+    i1 <- which.max(distanc[2,])
+    i2 <- distanc[1,i1]
+    c(tocheck[i1], test[[tocheck[i1]]][i2])})
+
+## okbs <- matrix(c(3754, 7902, 4751, 9865), 2,2)
+
+
+umlist <- list(diag(2), xumpaper)
+##
+for(ii in 1:length(umlist)){
+    xum <- umlist[[ii]]
 ldut <- rowSums(aperm((lcm1)*c(xum)))
-rgu <- range(ldut)
-allmetr <- sapply(metrlist, function(metr){ metr(lp,la1,lb1) })
-rgm <- apply(allmetr,2,range)
-okb <- c(which.min(colSums((t(allmetr)-rgm[2,])^2)/ncol(allmetr) + (ldut-rgu[1])^2),
-         which.min(colSums((t(allmetr)-rgm[1,])^2)/ncol(allmetr) + (ldut-rgu[2])^2)
-         )
+##
+allmetr <- t(sapply(metrlist, function(metr){ metr(lp,la1,lb1) }))
+rgm <- apply(allmetr,1,range)
+allmetr <- (allmetr-rgm[1,])/(2*(rgm[2,]-rgm[1,]))+0.5
+rgm <- apply(allmetr,1,range)
+ldut2 <- (ldut-min(ldut))/(2*diff(range(ldut)))+0.5
+rgu <- range(ldut2)
+okb <- okbs[,ii]
+    ## okb <- c(which.min(colSums(((allmetr-rgm[2,])^2)/c(9,9,9,9,9,9,9,9,5)) + (ldut2-rgu[1])^2),
+##          which.min(colSums(((allmetr-rgm[1,])^2)/c(9,9,9,9,9,9,9,9,5)) + (ldut2-rgu[2])^2)
+##          )
+## okb <- c(which.min(apply(rbind(allmetr-rgm[2,],ldut2-rgu[1]),2,
+##                          function(x){sum(abs(x)^2/c(9,9,9,9,9,9,9,9,9,1))})),
+##          which.min(apply(rbind(allmetr-rgm[1,],ldut2-rgu[2]),2,
+##                          function(x){sum(abs(x)^2/c(9,9,9,9,9,9,9,9,9,1))})))
+## tryn <- 6
+## okb <- c(which(!is.na(test))[tryn],test[which(!is.na(test))[tryn]])
 ##
 ##
-pdff(paste0('testsingle', paste0(xum,collapse='')))
+pdff(paste0('utility_vs_metrics_', paste0(xum,collapse='')),paper='a4r')
+##pngf(paste0('utility_vs_metrics_', paste0(xum,collapse='')))
 exc <- 0
 pchseq <- c(5,0,1,6)
+colseq <- c(4,6,7)
+par(mfrow=c(3,3))
+par(oma=c(0,0,0,0))
 for(i in 1:length(metrlist)){
     metr <- metrlist[[i]]
     ldmetr <- metr(lp,la1,lb1)
@@ -511,13 +563,18 @@ for(i in 1:length(metrlist)){
         ok <- okb
         pch <- 2
         col <- 2
-    }else{
-        rgm <- range(ldmetr)
-        ok <- c(which.min((ldmetr-rgm[1])^2 + (ldut-rgu[2])^2),
-                which.min((ldmetr-rgm[2])^2 + (ldut-rgu[1])^2))
+    }else if(max(diff(diff(ldmetr)/diff(ldut)))==0){
+        ok <- okb
+        pch <- NA
+        col <- NA
+        }else{
+        ldmetr2 <- (ldmetr-min(ldmetr))/(2*diff(range(ldmetr)))+0.5
+        rgm <- range(ldmetr2)
+        ok <- c(which.min((ldmetr2-rgm[1])^2 + (ldut2-rgu[2])^2),
+                which.min((ldmetr2-rgm[2])^2 + (ldut2-rgu[1])^2))
         exc <- exc + 1
         pch <- pchseq[exc]
-        col <- 2 + exc
+        col <- colseq[exc]
     }
     ## if(i<=5){
     ##     ok1 <- ok1b
@@ -533,14 +590,18 @@ for(i in 1:length(metrlist)){
     ## diffm <- ldmetr[1:(nn/2)]-ldmetr[(nn/2+1):nn]
     ## okp <- which( diffu*diffm < 0)[1]
 tplot(x=ldut,
-      y=ldmetr, type='p', pch=20, cex=0.5, alpha=0.25,
-      xlab='utility', ylab=ylab)
+      y=ldmetr, type='p', pch=20, cex=0.5, alpha=0.66, cex.axis=1.5,cex.lab=1.5, ly=3.5, n=5, family='Palatino',
+      mar=(if(i<6){c(1, 5.2, 2, 1)}else{c(4.1, 5.2, 2, 1)}),
+      xlabels=(i>6),
+      xlab=(if(i>6){'utility'}else{NA}),
+      ylab=ylab)
 tplot(x=rbind(ldut[ok]),
-      y=rbind(ldmetr[ok]), type='p', pch=pch,cex=3, lwd=5, col=col,
+      y=rbind(ldmetr[ok]), type='p', pch=pch,cex=2, lwd=3, col=col,
       add=T)
 #legend('topleft', legend=sum(groupok)/nn, bty='n')
 }
 dev.off()
+}
 
 ################################################################
 #### Plot of metric values for pairs of confusion matrices and
@@ -562,8 +623,8 @@ metrlist <- list('F1-measure'=f1score,
               'Balanced accuracy'=bacc,
               'Fowlkes-Mallows index'=foma,
               'Accuracy'=acc,
-              'True-positive rate (recall)'=function(p,a,b){a},
-              'True-negative rate (specificicy)'=function(p,a,b){b})
+              'True-positive rate'=function(p,a,b){a},
+              'True-negative rate'=function(p,a,b){b})
 ##
 lp <- runif(nn,0,1)
 la1 <- 0.5+0.5*rbeta(nn, shape1=shape1, shape2=shape2)
@@ -580,17 +641,24 @@ lxy <- runif(2*round(nn*6/3),-1,1)
 dim(lxy) <- c(round(nn*6/3),2)
 lxy <- lxy[lxy[,2]<lxy[,1]+1 & lxy[,2]>lxy[,1]-1,][1:nn,]
 ##
+## wlxy <- t(apply(lxy,1, function(xy){
+##     inrange <- FALSE
+##     k <- 0
+##     while((!inrange) & k<100){
+##         k <- k+1
+##         xy2 <- xy+rnorm(2,0,errorum/100)
+##         inrange <- (xy2[2] <= xy2[1]+1 & xy2[2] >= xy2[1]-1)
+##     }
+##     c(xy2,k)}))
+## if(max(wlxy[,3])>=99){print('WARNING')}
+## wlxy <- wlxy[,1:2]
 wlxy <- t(apply(lxy,1, function(xy){
-    inrange <- FALSE
-    k <- 0
-    while((!inrange) & k<100){
-        k <- k+1
-        xy2 <- xy+rnorm(2,0,errorum/100)
-        inrange <- (xy2[2] <= xy2[1]+1 & xy2[2] >= xy2[1]-1)
-    }
-    c(xy2,k)}))
-if(max(wlxy[,3])>=99){print('WARNING')}
-wlxy <- wlxy[,1:2]
+    xy2 <- xy+rnorm(2,0,errorum/100)
+    tempum <- xy2um(xy2)
+    tempum <- tempum-min(tempum)
+    tempum <- tempum/max(tempum)
+    um2xy(tempum)
+    }))
 ##
 lut <- apply(lxy,1,xy2um)
 dim(lut) <- c(2,2,nn)
@@ -608,6 +676,41 @@ summary(sapply(1:dim(lut)[3],function(i){mean(abs(lut[,,i]-wlut[,,i]))/mean(lut[
 
 func <- identity#function(x){plogis(x*10)*2-1}
 ##
+    endi0 <- 1
+    endi <- length(metrlist)+1
+    pdff(paste0('draws_',0), paper='a4r')
+    par(mfrow=c(3,3))
+    par(oma=c(0,0,0,0))
+    for(i in endi0:endi){
+        if(i < length(metrlist)+1){
+            metr <- metrlist[[i]]
+    ldmetr <- metr(lp,la2,lb2)-metr(lp,la1,lb1)
+    ylab <- names(metrlist)[i]
+    } else {
+    ldmetr <- wldut
+    ylab <- paste0('utility, ',errorum,'% incorrect utilities')
+    }
+        groupok <- (ldut>0 & ldmetr>0) | (ldut<0 & ldmetr<0)
+        tplot(x=list(func(ldut[groupok]),func(ldut[!groupok])),
+              family='Palatino',
+              y=list(func(ldmetr[groupok]),func(ldmetr[!groupok])),
+              type='p', pch=c(20,17),cex=c(0.5,0.65),
+              mar=(if(i<6){c(1, 5.2, 2, 1)}else{c(4.1, 5.2, 2, 1)}),
+              xlabels=(i>6),
+##              xlab=(if(i>6){'diff. in utility'}else{NA}),
+              xlab=(if(i>6){bquote(Delta~'utility')}else{NA}),
+              alpha=0.66, cex.axis=1.5, cex.lab=1.5, ly=3.5, n=5,
+              ylab=bquote(Delta~.(ylab)))
+        text(x=min(ldut),y=max(ldmetr), xpd=T, offset=0,
+             labels=paste0('incorrectly ranked pairs: ', round(100*(1-sum(groupok)/nn)), '%'),
+             adj=c(0.05,-0.5), cex=1.5, col=2
+             )
+        ## legend(x=min(ldut),y=max(ldmetr), bty='n', text.col=2, cex=1.5, xjust=0,
+        ##        legend=paste0('incorrectly ranked pairs: ', round(100*(1-sum(groupok)/nn)), '%'))
+    }
+    dev.off()
+
+
 for(j in 1:3){
     endi0 <- (j-1)*3+1
     endi <- j*3
@@ -627,95 +730,92 @@ for(j in 1:3){
         tplot(x=list(func(ldut[groupok]),func(ldut[!groupok])), 
               y=list(func(ldmetr[groupok]),func(ldmetr[!groupok])), type='p', pch=c(20,17),cex=c(0.5,0.65),
               alpha=0.66, xlabels=(!(i<endi)),
-              mar=(if(i<endi){c(1, 5.2, 1, 0)}else{c(4.1, 5.2, 1, 0)}),
+              mar=(if(i<endi){c(1, 5.2, 2, 0)}else{c(4.1, 5.2, 2, 0)}),
               xlab=(if(i<endi){NA}else{'diff. in utility'}),
               ylab=paste0('diff. in ',ylab))
         legend('topleft', bty='n', text.col=2, cex=1.5,
-               legend=paste0( round(100*(1-sum(groupok)/nn)),
-                             '% incorrectly ranked pairs'))
+               legend=paste0('incorrectly ranked pairs: ', round(100*(1-sum(groupok)/nn)), '%'))
     }
     dev.off()
 }
 
-pdff(paste0('draws'))
-for(i in 1:(length(metrlist)+1)){
-    if(i < length(metrlist)+1){
-    metr <- metrlist[[i]]
-    ldmetr <- metr(lp,la2,lb2)-metr(lp,la1,lb1)
-    ylab <- names(metrlist)[i]
-    } else {
-    ldmetr <- wldut
-    ylab <- paste0('utility using ',errorum,'% incorrect utilities')
-    }
-    groupok <- (ldut>0 & ldmetr>0) | (ldut<0 & ldmetr<0)
-    tplot(x=list(ldut[groupok],ldut[!groupok]),
-      y=list(ldmetr[groupok],ldmetr[!groupok]), type='p', pch=c(20,17),cex=0.5,
-      alpha=0.5,
-      xlab='difference in utility', ylab=paste0('difference in ',ylab))
-    legend('topleft', bty='n', legend=paste0(
-                          'incorrectly ranked pairs: ',
-                          round(100*(1-sum(groupok)/nn)), '%'),
-           cex=1.5)
-}
-dev.off()
 
+## pdff(paste0('draws'))
+## for(i in 1:(length(metrlist)+1)){
+##     if(i < length(metrlist)+1){
+##     metr <- metrlist[[i]]
+##     ldmetr <- metr(lp,la2,lb2)-metr(lp,la1,lb1)
+##     ylab <- names(metrlist)[i]
+##     } else {
+##     ldmetr <- wldut
+##     ylab <- paste0('utility using ',errorum,'% incorrect utilities')
+##     }
+##     groupok <- (ldut>0 & ldmetr>0) | (ldut<0 & ldmetr<0)
+##     tplot(x=list(ldut[groupok],ldut[!groupok]),
+##       y=list(ldmetr[groupok],ldmetr[!groupok]), type='p', pch=c(20,17),cex=0.5,
+##       alpha=0.5,
+##       xlab='difference in utility', ylab=paste0('difference in ',ylab))
+##     legend('topleft', bty='n', legend=paste0(
+##                           'incorrectly ranked pairs: ',
+##                           round(100*(1-sum(groupok)/nn)), '%'),
+##            cex=1.5)
+## }
+## dev.off()
 
-
-
-pdff(paste0('draws2'), paper='a4', width=11.7, height=16.5)
-endi <- 5
-par(mfrow=c(endi,1))
-par(oma=c(0,0,0,0))
-for(i in 1:endi){
-    if(i < length(metrlist)+1){
-    metr <- metrlist[[i]]
-    ldmetr <- metr(lp,la2,lb2)-metr(lp,la1,lb1)
-    ylab <- names(metrlist)[i]
-    } else {
-    ldmetr <- wldut
-    ylab <- paste0('utility using ',errorum,'% incorrect utilities')
-    }
-    groupok <- (ldut>0 & ldmetr>0) | (ldut<0 & ldmetr<0)
-    tplot(x=list(ldut[groupok],ldut[!groupok]), 
-      y=list(ldmetr[groupok],ldmetr[!groupok]), type='p', pch=c(20,17),cex=0.5,
-      alpha=0.5, xlabels=(!(i<endi)),
-      mar=(if(i<endi){c(1, 5.2, 1, 0)}else{c(4.1, 5.2, 1, 0)}),
-      xlab=(if(i<endi){NA}else{'difference in utility'}),
-      ylab=paste0('difference in ',ylab))
-    legend('topleft', bty='n', legend=paste0(
-                          'incorrectly ranked pairs: ',
-                          round(100*(1-sum(groupok)/nn)), '%'),
-           cex=1.5)
-}
-dev.off()
-##
-pdff(paste0('draws2b'), paper='a4', width=11.7, height=16.5)
-endi0 <- endi+1
-endi <- length(metrlist)+1
-par(mfrow=c(endi-endi0+1,1))
-par(oma=c(0,0,0,0))
-for(i in endi0:endi){
-    if(i < length(metrlist)+1){
-    metr <- metrlist[[i]]
-    ldmetr <- metr(lp,la2,lb2)-metr(lp,la1,lb1)
-    ylab <- names(metrlist)[i]
-    } else {
-    ldmetr <- wldut
-    ylab <- paste0('utility using ',errorum,'% incorrect utilities')
-    }
-    groupok <- (ldut>0 & ldmetr>0) | (ldut<0 & ldmetr<0)
-    tplot(x=list(ldut[groupok],ldut[!groupok]), 
-      y=list(ldmetr[groupok],ldmetr[!groupok]), type='p', pch=c(20,17),cex=0.5,
-      alpha=0.5, xlabels=(!(i<endi)),
-      mar=(if(i<endi){c(1, 5.2, 1, 0)}else{c(4.1, 5.2, 1, 0)}),
-      xlab=(if(i<endi){NA}else{'difference in utility'}),
-      ylab=paste0('difference in ',ylab))
-    legend('topleft', bty='n', legend=paste0(
-                          'incorrectly ranked pairs: ',
-                          round(100*(1-sum(groupok)/nn)), '%'),
-           cex=1.5)
-}
-dev.off()
+## pdff(paste0('draws2'), paper='a4', width=11.7, height=16.5)
+## endi <- 5
+## par(mfrow=c(endi,1))
+## par(oma=c(0,0,0,0))
+## for(i in 1:endi){
+##     if(i < length(metrlist)+1){
+##     metr <- metrlist[[i]]
+##     ldmetr <- metr(lp,la2,lb2)-metr(lp,la1,lb1)
+##     ylab <- names(metrlist)[i]
+##     } else {
+##     ldmetr <- wldut
+##     ylab <- paste0('utility using ',errorum,'% incorrect utilities')
+##     }
+##     groupok <- (ldut>0 & ldmetr>0) | (ldut<0 & ldmetr<0)
+##     tplot(x=list(ldut[groupok],ldut[!groupok]), 
+##       y=list(ldmetr[groupok],ldmetr[!groupok]), type='p', pch=c(20,17),cex=0.5,
+##       alpha=0.5, xlabels=(!(i<endi)),
+##       mar=(if(i<endi){c(1, 5.2, 1, 0)}else{c(4.1, 5.2, 1, 0)}),
+##       xlab=(if(i<endi){NA}else{'difference in utility'}),
+##       ylab=paste0('difference in ',ylab))
+##     legend('topleft', bty='n', legend=paste0(
+##                           'incorrectly ranked pairs: ',
+##                           round(100*(1-sum(groupok)/nn)), '%'),
+##            cex=1.5)
+## }
+## dev.off()
+## ##
+## pdff(paste0('draws2b'), paper='a4', width=11.7, height=16.5)
+## endi0 <- endi+1
+## endi <- length(metrlist)+1
+## par(mfrow=c(endi-endi0+1,1))
+## par(oma=c(0,0,0,0))
+## for(i in endi0:endi){
+##     if(i < length(metrlist)+1){
+##     metr <- metrlist[[i]]
+##     ldmetr <- metr(lp,la2,lb2)-metr(lp,la1,lb1)
+##     ylab <- names(metrlist)[i]
+##     } else {
+##     ldmetr <- wldut
+##     ylab <- paste0('utility using ',errorum,'% incorrect utilities')
+##     }
+##     groupok <- (ldut>0 & ldmetr>0) | (ldut<0 & ldmetr<0)
+##     tplot(x=list(ldut[groupok],ldut[!groupok]), 
+##       y=list(ldmetr[groupok],ldmetr[!groupok]), type='p', pch=c(20,17),cex=0.5,
+##       alpha=0.5, xlabels=(!(i<endi)),
+##       mar=(if(i<endi){c(1, 5.2, 1, 0)}else{c(4.1, 5.2, 1, 0)}),
+##       xlab=(if(i<endi){NA}else{'difference in utility'}),
+##       ylab=paste0('difference in ',ylab))
+##     legend('topleft', bty='n', legend=paste0(
+##                           'incorrectly ranked pairs: ',
+##                           round(100*(1-sum(groupok)/nn)), '%'),
+##            cex=1.5)
+## }
+## dev.off()
 
 
 
