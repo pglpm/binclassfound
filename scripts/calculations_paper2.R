@@ -1,6 +1,6 @@
 ## Author: PGL  Porta Mana
 ## Created: 2022-05-01T09:38:48+0200
-## Last-Updated: 2022-05-16T14:20:25+0200
+## Last-Updated: 2022-05-16T20:45:15+0200
 ################
 ## Calculations for the papers
 ################
@@ -492,7 +492,7 @@ lcm1 <- confm(lp,la1,lb1)
 ##
 ##
 
-okbs <- sapply(list(diag(2), xumpaper), function(xum){
+okbs <- sapply(list(diag(2), xumpaper, matrix(c(1,0,0,0),2,2)), function(xum){
     print(xum)
     excl <- (if(all(xum==diag(2))){8}else{9})
     ldut <- rowSums(aperm((lcm1)*c(xum)))
@@ -524,7 +524,7 @@ okbs <- sapply(list(diag(2), xumpaper), function(xum){
 ## okbs <- matrix(c(3754, 7902, 4751, 9865), 2,2)
 
 
-umlist <- list(diag(2), xumpaper)
+umlist <- list(diag(2), xumpaper, matrix(c(1,0,0,0),2,2))
 ##
 for(ii in 1:length(umlist)){
     xum <- umlist[[ii]]
@@ -597,6 +597,190 @@ tplot(x=ldut,
       ylab=ylab)
 tplot(x=rbind(ldut[ok]),
       y=rbind(ldmetr[ok]), type='p', pch=pch,cex=2, lwd=3, col=col,
+      add=T)
+#legend('topleft', legend=sum(groupok)/nn, bty='n')
+}
+dev.off()
+}
+
+##########################################################################
+#### Plot of wrong result of some metrics for some utility matrices
+#### Version 2
+##########################################################################
+
+## xumpaper <- xumpaper-min(xumpaper)
+## xumpaper <- signif(xumpaper/max(xumpaper), 2)
+##
+set.seed(149)
+##
+nn <- 10^4
+#xum <- xumpaper
+shape1 <- 2
+shape2 <- 1
+## inrange <- FALSE
+## while(!inrange){
+##     wxy <- um2xy(xum)+rnorm(2,0,0.1)
+##     inrange <- (wxy[2] <= wxy[1]+1 & wxy[2] >= wxy[1]-1)
+## }
+## wum <- xy2um(wxy)
+## print(wxy)
+## print(wum)
+##
+metrlist <- list('F1-measure'=f1score,
+              'Matthews Correlation Coefficient'=mcc,
+              ##'Precision'=prec,
+              ##'Balanced accuracy'=bacc,
+              ##'Fowlkes-Mallows index'=foma,
+              ##'True-negative rate'=function(p,a,b){b},
+              'Accuracy'=acc,
+              'True-positive rate'=function(p,a,b){a}
+             ## ,
+             ##  'Utility matrix eq. (4)'=function(p,a,b){
+             ##      rowSums(aperm(confm(p,a,b)* c(xumpaper) ))
+             ##  }
+              )
+##
+lp <- rep(0.8,nn)
+la1 <- 0.5+0.5*rbeta(nn, shape1=shape1, shape2=shape2)
+## test <- thist(la1);tplot(x=test$breaks, y=test$density)
+## summary(la1)
+lb1 <- 0.5+0.5*rbeta(nn, shape1=shape1, shape2=shape2)
+## la2 <- 0.5+0.5*rbeta(nn, shape1=shape1, shape2=shape2)
+## lb2 <- 0.5+0.5*rbeta(nn, shape1=shape1, shape2=shape2)
+##
+lcm1 <- confm(lp,la1,lb1)
+## lcm2 <- confm(lp,la2,lb2)
+##
+## ldut <- rowSums(aperm((lcm2-lcm1)*c(xum)))
+##
+##
+## pdff(paste0('testdiff', paste0(xum,collapse='')))
+## for(i in 1:length(metrlist)){
+##     metr <- metrlist[[i]]
+##     ldmetr <- metr(lp,la2,lb2)-metr(lp,la1,lb1)
+##     ylab <- names(metrlist)[i]
+## groupok <- (ldut>0 & ldmetr>0) | (ldut<0 & ldmetr<0)
+## tplot(x=list(ldut[groupok],ldut[!groupok]),
+##       y=list(ldmetr[groupok],ldmetr[!groupok]), type='p', pch=c(20,17),cex=0.5,
+##       alpha=0.25,
+##       xlab='difference in utility', ylab=paste0('difference in ',ylab))
+##     legend('topleft', bty='n', legend=paste0(
+##                           'incorrectly ranked pairs: ',
+##                           round(100*(1-sum(groupok)/nn)), '%'),
+##            cex=1.5)
+## }
+## dev.off()
+#################################
+## apap <- 2*c(0.27,0.43)
+## bpap <- 2*c(0.35, 0.32)
+## lupap <- rowSums(aperm(confm(rep(0.5,2),apap,bpap)*c(xum)))
+## lmpap <- metr(rep(0.5,2),apap,bpap)
+## set.seed(149)
+##
+##
+##
+
+okbs <- sapply(list(diag(2), matrix(c(1,0,0,0),2,2)), function(xum){
+    print(xum)
+    excl <- (if(all(xum==diag(2))){3}else{4})
+    ldut <- rowSums(aperm((lcm1)*c(xum)))
+    ##
+    allmetr <- t(sapply(metrlist[-excl], function(metr){ metr(lp,la1,lb1) }))
+    rgm <- apply(allmetr,1,range)
+    allmetr <- (allmetr-rgm[1,])/(2*(rgm[2,]-rgm[1,]))+0.5
+    rgm <- apply(allmetr,1,range)
+    ldut2 <- (ldut-min(ldut))/(2*diff(range(ldut)))+0.5
+    rgu <- range(ldut2)
+    ##    
+    system.time(test <- foreach(i=1:nn)%dopar%{
+        which(apply(rbind(allmetr-allmetr[,i]<0, ldut2-ldut2[i] > 0), 2, all) |
+              apply(rbind(allmetr-allmetr[,i]>0, ldut2-ldut2[i] < 0), 2, all))
+    })
+    ##
+    tocheck <- which(sapply(test,length)>0)
+    ##
+    distanc <- sapply(tocheck,function(i1){
+        mind <- sapply(test[[i1]],function(i2){
+            min(abs(c(allmetr[,i1]-allmetr[,i2],ldut2[i1]-ldut2[i2])))
+        })
+        c(which.max(mind),max(mind))})
+    ##
+    i1 <- which.max(distanc[2,])
+    i2 <- distanc[1,i1]
+    c(tocheck[i1], test[[tocheck[i1]]][i2])})
+
+if(p==0.5){
+    okbs <- matrix(c(1034, 1219, 1454, 4781), 2,2)
+}else if(p==0.8){
+    okbs <- matrix(c(138, 4130, 450, 4781))
+}
+
+
+umlist <- list(diag(2), matrix(c(1,0,0,0),2,2))
+##
+for(ii in 1:length(umlist)){
+    xum <- umlist[[ii]]
+ldut <- rowSums(aperm((lcm1)*c(xum)))
+##
+## allmetr <- t(sapply(metrlist, function(metr){ metr(lp,la1,lb1) }))
+## rgm <- apply(allmetr,1,range)
+## allmetr <- (allmetr-rgm[1,])/(2*(rgm[2,]-rgm[1,]))+0.5
+## rgm <- apply(allmetr,1,range)
+ldut2 <- (ldut-min(ldut))/(2*diff(range(ldut)))+0.5
+    rgu <- range(ldut2)
+##
+##     if(all(xum==diag(2))){scalingp <-c(3,3,Inf,3,1)}else{scalingp <-c(3,3,3,Inf,1)}
+##     distp <- function(x){sum(abs(x)^2/scalingp )}
+## okb2 <- c(which.min(apply(rbind(allmetr-rgm[2,],ldut2-rgu[1]),2, distp )),
+## #         which.min(apply(rbind(allmetr-mean(rgm),ldut2-mean(rgu)),2, distp )),
+##          which.min(apply(rbind(allmetr-rgm[1,],ldut2-rgu[2]),2, distp))
+##          )
+##
+##
+pdff(paste0('utility_vs_metrics_',lp[1],'_', paste0(xum,collapse='')),paper='a4r')
+##pngf(paste0('utility_vs_metrics_', paste0(xum,collapse='')))
+pchseq <- c(5,0,1,1)
+colseq <- rep(4,4)#c(3,4,6,7)
+par(mfrow=c(2,2))
+par(oma=c(0,0,0,0))
+for(i in 1:length(metrlist)){
+    metr <- metrlist[[i]]
+    ldmetr <- metr(lp,la1,lb1)
+    ylab <- names(metrlist)[i]
+    if(max(diff(diff(ldmetr)/diff(ldut)))<1e-11){
+        ok1 <- ok2 <- okb
+        pch <- NA
+        col <- NA
+    }else{
+        ok1 <- okbs[,ii]
+        ldmetr2 <- (ldmetr-min(ldmetr))/(2*diff(range(ldmetr)))+0.5
+        rgm <- range(ldmetr2)
+        ok2 <- c(which.min((ldmetr2-rgm[1])^10 + (ldut2-rgu[2])^10),
+                which.min((ldmetr2-rgm[2])^10 + (ldut2-rgu[1])^10))
+        pch <- rep(c(2,pchseq[i]),each=2)
+        col <- rep(c(2,colseq[i]), each=2)
+        }
+    ## if(i<=5){
+    ##     ok1 <- ok1b
+    ##     ok2 <- ok2b
+    ##     pch <- 2
+    ## }else{
+    ##     rgm <- range(ldmetr)
+    ##     ok1 <- which.min((ldmetr-rgm[1])^2 + (ldut-rgu[2])^2)
+    ##     ok2 <- which.min((ldmetr-rgm[2])^2 + (ldut-rgu[1])^2)
+    ##     pch <- 5
+    ## }
+    ## diffu <- ldut[1:(nn/2)]-ldut[(nn/2+1):nn]
+    ## diffm <- ldmetr[1:(nn/2)]-ldmetr[(nn/2+1):nn]
+    ## okp <- which( diffu*diffm < 0)[1]
+tplot(x=ldut,
+      y=ldmetr, type='p', pch=20, cex=0.5, alpha=0.66, cex.axis=1.5,cex.lab=1.5, ly=3.5, n=5, family='Palatino',
+      mar=(if(i<2){c(1, 5.2, 2, 1)}else{c(4.1, 5.2, 2, 1)}),
+      xlabels=(i>2),
+      xlab=(if(i>2){'utility'}else{NA}),
+      ylab=ylab)
+tplot(x=rbind(ldut[c(ok1,ok2)]),
+      y=rbind(ldmetr[c(ok1,ok2)]), type='p', pch=pch, cex=2, lwd=3, col=col,
       add=T)
 #legend('topleft', legend=sum(groupok)/nn, bty='n')
 }
