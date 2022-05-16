@@ -1,7 +1,7 @@
 \pdfoutput=1
 %% Author: PGL  Porta Mana
 %% Created: 2022-03-04T07:39:34+0200
-%% Last-Updated: 2022-05-16T14:48:30+0200
+%% Last-Updated: 2022-05-16T14:59:02+0200
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Decision theory for machine-learning classifiers
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -1199,14 +1199,16 @@ Second, the ranking of confusion matrices yielded by the metric does not fully a
 
 By contrast, compliant metrics such as the accuracy give completely correct rankings for all pairs of confusion matrices in some specific set of classification problems.
 
+% \setlength{\fboxsep}{0pt}%
+% \setlength{\fboxrule}{0.25pt}%
 \begin{figure}[p]
   \centering
   %{A}\hfill\mbox{}\\[0pt]
 \includegraphics[width=0.99\linewidth]{utility_vs_metrics_1001.jpg}\\[0pt]
 % {B}\hfill\mbox{}\\[0pt]
-{\color{mygrey}\rule{0.33\linewidth}{0.25pt}}
-  \includegraphics[width=0.99\linewidth]{utility_vs_metrics_15-35-335165.jpg}\\
-  \caption{Relationship between various metrics and utility for two different utility matrices. Upper panel: for the utility matrix $ \begin{bsmallmatrix} 1&0\\0&1 \end{bsmallmatrix} $. Lower panel: for the utility matrix $ \begin{bsmallmatrix} 15 & -335  \\ -35 & 165 \end{bsmallmatrix} $, \eqn~\eqref{eq:utility_example}. The pairs of red triangles represent confusion matrices that are incorrectly ranked by the metric reported on the $y$-axis. \mynotep{blah}}
+\vspace{-1em}{\color{mygrey}\rule{0.66\linewidth}{0.25pt}}
+\includegraphics[width=0.99\linewidth]{utility_vs_metrics_15-35-335165.jpg}\\
+  \caption{Relationship between various metrics and utility metric for two classification problems with different utility matrices. Upper panel: classification with utility matrix $ \begin{bsmallmatrix} 1&0\\0&1 \end{bsmallmatrix} $. Lower panel: classification with utility matrix $ \begin{bsmallmatrix} 15 & -335  \\ -35 & 165 \end{bsmallmatrix} $, \eqn~\eqref{eq:utility_example}. Pairs of red triangles represent two confusion matrices (the same in all plots of one panel) that are incorrectly ranked by the metric reported on the $y$-axis.}
   \label{fig:metrics_vs_utility}
 \end{figure}
 
