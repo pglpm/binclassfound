@@ -1,7 +1,7 @@
 \pdfoutput=1
 %% Author: PGL  Porta Mana
 %% Created: 2022-03-04T07:39:34+0200
-%% Last-Updated: 2022-05-18T20:58:35+0200
+%% Last-Updated: 2022-05-18T22:48:01+0200
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Decision theory for machine-learning classifiers
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -1265,17 +1265,20 @@ Several interrelated questions arise from our arguments, though:
 \begin{itemize}
 \item What to do when we are uncertain about the utilities underlying a classification problem?
 \item What happens if the utilities we use are actually wrong, not the true ones underlying the problem?
-\item How often do popular metrics such as $F_{1}$-measure or Matthews correlation coefficient lead to incorrect results, on average?
+\item How often do uncompliant metrics such as $F_{1}$-measure or Matthews correlation coefficient lead to incorrect results, on average?
 \end{itemize}
+In fact, if a small error in the assessment of the utilities led to a large number of wrong evaluations, and at the same time incompliant metrics led a small number of wrong evaluations on average, then all the rigorousness of decision-theoretic metrics would be useless in practice, and  incompliant metrics would be best for realistic situations.
 
+This is not the case, however. We now discuss how to deal with uncertainty about the utilities, and present an important result: Using wrong utilities, even with relative errors as large as 25\%, still leads to fewer incorrect relative evaluations on average than using some of the most common metrics.
 
 
 \begin{figure}[t]
   \centering
-    \includegraphics[width=\linewidth]{draws_0.jpg}\\
+    \includegraphics[width=0.99\linewidth]{incorrectscores2.jpg}\\
   \caption{Relationship between various metrics and utility}
   \label{fig:wrongly_ranked_pairs}
 \end{figure}
+%% True-positive/negative rate, not reported: 25.0\% incorrect pair-rankings
 
 
 
