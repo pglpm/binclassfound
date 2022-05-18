@@ -1,7 +1,7 @@
 \pdfoutput=1
 %% Author: PGL  Porta Mana
 %% Created: 2022-03-04T07:39:34+0200
-%% Last-Updated: 2022-05-16T22:21:40+0200
+%% Last-Updated: 2022-05-16T22:24:17+0200
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Decision theory for machine-learning classifiers
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -1235,12 +1235,11 @@ Consider the uppermost left plot of \fig~\ref{fig:metrics_vs_utility} as an exam
 \item its average utility yield, according to the utility matrix $\begin{bsmallmatrix} 1&0\\0&1 \end{bsmallmatrix}$; this number is the actual performance, appropriate to this specific problem, of the corresponding algorithm;
 \item its score according to another metric, in this case the $F_{1}$-measure;
 \end{enumerate}
-and we plot a corresponding point with these two numbers as $x$- and $y$-coordinates.
-This plot thus shows the general statistical relation between the appropriate utility score and the $F_{1}$-measure of this distribution of confusion matrices.
+and we plot (blue disks) a corresponding point with these two numbers as $x$- and $y$-coordinates. This plot thus shows the general statistical relation between the appropriate utility score and the $F_{1}$-measure of this distribution of confusion matrices.
 
 The other three plots in the upper panel of \fig~\ref{fig:metrics_vs_utility} are analogous but for Matthews Correlation Coefficient, accuracy, and true-positive rate as $y$-coordinates. The lower panel is analogous to the upper panel, but for an imbalanced dataset with one class appearing with $80\%$ frequency. Finally, \fig~\ref{fig:metrics_vs_utility2} is analogous to \fig~\ref{fig:metrics_vs_utility} but with an underlying utility matrix equal to $ \begin{bsmallmatrix} 1&0\\0&0 \end{bsmallmatrix} $.
 
-In all these plots we see that it is  always possible to find two or more confusion matrices (yellow non-triangular pairs) for which the $F_{1}$-measure or the Matthews Correlation Coefficient give completely reversed rankings, scoring the worst confusion matrix (and the algorithm yielding it) as the best, and the best as the worst. It is even possible to find at least two confusion matrices (red triangular pairs) for which both these metrics simultaneously give the wrong ranking. It turns out that \emph{there is no classification problem for which these wrong-classification cases do not occur}. This is the second phenomenon mentioned above.
+In all these plots we see that it is  always possible to find two or more confusion matrices (pairs of yellow non-triangular shapes) for which the $F_{1}$-measure or the Matthews Correlation Coefficient give completely reversed rankings, scoring the worst confusion matrix (and the algorithm yielding it) as the best, and the best as the worst. It is even possible to find at least two confusion matrices (pairs of red triangular shapes) for which both these metrics simultaneously give the wrong ranking. It turns out that \emph{there is no classification problem for which these wrong-classification cases do not occur}. This is the second phenomenon mentioned above.
 
 \mynotep{add comment about illogical to say that MCC is almost good in the first case}
 

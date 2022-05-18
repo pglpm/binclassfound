@@ -1,6 +1,6 @@
 ## Author: PGL  Porta Mana
 ## Created: 2022-05-01T09:38:48+0200
-## Last-Updated: 2022-05-16T20:50:10+0200
+## Last-Updated: 2022-05-18T07:56:57+0200
 ################
 ## Calculations for the papers
 ################
@@ -680,7 +680,8 @@ lcm1 <- confm(lp,la1,lb1)
 ##
 ##
 
-okbs <- sapply(list(diag(2), matrix(c(1,0,0,0),2,2)), function(xum){
+if(FALSE){
+    okbs <- sapply(list(diag(2), matrix(c(1,0,0,0),2,2)), function(xum){
     print(xum)
     excl <- (if(all(xum==diag(2))){3}else{4})
     ldut <- rowSums(aperm((lcm1)*c(xum)))
@@ -708,26 +709,21 @@ okbs <- sapply(list(diag(2), matrix(c(1,0,0,0),2,2)), function(xum){
     i1 <- which.max(distanc[2,])
     i2 <- distanc[1,i1]
     c(tocheck[i1], test[[tocheck[i1]]][i2])})
-
+}else{
 if(lp[1]==0.5){
     okbs <- matrix(c(1034, 1219, 1454, 4781), 2,2)
-}else if(p==0.8){
-    okbs <- matrix(c(138, 4130, 450, 4781))
+}else if(lp[1]==0.8){
+    okbs <- matrix(c(138, 4130, 450, 4781),2,2)
 }
-
+}
 
 umlist <- list(diag(2), matrix(c(1,0,0,0),2,2))
 ##
-for(ii in 1:length(umlist)){
-    xum <- umlist[[ii]]
-ldut <- rowSums(aperm((lcm1)*c(xum)))
 ##
 ## allmetr <- t(sapply(metrlist, function(metr){ metr(lp,la1,lb1) }))
 ## rgm <- apply(allmetr,1,range)
 ## allmetr <- (allmetr-rgm[1,])/(2*(rgm[2,]-rgm[1,]))+0.5
 ## rgm <- apply(allmetr,1,range)
-ldut2 <- (ldut-min(ldut))/(2*diff(range(ldut)))+0.5
-    rgu <- range(ldut2)
 ##
 ##     if(all(xum==diag(2))){scalingp <-c(3,3,Inf,3,1)}else{scalingp <-c(3,3,3,Inf,1)}
 ##     distp <- function(x){sum(abs(x)^2/scalingp )}
@@ -737,55 +733,74 @@ ldut2 <- (ldut-min(ldut))/(2*diff(range(ldut)))+0.5
 ##          )
 ##
 ##
-pdff(paste0('utility_vs_metrics_',lp[1],'_', paste0(xum,collapse='')),paper='a4r')
-##pngf(paste0('utility_vs_metrics_', paste0(xum,collapse='')))
+lem <- length(metrlist)
+pdff(paste0('utility_vs_metrics_',lp[1]),paper='a4')
 pchseq <- c(5,0,1,1)
 colseq <- rep(4,4)#c(3,4,6,7)
-par(mfrow=c(2,2))
+par(mfcol=c(4,2))
 par(oma=c(0,0,0,0))
-for(i in 1:length(metrlist)){
-    metr <- metrlist[[i]]
-    ldmetr <- metr(lp,la1,lb1)
-    ylab <- names(metrlist)[i]
-    if(max(diff(diff(ldmetr)/diff(ldut)))<1e-11){
-        ok1 <- ok2 <- okb
-        pch <- NA
-        col <- NA
-    }else{
-        ok1 <- okbs[,ii]
-        ldmetr2 <- (ldmetr-min(ldmetr))/(2*diff(range(ldmetr)))+0.5
-        rgm <- range(ldmetr2)
-        ok2 <- c(which.min((ldmetr2-rgm[1])^10 + (ldut2-rgu[2])^10),
-                which.min((ldmetr2-rgm[2])^10 + (ldut2-rgu[1])^10))
-        pch <- rep(c(2,pchseq[i]),each=2)
-        col <- rep(c(2,colseq[i]), each=2)
+for(ii in 1:length(umlist)){
+    xum <- umlist[[ii]]
+    ldut <- rowSums(aperm((lcm1)*c(xum)))
+    ldut2 <- (ldut-min(ldut))/(2*diff(range(ldut)))+0.5
+    rgu <- range(ldut2)
+    ##
+    for(i in 1:lem){
+        metr <- metrlist[[i]]
+        ldmetr <- metr(lp,la1,lb1)
+        ylab <- names(metrlist)[i]
+        if(max(diff(diff(ldmetr)/diff(ldut)))<1e-11){
+            ok1 <- ok2 <- c(1,2)
+            pch <- NA
+            col <- NA
+        }else{
+            ok1 <- okbs[,ii]
+            ldmetr2 <- (ldmetr-min(ldmetr))/(2*diff(range(ldmetr)))+0.5
+            rgm <- range(ldmetr2)
+            ok2 <- c(which.min((ldmetr2-rgm[1])^10 + (ldut2-rgu[2])^10),
+                     which.min((ldmetr2-rgm[2])^10 + (ldut2-rgu[1])^10))
+            pch <- rep(c(2+4*(ii%/%2==1),pchseq[i]),each=2)
+            col <- rep(c(2,colseq[i]), each=2)
         }
-    ## if(i<=5){
-    ##     ok1 <- ok1b
-    ##     ok2 <- ok2b
-    ##     pch <- 2
-    ## }else{
-    ##     rgm <- range(ldmetr)
-    ##     ok1 <- which.min((ldmetr-rgm[1])^2 + (ldut-rgu[2])^2)
-    ##     ok2 <- which.min((ldmetr-rgm[2])^2 + (ldut-rgu[1])^2)
-    ##     pch <- 5
-    ## }
-    ## diffu <- ldut[1:(nn/2)]-ldut[(nn/2+1):nn]
-    ## diffm <- ldmetr[1:(nn/2)]-ldmetr[(nn/2+1):nn]
-    ## okp <- which( diffu*diffm < 0)[1]
-tplot(x=ldut,
-      y=ldmetr, type='p', pch=20, cex=0.5, alpha=0.66, cex.axis=1.5,cex.lab=1.5, ly=3.5, n=5, family='Palatino',
-      mar=(if(i<2){c(1, 5.2, 2, 1)}else{c(4.1, 5.2, 2, 1)}),
-      xlabels=(i>2),
-      xlab=(if(i>2){'utility'}else{NA}),
-      ylab=ylab)
-tplot(x=rbind(ldut[c(ok1,ok2)]),
-      y=rbind(ldmetr[c(ok1,ok2)]), type='p', pch=pch, cex=2, lwd=3, col=col,
-      add=T)
-#legend('topleft', legend=sum(groupok)/nn, bty='n')
+        ## if(i<=5){
+        ##     ok1 <- ok1b
+        ##     ok2 <- ok2b
+        ##     pch <- 2
+        ## }else{
+        ##     rgm <- range(ldmetr)
+        ##     ok1 <- which.min((ldmetr-rgm[1])^2 + (ldut-rgu[2])^2)
+        ##     ok2 <- which.min((ldmetr-rgm[2])^2 + (ldut-rgu[1])^2)
+        ##     pch <- 5
+        ## }
+        ## diffu <- ldut[1:(nn/2)]-ldut[(nn/2+1):nn]
+        ## diffm <- ldmetr[1:(nn/2)]-ldmetr[(nn/2+1):nn]
+        ## okp <- which( diffu*diffm < 0)[1]
+        tplot(x=ldut, y=ldmetr,
+              type='p', pch=20, cex=0.5, alpha=0.66,
+              cex.axis=1.5,cex.lab=1.5, ly=3, n=5, family='Palatino',
+              mar=c((if(i%/%lem!=1){4}else{6.1}),
+              (if(ii%/%2!=1){4.1}else{4.1}),
+              0.25,
+              (if(ii==1){0.25}else{0.25})
+              ),
+              ylabels=(ii%/%2 != 1),
+              ylab=(if(ii%/%2 != 1){ylab}else{NA}),
+              lx=(i%/%lem == 1)*2.33,
+              xlabels=(i%/%lem == 1),
+              xlab=(if(i%/%lem == 1){
+                        if(ii==1){
+                            expression('yield for utility matrix '~bgroup("[",atop(1~~0,0~~1),"]"))
+                        }else{
+                            expression('yield for utility matrix '~bgroup("[",atop(1~~0,0~~0),"]"))
+                        }
+                    }else{NA})
+              )
+        tplot(x=rbind(ldut[c(ok1,ok2)]),
+              y=rbind(ldmetr[c(ok1,ok2)]), type='p', pch=pch, cex=2, lwd=3, col=col,
+              add=T)
+    }
 }
 dev.off()
-}
 
 ################################################################
 #### Plot of metric values for pairs of confusion matrices and
