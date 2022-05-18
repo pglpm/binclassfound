@@ -1,7 +1,7 @@
 \pdfoutput=1
 %% Author: PGL  Porta Mana
 %% Created: 2022-03-04T07:39:34+0200
-%% Last-Updated: 2022-05-18T20:47:56+0200
+%% Last-Updated: 2022-05-18T20:58:35+0200
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Decision theory for machine-learning classifiers
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -1259,7 +1259,14 @@ A metric non-compliant with decision theory can lead to a large number of correc
 \section{Unknown or incorrect utilities}
 \label{sec:unknown_utilities}
 
-So far we have argued that the natural, best evaluation metric for a confusion matrix is the utility yield according to the utilities underlying the particular classification problem. Our arguments are based on the principles of decision theory. We have also argued that many popular metrics can lead to incorrect evaluations.
+So far we have argued that the natural, best evaluation metric for a confusion matrix is the utility yield according to the utilities underlying the particular classification problem. Our arguments are based on the principles of decision theory. We have also argued that many popular metrics, those not complying with formula~\eqref{eq:general_valuation_metric}, must lead to instances of incorrect evaluation.
+
+Several interrelated questions arise from our arguments, though:
+\begin{itemize}
+\item What to do when we are uncertain about the utilities underlying a classification problem?
+\item What happens if the utilities we use are actually wrong, not the true ones underlying the problem?
+\item How often do popular metrics such as $F_{1}$-measure or Matthews correlation coefficient lead to incorrect results, on average?
+\end{itemize}
 
 
 
