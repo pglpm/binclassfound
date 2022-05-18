@@ -1,7 +1,7 @@
 \pdfoutput=1
 %% Author: PGL  Porta Mana
 %% Created: 2022-03-04T07:39:34+0200
-%% Last-Updated: 2022-05-16T22:24:17+0200
+%% Last-Updated: 2022-05-18T08:36:16+0200
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Decision theory for machine-learning classifiers
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -1207,11 +1207,11 @@ The second phenomenon is illustrated in \figs~\ref{fig:metrics_vs_utility}--\ref
 \begin{figure}[p]
   \centering
   %{A}\hfill\mbox{}\\[0pt]
-\includegraphics[width=0.95\linewidth]{utility_vs_metrics_0.5_1001.jpg}\\[0pt]
+\includegraphics[width=0.99\linewidth]{utility_vs_metrics_0.5.jpg}\\[0pt]
 % {B}\hfill\mbox{}\\[0pt]
-\vspace{-1em}{\color{mygrey}\rule{0.66\linewidth}{0.25pt}}
-\includegraphics[width=0.95\linewidth]{utility_vs_metrics_0.8_1001.jpg}\\[0pt]
-\caption{Relationship between various metrics and actual utility yield for a binary-classification problem with underlying utility matrix $ \begin{bsmallmatrix} 1&0\\0&1 \end{bsmallmatrix} $. Upper panel: balanced dataset, either class with $50\%$ frequency. Lower panel: imbalanced dataset, class~$0$  with $80\%$ frequency.
+% \vspace{-1em}{\color{mygrey}\rule{0.66\linewidth}{0.25pt}}
+% \includegraphics[width=0.95\linewidth]{utility_vs_metrics_0.8.jpg}\\[0pt]
+\caption{\mynotew{to be rewritten} Relationship between various metrics and actual utility yield for a binary-classification problem with underlying utility matrix $ \begin{bsmallmatrix} 1&0\\0&1 \end{bsmallmatrix} $. Upper panel: balanced dataset, either class with $50\%$ frequency. Lower panel: imbalanced dataset, class~$0$  with $80\%$ frequency.
   Pairs of yellow non-triangular shapes in a plot show two confusion matrices which are wrongly ranked by the metric of the plot's $y$-axis.   Clearly there can be even three or more confusion matrices ranked in completely opposite order by the metric.
   The accuracy always give a correct rank, no matter the class balance. It is indeed the metric corresponding to the specific utility matrix of this classification problem.
   Red triangular pairs (almost overlapping in some plots) show two confusion matrices which are wrongly ranked by \emph{all} metrics simultaneously except the accuracy.}
@@ -1221,10 +1221,10 @@ The second phenomenon is illustrated in \figs~\ref{fig:metrics_vs_utility}--\ref
 \begin{figure}[p]
   \centering
   %{A}\hfill\mbox{}\\[0pt]
-\includegraphics[width=0.99\linewidth]{utility_vs_metrics_0.5_1000.jpg}\\[0pt]
+\includegraphics[width=0.99\linewidth]{utility_vs_metrics_0.8.jpg}\\[0pt]
 % {B}\hfill\mbox{}\\[0pt]
-\vspace{-1em}{\color{mygrey}\rule{0.66\linewidth}{0.25pt}}
-\includegraphics[width=0.99\linewidth]{utility_vs_metrics_0.8_1000.jpg}\\
+% \vspace{-1em}{\color{mygrey}\rule{0.66\linewidth}{0.25pt}}
+% \includegraphics[width=0.99\linewidth]{utility_vs_metrics_0.8.jpg}\\
   \caption{As for \fig~\ref{fig:metrics_vs_utility} but for a binary-classification problem with underlying utility matrix $ \begin{bsmallmatrix} 1&0\\0&0 \end{bsmallmatrix} $. The true-positive rate (recall) is the metric corresponding to this utility matrix, and therefore always leads to correct ranking, no matter the class balance.}
   \label{fig:metrics_vs_utility2}
 \end{figure}
