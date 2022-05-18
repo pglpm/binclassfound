@@ -1,7 +1,7 @@
 \pdfoutput=1
 %% Author: PGL  Porta Mana
 %% Created: 2022-03-04T07:39:34+0200
-%% Last-Updated: 2022-05-18T08:36:16+0200
+%% Last-Updated: 2022-05-18T12:08:48+0200
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Decision theory for machine-learning classifiers
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -1199,47 +1199,58 @@ Second, the ranking of confusion matrices yielded by the metric does not fully a
 
 By contrast, compliant metrics such as the accuracy give completely correct rankings for all pairs of confusion matrices in some specific set of classification problems.
 
-The second phenomenon is illustrated in \figs~\ref{fig:metrics_vs_utility}--\ref{fig:metrics_vs_utility2}, which we now explain.
-
-
+The second phenomenon is illustrated in the plots of \figs~\ref{fig:metrics_vs_utility}--\ref{fig:metrics_vs_utility2}.
 % \setlength{\fboxsep}{0pt}%
 % \setlength{\fboxrule}{0.25pt}%
 \begin{figure}[p]
   \centering
-  %{A}\hfill\mbox{}\\[0pt]
-\includegraphics[width=0.99\linewidth]{utility_vs_metrics_0.5.jpg}\\[0pt]
+  % {A}\hfill\mbox{}\\[0pt]
+  \vspace{-0.5\headsep}
+\includegraphics[width=0.95\linewidth]{utility_vs_metrics_0.5.jpg}\\[-1\baselineskip]
 % {B}\hfill\mbox{}\\[0pt]
 % \vspace{-1em}{\color{mygrey}\rule{0.66\linewidth}{0.25pt}}
 % \includegraphics[width=0.95\linewidth]{utility_vs_metrics_0.8.jpg}\\[0pt]
-\caption{\mynotew{to be rewritten} Relationship between various metrics and actual utility yield for a binary-classification problem with underlying utility matrix $ \begin{bsmallmatrix} 1&0\\0&1 \end{bsmallmatrix} $. Upper panel: balanced dataset, either class with $50\%$ frequency. Lower panel: imbalanced dataset, class~$0$  with $80\%$ frequency.
-  Pairs of yellow non-triangular shapes in a plot show two confusion matrices which are wrongly ranked by the metric of the plot's $y$-axis.   Clearly there can be even three or more confusion matrices ranked in completely opposite order by the metric.
-  The accuracy always give a correct rank, no matter the class balance. It is indeed the metric corresponding to the specific utility matrix of this classification problem.
-  Red triangular pairs (almost overlapping in some plots) show two confusion matrices which are wrongly ranked by \emph{all} metrics simultaneously except the accuracy.}
+\caption{Relationship between various evaluation metrics and actual utility yields for two binary-classification problems with underlying utility matrices $\begin{bsmallmatrix} 1&0\\0&1 \end{bsmallmatrix}$ (left column) and $\begin{bsmallmatrix} 1&0\\0&0 \end{bsmallmatrix}$ (right column). The dataset from which all confusion matrices are obtained has 50\%/50\% class balance.
+%
+  Pairs of {\color{myyellow}yellow non-triangular shapes} in a plot show two confusion matrices which are wrongly ranked by the metric of the plot's y-axis with respect to the actual utility yield (x-axis). Clearly there can  even be three or more confusion matrices ranked in completely opposite order by the metric.
+%
+  {\color{myred}Red triangular pairs} (almost overlapping in some plots) show two confusion matrices which are wrongly ranked by \emph{all} metrics but one simultaneously.
+  %%
+  The accuracy yields correct evaluations the classification problem on the left column; and the true-positive rate, for the one on the right.
+}
   \label{fig:metrics_vs_utility}
 \end{figure}
 %%
 \begin{figure}[p]
   \centering
   %{A}\hfill\mbox{}\\[0pt]
-\includegraphics[width=0.99\linewidth]{utility_vs_metrics_0.8.jpg}\\[0pt]
+\includegraphics[width=0.95\linewidth]{utility_vs_metrics_0.8.jpg}\\%[0pt]
 % {B}\hfill\mbox{}\\[0pt]
 % \vspace{-1em}{\color{mygrey}\rule{0.66\linewidth}{0.25pt}}
 % \includegraphics[width=0.99\linewidth]{utility_vs_metrics_0.8.jpg}\\
-  \caption{As for \fig~\ref{fig:metrics_vs_utility} but for a binary-classification problem with underlying utility matrix $ \begin{bsmallmatrix} 1&0\\0&0 \end{bsmallmatrix} $. The true-positive rate (recall) is the metric corresponding to this utility matrix, and therefore always leads to correct ranking, no matter the class balance.}
+\caption{As for \fig~\ref{fig:metrics_vs_utility} but for an imbalanced dataset with 80\% occurrence of class~0 and 20\% of class~1.}
   \label{fig:metrics_vs_utility2}
 \end{figure}
+Each blue dot in a plot represents a hypothetical confusion matrix obtained from a test dataset in a binary-classification problem. The coordinates are the utility yield of that confusion matrix, according to a particular utility matrix underlying the classification problem, and the score of the confusion matrix according to another metric. The underlying utility matrix is $\begin{bsmallmatrix} 1&0\\0&1 \end{bsmallmatrix}$ for all plots in the left column, and $\begin{bsmallmatrix} 1&0\\0&0 \end{bsmallmatrix}$ for all plots in the right column. The other metrics considered, one for each row of plots, are accuracy, true-positive rate (recall, class~0 being \enquote{positive}), $F_{1}$-measure, Matthews correlation coefficient.
+
+The confusion matrices are selected by first fixing a proportion of classes in the dataset, which is 50\%/50\% (balanced dataset) for all plots in \fig~\ref{fig:metrics_vs_utility} and 80\%/20\% (imbalanced dataset) for all plots in \fig~\ref{fig:metrics_vs_utility2}; and then choosing a true-positive and true-negative rates independently distributed between $1/2$ and $1$ with linearly increasing probabilities. These confusion matrices therefore represent the classification statistics obtained on a set (one and the same in each figure) from classifying algorithms that tend to have good performance -- as is clear from the fact that the points tend to accumulate on the upper-right corners of the plots.
+
+% Consider the uppermost left plot of \fig~\ref{fig:metrics_vs_utility} as an example. It corresponds to a binary-classification problem with an underlying utility matrix equivalent to the identity $ \begin{bsmallmatrix} 1&0\\0&1 \end{bsmallmatrix} $, and a test set with a balanced number of classes, that is, each class appear with $50\%$ frequency. We select a large number of confusion matrices having this class balance and true-positive and true-negative rates distributed between $1/2$ and $1$ with linearly increasing probabilities. These confusion matrices would thus arise mostly from good classifying algorithms. For each confusion matrix we calculate
+% \begin{enumerate}[label=\arabic*.]
+% \item its average utility yield, according to the utility matrix $\begin{bsmallmatrix} 1&0\\0&1 \end{bsmallmatrix}$; this number is the actual performance, appropriate to this specific problem, of the corresponding algorithm;
+% \item its score according to another metric, in this case the $F_{1}$-measure;
+% \end{enumerate}
+% and we plot (blue disks) a corresponding point with these two numbers as $x$- and $y$-coordinates. This plot thus shows the general statistical relation between the appropriate utility score and the $F_{1}$-measure of this distribution of confusion matrices.
+% 
+% The other three plots in the upper panel of \fig~\ref{fig:metrics_vs_utility} are analogous but for Matthews Correlation Coefficient, accuracy, and true-positive rate as $y$-coordinates. The lower panel is analogous to the upper panel, but for an imbalanced dataset with one class appearing with $80\%$ frequency. Finally, \fig~\ref{fig:metrics_vs_utility2} is analogous to \fig~\ref{fig:metrics_vs_utility} but with an underlying utility matrix equal to $ \begin{bsmallmatrix} 1&0\\0&0 \end{bsmallmatrix} $.
+
+We see that the accuracy always gives correct relative evaluations of all confusion matrices when the underlying utility matrix is equivalent to $\begin{bsmallmatrix} 1&0\\0&1 \end{bsmallmatrix}$ (left column): the y-coordinates are a monotonically increasing function of the x-coordinates. Accuracy is indeed the utility yield corresponding to the identity utility matrix. The true-positive rate always gives correct relative evaluations when the underlying utility matrix is is equivalent to $\begin{bsmallmatrix} 1&0\\0&0 \end{bsmallmatrix}$ (right column) and the same test set is used for the evaluation.
+
+On the other hand,
 
 
-Consider the uppermost left plot of \fig~\ref{fig:metrics_vs_utility} as an example. It corresponds to a binary-classification problem with an underlying utility matrix equivalent to the identity $ \begin{bsmallmatrix} 1&0\\0&1 \end{bsmallmatrix} $, and a test set with a balanced number of classes, that is, each class appear with $50\%$ frequency. We select a large number of confusion matrices having this class balance and true-positive and true-negative rates distributed between $1/2$ and $1$ with linearly increasing probabilities. These confusion matrices would thus arise mostly from good classifying algorithms. For each confusion matrix we calculate
-\begin{enumerate}[label=\arabic*.]
-\item its average utility yield, according to the utility matrix $\begin{bsmallmatrix} 1&0\\0&1 \end{bsmallmatrix}$; this number is the actual performance, appropriate to this specific problem, of the corresponding algorithm;
-\item its score according to another metric, in this case the $F_{1}$-measure;
-\end{enumerate}
-and we plot (blue disks) a corresponding point with these two numbers as $x$- and $y$-coordinates. This plot thus shows the general statistical relation between the appropriate utility score and the $F_{1}$-measure of this distribution of confusion matrices.
 
-The other three plots in the upper panel of \fig~\ref{fig:metrics_vs_utility} are analogous but for Matthews Correlation Coefficient, accuracy, and true-positive rate as $y$-coordinates. The lower panel is analogous to the upper panel, but for an imbalanced dataset with one class appearing with $80\%$ frequency. Finally, \fig~\ref{fig:metrics_vs_utility2} is analogous to \fig~\ref{fig:metrics_vs_utility} but with an underlying utility matrix equal to $ \begin{bsmallmatrix} 1&0\\0&0 \end{bsmallmatrix} $.
-
-In all these plots we see that it is  always possible to find two or more confusion matrices (pairs of yellow non-triangular shapes) for which the $F_{1}$-measure or the Matthews Correlation Coefficient give completely reversed rankings, scoring the worst confusion matrix (and the algorithm yielding it) as the best, and the best as the worst. It is even possible to find at least two confusion matrices (pairs of red triangular shapes) for which both these metrics simultaneously give the wrong ranking. It turns out that \emph{there is no classification problem for which these wrong-classification cases do not occur}. This is the second phenomenon mentioned above.
+In all these plots we see that it is always possible to find two or more confusion matrices (pairs of yellow non-triangular shapes) for which the $F_{1}$-measure gives completely reversed evaluations with respect to the actual utility yield, scoring the worst confusion matrix -- and thus its associated algorithm -- as the best, and the best as the worst. The same holds for the Matthews correlation coefficient. It is even possible to find at least two confusion matrices (pairs of red triangular shapes) for which both these metrics give the wrong evaluation simultaneously. It turns out that these two metrics \emph{always lead to some incorrect evaluations in all  classification problem}. This is the second phenomenon mentioned above.
 
 \mynotep{add comment about illogical to say that MCC is almost good in the first case}
 

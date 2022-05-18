@@ -1,6 +1,6 @@
 ## Author: PGL  Porta Mana
 ## Created: 2022-05-01T09:38:48+0200
-## Last-Updated: 2022-05-18T07:56:57+0200
+## Last-Updated: 2022-05-18T12:01:58+0200
 ################
 ## Calculations for the papers
 ################
@@ -626,21 +626,22 @@ shape2 <- 1
 ## print(wxy)
 ## print(wum)
 ##
-metrlist <- list('F1-measure'=f1score,
-              'Matthews Correlation Coefficient'=mcc,
-              ##'Precision'=prec,
-              ##'Balanced accuracy'=bacc,
-              ##'Fowlkes-Mallows index'=foma,
-              ##'True-negative rate'=function(p,a,b){b},
-              'Accuracy'=acc,
-              'True-positive rate'=function(p,a,b){a}
-             ## ,
-             ##  'Utility matrix eq. (4)'=function(p,a,b){
-             ##      rowSums(aperm(confm(p,a,b)* c(xumpaper) ))
-             ##  }
-              )
+metrlist <- list(
+    'Accuracy'=acc,
+    'True-positive rate'=function(p,a,b){a},
+    'F1-measure'=f1score,
+    'Matthews Correlation Coefficient'=mcc
+    ##'Precision'=prec,
+    ##'Balanced accuracy'=bacc,
+    ##'Fowlkes-Mallows index'=foma,
+    ##'True-negative rate'=function(p,a,b){b},
+    ## ,
+    ##  'Utility matrix eq. (4)'=function(p,a,b){
+    ##      rowSums(aperm(confm(p,a,b)* c(xumpaper) ))
+    ##  }
+    )
 ##
-lp <- rep(0.5,nn)
+lp <- rep(0.8,nn)
 la1 <- 0.5+0.5*rbeta(nn, shape1=shape1, shape2=shape2)
 ## test <- thist(la1);tplot(x=test$breaks, y=test$density)
 ## summary(la1)
