@@ -1,7 +1,7 @@
 \pdfoutput=1
 %% Author: PGL  Porta Mana
 %% Created: 2022-03-04T07:39:34+0200
-%% Last-Updated: 2022-05-19T11:50:13+0200
+%% Last-Updated: 2022-05-19T12:48:35+0200
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Decision theory for machine-learning classifiers
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -1300,11 +1300,17 @@ For a binary-classification problem the set of possible utility matrices can be 
 
 It may happen that our assessment of the utility matrix underlying a classification problem is incorrect. This can especially occur when our assessment has to be made on semi-quantitative grounds owing to lack of information. In this case our comparative evaluations may also end up being incorrect. How often can this happen on average? and depending on how much error in the utilities?
 
-A precise answer to these questions is extremely difficult if not impossible because to define \enquote{on average} we would need to conduct a survey of classification problems of any kind, collecting statistics about their underlying utility matrices and about the confusion matrices of candidate classification algorithms for their solution. We try to give a cursory answer to these questions for the binary-classification case, based on the following assumptions and judgements:
+A precise answer to these questions is extremely difficult if not impossible because to define \enquote{on average} we would need to conduct a survey of classification problems of any kind, collecting statistics about their underlying utility matrices, about the confusion matrices of candidate classification algorithms for their solution, and about the errors committed in assessing utilities. We try to give a cursory answer to these questions for the binary-classification case, based on the following assumptions and judgements:
 \begin{itemize}
-\item A uniform distribution of utility matrices on the set of \fig~\ref{fig:space_UM} (in that coordinate system).
-\item A distribution of confusion matrices for which the fraction of one class is uniformly distributed in $\clcl{0,1}$, and the true-positive and true-negative rates are independently distributed in $\clcl{0.5, 1}$ with linearly increasing probabilities. This means that we consider problems with highly imbalanced data to be as common as problems with balanced data (a realistic assumption according to our expecience); and that candidate classifiers tend to be good (median of 85\% true-positive and true-negative rates, lower and upper quartiles at 75\% and 93\%).
+\item Two possible distribution of utility matrices on the set of \fig~\ref{fig:space_UM} (in that coordinate system): a uniform one, and a bivariate gaussian one centred on the identity matrix $\begin{bsmallmatrix} 1&0\\0&0 \end{bsmallmatrix}$ and with $0.5$ standard deviation in the $x$ and $y$ coordinates of \eqn~\eqref{eq:coords_um}.
+\item A distribution of confusion matrices for which the fraction of one class is uniformly distributed in $\clcl{0,1}$, and the true-positive and true-negative rates are independently distributed in $\clcl{0.5, 1}$ with linearly increasing probabilities (median of 0.85,  lower and upper quartiles at 0.75 and 0.93). This means that we consider problems with highly imbalanced data to be as common as problems with balanced data (a realistic assumption according to our expecience); and candidate classifiers to be generally good.
+\item Two possible distributions of error around a true utility matrix, represented by a bivariate gaussian centred on the true utility matrix and with standard deviations in the $x$ and $y$ coordinates equal to either $0.1$ or $0.25$.
 \end{itemize}
+
+Under these assumptions we calculate how often a pair of classifiers, represented by two confusion matrices having the same class proportions, leads to a reversed comparative evaluation with respect to the underlying utility. This is an integration problem that we solve by Monte Carlo sampling; the procedure is intuitive:
+\begin{enumerate}[label=\arabic*.]
+\item draw a u
+\end{enumerate}
 
 We then consider all possible pairwise comparative evaluations as follows:
 

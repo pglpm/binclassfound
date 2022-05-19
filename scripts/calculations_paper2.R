@@ -1,6 +1,6 @@
 ## Author: PGL  Porta Mana
 ## Created: 2022-05-01T09:38:48+0200
-## Last-Updated: 2022-05-19T09:13:54+0200
+## Last-Updated: 2022-05-19T13:51:21+0200
 ################
 ## Calculations for the papers
 ################
@@ -1207,7 +1207,223 @@ for(i in 1:(lem+2)){
 dev.off()
 
 
+################################################################
+#### Plot of metric values for pairs of confusion matrices and
+#### draws of utility matrices
+#### Version 4
+################################################################
 
+set.seed(149)
+##
+nn <- 10^6
+nn2 <- 3*10^3
+alpha <- 0.5
+shape1 <- 2
+shape2 <- 1
+##
+metrlist <- list(
+        ## 'True-positive rate'=function(p,a,b){a},
+##    'True-negative rate'=function(p,a,b){b},
+    'Precision'=prec,
+    'Balanced accuracy'=bacc,
+    'Matthews Corr. Coeff.'=mcc,
+    'Fowlkes-Mallows index'=foma,
+    'F1-measure'=f1score,
+    'Accuracy'=acc
+)
+##
+lp <- runif(nn,0,1)
+la1 <- 0.5+0.5*rbeta(nn, shape1=shape1, shape2=shape2)
+## test <- thist(la1);tplot(x=test$breaks, y=test$density)
+## summary(la1)
+lb1 <- 0.5+0.5*rbeta(nn, shape1=shape1, shape2=shape2)
+la2 <- 0.5+0.5*rbeta(nn, shape1=shape1, shape2=shape2)
+lb2 <- 0.5+0.5*rbeta(nn, shape1=shape1, shape2=shape2)
+##
+lcm1 <- confm(lp,la1,lb1)
+lcm2 <- confm(lp,la2,lb2)
+##
+for(typexy in c('unif','norm')){
+    if(typexy=='unif'){lxy <- runif(2*round(nn*6/3),-1,1)
+    }else{ lxy <- rnorm(2*round(nn*6/3),0,1/2)}
+dim(lxy) <- c(round(nn*6/3),2)
+lxy <- lxy[lxy[,2]<lxy[,1]+1 & lxy[,2]>lxy[,1]-1,][1:nn,]
+##
+lut <- apply(lxy,1,xy2um)
+dim(lut) <- c(2,2,nn)
+##
+ldut <- rowSums(aperm((lcm2-lcm1)*lut))
+##
+func <- identity#function(x){plogis(x*10)*2-1}
+##
+lem <- length(metrlist)
+errorums <- c(15,5)
+pdff(paste0('incorrectscores3',typexy), paper='a4')
+par(mfrow=c(lem/2+1,2))
+par(oma=c(0,0,0,0))
+for(i in 1:(lem+length(errorums))){
+    if(i <= lem){
+        metr <- metrlist[[i]]
+        ldmetr <- metr(lp,la2,lb2)-metr(lp,la1,lb1)
+        ylab <- names(metrlist)[i]
+    } else {
+        errorum <- errorums[i-lem]
+        wlut <- lut+rnorm(length(lut),0,errorum/100)
+        ##
+        wldut <- rowSums(aperm((lcm2-lcm1)*wlut))
+        ##
+        summary(sapply(1:dim(lut)[3],function(i){mean(abs(lut[,,i]-wlut[,,i]))/mean(lut[,,i])}))
+        ldmetr <- wldut
+        ylab <- paste0('utility, ',errorum,'% incorrect utilities')
+    }
+    groupok <- (ldut>0 & ldmetr>0) | (ldut<0 & ldmetr<0)
+    groupok2 <- (ldut[1:nn2]>0 & ldmetr[1:nn2]>0) | (ldut[1:nn2]<0 & ldmetr[1:nn2]<0)
+    tplot(x=list(func(ldut[1:nn2][groupok2]),func(ldut[1:nn2][!groupok2])),
+          y=list(func(ldmetr[1:nn2][groupok2]),func(ldmetr[1:nn2][!groupok2])),
+          family='Palatino', 
+          type='p', pch=c(20,17), cex=c(0.5,0.65),
+          mar=(if(i<lem+length(errorums)-2){c(3, 5.2, 2, 2)}else{c(4.1, 5.2, 2, 2)}),
+          xlabels=(i>lem+length(errorums)-2), 
+          xlab=(if(i>(lem+length(errorums)-2)){bquote(Delta~'utility yield')}else{NA}),
+          ##col.lab=c('black',(if(i>lem){3}else{'black'})),
+          col=c(1,(if(i>lem){4}else{2})),
+          alpha=alpha,
+          cex.axis=1.5, ly=3.5, n=5, cex.lab=1.5,
+          ylab=bquote(Delta~.(ylab)))
+    text(x=min(ldut[1:nn2]),y=max(ldmetr[1:nn2]), xpd=T, offset=0,
+         labels=paste0('incorrectly ranked pairs: ', round(100*(1-sum(groupok)/nn),1), '%'),
+         adj=c(0.05,-0.5), cex=1.5, col=(if(i>lem){4}else{2})
+         )
+    ## legend(x=min(ldut),y=max(ldmetr), bty='n', text.col=2, cex=1.5, xjust=0,
+    ##        legend=paste0('incorrectly ranked pairs: ', round(100*(1-sum(groupok)/nn)), '%'))
+}
+dev.off()
+}
+
+
+
+################################################################
+#### Plot of metric values for pairs of confusion matrices and
+#### draws of utility matrices
+#### Version 5 - linear graph
+################################################################
+
+set.seed(149)
+##
+nn <- 10^6
+nn2 <- 3*10^3
+alpha <- 0.5
+shape1 <- 2
+shape2 <- 1
+##
+metrlist <- list(
+        'True-positive rate'=function(p,a,b){a},
+##    'True-negative rate'=function(p,a,b){b},
+    'Precision'=prec,
+    'Balanced accuracy'=bacc,
+    'Matthews Corr. Coeff.'=mcc,
+    'Fowlkes-Mallows index'=foma,
+    'F1-measure'=f1score,
+    'Accuracy'=acc
+)
+##
+lp <- runif(nn,0,1)
+la1 <- 0.5+0.5*rbeta(nn, shape1=shape1, shape2=shape2)
+## test <- thist(la1);tplot(x=test$breaks, y=test$density)
+## summary(la1)
+lb1 <- 0.5+0.5*rbeta(nn, shape1=shape1, shape2=shape2)
+la2 <- 0.5+0.5*rbeta(nn, shape1=shape1, shape2=shape2)
+lb2 <- 0.5+0.5*rbeta(nn, shape1=shape1, shape2=shape2)
+##
+lcm1 <- confm(lp,la1,lb1)
+lcm2 <- confm(lp,la2,lb2)
+##
+valuesincpairs <- foreach(typexy=c('unif','norm'))%do%{
+    if(typexy=='unif'){lxy <- runif(2*round(nn*6/3),-1,1)
+    }else{ lxy <- rnorm(2*round(nn*6/3),0,1/2)}
+    ##
+    dim(lxy) <- c(round(nn*6/3),2)
+    lxy <- lxy[lxy[,2]<lxy[,1]+1 & lxy[,2]>lxy[,1]-1,][1:nn,]
+    ##
+    lut <- apply(lxy,1,xy2um)
+    dim(lut) <- c(2,2,nn)
+    ##
+    ldut <- rowSums(aperm((lcm2-lcm1)*lut))
+    ##
+    percmetrics <- sapply(metrlist, function(metr){
+                ldmetr <- metr(lp,la2,lb2)-metr(lp,la1,lb1)
+                groupok <- (ldut>0 & ldmetr>0) | (ldut<0 & ldmetr<0)
+                round(100*(1-sum(groupok)/nn),1)
+    })
+    names(percmetrics) <- names(metrlist)
+    ##
+    errorums <- c(1,seq(5,50,by=5))
+    percwum <- foreach(errorum=errorums, .combine=c)%dorng%{
+        wlut <- lut+rnorm(length(lut),0,errorum/100)
+        ##
+        ldmetr <- rowSums(aperm((lcm2-lcm1)*wlut))
+        ##
+        groupok <- (ldut>0 & ldmetr>0) | (ldut<0 & ldmetr<0)
+        round(100*(1-sum(groupok)/nn),1)
+    }
+    names(percwum) <- errorums
+    ##
+    list(metrics=percmetrics, ums=percwum)
+}
+names(valuesincpairs) <- c('unif','norm')
+
+for(typexy in c('unif','norm')){
+    pdff(paste0('increase_error_',typexy), paper='a4r')
+    datap1 <- valuesincpairs[[typexy]]$ums
+    datap2 <- valuesincpairs[[typexy]]$metrics
+    ylim <- range(c(datap1,datap2,0))
+    tplot(x=as.integer(names(datap1)), y=datap1, type='l', lwd=3, ylim=ylim)
+    abline(h=datap2, col=2:7)
+    dev.off()
+}
+    
+errorums <- c(15,5)
+pdff(paste0('incorrectscores3',typexy), paper='a4')
+par(mfrow=c(lem/2+1,2))
+par(oma=c(0,0,0,0))
+for(i in 1:(lem+length(errorums))){
+    if(i <= lem){
+        metr <- metrlist[[i]]
+        ldmetr <- metr(lp,la2,lb2)-metr(lp,la1,lb1)
+        ylab <- names(metrlist)[i]
+    } else {
+        errorum <- errorums[i-lem]
+        wlut <- lut+rnorm(length(lut),0,errorum/100)
+        ##
+        wldut <- rowSums(aperm((lcm2-lcm1)*wlut))
+        ##
+        summary(sapply(1:dim(lut)[3],function(i){mean(abs(lut[,,i]-wlut[,,i]))/mean(lut[,,i])}))
+        ldmetr <- wldut
+        ylab <- paste0('utility, ',errorum,'% incorrect utilities')
+    }
+    groupok <- (ldut>0 & ldmetr>0) | (ldut<0 & ldmetr<0)
+    groupok2 <- (ldut[1:nn2]>0 & ldmetr[1:nn2]>0) | (ldut[1:nn2]<0 & ldmetr[1:nn2]<0)
+    tplot(x=list(func(ldut[1:nn2][groupok2]),func(ldut[1:nn2][!groupok2])),
+          y=list(func(ldmetr[1:nn2][groupok2]),func(ldmetr[1:nn2][!groupok2])),
+          family='Palatino', 
+          type='p', pch=c(20,17), cex=c(0.5,0.65),
+          mar=(if(i<lem+length(errorums)-2){c(3, 5.2, 2, 2)}else{c(4.1, 5.2, 2, 2)}),
+          xlabels=(i>lem+length(errorums)-2), 
+          xlab=(if(i>(lem+length(errorums)-2)){bquote(Delta~'utility yield')}else{NA}),
+          ##col.lab=c('black',(if(i>lem){3}else{'black'})),
+          col=c(1,(if(i>lem){4}else{2})),
+          alpha=alpha,
+          cex.axis=1.5, ly=3.5, n=5, cex.lab=1.5,
+          ylab=bquote(Delta~.(ylab)))
+    text(x=min(ldut[1:nn2]),y=max(ldmetr[1:nn2]), xpd=T, offset=0,
+         labels=paste0('incorrectly ranked pairs: ', round(100*(1-sum(groupok)/nn),1), '%'),
+         adj=c(0.05,-0.5), cex=1.5, col=(if(i>lem){4}else{2})
+         )
+    ## legend(x=min(ldut),y=max(ldmetr), bty='n', text.col=2, cex=1.5, xjust=0,
+    ##        legend=paste0('incorrectly ranked pairs: ', round(100*(1-sum(groupok)/nn)), '%'))
+}
+dev.off()
+}
 
 
 
