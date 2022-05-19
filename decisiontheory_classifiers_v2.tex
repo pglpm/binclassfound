@@ -1,7 +1,7 @@
 \pdfoutput=1
 %% Author: PGL  Porta Mana
 %% Created: 2022-03-04T07:39:34+0200
-%% Last-Updated: 2022-05-19T10:27:05+0200
+%% Last-Updated: 2022-05-19T11:50:13+0200
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Decision theory for machine-learning classifiers
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -602,7 +602,7 @@ Open Science Framework \doi{10.31219/osf.io/#1}%
 %\providecommand{\varparallel}{\ensuremath{\mathbin{/\mkern-7mu/}}}%parallel (tentative symbol)
 \renewcommand*{\le}{\leqslant}%less or equal
 \renewcommand*{\ge}{\geqslant}%greater or equal
-%\DeclarePairedDelimiter\clcl{[}{]}
+\DeclarePairedDelimiter\clcl{[}{]}
 %\DeclarePairedDelimiter\clop{[}{[}
 %\DeclarePairedDelimiter\opcl{]}{]}
 %\DeclarePairedDelimiter\opop{]}{[}
@@ -691,6 +691,7 @@ Open Science Framework \doi{10.31219/osf.io/#1}%
 \newcommand{\mynoteu}[1]{{\footnotesize\color{notecolour}\puzzle\ #1}}
 
 \newcommand*{\widebar}[1]{{\mkern1.5mu\skew{2}\overline{\mkern-1.5mu#1\mkern-1.5mu}\mkern 1.5mu}}
+\newcommand*{\myhat}[1]{{\mkern1.5mu\skew{2}\hat{\mkern-1.5mu#1\mkern-1.5mu}\mkern 1.5mu}}
 
 %\newcommand*{\myeuro}{{\fontencoding{U}\fontfamily{eurosym}\selectfont{}\symbol{22}}}
 \usepackage{eurosym}\renewcommand*{\texteuro}{\euro}
@@ -727,6 +728,7 @@ Open Science Framework \doi{10.31219/osf.io/#1}%
 \newcommand*{\fp}{\textrm{fp}}
 \newcommand*{\fn}{\textrm{fn}}
 \newcommand*{\tn}{\textrm{tn}}
+\newcommand*{\aveu}{\myhat{\mathte{U}}}
 \newcommand*{\uncu}[1]{\mathte{U}^{(#1)}}
 %%% Custom macros end @@@
 
@@ -1277,24 +1279,34 @@ This is not the case, however. We now discuss how to deal with uncertainty about
 Dealing with unknown utilities is straightforward. Suppose we are uncertain whether the utility matrix appropriate to a classification problem is $\uncu{1} \equiv \bigl(U^{(1)}_{ij}\bigr)$ or $\uncu{2}$ or $\uncu{3}$ and so on, where the number of alternatives can even be infinite or continuous. Each alternative $\uncu{a}$ has a probability $q_a$, or probability density $q(a)\ \di a$ in the continuous case. Then \emph{for the classification problem we should use the expected utility matrix
   \begin{equation}
     \label{eq:expe_UM}
-    \mathte{U} \defd q_{1}\ \uncu{1} + q_{2}\ \uncu{2} + q_{3}\ \uncu{3} + \dotsb
+    \aveu \defd q_{1}\ \uncu{1} + q_{2}\ \uncu{2} + q_{3}\ \uncu{3} + \dotsb
   \end{equation}
-  (or $\mathte{U} \defd \int q(a)\, \uncu{a}\, \di a$ in the continuous case)}.
+  or $\aveu \defd \int q(a)\, \uncu{a}\, \di a$ in the continuous case}.
 
-We only give a sketch of the proof of this intuitive result. If we are uncertainty about the utility matrix then we have a double decision problem: choosing the optimal utility and choosing the optimal class. If the true utility matrix is for instance $\uncu{2} \equiv \bigl(U^{(2)}_{ij}\bigr)$, and the true class is class~$0$, then choosing class~$1$ would yield a utility $U^{(2)}_{10}$, choosing class~$0$ would yield a utility $U^{(2)_{00}}$, and so on. Our double decision problem is thus characterized by a rectangular utility matrix that is the row-concatenation of the utility matrices $\uncu{a}$. We make the realistic judgement that the probabilities $q_{a}$ of the utility matrices and the probabilities $p_{j}$ of the classes are independent, so that $q_{a}\cdot p_{j}$ is probability that the true utility matrix is $\uncu{a}$ and the true class is $j$. The principle of maximum expected utility, \sect~\ref{sec:dt_utilities} and \eqn~\eqref{eq:exp_utility}, then  leads to the maximization of the expected utilities
+We only give a sketch of the proof of this intuitive result. If we are uncertainty about the utility matrix then we have a double decision problem: choosing the optimal utility and choosing the optimal class. If the true utility matrix is for instance $\uncu{2} \equiv \bigl(U^{(2)}_{ij}\bigr)$, and the true class is class~$0$, then choosing class~$1$ would yield a utility $U^{(2)}_{10}$, choosing class~$0$ would yield a utility $U^{(2)}_{00}$, and so on. Our double decision problem is thus characterized by a rectangular utility matrix that is the row-concatenation of the utility matrices $\uncu{a}$. We make the realistic judgement that the probabilities $q_{a}$ of the utility matrices and the probabilities $p_{j}$ of the classes are independent, so that $q_{a}\cdot p_{j}$ is probability that the true utility matrix is $\uncu{a}$ and the true class is $j$. The principle of maximum expected utility, \sect~\ref{sec:dt_utilities} and \eqn~\eqref{eq:exp_utility}, then  leads to the maximization of the expected utilities
 \begin{equation}
   \label{eq:average_expe_utility}
   \eu_{i} \defd \sum_{j,a} U^{(a)}_{ij}\ q_{a}\cdot p_{j}
-  \equiv \sum_{j} \Bigl[\sum_{a} q_{a}\ U^{(a)}_{ij} \Bigr]\ p_{j}
+  \equiv \sum_{j} \biggl[\underbrace{\sum_{a} q_{a}\ U^{(a)}_{ij}}_{\aveu} \biggr]\ p_{j}
 \end{equation}
-in which the average utility matrix~\eqref{eq:expe_UM} appears as the \enquote{effective} utility matrix to be used for the class-decision problem alone.
+in which the expected utility matrix~\eqref{eq:expe_UM} appears as the \enquote{effective} utility matrix to be used for the class-decision problem alone.
 
 \medskip
 
 For a binary-classification problem the set of possible utility matrices can be represented as in \fig~\ref{fig:space_UM}, as discussed in \sect~\ref{sec:dt_space_util}. Our uncertainty about the true underlying utility matrix corresponds to a discrete or continuous distribution of probability over this set. Note, however, that the expected utility matrix~\eqref{eq:expe_UM} does \emph{not} correspond to the mass-centre of the distribution, because of the peculiar coordinate system used in that figure. The actual mass-centre is obtained by representing the set of utility matrices as a two-dimensional surface (a tetrahedron) in three-dimensional space; for brevity we do not discuss this representation in the present work.
 
-\subsection{Consequences of wrong utility assessments}
+\subsection{Consequences of wrong utility assessments and comparison with common metrics}
 \label{sec:wrong_utility_assess}
+
+It may happen that our assessment of the utility matrix underlying a classification problem is incorrect. This can especially occur when our assessment has to be made on semi-quantitative grounds owing to lack of information. In this case our comparative evaluations may also end up being incorrect. How often can this happen on average? and depending on how much error in the utilities?
+
+A precise answer to these questions is extremely difficult if not impossible because to define \enquote{on average} we would need to conduct a survey of classification problems of any kind, collecting statistics about their underlying utility matrices and about the confusion matrices of candidate classification algorithms for their solution. We try to give a cursory answer to these questions for the binary-classification case, based on the following assumptions and judgements:
+\begin{itemize}
+\item A uniform distribution of utility matrices on the set of \fig~\ref{fig:space_UM} (in that coordinate system).
+\item A distribution of confusion matrices for which the fraction of one class is uniformly distributed in $\clcl{0,1}$, and the true-positive and true-negative rates are independently distributed in $\clcl{0.5, 1}$ with linearly increasing probabilities. This means that we consider problems with highly imbalanced data to be as common as problems with balanced data (a realistic assumption according to our expecience); and that candidate classifiers tend to be good (median of 85\% true-positive and true-negative rates, lower and upper quartiles at 75\% and 93\%).
+\end{itemize}
+
+We then consider all possible pairwise comparative evaluations as follows:
 
 
 
