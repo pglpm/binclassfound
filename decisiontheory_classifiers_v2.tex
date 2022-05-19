@@ -1,7 +1,7 @@
 \pdfoutput=1
 %% Author: PGL  Porta Mana
 %% Created: 2022-03-04T07:39:34+0200
-%% Last-Updated: 2022-05-19T21:18:39+0200
+%% Last-Updated: 2022-05-19T23:23:36+0200
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Decision theory for machine-learning classifiers
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -338,7 +338,7 @@ Open Science Framework \doi{10.31219/osf.io/#1}%
 
 \usepackage{graphicx}
 
-%\usepackage{wrapfig}
+\usepackage{wrapfig}
 
 %\usepackage{tikz-cd}
 
@@ -1301,11 +1301,31 @@ For a binary-classification problem the set of possible utility matrices can be 
 It may happen that our assessment of the utility matrix of a classification problem is incorrect, especially if it has been made on semi-quantitative grounds owing to lack of information. Then our comparative evaluations of classifiers may also end up being incorrect. What is the probability of an incorrect comparative evaluation, on average, in such cases? and how does it depend on the amount of error in the utilities? Is it higher than the probability of incorrect evaluation by other metrics?
 
 A precise answer to these questions is extremely difficult if not impossible because to define \enquote{on average} we would need to conduct a survey of classification problems of any kind, collecting statistics about their underlying utility matrices, about the confusion matrices of candidate classification algorithms for their solution, and about the errors committed in assessing utilities. We try to give a cursory answer to questions above for the binary-classification case, based on the following assumptions and judgements:
+% \setlength{\intextsep}{0ex}% with wrapfigure
+% \setlength{\columnsep}{0ex}% with wrapfigure
+% \begin{wrapfigure}{r}{0.3\linewidth} % with wrapfigure
+% \centering\includegraphics[width=\linewidth]{distr_true_um_norm.pdf}
+% %\caption{caption}\label{fig:comparison_a5}
+% \end{wrapfigure}% exp_family_maxent.nb
 \begin{itemize}
-\item Two possible distribution of true utility matrices on the set of \fig~\ref{fig:space_UM} (in that coordinate system): a uniform distribution, and a bivariate gaussian distribution centred on the identity matrix $\begin{bsmallmatrix} 1&0\\0&0 \end{bsmallmatrix}$ and with $0.5$ standard deviation in the $x$ and $y$ coordinates of \eqn~\eqref{eq:coords_um}.
+\item Two possible distributions of true utility matrices on the set of \fig~\ref{fig:space_UM} (in that coordinate system): a uniform distribution; and a bivariate (truncated) gaussian distribution centred on the identity matrix $\begin{bsmallmatrix} 1&0\\0&1 \end{bsmallmatrix}$ and with standard deviation $1/3$ in the $x$ and $y$ coordinates of \eqn~\eqref{eq:coords_um}, illustrated in \fig~\ref{fig:gauss_distr_um}.
+
 \item A distribution of confusion matrices for which the fraction of one class is uniformly distributed in $\clcl{0,1}$, and the true-positive and true-negative rates are independently distributed in $\clcl{0.5, 1}$ with linearly increasing probabilities (median of 0.85,  lower and upper quartiles at 0.75 and 0.93). This means that we consider problems with highly imbalanced data to be as common as problems with balanced data (a realistic assumption according to our expecience); and candidate classifiers to be generally good.
-\item A gaussian distribution of error around each true utility-matrix element, centred on the true utility value. We consider standard deviations ranging from $0.01$  to $0.5$. Note that each true utility has a value between $0$ and $1$.
+  
+\item A gaussian distribution of error around each true utility-matrix element, centred on the true utility value. We consider standard deviations ranging from $0.01$ to $0.5$. Note that each true utility has a value between $0$ and $1$. Figure~\ref{fig:error_distr_um} illustrates the extent of such an error in the space of utility matrices, for a standard deviation of $0.1$.
 \end{itemize}
+\begin{figure}[b]
+  \centering
+  \hspace{\stretch{1}}
+  \parbox[t]{0.33\linewidth}{%
+    \centering\includegraphics[width=\linewidth]{distr_true_um_norm.pdf}\\
+\caption{Truncated gaussian distribution in the space of utility matrices}\label{fig:gauss_distr_um}}
+  \hspace{\stretch{1}}
+  \parbox[t]{0.33\linewidth}{%
+    \centering\includegraphics[width=\linewidth]{error_around_um.pdf}
+  \caption{Extent of error ({\color{myredpurple}purple dots}) with standard deviation $0.1$, around the utility matrix $\begin{bsmallmatrix} 0.5&0.5\\0&1 \end{bsmallmatrix}$ (black diamond) in the space of utility matrices}\label{fig:error_distr_um}}
+  \hspace{\stretch{1}}
+\end{figure}
 
 Under these assumptions we calculate how often a pair of classifiers, represented by two confusion matrices with the same class proportions, is evaluated in reverse order, with respect to their true utility yield, when an incorrect utility matrix or another metric is used for the evaluation. This calculation is an integration problem that we solve by Monte Carlo sampling. The procedure is intuitive:
 \begin{enumerate}[label=\arabic*.,ref=\arabic*]
@@ -1345,13 +1365,18 @@ The results of this sampling procedure for the case of uniform distribution of t
   \caption{Relationship between various metrics and utility}
   \label{fig:percentage_vs_error}
 \end{figure}
+
 The plots are displayed in order (left-rigt, top-bottom) of decreasing percentages of incorrect rankings. The accuracy metric proves to be the best among the ones considered, leading to $8.7\%$ incorrect pairwise rankings. But we see that a utility matrix affected by gaussian errors with $0.1$ standard deviation is even better, with $5.4\%$ incorrect pairwise rankings.
 
-The dependence of the fraction of incorrect rankings on the standard deviation of the error affecting the utilities is shown in the plots of \fig~\ref{fig:percentage_vs_error}, for the case of uniform distribution (top plot) and gaussian distribution (bottom plot) of true utility matrices. It is approximately linear. The plots also report the fractions of incorrect rankings for the other metrics. We see that evaluations based on a utility matrix affected by errors with standard deviation $0.15$ or even $0.2$ are still more reliable than evaluations based on the other reported metrics. This is a remarkable fact, considering that the errors are on utilities in the range $\clcl{0,1}$: such standard deviations are quite large.
+The dependence of the fraction of incorrect rankings on the standard deviation of the error affecting the utilities is shown in the plots of \fig~\ref{fig:percentage_vs_error}, for the case of uniform distribution (top plot) and gaussian distribution (bottom plot) of true utility matrices. It is approximately linear. The plots also report the fractions of incorrect rankings for the other metrics. We see that evaluations based on a utility matrix affected by errors with standard deviation slightly higher than $0.15$ are still more reliable than evaluations based on the other reported metrics. This is a remarkable fact, considering that errors with such standard deviations are quite large, as can be seen in \fig~\ref{fig:error_distr_um}.
+
+
+\section{What about the area under the curve of the receiver operating characteristic?}
+\label{sec:auc}
 
 
 
-\section{Remarks on the test set}
+\section{Remarks on the choice of test dataset}
 \label{sec:test_set}
 
 
