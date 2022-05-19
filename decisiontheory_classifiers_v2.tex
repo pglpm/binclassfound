@@ -1,7 +1,7 @@
 \pdfoutput=1
 %% Author: PGL  Porta Mana
 %% Created: 2022-03-04T07:39:34+0200
-%% Last-Updated: 2022-05-18T22:48:01+0200
+%% Last-Updated: 2022-05-19T10:27:05+0200
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Decision theory for machine-learning classifiers
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -727,7 +727,7 @@ Open Science Framework \doi{10.31219/osf.io/#1}%
 \newcommand*{\fp}{\textrm{fp}}
 \newcommand*{\fn}{\textrm{fn}}
 \newcommand*{\tn}{\textrm{tn}}
-
+\newcommand*{\uncu}[1]{\mathte{U}^{(#1)}}
 %%% Custom macros end @@@
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -1257,7 +1257,7 @@ A metric non-compliant with decision theory can lead to a large number of correc
 
 
 \section{Unknown or incorrect utilities}
-\label{sec:unknown_utilities}
+\label{sec:unknown_wrong_utilities}
 
 So far we have argued that the natural, best evaluation metric for a confusion matrix is the utility yield according to the utilities underlying the particular classification problem. Our arguments are based on the principles of decision theory. We have also argued that many popular metrics, those not complying with formula~\eqref{eq:general_valuation_metric}, must lead to instances of incorrect evaluation.
 
@@ -1269,14 +1269,48 @@ Several interrelated questions arise from our arguments, though:
 \end{itemize}
 In fact, if a small error in the assessment of the utilities led to a large number of wrong evaluations, and at the same time incompliant metrics led a small number of wrong evaluations on average, then all the rigorousness of decision-theoretic metrics would be useless in practice, and  incompliant metrics would be best for realistic situations.
 
-This is not the case, however. We now discuss how to deal with uncertainty about the utilities, and present an important result: Using wrong utilities, even with relative errors as large as 25\%, still leads to fewer incorrect relative evaluations on average than using some of the most common metrics.
+This is not the case, however. We now discuss how to deal with uncertainty about the utilities, and present an important result: Using wrong utilities, even with relative errors as large as 20\%, still leads to fewer incorrect relative evaluations on average than using some of the most common metrics.
+
+\subsection{Unknown utilities}
+\label{sec:unknown_utilities}
+
+Dealing with unknown utilities is straightforward. Suppose we are uncertain whether the utility matrix appropriate to a classification problem is $\uncu{1} \equiv \bigl(U^{(1)}_{ij}\bigr)$ or $\uncu{2}$ or $\uncu{3}$ and so on, where the number of alternatives can even be infinite or continuous. Each alternative $\uncu{a}$ has a probability $q_a$, or probability density $q(a)\ \di a$ in the continuous case. Then \emph{for the classification problem we should use the expected utility matrix
+  \begin{equation}
+    \label{eq:expe_UM}
+    \mathte{U} \defd q_{1}\ \uncu{1} + q_{2}\ \uncu{2} + q_{3}\ \uncu{3} + \dotsb
+  \end{equation}
+  (or $\mathte{U} \defd \int q(a)\, \uncu{a}\, \di a$ in the continuous case)}.
+
+We only give a sketch of the proof of this intuitive result. If we are uncertainty about the utility matrix then we have a double decision problem: choosing the optimal utility and choosing the optimal class. If the true utility matrix is for instance $\uncu{2} \equiv \bigl(U^{(2)}_{ij}\bigr)$, and the true class is class~$0$, then choosing class~$1$ would yield a utility $U^{(2)}_{10}$, choosing class~$0$ would yield a utility $U^{(2)_{00}}$, and so on. Our double decision problem is thus characterized by a rectangular utility matrix that is the row-concatenation of the utility matrices $\uncu{a}$. We make the realistic judgement that the probabilities $q_{a}$ of the utility matrices and the probabilities $p_{j}$ of the classes are independent, so that $q_{a}\cdot p_{j}$ is probability that the true utility matrix is $\uncu{a}$ and the true class is $j$. The principle of maximum expected utility, \sect~\ref{sec:dt_utilities} and \eqn~\eqref{eq:exp_utility}, then  leads to the maximization of the expected utilities
+\begin{equation}
+  \label{eq:average_expe_utility}
+  \eu_{i} \defd \sum_{j,a} U^{(a)}_{ij}\ q_{a}\cdot p_{j}
+  \equiv \sum_{j} \Bigl[\sum_{a} q_{a}\ U^{(a)}_{ij} \Bigr]\ p_{j}
+\end{equation}
+in which the average utility matrix~\eqref{eq:expe_UM} appears as the \enquote{effective} utility matrix to be used for the class-decision problem alone.
+
+\medskip
+
+For a binary-classification problem the set of possible utility matrices can be represented as in \fig~\ref{fig:space_UM}, as discussed in \sect~\ref{sec:dt_space_util}. Our uncertainty about the true underlying utility matrix corresponds to a discrete or continuous distribution of probability over this set. Note, however, that the expected utility matrix~\eqref{eq:expe_UM} does \emph{not} correspond to the mass-centre of the distribution, because of the peculiar coordinate system used in that figure. The actual mass-centre is obtained by representing the set of utility matrices as a two-dimensional surface (a tetrahedron) in three-dimensional space; for brevity we do not discuss this representation in the present work.
+
+\subsection{Consequences of wrong utility assessments}
+\label{sec:wrong_utility_assess}
 
 
-\begin{figure}[t]
+
+
+\begin{figure}[p]
   \centering
-    \includegraphics[width=0.99\linewidth]{incorrectscores2.jpg}\\
+    \includegraphics[width=0.99\linewidth]{incorrectscores2_25.jpg}\\
   \caption{Relationship between various metrics and utility}
   \label{fig:wrongly_ranked_pairs}
+\end{figure}
+%% True-positive/negative rate, not reported: 25.0\% incorrect pair-rankings
+\begin{figure}[p]
+  \centering
+    \includegraphics[width=0.99\linewidth]{incorrectscores2norm2_25.jpg}\\
+  \caption{Relationship between various metrics and utility}
+  \label{fig:wrongly_ranked_pairs2}
 \end{figure}
 %% True-positive/negative rate, not reported: 25.0\% incorrect pair-rankings
 
