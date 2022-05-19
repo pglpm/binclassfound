@@ -1,6 +1,6 @@
 ## Author: PGL  Porta Mana
 ## Created: 2022-05-01T09:38:48+0200
-## Last-Updated: 2022-05-19T14:40:25+0200
+## Last-Updated: 2022-05-19T21:19:27+0200
 ################
 ## Calculations for the papers
 ################
@@ -1274,7 +1274,7 @@ for(i in 1:(lem+length(errorums))){
         ##
         summary(sapply(1:dim(lut)[3],function(i){mean(abs(lut[,,i]-wlut[,,i]))/mean(lut[,,i])}))
         ldmetr <- wldut
-        ylab <- paste0('utility, ',errorum,'% incorrect utilities')
+        ylab <- paste0('utility, error with ',errorum/100,' std')
     }
     groupok <- (ldut>0 & ldmetr>0) | (ldut<0 & ldmetr<0)
     groupok2 <- (ldut[1:nn2]>0 & ldmetr[1:nn2]>0) | (ldut[1:nn2]<0 & ldmetr[1:nn2]<0)
@@ -1373,16 +1373,17 @@ valuesincpairs <- foreach(typexy=c('unif','norm'))%do%{
 names(valuesincpairs) <- c('unif','norm')
 
 for(typexy in c('unif','norm')){
-    pdff(paste0('increase_error_',typexy), paper='a4r')
+    pdff(paste0('../increase_error_',typexy), paper='a4r')
     datap1 <- valuesincpairs[[typexy]]$ums
     datap2 <- valuesincpairs[[typexy]]$metrics
     ylim <- range(c(datap1,datap2,0))
     tplot(x=as.integer(names(datap1))/100, y=datap1, type='l', lwd=4, ylim=ylim,
           ylab='incorrectly ranked pairs/%',
           xlab='standard deviation of error in utilities',
-          mar=c(3.25, 3, 3, 9)+c(1,1.1,1,1))
+          mar=c(4.5, 3, 0, 9)+c(1,1.1,1,1))
     abline(h=datap2, col=c(2), lwd=2, lty=2)
     mtext(text=paste0('  ',names(datap2)), side=4, at=datap2, las=1, cex=1.1, col=2)
+mtext(text=paste0('(with ',(if(typexy=='unif'){'uniform'}else{'gaussian'}), ' distribution of true utility matrices)'), side=1, padj=6,cex=1.25, font=1) 
     dev.off()
 }
     

@@ -1,7 +1,7 @@
 \pdfoutput=1
 %% Author: PGL  Porta Mana
 %% Created: 2022-03-04T07:39:34+0200
-%% Last-Updated: 2022-05-19T16:56:09+0200
+%% Last-Updated: 2022-05-19T21:18:39+0200
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Decision theory for machine-learning classifiers
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -1308,39 +1308,46 @@ A precise answer to these questions is extremely difficult if not impossible bec
 \end{itemize}
 
 Under these assumptions we calculate how often a pair of classifiers, represented by two confusion matrices with the same class proportions, is evaluated in reverse order, with respect to their true utility yield, when an incorrect utility matrix or another metric is used for the evaluation. This calculation is an integration problem that we solve by Monte Carlo sampling. The procedure is intuitive:
-\begin{enumerate}[label=\arabic*.]
-\item\label{item:draw_um} draw a \enquote{true} utility matrix;
-\item\label{item:draw_wrongum} draw some errors committed around the elements of the true utility matrix, and add them to it;
-\item draw a class proportion; 
-\item draw two confusion matrices having that class proportion (the class proportion must be the same since the matrices are obtained from the same data);
-\item calculate the difference in the true utility yield of the two confusion matrices, using the true utility from~\ref{item:draw_um};
-\item calculate the difference in
-  \begin{enumerate}
-  \item the scores of the two confusion matrices according to several metrics;
-  \item the  yields according to the erroneous utility matrix from~\ref{item:draw_wrongum}
+\begin{enumerate}[label=\arabic*.,ref=\arabic*]
+\item\label{item:draw_um} Draw a \enquote{true} utility matrix.
+\item\label{item:draw_wrongum} Draw some errors  around the elements of the true utility matrix, and add them to it.
+\item Draw a class proportion.
+\item\label{item:draw_cm} Draw two confusion matrices having that class proportion (the class proportion must be the same since the matrices are obtained from the same data).
+\item\label{item:diff_true} Calculate the difference in the true utility yield of the two confusion matrices, using the true utility from step~\ref{item:draw_um}.
+\item\label{item:diff_other} Calculate the difference in
+  \begin{enumerate}[label=\theenumi\alph*.]
+  \item the scores according to several metrics
+  \item the yields according to the erroneous utility matrix from step~\ref{item:draw_wrongum}
   \end{enumerate}
+for the two confusion matrices.
+\item If the differences from steps~\ref{item:diff_true} and \ref{item:diff_other} disagree in sign then this pair of confusion matrices was incorrectly ranked by the metric or the incorrect utility matrix.
 \end{enumerate}
 
-We then consider all possible pairwise comparative evaluations as follows:
-
-
-
-
+The results of this sampling procedure for the case of uniform distribution of true utility matrices, utilities affected by errors with $0.1$ standard deviation, and several metrics, are shown in \fig~\ref{fig:wrongly_ranked_pairs}. Each point represents a pair of confusion matrices (step~\ref{item:draw_cm}); its coordinates are the true utility yield and either the score given by a metric or (last plot) the yield according to the incorrect utility matrix. The red or yellow triangular points in the in the II and IV quadrants (discordant signs) are incorrectly ranked pairs. The percentages of incorrect rankings are calculated from $10^{6}$ samples, giving slightly more than one decimal significant digit; fewer samples are shown in the plots.
 \begin{figure}[p]
   \centering
-    \includegraphics[width=0.99\linewidth]{incorrectscores2_25.jpg}\\
+    \includegraphics[width=0.99\linewidth]{incorrectscores3unif-10.jpg}\\
   \caption{Relationship between various metrics and utility}
   \label{fig:wrongly_ranked_pairs}
 \end{figure}
+% %% True-positive/negative rate, not reported: 25.0\% incorrect pair-rankings
+% \begin{figure}[p]
+%   \centering
+%     \includegraphics[width=0.99\linewidth]{incorrectscores2norm2_25.jpg}\\
+%   \caption{Relationship between various metrics and utility}
+%   \label{fig:wrongly_ranked_pairs2}
+% \end{figure}
 %% True-positive/negative rate, not reported: 25.0\% incorrect pair-rankings
 \begin{figure}[p]
   \centering
-    \includegraphics[width=0.99\linewidth]{incorrectscores2norm2_25.jpg}\\
+    \includegraphics[width=0.99\linewidth]{increase_error_unif.pdf}\\\hfill
+    \includegraphics[width=0.99\linewidth]{increase_error_norm.pdf}\\\hfill
   \caption{Relationship between various metrics and utility}
-  \label{fig:wrongly_ranked_pairs2}
+  \label{fig:percentage_vs_error}
 \end{figure}
-%% True-positive/negative rate, not reported: 25.0\% incorrect pair-rankings
+The plots are displayed in order (left-rigt, top-bottom) of decreasing percentages of incorrect rankings. The accuracy metric proves to be the best among the ones considered, leading to $8.7\%$ incorrect pairwise rankings. But we see that a utility matrix affected by gaussian errors with $0.1$ standard deviation is even better, with $5.4\%$ incorrect pairwise rankings.
 
+The dependence of the fraction of incorrect rankings on the standard deviation of the error affecting the utilities is shown in the plots of \fig~\ref{fig:percentage_vs_error}, for the case of uniform distribution (top plot) and gaussian distribution (bottom plot) of true utility matrices. It is approximately linear. The plots also report the fractions of incorrect rankings for the other metrics. We see that evaluations based on a utility matrix affected by errors with standard deviation $0.15$ or even $0.2$ are still more reliable than evaluations based on the other reported metrics. This is a remarkable fact, considering that the errors are on utilities in the range $\clcl{0,1}$: such standard deviations are quite large.
 
 
 
