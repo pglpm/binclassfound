@@ -1,6 +1,6 @@
 ## Author: PGL  Porta Mana
 ## Created: 2022-05-01T09:38:48+0200
-## Last-Updated: 2022-05-19T13:51:21+0200
+## Last-Updated: 2022-05-19T14:40:25+0200
 ################
 ## Calculations for the papers
 ################
@@ -1222,7 +1222,7 @@ shape1 <- 2
 shape2 <- 1
 ##
 metrlist <- list(
-        ## 'True-positive rate'=function(p,a,b){a},
+        'True-positive rate'=function(p,a,b){a},
 ##    'True-negative rate'=function(p,a,b){b},
     'Precision'=prec,
     'Balanced accuracy'=bacc,
@@ -1257,8 +1257,8 @@ ldut <- rowSums(aperm((lcm2-lcm1)*lut))
 func <- identity#function(x){plogis(x*10)*2-1}
 ##
 lem <- length(metrlist)
-errorums <- c(15,5)
-pdff(paste0('incorrectscores3',typexy), paper='a4')
+errorums <- c(10)
+pdff(paste0('incorrectscores3',typexy,'-',paste0(errorums,collapse='_')), paper='a4')
 par(mfrow=c(lem/2+1,2))
 par(oma=c(0,0,0,0))
 for(i in 1:(lem+length(errorums))){
@@ -1377,8 +1377,12 @@ for(typexy in c('unif','norm')){
     datap1 <- valuesincpairs[[typexy]]$ums
     datap2 <- valuesincpairs[[typexy]]$metrics
     ylim <- range(c(datap1,datap2,0))
-    tplot(x=as.integer(names(datap1)), y=datap1, type='l', lwd=3, ylim=ylim)
-    abline(h=datap2, col=2:7)
+    tplot(x=as.integer(names(datap1))/100, y=datap1, type='l', lwd=4, ylim=ylim,
+          ylab='incorrectly ranked pairs/%',
+          xlab='standard deviation of error in utilities',
+          mar=c(3.25, 3, 3, 9)+c(1,1.1,1,1))
+    abline(h=datap2, col=c(2), lwd=2, lty=2)
+    mtext(text=paste0('  ',names(datap2)), side=4, at=datap2, las=1, cex=1.1, col=2)
     dev.off()
 }
     
