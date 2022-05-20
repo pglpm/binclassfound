@@ -1,7 +1,7 @@
 \pdfoutput=1
 %% Author: PGL  Porta Mana
 %% Created: 2022-03-04T07:39:34+0200
-%% Last-Updated: 2022-05-20T14:30:40+0200
+%% Last-Updated: 2022-05-20T14:48:48+0200
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Decision theory for machine-learning classifiers
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -1210,9 +1210,9 @@ The second phenomenon is illustrated in the plots of \figs~\ref{fig:metrics_vs_u
 % {B}\hfill\mbox{}\\[0pt]
 % \vspace{-1em}{\color{mygrey}\rule{0.66\linewidth}{0.25pt}}
 % \includegraphics[width=0.95\linewidth]{utility_vs_metrics2_0.9.jpg}\\[0pt]
-\caption{Relationship between various evaluation metrics and actual utility yields for a  two binary-classification problems with underlying utility matrices $\begin{bsmallmatrix} 1&0\\0&1 \end{bsmallmatrix}$ (left column) and $\begin{bsmallmatrix} 1&0\\0&0 \end{bsmallmatrix}$ (right column). All confusion matrices ({\color{myblue}blue dots}) are obtained from a dataset with 50\%/50\% class balance.
+\caption{Relationship between various evaluation metrics and actual utility yields for a  two binary-classification problems with underlying utility matrices $\begin{bsmallmatrix} 1&0\\0&1 \end{bsmallmatrix}$ (left column) and $\begin{bsmallmatrix} 1&0\\0&0 \end{bsmallmatrix}$ (right column). All confusion matrices ({\color{mypurpleblue}blue dots}) are obtained from a dataset with 50\%/50\% class balance.
 %
-  Pairs of {\color{myred}red triangular shapes} in a plot show two confusion matrices which are wrongly ranked by the metric (y-axis) with respect to the actual utility yield (x-axis). Clearly there can even be three or more confusion matrices ranked in completely reverse order by the metric.
+  Pairs of {\color{myred}red triangles} in a plot show two confusion matrices which are wrongly ranked by the metric (y-axis) with respect to the actual utility yield (x-axis). Clearly there can even be three or more confusion matrices ranked in completely reverse order by the metric.
 %
   % {\color{myred}Red triangular pairs} (almost overlapping in some plots) in each column show two confusion matrices wrongly ranked by \emph{all} metrics but one simultaneously.
   %%
@@ -1313,20 +1313,19 @@ A precise answer to these questions is extremely difficult if not impossible bec
 
 \item\label{item:distr_cm} A distribution of confusion matrices for which the fraction of one class is uniformly distributed in $\clcl{0,1}$, and the true-positive and true-negative rates are independently distributed in $\clcl{0.5, 1}$ with linearly increasing probabilities (median of 0.85,  lower and upper quartiles at 0.75 and 0.93). This means that we consider problems with highly imbalanced data to be as common as problems with balanced data (a realistic assumption according to our expecience); and candidate classifiers to be generally good.
   
-\item\label{item:distr_error} A truncated gaussian distribution of error around each true utility-matrix element, centred on the true utility value. We consider standard deviations ranging from $0$ to $0.3$. The gaussian must be truncated because each true utility has a value between $0$ and $1$ and moreover we require correct classifications to have higher utilities than incorrect ones. Figure~\ref{fig:error_distr_um} illustrates the extent of such an error in the space of utility matrices, for a standard deviation of $0.1$.
+\item\label{item:distr_error} A truncated gaussian distribution of error around each true utility-matrix element, centred on the true utility value. We consider standard deviations ranging from $0$ to $0.3$. The gaussian must be truncated because each true utility has a value between $0$ and $1$ and moreover we require correct classifications to have higher utilities than incorrect ones. Figure~\ref{fig:error_distr_um} illustrates the extent of such an error in the space of utility matrices, for standard deviations equal to $0.1$ and $0.2$.
 \end{enumerate}
-\begin{figure}[b]
+\begin{figure}[t]
   \centering
   \hspace{\stretch{1}}
-  \parbox[t]{0.33\linewidth}{%
+  \parbox[t]{0.45\linewidth}{%
     \centering\includegraphics[width=\linewidth]{distr_true_um_norm.pdf}\\
     \caption{Truncated gaussian distribution in the space of utility matrices of \fig~\ref{fig:space_UM}, described in item~\ref{item:distr_um}.}
     \label{fig:gauss_distr_um}}
   \hspace{\stretch{1}}
-  \parbox[t]{0.33\linewidth}{%
+  \parbox[t]{0.45\linewidth}{%
     \centering\includegraphics[width=\linewidth]{error_around_um2.pdf}
-    \caption{Extent of errors 
-      with standard deviations $0.1$ ({\color{myblue}blue triangles}) and $0.2$ ({\color{myred}red squares}), around the utility matrices $\begin{bsmallmatrix} 0.5&0.5\\0&1 \end{bsmallmatrix}$ and $\begin{bsmallmatrix} 1&0\\0.5&0.1 \end{bsmallmatrix}$ (black diamonds) in the space of utility matrices.}
+    \caption{Extents of errors having standard deviations $0.1$ ({\color{mypurpleblue}blue triangles}) and $0.2$ ({\color{myred}red squares}), around the utility matrices $\begin{bsmallmatrix} 0.5&0.5\\0&1 \end{bsmallmatrix}$ and $\begin{bsmallmatrix} 1&0\\0.5&0.1 \end{bsmallmatrix}$ (black diamonds).}
     \label{fig:error_distr_um}}
   \hspace{\stretch{1}}
 \end{figure}
@@ -1346,7 +1345,7 @@ for the two confusion matrices.
 \item If the differences from steps~\ref{item:diff_true} and \ref{item:diff_other} disagree in sign then this pair of confusion matrices was incorrectly ranked by the metric or the incorrect utility matrix.
 \end{enumerate}
 
-The results of this sampling procedure for the case of uniform distribution of true utility matrices, several metrics, and utilities affected by errors with $0.1$ standard deviation, are shown in \fig~\ref{fig:wrongly_ranked_pairs}. Each point represents a pair of confusion matrices (step~\ref{item:draw_cm}); its coordinates are the true utility yield and either the score given by a metric or (last plot) the yield according to the incorrect utility matrix. The red or yellow triangular points in the in the II and IV quadrants (discordant signs) are incorrectly ranked pairs. The percentages of incorrect rankings are calculated from $10^{6}$ samples, giving slightly more than one decimal significant digit; fewer samples are shown in the plots.
+The results of this sampling procedure for the case of uniform distribution of true utility matrices, several metrics, and utilities affected by errors with $0.1$ standard deviation, are shown in \fig~\ref{fig:wrongly_ranked_pairs}.
 \begin{figure}[p]
   \centering
     \includegraphics[width=0.99\linewidth]{incorrectscores4unif-11.jpg}\\
@@ -1368,6 +1367,7 @@ The results of this sampling procedure for the case of uniform distribution of t
   \caption{Dependence of the proportion of incorrectly ranked pairs of confusion matrices, on the standard deviation of the assessment error on the utilities. Top plot: case with uniform distribution of true utility matrices. Bottom plot: case with gaussian distribution of true utility matrices, as in \fig~\ref{fig:gauss_distr_um}.}
   \label{fig:percentage_vs_error}
 \end{figure}
+Each point represents a pair of confusion matrices (step~\ref{item:draw_cm}); its coordinates are the true utility yield and either the score given by a metric or (last plot) the yield according to the incorrect utility matrix. The red or yellow triangular points in the in the II and IV quadrants (discordant signs) are incorrectly ranked pairs. The percentages of incorrect rankings are calculated from $10^{6}$ samples, giving slightly more than one decimal significant digit; fewer samples are shown in the plots.
 
 The plots are displayed in order (left-rigt, top-bottom) of decreasing percentages of incorrect rankings. The accuracy metric proves to be the best among the ones considered, leading to $8.7\%$ incorrect pairwise rankings. But we see that a utility matrix affected by gaussian errors with $0.1$ standard deviation is even better, yielding $4\%$ incorrect pairwise rankings.
 
