@@ -1,7 +1,7 @@
 \pdfoutput=1
 %% Author: PGL  Porta Mana
 %% Created: 2022-03-04T07:39:34+0200
-%% Last-Updated: 2022-05-20T15:08:28+0200
+%% Last-Updated: 2022-05-20T18:39:25+0200
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Decision theory for machine-learning classifiers
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -1042,6 +1042,12 @@ In an individual classification instance, if we know which class is true then th
   \label{eq:exp_utility}
   \eu_{i} \defd \sum_{j} U_{ij}\ p_{j} \ .
 \end{equation}
+In formulae, this principle of \emph{maximization of expected utility}  is
+\begin{equation}
+  \label{eq:max_expe_utility}
+  \text{choose class}\quad
+  i^{*} = \argmax_{i}\set{\eu_{i}} \equiv \argmax_{i}\set[\bigg]{\sum_{j} U_{ij}\ p_{j}} \ .
+\end{equation}
 % where $\p(c_{1})$ and $\p(c_{2}) \equiv 1 - \p(c_{1})$ are the probabilities of classes $c_{1}$ and $c_{2}$. The $\nd$ expected utilities are therefore given by the matrix product of the utility matrix times the column matrix of probabilities.
 
 % For instance, if the ticket above has a 20\% probability of winning and 80\% of losing, that is $\p(\texttt{\small win}) = 0.2$ and $\p(\texttt{\small lose}) = 0.8$, then our two decisions have expected utilities
@@ -1054,7 +1060,7 @@ In an individual classification instance, if we know which class is true then th
 % \end{equation}
 % The optimal choice is to buy the ticket, that is, to classify the ticket \emph{as if} it belonged to class \texttt{win}, even if it most probably belongs to class \texttt{lose}.
 
-A very important result in decision theory and game theory is that basic requirements of rational decision-making imply that there \emph{must} be a set of utilities underlying the decisions of a rational agent, and the decisions must obey the rule of \emph{maximization of expected utility} \autocites[\sect~15.2]{russelletal1995_r2022}[\chaps~2--3]{neumannetal1944_r1955}.
+A very important result in decision theory and game theory is that basic requirements of rational decision-making imply that there \emph{must} be a set of utilities underlying the decisions of a rational agent, and the decisions must obey the principle of maximization of expected utility\autocites[\sect~15.2]{russelletal1995_r2022}[\chaps~2--3]{neumannetal1944_r1955}.
 
 How are utilities determined? They are obviously problem-specific and cannot be given by the theory (which would otherwise be a model rather than a theory). Utilities can be obvious in decision problems involving gains or losses of measurable quantities such as money or energy (the utility of money is usually not equal to the amount of money, the relationship between the two being somewhat logarithmic \autocites[\eg][pp.~203--204]{north1968}[\chap~4]{raiffa1968_r1970}). In medical problems they can correspond to life expectancy and quality of life; see for example \textcite[esp. \chap~8]{soxetal1988_r2013} and \textcite[esp. \chap~4]{huninketal2001_r2014} on how such health factors are transformed into utilities.
 
@@ -1282,7 +1288,7 @@ Dealing with unknown utilities is straightforward. Suppose we are uncertain whet
   \end{equation}
   or $\aveu \defd \int q(a)\, \uncu{a}\, \di a$ in the continuous case}.
 
-We only give a sketch of the proof of this intuitive result. If we are uncertainty about the utility matrix then we have a double decision problem: choosing the optimal utility and choosing the optimal class. If the true utility matrix is for instance $\uncu{2} \equiv \bigl(U^{(2)}_{ij}\bigr)$, and the true class is class~$0$, then choosing class~$1$ would yield a utility $U^{(2)}_{10}$, choosing class~$0$ would yield a utility $U^{(2)}_{00}$, and so on. Our double decision problem is thus characterized by a rectangular utility matrix that is the row-concatenation of the utility matrices $\uncu{a}$. We make the realistic judgement that the probabilities $q_{a}$ of the utility matrices and the probabilities $p_{j}$ of the classes are independent, so that $q_{a}\cdot p_{j}$ is probability that the true utility matrix is $\uncu{a}$ and the true class is $j$. The principle of maximum expected utility, \sect~\ref{sec:dt_utilities} and \eqn~\eqref{eq:exp_utility}, then  leads to the maximization of the expected utilities
+We only give a sketch of the proof of this intuitive result. If we are uncertainty about the utility matrix then we have a double decision problem: choosing the optimal utility and choosing the optimal class. If the true utility matrix is for instance $\uncu{2} \equiv \bigl(U^{(2)}_{ij}\bigr)$, and the true class is class~$0$, then choosing class~$1$ would yield a utility $U^{(2)}_{10}$, choosing class~$0$ would yield a utility $U^{(2)}_{00}$, and so on. Our double decision problem is thus characterized by a rectangular utility matrix that is the row-concatenation of the utility matrices $\uncu{a}$. We make the realistic judgement that the probabilities $q_{a}$ of the utility matrices and the probabilities $p_{j}$ of the classes are independent, so that $q_{a}\cdot p_{j}$ is probability that the true utility matrix is $\uncu{a}$ and the true class is $j$. The principle of maximum expected utility, \sect~\ref{sec:dt_utilities} \eqn~\eqref{eq:max_expe_utility}, then leads to the maximization of the expected utilities
 \begin{equation}
   \label{eq:average_expe_utility}
   \eu_{i} \defd \sum_{j,a} U^{(a)}_{ij}\ q_{a}\cdot p_{j}
@@ -1379,6 +1385,22 @@ An utility error with standard deviations around $0.25$ cover the whole space of
 \section{What about the area under the curve of the receiver operating characteristic?}
 \label{sec:auc}
 
+Another very common metric to evaluate binary classifiers is the Area Under the Curve of the Receiver Operating Characteristic, or \enquote{area under the curve} for short. This metric can only be used for particular classifying algorithms, and its meaning is different from that of the metrics reviewed so far. For these reasons we leave a full discussion of it to future works, and only offer a couple of remarks.
+
+The area under the curve can only be computed for classifiers that output a continuous variable rather than a class. A threshold for this variable determines whether its value predicts of one class or the other. Different choices of threshold leads to different pairs of false-positive rate (which is $1-{}$true-negative rate) and true-positive rate in a given test set. These pairs can be plotted as a curve on a graph with corresponding axes. Given the proportion of classes in the test set, every point on such curve corresponds to a possible confusion matrix $C_{ij}(\theta)$ that the classifier can produce depending on the threshold $\theta$ chosen. The area subtended by such curve is a weighted average of true-positive rates with a peculiar choice of weights; the weights are uniform as a function of false-positive rate, but generally not uniform as a function of the threshold $\theta$.
+
+The following remarks can be done
+from the standpoint of decision theory.
+
+First, according to the principle of maximum expected utility, \sect~\ref{sec:dt_utilities} \eqn~\eqref{eq:max_expe_utility}, the threshold $\theta$ should be chosen such as to maximize the utility yield, given by \eqn~\eqref{eq:final_utility}:
+\begin{equation}
+  \label{eq:threshold_auc_maxutility}
+  \text{choose threshold}\quad
+  \theta^{*} = \argmax_{\theta}\set[\bigg]{\sum_{ij} U_{ij}\ C_{ij}(\theta)} \ .
+\end{equation}
+Any other values of the threshold are irrelevant. Averages over threshold values are therefore irrelevant as well.
+
+Second, if we want an average of the performance over several classification problems, the quantity to be averaged is the utility matrix of those classification problems, as discussed in \sect~\ref{sec:unknown_utilities}. Once this average is computed we go back to a unique choice of threshold according to the first remark above.
 
 
 
