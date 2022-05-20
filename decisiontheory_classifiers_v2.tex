@@ -1,7 +1,7 @@
 \pdfoutput=1
 %% Author: PGL  Porta Mana
 %% Created: 2022-03-04T07:39:34+0200
-%% Last-Updated: 2022-05-20T14:48:48+0200
+%% Last-Updated: 2022-05-20T15:08:28+0200
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Decision theory for machine-learning classifiers
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -995,7 +995,7 @@ Most of the issues above are described in the context of binary classification, 
 \subsection{References}
 \label{sec:dt_refs}
 
-Here we give a brief overview of decision theory. We only focus on the notions relevant to the problem of evaluating classifiers, and simply state the rules of the theory. These rules are quite intuitive, but it must be remarked that they are constructed in order to be logically and mathematically self-consistent: see the following references. For a presentation of decision theory from the point of view of artificial intelligence and machine learning see \textcite[\chap~15]{russelletal1995_r2022}. Simple introductions are given by \textcite{jeffrey1965,north1968,raiffa1968_r1970}, and a discussion of its foundations and history by \textcite{steeleetal2015_r2020}. For more thorough expositions see \textcite{raiffaetal1961_r2000,berger1980_r1985,savage1954_r1972}; and \textcite{soxetal1988_r2013,huninketal2001_r2014} for a medical perspective.
+Here we give a brief overview of decision theory. We only focus on the notions relevant to the problem of evaluating classifiers, and simply state the rules of the theory. These rules are quite intuitive, but it must be remarked that they are constructed in order to be logically and mathematically self-consistent: see the following references. For a presentation of decision theory from the point of view of artificial intelligence and machine learning see \textcite[\chap~15]{russelletal1995_r2022}. Simple introductions are given by \textcite{jeffrey1965,north1968,raiffa1968_r1970}, and a discussion of its foundations and history by \textcite{steeleetal2015_r2020}. For more thorough expositions see \textcite{raiffaetal1961_r2000,berger1980_r1985,savage1954_r1972}; and \textcite{soxetal1988_r2013,huninketal2001_r2014} for a medical perspective. See also Ramsey's \parencites*{ramsey1926} insightful and charming pioneering discussion.
 
 \subsection{Decisions and classes}
 \label{sec:dt_dec_classes}
@@ -1381,10 +1381,12 @@ An utility error with standard deviations around $0.25$ cover the whole space of
 
 
 
+
+
+
 % \section{Remarks on the choice of test dataset}
 % \label{sec:test_set}
-
-
+%
 % It may not be amiss to emphasize that the \emph{proportions $N_{c}$ of classes in the test set should be representative of the proportions that will be encountered in the real application}. Otherwise the test-set results would misleading or even opposite to what the real performance will be. In the lottery example with utility matrix~\eqref{eq:exp_utilities_lottery}, suppose we have an algorithm that always makes the decision \texttt{buy} and another algorithm that always decides \texttt{not-buy}. In  real instances of such lotteries the class \texttt{win} occurs 1\% of the time, and \texttt{lose}, 99\%. In a real application the first algorithm would thus yield $-0.89$, a loss, on average at each instance, and the second $0$. The second algorithm is actually best. Suppose we test these algorithms on a test set where the two classes appear 50\%/50\% instead. On this test set the first algorithm will yield $4.5$ on average, the second $0$. Thus according to the test the first algorithm is best -- a wrong conclusion.
 
 
