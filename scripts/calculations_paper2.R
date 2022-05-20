@@ -1,6 +1,6 @@
 ## Author: PGL  Porta Mana
 ## Created: 2022-05-01T09:38:48+0200
-## Last-Updated: 2022-05-20T23:18:42+0200
+## Last-Updated: 2022-05-20T23:54:54+0200
 ################
 ## Calculations for the papers
 ################
@@ -1503,25 +1503,34 @@ tplot(x=c(0,1,1,0,0), y=c(0,0,1,1,0), type='l', add=T, col='#000000', lwd=0.5)
 
 
 mm <- 1/4
-inte1 <- -(0.8*mm+0.75 - 1)/(0.8-1) + 1
-inte2 <- 0.6 - mm*0.1
+inte1 <- 0.78
+inte2 <- 1-mm
 dinte <- inte1-inte2
-tplot(x=cbind(c(0, 0.8, 1), c(0,0.1,1)),
-      y=cbind(c(0, 0.8*mm+0.75, 1), c(0,0.6,1)),
+##
+line1 <- xspline(x=c(0, 0.7, 1), y=c(0, 0.7*mm+0.8, 1), shape=c(0,0.5,0), lwd=3, border=palette()[1], draw=F)
+line2 <- xspline(x=c(0,0.1,1), y=c(0,0.75,1), shape=c(0,0.5,0), lwd=3, lty=2, border=palette()[2], draw=F)
+##
+tplot(x=list(line1$x, line2$x), y=list(line1$y, line2$y),
+    ## x=cbind(c(0, 0.8, 1), c(0,0.1,1)),
+    ##   y=cbind(c(0, 0.8*mm+0.75, 1), c(0,0.6,1)),
       asp=1, xgrid=F, ygrid=F, ylab=expression(t), xlab=expression(f),
       xlim=c(0,1), ylim=c(0,1),
       lwd=3)
-for(qq in seq(inte2-dinte/2,inte1+dinte/2,by=dinte/2)){
-    abline(a=qq, b=rep(mm,3), col=7, ylim=c(0,1))
+cols <- c(7,7,2,1,7,7)
+ltys <- c(7,7,6,5,7,7)
+lwds <- c(1,1,3,3,1,1)/2
+k <- 0
+for(qq in seq(inte2-2*dinte,inte1+2*dinte,by=dinte)){
+    k <- k+1
+    abline(a=qq, b=rep(mm,3), col=cols[k], lwd=lwds[k])
 }
 tplot(x=c(0,1,1,0,0), y=c(0,0,1,1,0), type='l', add=T, col='#000000', lwd=0.5)
-
 
 (y-1)/(0.8*mm+0.75 - 1) = (x-1)/(0.8-1)
 y= 
 
     0.6/(mm*0.1) =k
-
+1 = mm +k
     
     (y-1)/(0.6 - 1) = (x-1)/(0.1-1)
 y= - (0.6 - 1)/(0.1-1) + 1
