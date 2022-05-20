@@ -1,6 +1,6 @@
 ## Author: PGL  Porta Mana
 ## Created: 2022-05-01T09:38:48+0200
-## Last-Updated: 2022-05-20T13:41:48+0200
+## Last-Updated: 2022-05-20T23:18:42+0200
 ################
 ## Calculations for the papers
 ################
@@ -1460,11 +1460,11 @@ dim(wlut) <- c(2,2,nn2)
 sd(wlut-lut)
 wlxy <- t(apply(wlut,3,um2xy))
 ##
-tplot(x=wlxy[1:1000,1], y=wlxy[1:1000,2], type='p', pch=16, cex=0.75, col=2, alpha=0.5, xgrid=F, ygrid=F, xticks=F,yticks=F,xlab=NA,ylab=NA,asp=1, mar=rep(1,4), xlim=c(-1,1), ylim=c(-1,1))
+tplot(x=wlxy[1:1000,1], y=wlxy[1:1000,2], type='p', pch=17, cex=0.75, col=1, alpha=0.5, xgrid=F, ygrid=F, xticks=F,yticks=F,xlab=NA,ylab=NA,asp=1, mar=rep(1,4), xlim=c(-1,1), ylim=c(-1,1))
 tplot(x=lxy[1,1], y=lxy[1,2], type='p', add=T, col='#000000', cex=3, pch=18)
 ##
-errorum <- 11
-lxy <- rep(c(-0.9,-0.5),each=nn2)
+errorum <- 50
+lxy <- rep(c(-0.5,-0.5),each=nn2)
 dim(lxy) <- c(nn2,2)
 lut <- apply(lxy,1,xy2um)
 dim(lut) <- c(2,2,nn2)
@@ -1481,15 +1481,50 @@ dim(wlut) <- c(2,2,nn2)
 sd(wlut-lut)
 wlxy <- t(apply(wlut,3,um2xy))
 ##
-tplot(x=wlxy[1:1000,1], y=wlxy[1:1000,2], type='p', pch=16, cex=0.75, col=6, alpha=0.5, xgrid=F, ygrid=F, xticks=F,yticks=F,xlab=NA,ylab=NA,asp=1, mar=rep(1,4), xlim=c(-1,1), ylim=c(-1,1), add=T)
+tplot(x=wlxy[1:1000,1], y=wlxy[1:1000,2], type='p', pch=15, cex=0.75, col=2, alpha=0.5, xgrid=F, ygrid=F, xticks=F,yticks=F,xlab=NA,ylab=NA,asp=1, mar=rep(1,4), xlim=c(-1,1), ylim=c(-1,1), add=T)
 tplot(x=lxy[1,1], y=lxy[1,2], type='p', add=T, col='#000000', cex=3, pch=18)
 ##
 tplot(x=c(-1,-1,0,1,1,0,-1), y=c(0,-1,-1,0,1,1,0), type='l', add=T, col='#000000', lwd=1)
 
+################################################################
+#### AUC example
+################################################################
+
+mm <- 3
+tplot(x=cbind(c(0, 0.1, 1), c(0,0.5,1)),
+      y=cbind(c(0, 0.1*mm, 1), c(0,1,1)),
+      asp=1, xgrid=F, ygrid=F, ylab=expression(t), xlab=expression(f),
+      xlim=c(0,1), ylim=c(0,1),
+      lwd=3)
+for(qq in seq(-2,2,0.5)){
+    abline(a=qq, b=rep(mm,3), col=7, ylim=c(0,1))
+}
+tplot(x=c(0,1,1,0,0), y=c(0,0,1,1,0), type='l', add=T, col='#000000', lwd=0.5)
 
 
+mm <- 1/4
+inte1 <- -(0.8*mm+0.75 - 1)/(0.8-1) + 1
+inte2 <- 0.6 - mm*0.1
+dinte <- inte1-inte2
+tplot(x=cbind(c(0, 0.8, 1), c(0,0.1,1)),
+      y=cbind(c(0, 0.8*mm+0.75, 1), c(0,0.6,1)),
+      asp=1, xgrid=F, ygrid=F, ylab=expression(t), xlab=expression(f),
+      xlim=c(0,1), ylim=c(0,1),
+      lwd=3)
+for(qq in seq(inte2-dinte/2,inte1+dinte/2,by=dinte/2)){
+    abline(a=qq, b=rep(mm,3), col=7, ylim=c(0,1))
+}
+tplot(x=c(0,1,1,0,0), y=c(0,0,1,1,0), type='l', add=T, col='#000000', lwd=0.5)
 
 
+(y-1)/(0.8*mm+0.75 - 1) = (x-1)/(0.8-1)
+y= 
+
+    0.6/(mm*0.1) =k
+
+    
+    (y-1)/(0.6 - 1) = (x-1)/(0.1-1)
+y= - (0.6 - 1)/(0.1-1) + 1
 
 
 

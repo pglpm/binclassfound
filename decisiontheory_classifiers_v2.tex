@@ -1,7 +1,7 @@
 \pdfoutput=1
 %% Author: PGL  Porta Mana
 %% Created: 2022-03-04T07:39:34+0200
-%% Last-Updated: 2022-05-20T19:31:58+0200
+%% Last-Updated: 2022-05-20T22:39:30+0200
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Decision theory for machine-learning classifiers
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -1389,58 +1389,72 @@ An utility error with standard deviations around $0.25$ cover the whole space of
 
 Another very common metric to evaluate binary classifiers is the Area Under the Curve of the Receiver Operating Characteristic, or \enquote{area under the curve} for short. This metric can only be used for particular classifying algorithms, and its meaning is different from that of the metrics reviewed so far. For these reasons we leave a full discussion of it to future works, and only offer a couple of remarks.
 
-The area under the curve can only be computed for classifiers that output a continuous variable rather than a class. A threshold for this variable determines whether its value predicts of one class or the other. Different choices of threshold leads to different pairs of false-positive rate (which is $1-{}$true-negative rate) and true-positive rate in a given test set. These pairs can be plotted as a curve on a graph with corresponding axes. Given the proportion of classes in the test set, every point on such curve corresponds to a possible confusion matrix $C_{ij}(\theta)$ that the classifier can produce depending on the threshold $\theta$ chosen. The area subtended by such curve is a weighted average of true-positive rates with a peculiar choice of weights; the weights are uniform as a function of false-positive rate, but generally not uniform as a function of the threshold $\theta$. The meaning and proper use of the receiver operating characteristic are discussed in a classic by \textcites{metz1978}; see especially p.~290 and the section \emph{Cost/Benefit Analysis}, p.~295, which echoes some of the remarks below.
+The area under the curve can only be computed for classifiers that output a continuous variable rather than a class. A threshold for this variable determines whether its value predicts of one class or the other. Different choices of threshold leads to different pairs of false-positive rate $f$ (which is $1-{}$true-negative rate) and true-positive rate $t$ in a given test set. These pairs can be plotted as a curve $f \mapsto t(f)$ on a graph with corresponding axes. Given the proportion of classes in the test set, every point on such curve corresponds to a possible confusion matrix $C_{ij}(f)$ that the classifier can produce depending on the threshold chosen. The area subtended by such curve is a weighted average of true-positive rates with a peculiar choice of weights; the weights are uniform as a function of false-positive rate, but generally not uniform as a function of the threshold, for example. The meaning and proper use of the receiver operating characteristic are discussed in a classic by \textcites{metz1978}; see especially p.~290.
 
-The following remarks can be made from the standpoint of decision theory; they share many points with the discussions by \textcites{bakeretal2001}, \textcite{loboetal2008}, and Metz cited above.
 
-First, according to the principle of maximum expected utility, \sect~\ref{sec:dt_utilities}, the threshold $\theta$ should be chosen such as to maximize the utility yield, given by \eqn~\eqref{eq:final_utility}:
+\medskip
+
+From the standpoint of decision theory two remarks can be made\autocites[similar points are made by][]{bakeretal2001,loboetal2008}. First, according to the principle of maximum expected utility, \sect~\ref{sec:dt_utilities}, we should choose a threshold and corresponding false-positive rate $f^{*}$ such as to maximize the utility yield, given by \eqn~\eqref{eq:final_utility}:
 \begin{equation}
   \label{eq:threshold_auc_maxutility}
-  \text{choose threshold}\quad
-  \theta^{*} = \argmax_{\theta}\set[\bigg]{\sum_{i,j=0}^{1} U_{ij}\ C_{ij}(\theta)} \ .
+  \text{\small choose}\quad
+  f^{*} = \argmax_{f}\set[\bigg]{\sum_{i,j=0}^{1} U_{ij}\ C_{ij}(f)} \ .
 \end{equation}
-Any other values of the threshold are irrelevant. Averages over threshold values are therefore irrelevant as well.
+Any other values of $f$ and of the threshold are irrelevant. Averages over $f$ values are therefore irrelevant as well. Second, if our goal is to evaluate the average performance over several possible classification problems, then the quantities to be averaged are the utility matrices of those classification problems, as discussed in \sect~\ref{sec:unknown_utilities}, yielding a unique expected utility matrix. Once this is computed we go back to a single choice of $f$ according to our first remark.
+% Finally, if we wanted to somehow interpret the average implicit in the area under the curve as an average of utility matrices, in accord to the remark above, then such average would depend on the probabilities or frequencies appearing in the confusion matrix, and would therefore imply some sort of cognitive bias as discussed in \sect~\ref{sec:decision_theory}.
 
-Second, if we want an average of the performance over several classification problems, the quantities to be averaged are the utility matrices of those classification problems, as discussed in \sect~\ref{sec:unknown_utilities}, giving an expected utility matrix. Once this is computed we go back to a unique choice of threshold according to the first remark above.
+Owing to these issues, the area under the curve suffers from the same problems as the non-compliant metrics discussed in \sect~\ref{sec:common_metrics}: in every classification problem it always leads to cases of incorrect evaluation.
 
-Finally, if we wanted to somehow interpret the average implicit in the area under the curve as an average of utility matrices, in accord to the remark above, then such average would depend on the probabilities or frequencies appearing in the confusion matrix, and would therefore imply some sort of cognitive bias as discussed in \sect~\ref{sec:decision_theory}.
+A correct use of the receiver-operating-characteristic curve $t(f)$ can be made, however. It is explained in \textcite{metz1978}, section \emph{Cost/Benefit Analysis} p.~295, and in \textcites{soxetal1988_r2013}, \sect~5.7.4 (curiously Sox \etal\ also mention the generally erroneous criterion of the area under the curve).
 
-Owing to the issues above, the area under the curve suffers from the same problems as the non-compliant metrics discussed in \sect~\ref{sec:common_metrics}: they always lead to some cases of incorrect evaluation, in every classification problem.
-
-Denoting the class balance by $B$ and the true-positive and false-positive rates by $t$ and $f$, the confusion matrix can be written
+Denote the proportion of class~$0$ (positive) in the test set by $B$. The confusion matrix as a function of $f$ is then
 \begin{equation}
   \label{eq:CM_fromrates}
   \begin{bmatrix}
-    C_{00} & C_{01}\\ C_{10} & C_{11}
+    C_{00}(f) & C_{01}(f)\\ C_{10}(f) & C_{11}(f)
   \end{bmatrix}
   =
   \begin{bmatrix}
-    B\ t & (1-B)\ f \\ B\ (1-t) &(1-B)\ (1-f)
-  \end{bmatrix}
+    B\ t(f) & (1-B)\ f \\ B\ [1-t(f)] &(1-B)\ (1-f)
+  \end{bmatrix} \ .
 \end{equation}
-
-
-
-\begin{equation}
-  \label{eq:threshold_auc_maxutility_rates}
-  \text{choose threshold}\quad
-  \theta^{*} = \argmax_{f}\set[\bigg]{
+The sum in formula~\eqref{eq:threshold_auc_maxutility} above can then be explicitly written, rearranging some terms,
+\begin{multline}
+  \label{eq:sum_UC}
     % U_{00}\  B\ t +
     % U_{01}\ (1-B)\ f +
     % U_{10}\ B\ (1-t) +
     % U_{11}\ (1-B)\ (1-f)
+  \sum_{i,j=0}^{1} U_{ij}\ C_{ij}(f) \equiv
+      (U_{00} - U_{10})\  B\ t(f) -
+    (U_{11} - U_{01})\ (1-B)\ f
+    +{}\\[-2\jot]
+    U_{10}\ B\ + U_{11}\ (1-B) \ .
+\end{multline}
+The principle of maximum expected utility~\eqref{eq:threshold_auc_maxutility} is  then equivalent to the following condition, obtained using the explicit sum above but dropping the constant term on the second line for simplicity:
+\begin{equation}
+  \label{eq:threshold_auc_maxutility_rates}
+  \text{\small choose}\quad
+  f^{*} = \argmax_{f}\set[\big]{
     (U_{00} - U_{10})\  B\ t(f) -
-    (U_{11} - U_{01})\ (1-B)\ f +
-    U_{10}\ B\ + U_{11}\ (1-B)
-}
+    (U_{11} - U_{01})\ (1-B)\ f
+%    + U_{10}\ B\ + U_{11}\ (1-B)
+} \ .
   \end{equation}
+The function in braces is monotonically increasing because $t(f)$ is (we assume, as always, that the utility of correct classification of a class is higher than that of misclassification, so $U_{00}-U_{10} \ge 0$ and $U_{11}-U_{01} \ge 0$). Its maximum can thus be found by setting its derivative to zero:
 \begin{equation}
   \label{eq:threshold_auc_maxutility_derivat}
-  \text{choose threshold}\quad
-  \theta^{*} = 
-    (U_{00} - U_{10})\  B \frac{\di t}{\di f} =
-    (U_{11} - U_{01})\ (1-B)\
-  \end{equation}
+  \text{\small choose } f^{*} \text{\small\ such that}\quad
+t'(f^{*}) = \frac{(U_{11} - U_{01})\ (1-B)}{(U_{00} - U_{10})\  B} \ .
+\end{equation}
+If we have several classifiers, each with its own curve $t(f)$, then \emph{the best is the one tangent to the line
+\begin{equation}
+  \label{eq:tangent_line}
+  t = \frac{(U_{11} - U_{01})\ (1-B)}{(U_{00} - U_{10})\  B} f + \textrm{\small const.}
+\end{equation}
+having the highest intercept.}
+
+So it is the tangent of a receiver-operating-characteristic curve that matters, not its subtended area. From this criterion it can be seen geometrically that if a classifier has its curve $t(f)$ \emph{completely above} the curve of another classifier, then it must have a higher yield. But nothing in general can be said if the curves of the two classifiers cross.
 
 
 
