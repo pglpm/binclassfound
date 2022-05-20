@@ -1,6 +1,6 @@
 ## Author: PGL  Porta Mana
 ## Created: 2022-05-01T09:38:48+0200
-## Last-Updated: 2022-05-19T21:19:27+0200
+## Last-Updated: 2022-05-20T13:41:48+0200
 ################
 ## Calculations for the papers
 ################
@@ -143,15 +143,22 @@ utn <- matrix(c(0,0,0,1),2,2)
 ufp <- matrix(c(0,0,1,0),2,2)
 ufn <- matrix(c(0,1,0,0),2,2)
 ##
-xy2um <- function(ab,ab2=NULL){
+xy2um <- function(ab,ab2=NULL,norm=TRUE){
     if(length(ab)==1){ab <- c(ab,ab2)}
-        id + (ab[1]<0)*ab[1]*utn - (ab[1]>0)*ab[1]*utp +
-        (ab[2]>0)*ab[2]*ufp - (ab[2]<0)*ab[2]*ufn
+        um <- id + (ab[1]<0)*ab[1]*utn - (ab[1]>0)*ab[1]*utp +
+            (ab[2]>0)*ab[2]*ufp - (ab[2]<0)*ab[2]*ufn
+    if(norm){
+        um <- um-min(um)
+        um <- um/max(um)
+    }
+    um
 }
 ##
-um2xy <- function(um){
-    um <- um-min(um)
-    um <- um/max(um)
+um2xy <- function(um,norm=TRUE){
+    if(norm){
+        um <- um-min(um)
+        um <- um/max(um)
+    }
     x <- -(1-um[2,2])*(um[2,2]<1) + (1-um[1,1])*(um[1,1]<1)
     y <- -um[2,1]*(um[2,1]>0) + um[1,2]*(um[1,2]>0)
     c(x,y)
@@ -1245,7 +1252,7 @@ lcm2 <- confm(lp,la2,lb2)
 ##
 for(typexy in c('unif','norm')){
     if(typexy=='unif'){lxy <- runif(2*round(nn*6/3),-1,1)
-    }else{ lxy <- rnorm(2*round(nn*6/3),0,1/2)}
+    }else{ lxy <- rnorm(2*round(nn*6/3),0,1/3)}
 dim(lxy) <- c(round(nn*6/3),2)
 lxy <- lxy[lxy[,2]<lxy[,1]+1 & lxy[,2]>lxy[,1]-1,][1:nn,]
 ##
@@ -1257,8 +1264,8 @@ ldut <- rowSums(aperm((lcm2-lcm1)*lut))
 func <- identity#function(x){plogis(x*10)*2-1}
 ##
 lem <- length(metrlist)
-errorums <- c(10)
-pdff(paste0('incorrectscores3',typexy,'-',paste0(errorums,collapse='_')), paper='a4')
+errorums <- c(11)
+pdff(paste0('../incorrectscores4',typexy,'-',paste0(errorums,collapse='_')), paper='a4')
 par(mfrow=c(lem/2+1,2))
 par(oma=c(0,0,0,0))
 for(i in 1:(lem+length(errorums))){
@@ -1268,13 +1275,33 @@ for(i in 1:(lem+length(errorums))){
         ylab <- names(metrlist)[i]
     } else {
         errorum <- errorums[i-lem]
-        wlut <- lut+rnorm(length(lut),0,errorum/100)
+        wlut <- apply(lut,3,function(um){
+            inrange <- FALSE
+            while(!inrange){
+                newum <- um+rnorm(4,0,errorum/100)
+                inrange <- min(newum)>=0 & max(newum)<=1 & newum[1,1]>=newum[2,1] & newum[2,2]>=newum[1,2]
+                ## newxy <- um2xy(newum,norm=T)
+                ## inrange <- newxy[2]<newxy[1]+1 & newxy[2]>newxy[1]-1 & abs(newxy[1])<=1 & abs(newxy[2])<=1
+            }
+            newum})
+        dim(wlut) <- c(2,2,nn)
+        print(paste0(typexy,'_',sd(wlut-lut)))
+        ## wlut <- apply(lxy,1,function(xy){
+        ##     xy <- lxy[i,]
+        ##     inrange <- FALSE
+        ##     while(!inrange){
+        ##         newxy <- xy+rnorm(2,0,errorum/100)
+        ##         inrange <- newxy[2]<newxy[1]+1 & newxy[2]>newxy[1]-1 & abs(newxy[1])<=1 & abs(newxy[2])<=1
+        ##     }
+        ##     xy2um(newxy)})
+        ## dim(wlut) <- c(2,2,nn)
+        ## wlut <- lut+rnorm(length(lut),0,errorum/100)
         ##
         wldut <- rowSums(aperm((lcm2-lcm1)*wlut))
         ##
-        summary(sapply(1:dim(lut)[3],function(i){mean(abs(lut[,,i]-wlut[,,i]))/mean(lut[,,i])}))
+        ## summary(sapply(1:dim(lut)[3],function(i){mean(abs(lut[,,i]-wlut[,,i]))/mean(lut[,,i])}))
         ldmetr <- wldut
-        ylab <- paste0('utility, error with ',errorum/100,' std')
+        ylab <- paste0('utility, ',round(sd(wlut-lut),1),'-std error')
     }
     groupok <- (ldut>0 & ldmetr>0) | (ldut<0 & ldmetr<0)
     groupok2 <- (ldut[1:nn2]>0 & ldmetr[1:nn2]>0) | (ldut[1:nn2]<0 & ldmetr[1:nn2]<0)
@@ -1338,12 +1365,13 @@ lb2 <- 0.5+0.5*rbeta(nn, shape1=shape1, shape2=shape2)
 lcm1 <- confm(lp,la1,lb1)
 lcm2 <- confm(lp,la2,lb2)
 ##
-valuesincpairs <- foreach(typexy=c('unif','norm'))%do%{
+ipairs <- foreach(typexy=c('unif','norm'))%do%{
+    print(typexy)
     if(typexy=='unif'){lxy <- runif(2*round(nn*6/3),-1,1)
-    }else{ lxy <- rnorm(2*round(nn*6/3),0,1/2)}
+    }else{ lxy <- rnorm(2*round(nn*6/3),0,1/3)}
     ##
     dim(lxy) <- c(round(nn*6/3),2)
-    lxy <- lxy[lxy[,2]<lxy[,1]+1 & lxy[,2]>lxy[,1]-1,][1:nn,]
+    lxy <- lxy[lxy[,2]<lxy[,1]+1 & lxy[,2]>lxy[,1]-1 & abs(lxy[,1])<=1 & abs(lxy[,2])<=1,][1:nn,]
     ##
     lut <- apply(lxy,1,xy2um)
     dim(lut) <- c(2,2,nn)
@@ -1357,27 +1385,48 @@ valuesincpairs <- foreach(typexy=c('unif','norm'))%do%{
     })
     names(percmetrics) <- names(metrlist)
     ##
-    errorums <- c(1,seq(5,50,by=5))
-    percwum <- foreach(errorum=errorums, .combine=c)%dorng%{
-        wlut <- lut+rnorm(length(lut),0,errorum/100)
+    errorums <- c(seq(0,50,by=10))
+    percwum <- foreach(errorum=errorums, .combine=cbind)%dorng%{
+        print(paste0(typexy,'_',errorum))
+        wlut <- apply(lut,3,function(um){
+            inrange <- FALSE
+            while(!inrange){
+                newum <- um+rnorm(4,0,errorum/100)
+                inrange <- min(newum)>=0 & max(newum)<=1 & newum[1,1]>=newum[2,1] & newum[2,2]>=newum[1,2]
+                ## newxy <- um2xy(newum,norm=T)
+                ## inrange <- newxy[2]<newxy[1]+1 & newxy[2]>newxy[1]-1 & abs(newxy[1])<=1 & abs(newxy[2])<=1
+            }
+            newum})
+        dim(wlut) <- c(2,2,nn)
+        ## wlut <- apply(lxy,1,function(xy){
+        ##     inrange <- FALSE
+        ##     while(!inrange){
+        ##         newxy <- xy+rnorm(2,0,errorum/100)
+        ##         inrange <- newxy[2]<newxy[1]+1 & newxy[2]>newxy[1]-1 & abs(newxy[1])<=1 & abs(newxy[2])<=1
+        ##     }
+        ##     xy2um(newxy)})
+        ## dim(wlut) <- c(2,2,nn)
         ##
         ldmetr <- rowSums(aperm((lcm2-lcm1)*wlut))
         ##
         groupok <- (ldut>0 & ldmetr>0) | (ldut<0 & ldmetr<0)
-        round(100*(1-sum(groupok)/nn),1)
+        print(paste0(errorum,' ',sd(wlut-lut)))
+        c(sd(wlut-lut), round(100*(1-sum(groupok)/nn),1))
     }
-    names(percwum) <- errorums
+    attr(percwum, 'rng') <- NULL
+    colnames(percwum) <- errorums
+    rownames(percwum) <- c('trueSD', 'percentage')
     ##
     list(metrics=percmetrics, ums=percwum)
 }
-names(valuesincpairs) <- c('unif','norm')
+names(ipairs) <- c('unif','norm')
 
 for(typexy in c('unif','norm')){
-    pdff(paste0('../increase_error_',typexy), paper='a4r')
-    datap1 <- valuesincpairs[[typexy]]$ums
-    datap2 <- valuesincpairs[[typexy]]$metrics
+    pdff(paste0('../increase_error2_',typexy), paper='a4r')
+    datap1 <- ipairs[[typexy]]$ums
+    datap2 <- ipairs[[typexy]]$metrics
     ylim <- range(c(datap1,datap2,0))
-    tplot(x=as.integer(names(datap1))/100, y=datap1, type='l', lwd=4, ylim=ylim,
+    tplot(x=datap1['trueSD',], y=datap1['percentage',], type='l', lwd=4, ylim=ylim,
           ylab='incorrectly ranked pairs/%',
           xlab='standard deviation of error in utilities',
           mar=c(4.5, 3, 0, 9)+c(1,1.1,1,1))
@@ -1386,49 +1435,63 @@ for(typexy in c('unif','norm')){
 mtext(text=paste0('(with ',(if(typexy=='unif'){'uniform'}else{'gaussian'}), ' distribution of true utility matrices)'), side=1, padj=6,cex=1.25, font=1) 
     dev.off()
 }
-    
-errorums <- c(15,5)
-pdff(paste0('incorrectscores3',typexy), paper='a4')
-par(mfrow=c(lem/2+1,2))
-par(oma=c(0,0,0,0))
-for(i in 1:(lem+length(errorums))){
-    if(i <= lem){
-        metr <- metrlist[[i]]
-        ldmetr <- metr(lp,la2,lb2)-metr(lp,la1,lb1)
-        ylab <- names(metrlist)[i]
-    } else {
-        errorum <- errorums[i-lem]
-        wlut <- lut+rnorm(length(lut),0,errorum/100)
-        ##
-        wldut <- rowSums(aperm((lcm2-lcm1)*wlut))
-        ##
-        summary(sapply(1:dim(lut)[3],function(i){mean(abs(lut[,,i]-wlut[,,i]))/mean(lut[,,i])}))
-        ldmetr <- wldut
-        ylab <- paste0('utility, ',errorum,'% incorrect utilities')
+
+## gaussian distribution of true UMs
+tplot(x=lxy[1:nn2,1], y=lxy[1:nn2,2], type='p', pch=16, cex=0.75, col=3, alpha=0.5, xgrid=F, ygrid=F, xticks=F,yticks=F,xlab=NA,ylab=NA,asp=1, mar=rep(1,4))
+tplot(x=c(-1,-1,0,1,1,0,-1), y=c(0,-1,-1,0,1,1,0), type='l', add=T, col='#000000', lwd=1)
+
+#### examples error distribution
+set.seed(149)
+errorum <- 11
+lxy <- rep(c(0.5,0.5),each=nn2)
+dim(lxy) <- c(nn2,2)
+lut <- apply(lxy,1,xy2um)
+dim(lut) <- c(2,2,nn2)
+wlut <- apply(lut,3,function(um){
+    inrange <- FALSE
+    while(!inrange){
+        newum <- um+rnorm(4,0,errorum/100)
+        inrange <- min(newum)>=0 & max(newum)<=1 & newum[1,1]>=newum[2,1] & newum[2,2]>=newum[1,2]
+        ## newxy <- um2xy(newum,norm=T)
+        ## inrange <- newxy[2]<newxy[1]+1 & newxy[2]>newxy[1]-1 & abs(newxy[1])<=1 & abs(newxy[2])<=1
     }
-    groupok <- (ldut>0 & ldmetr>0) | (ldut<0 & ldmetr<0)
-    groupok2 <- (ldut[1:nn2]>0 & ldmetr[1:nn2]>0) | (ldut[1:nn2]<0 & ldmetr[1:nn2]<0)
-    tplot(x=list(func(ldut[1:nn2][groupok2]),func(ldut[1:nn2][!groupok2])),
-          y=list(func(ldmetr[1:nn2][groupok2]),func(ldmetr[1:nn2][!groupok2])),
-          family='Palatino', 
-          type='p', pch=c(20,17), cex=c(0.5,0.65),
-          mar=(if(i<lem+length(errorums)-2){c(3, 5.2, 2, 2)}else{c(4.1, 5.2, 2, 2)}),
-          xlabels=(i>lem+length(errorums)-2), 
-          xlab=(if(i>(lem+length(errorums)-2)){bquote(Delta~'utility yield')}else{NA}),
-          ##col.lab=c('black',(if(i>lem){3}else{'black'})),
-          col=c(1,(if(i>lem){4}else{2})),
-          alpha=alpha,
-          cex.axis=1.5, ly=3.5, n=5, cex.lab=1.5,
-          ylab=bquote(Delta~.(ylab)))
-    text(x=min(ldut[1:nn2]),y=max(ldmetr[1:nn2]), xpd=T, offset=0,
-         labels=paste0('incorrectly ranked pairs: ', round(100*(1-sum(groupok)/nn),1), '%'),
-         adj=c(0.05,-0.5), cex=1.5, col=(if(i>lem){4}else{2})
-         )
-    ## legend(x=min(ldut),y=max(ldmetr), bty='n', text.col=2, cex=1.5, xjust=0,
-    ##        legend=paste0('incorrectly ranked pairs: ', round(100*(1-sum(groupok)/nn)), '%'))
-}
-dev.off()
-}
+    newum})
+dim(wlut) <- c(2,2,nn2)
+sd(wlut-lut)
+wlxy <- t(apply(wlut,3,um2xy))
+##
+tplot(x=wlxy[1:1000,1], y=wlxy[1:1000,2], type='p', pch=16, cex=0.75, col=2, alpha=0.5, xgrid=F, ygrid=F, xticks=F,yticks=F,xlab=NA,ylab=NA,asp=1, mar=rep(1,4), xlim=c(-1,1), ylim=c(-1,1))
+tplot(x=lxy[1,1], y=lxy[1,2], type='p', add=T, col='#000000', cex=3, pch=18)
+##
+errorum <- 11
+lxy <- rep(c(-0.9,-0.5),each=nn2)
+dim(lxy) <- c(nn2,2)
+lut <- apply(lxy,1,xy2um)
+dim(lut) <- c(2,2,nn2)
+wlut <- apply(lut,3,function(um){
+    inrange <- FALSE
+    while(!inrange){
+        newum <- um+rnorm(4,0,errorum/100)
+        inrange <- min(newum)>=0 & max(newum)<=1 & newum[1,1]>=newum[2,1] & newum[2,2]>=newum[1,2]
+        ## newxy <- um2xy(newum,norm=T)
+        ## inrange <- newxy[2]<newxy[1]+1 & newxy[2]>newxy[1]-1 & abs(newxy[1])<=1 & abs(newxy[2])<=1
+    }
+    newum})
+dim(wlut) <- c(2,2,nn2)
+sd(wlut-lut)
+wlxy <- t(apply(wlut,3,um2xy))
+##
+tplot(x=wlxy[1:1000,1], y=wlxy[1:1000,2], type='p', pch=16, cex=0.75, col=6, alpha=0.5, xgrid=F, ygrid=F, xticks=F,yticks=F,xlab=NA,ylab=NA,asp=1, mar=rep(1,4), xlim=c(-1,1), ylim=c(-1,1), add=T)
+tplot(x=lxy[1,1], y=lxy[1,2], type='p', add=T, col='#000000', cex=3, pch=18)
+##
+tplot(x=c(-1,-1,0,1,1,0,-1), y=c(0,-1,-1,0,1,1,0), type='l', add=T, col='#000000', lwd=1)
+
+
+
+
+
+
+
 
 
 

@@ -1,7 +1,7 @@
 \pdfoutput=1
 %% Author: PGL  Porta Mana
 %% Created: 2022-03-04T07:39:34+0200
-%% Last-Updated: 2022-05-19T23:24:42+0200
+%% Last-Updated: 2022-05-20T14:19:40+0200
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Decision theory for machine-learning classifiers
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -1028,7 +1028,7 @@ These utilities are collected into a \emph{utility matrix} $(U_{ij})$ as shown i
 %     \texttt{\small not-buy}&$0$&$0$
 %   \end{tabular}
 % \end{center}
-The component $U_{ij}$ is the utility of the decision corresponding to class $i$ if class $j$ is true, or briefly the utility of class $i$ given class $j$.
+The component $U_{ij}$ is the utility of the decision corresponding to class $i$ if class $j$ is true, or briefly the utility of class $i$ conditional on class $j$.
 % One utility from the lottery example is $\U(\texttt{\small buy} \| \texttt{\small lose}) = -1$. If we have $\nd$ available decisions and $\nc$ possible classes, the utilities can be collected in a \emph{utility matrix} $\mathte{U} \equiv (U_{dc})$ having $\nd$ rows and $\nc$ columns. The utility matrix for the lottery is
 % \begin{equation}
 %   \label{eq:utmatr_lottery}
@@ -1291,6 +1291,8 @@ We only give a sketch of the proof of this intuitive result. If we are uncertain
 \end{equation}
 in which the expected utility matrix~\eqref{eq:expe_UM} appears as the \enquote{effective} utility matrix to be used for the class-decision problem alone.
 
+If our uncertainty is symmetric with respect to the utilities conditional on the different classes -- for instance, our uncertainty about the utilities conditional on class~$0$ is the same as on class~$1$ -- then the expected utility matrix is equivalent to the identity matrix. The utility yield is in this case equal to the accuracy. The accuracy is therefore the natural evaluation metric to use if we are in a complete state of uncertainty regarding the underlying utilities. This fact is indeed reflected in some results discussed in \sect~\ref{sec:wrong_utility_assess}.
+
 \medskip
 
 For a binary-classification problem the set of possible utility matrices can be represented as in \fig~\ref{fig:space_UM}, as discussed in \sect~\ref{sec:dt_space_util}. Our uncertainty about the true underlying utility matrix corresponds to a discrete or continuous distribution of probability over this set. Note, however, that the expected utility matrix~\eqref{eq:expe_UM} does \emph{not} correspond to the mass-centre of the distribution, because of the peculiar coordinate system used in that figure. The actual mass-centre is obtained by representing the set of utility matrices as a two-dimensional surface (a tetrahedron) in three-dimensional space; for brevity we do not discuss this representation in the present work.
@@ -1307,32 +1309,34 @@ A precise answer to these questions is extremely difficult if not impossible bec
 % \centering\includegraphics[width=\linewidth]{distr_true_um_norm.pdf}
 % %\caption{caption}\label{fig:comparison_a5}
 % \end{wrapfigure}% exp_family_maxent.nb
-\begin{itemize}
-\item Two possible distributions of true utility matrices on the set of \fig~\ref{fig:space_UM} (in that coordinate system): a uniform distribution; and a bivariate (truncated) gaussian distribution centred on the identity matrix $\begin{bsmallmatrix} 1&0\\0&1 \end{bsmallmatrix}$ and with standard deviation $1/3$ in the $x$ and $y$ coordinates of \eqn~\eqref{eq:coords_um}, illustrated in \fig~\ref{fig:gauss_distr_um}.
+\begin{enumerate}[label=(\roman*)]
+\item\label{item:distr_um} Two possible distributions of true utility matrices on the set of \fig~\ref{fig:space_UM} (in that coordinate system): a uniform distribution; and a bivariate (truncated) gaussian distribution centred on the identity matrix $\begin{bsmallmatrix} 1&0\\0&1 \end{bsmallmatrix}$ and with standard deviation $1/3$ in the $x$ and $y$ coordinates of \eqn~\eqref{eq:coords_um}, illustrated in \fig~\ref{fig:gauss_distr_um}.
 
-\item A distribution of confusion matrices for which the fraction of one class is uniformly distributed in $\clcl{0,1}$, and the true-positive and true-negative rates are independently distributed in $\clcl{0.5, 1}$ with linearly increasing probabilities (median of 0.85,  lower and upper quartiles at 0.75 and 0.93). This means that we consider problems with highly imbalanced data to be as common as problems with balanced data (a realistic assumption according to our expecience); and candidate classifiers to be generally good.
+\item\label{item:distr_cm} A distribution of confusion matrices for which the fraction of one class is uniformly distributed in $\clcl{0,1}$, and the true-positive and true-negative rates are independently distributed in $\clcl{0.5, 1}$ with linearly increasing probabilities (median of 0.85,  lower and upper quartiles at 0.75 and 0.93). This means that we consider problems with highly imbalanced data to be as common as problems with balanced data (a realistic assumption according to our expecience); and candidate classifiers to be generally good.
   
-\item A gaussian distribution of error around each true utility-matrix element, centred on the true utility value. We consider standard deviations ranging from $0.01$ to $0.5$. Note that each true utility has a value between $0$ and $1$. Figure~\ref{fig:error_distr_um} illustrates the extent of such an error in the space of utility matrices, for a standard deviation of $0.1$.
-\end{itemize}
+\item\label{item:distr_error} A truncated gaussian distribution of error around each true utility-matrix element, centred on the true utility value. We consider standard deviations ranging from $0$ to $0.3$. The gaussian must be truncated because each true utility has a value between $0$ and $1$ and moreover we require correct classifications to have higher utilities than incorrect ones. Figure~\ref{fig:error_distr_um} illustrates the extent of such an error in the space of utility matrices, for a standard deviation of $0.1$.
+\end{enumerate}
 \begin{figure}[b]
   \centering
   \hspace{\stretch{1}}
   \parbox[t]{0.33\linewidth}{%
     \centering\includegraphics[width=\linewidth]{distr_true_um_norm.pdf}\\
-\caption{Truncated gaussian distribution in the space of utility matrices of \fig~\ref{fig:space_UM}.}\label{fig:gauss_distr_um}}
+    \caption{Truncated gaussian distribution in the space of utility matrices of \fig~\ref{fig:space_UM}, described in item~\ref{item:distr_um}.}
+    \label{fig:gauss_distr_um}}
   \hspace{\stretch{1}}
   \parbox[t]{0.33\linewidth}{%
-    \centering\includegraphics[width=\linewidth]{error_around_um.pdf}
-  \caption{Extent of error ({\color{myredpurple}purple dots}) with standard deviation $0.1$, around the utility matrix $\begin{bsmallmatrix} 0.5&0.5\\0&1 \end{bsmallmatrix}$ (black diamond) in the space of utility matrices.}\label{fig:error_distr_um}}
+    \centering\includegraphics[width=\linewidth]{error_around_um2.pdf}
+    \caption{Extent of errors 
+      with standard deviations $0.1$ ({\color{myblue}blue triangles}) and $0.2$ ({\color{myred}red squares}), around the utility matrices $\begin{bsmallmatrix} 0.5&0.5\\0&1 \end{bsmallmatrix}$ and $\begin{bsmallmatrix} 1&0\\0.5&0.1 \end{bsmallmatrix}$ (black diamonds) in the space of utility matrices.}
+    \label{fig:error_distr_um}}
   \hspace{\stretch{1}}
 \end{figure}
 
 Under these assumptions we calculate how often a pair of classifiers, represented by two confusion matrices with the same class proportions, is evaluated in reverse order, with respect to their true utility yield, when an incorrect utility matrix or another metric is used for the evaluation. This calculation is an integration problem that we solve by Monte Carlo sampling. The procedure is intuitive:
 \begin{enumerate}[label=\arabic*.,ref=\arabic*]
-\item\label{item:draw_um} Draw a \enquote{true} utility matrix.
-\item\label{item:draw_wrongum} Draw some errors  around the elements of the true utility matrix, and add them to it.
-\item Draw a class proportion.
-\item\label{item:draw_cm} Draw two confusion matrices having that class proportion (the class proportion must be the same since the matrices are obtained from the same data).
+\item\label{item:draw_um} Select a \enquote{true} utility matrix according to the distribution~\ref{item:distr_um}.
+\item\label{item:draw_wrongum} Select errors around the elements of the true utility matrix, according to the distribution~\ref{item:distr_error}, and add them to it.
+\item\label{item:draw_cm} Select a class proportion and then two confusion matrices having that class proportion (the class proportion must be the same since the matrices are obtained from the same data), according to the distributions~\ref{item:distr_cm}.
 \item\label{item:diff_true} Calculate the difference in the true utility yield of the two confusion matrices, using the true utility from step~\ref{item:draw_um}.
 \item\label{item:diff_other} Calculate the difference in
   \begin{enumerate}[label=\theenumi\alph*.]
@@ -1343,11 +1347,11 @@ for the two confusion matrices.
 \item If the differences from steps~\ref{item:diff_true} and \ref{item:diff_other} disagree in sign then this pair of confusion matrices was incorrectly ranked by the metric or the incorrect utility matrix.
 \end{enumerate}
 
-The results of this sampling procedure for the case of uniform distribution of true utility matrices, utilities affected by errors with $0.1$ standard deviation, and several metrics, are shown in \fig~\ref{fig:wrongly_ranked_pairs}. Each point represents a pair of confusion matrices (step~\ref{item:draw_cm}); its coordinates are the true utility yield and either the score given by a metric or (last plot) the yield according to the incorrect utility matrix. The red or yellow triangular points in the in the II and IV quadrants (discordant signs) are incorrectly ranked pairs. The percentages of incorrect rankings are calculated from $10^{6}$ samples, giving slightly more than one decimal significant digit; fewer samples are shown in the plots.
+The results of this sampling procedure for the case of uniform distribution of true utility matrices, several metrics, and utilities affected by errors with $0.1$ standard deviation, are shown in \fig~\ref{fig:wrongly_ranked_pairs}. Each point represents a pair of confusion matrices (step~\ref{item:draw_cm}); its coordinates are the true utility yield and either the score given by a metric or (last plot) the yield according to the incorrect utility matrix. The red or yellow triangular points in the in the II and IV quadrants (discordant signs) are incorrectly ranked pairs. The percentages of incorrect rankings are calculated from $10^{6}$ samples, giving slightly more than one decimal significant digit; fewer samples are shown in the plots.
 \begin{figure}[p]
   \centering
-    \includegraphics[width=0.99\linewidth]{incorrectscores3unif-10.jpg}\\
-  \caption{Relationship between various metrics and utility}
+    \includegraphics[width=0.99\linewidth]{incorrectscores4unif-11.jpg}\\
+  \caption{Relationship between difference in utility yields according to a \enquote{true} utility matrix, and difference in scores according to other metrics including an incorrectly assessed utility matrix (error with $0.1$ standard deviation). Points landing in the II or IV quadrants represent pairs of confusion matrices that were wrongly compared.}
   \label{fig:wrongly_ranked_pairs}
 \end{figure}
 % %% True-positive/negative rate, not reported: 25.0\% incorrect pair-rankings
@@ -1360,15 +1364,17 @@ The results of this sampling procedure for the case of uniform distribution of t
 %% True-positive/negative rate, not reported: 25.0\% incorrect pair-rankings
 \begin{figure}[p]
   \centering
-    \includegraphics[width=0.99\linewidth]{increase_error_unif.pdf}\\\hfill
-    \includegraphics[width=0.99\linewidth]{increase_error_norm.pdf}\\\hfill
-  \caption{Relationship between various metrics and utility}
+    \includegraphics[width=0.99\linewidth]{increase_error2_unif.pdf}\\\hfill
+    \includegraphics[width=0.99\linewidth]{increase_error2_norm.pdf}\\\hfill
+  \caption{Dependence of the proportion of incorrectly ranked pairs of confusion matrices, on the standard deviation of the assessment error on the utilities. Top plot: case with uniform distribution of true utility matrices. Bottom plot: case with gaussian distribution of true utility matrices, as in \fig~\ref{fig:gauss_distr_um}.}
   \label{fig:percentage_vs_error}
 \end{figure}
 
-The plots are displayed in order (left-rigt, top-bottom) of decreasing percentages of incorrect rankings. The accuracy metric proves to be the best among the ones considered, leading to $8.7\%$ incorrect pairwise rankings. But we see that a utility matrix affected by gaussian errors with $0.1$ standard deviation is even better, with $5.4\%$ incorrect pairwise rankings.
+The plots are displayed in order (left-rigt, top-bottom) of decreasing percentages of incorrect rankings. The accuracy metric proves to be the best among the ones considered, leading to $8.7\%$ incorrect pairwise rankings. But we see that a utility matrix affected by gaussian errors with $0.1$ standard deviation is even better, yielding $4\%$ incorrect pairwise rankings.
 
-The dependence of the fraction of incorrect rankings on the standard deviation of the error affecting the utilities is shown in the plots of \fig~\ref{fig:percentage_vs_error}, for the case of uniform distribution (top plot) and gaussian distribution (bottom plot) of true utility matrices. It is approximately linear. The plots also report the fractions of incorrect rankings for the other metrics. We see that evaluations based on a utility matrix affected by errors with standard deviation slightly higher than $0.15$ are still more reliable than evaluations based on the other reported metrics. This is a remarkable fact, considering that errors with such standard deviations are quite large, as can be seen in \fig~\ref{fig:error_distr_um}.
+The dependence of the fraction of incorrect rankings on the standard deviation of the error affecting the utilities is shown in the plots of \fig~\ref{fig:percentage_vs_error}, for the case of uniform distribution (top plot) and gaussian distribution (bottom plot) of true utility matrices. It is approximately linear. The plots also report the fractions of incorrect rankings for the other metrics. We see that evaluations based on a utility matrix affected by errors with standard deviation up to $0.15$ or even $0.25$ are still more reliable than evaluations based on the other reported metrics. This is a remarkable fact, considering that errors with such standard deviations are quite large, as can be seen in \fig~\ref{fig:error_distr_um}.
+
+An utility error with standard deviations around $0.25$ cover the whole space of utility matrices almost uniformly (cf \fig~\ref{fig:error_distr_um}). Such large error means that we were completely uncertain about the utilities to start with. It therefore makes sense that the accuracy, equivalent to using the identity utility matrix, becomes a more reliable metric when this error level is reached. Indeed we saw in \sect~\ref{sec:unknown_utilities} that the identity utility matrix is the natural one to use in a state of complete uncertainty about the utilities.
 
 
 \section{What about the area under the curve of the receiver operating characteristic?}
@@ -1376,11 +1382,11 @@ The dependence of the fraction of incorrect rankings on the standard deviation o
 
 
 
-\section{Remarks on the choice of test dataset}
-\label{sec:test_set}
+% \section{Remarks on the choice of test dataset}
+% \label{sec:test_set}
 
 
-It may not be amiss to emphasize that the \emph{proportions $N_{c}$ of classes in the test set should be representative of the proportions that will be encountered in the real application}. Otherwise the test-set results would misleading or even opposite to what the real performance will be. In the lottery example with utility matrix~\eqref{eq:exp_utilities_lottery}, suppose we have an algorithm that always makes the decision \texttt{buy} and another algorithm that always decides \texttt{not-buy}. In  real instances of such lotteries the class \texttt{win} occurs 1\% of the time, and \texttt{lose}, 99\%. In a real application the first algorithm would thus yield $-0.89$, a loss, on average at each instance, and the second $0$. The second algorithm is actually best. Suppose we test these algorithms on a test set where the two classes appear 50\%/50\% instead. On this test set the first algorithm will yield $4.5$ on average, the second $0$. Thus according to the test the first algorithm is best -- a wrong conclusion.
+% It may not be amiss to emphasize that the \emph{proportions $N_{c}$ of classes in the test set should be representative of the proportions that will be encountered in the real application}. Otherwise the test-set results would misleading or even opposite to what the real performance will be. In the lottery example with utility matrix~\eqref{eq:exp_utilities_lottery}, suppose we have an algorithm that always makes the decision \texttt{buy} and another algorithm that always decides \texttt{not-buy}. In  real instances of such lotteries the class \texttt{win} occurs 1\% of the time, and \texttt{lose}, 99\%. In a real application the first algorithm would thus yield $-0.89$, a loss, on average at each instance, and the second $0$. The second algorithm is actually best. Suppose we test these algorithms on a test set where the two classes appear 50\%/50\% instead. On this test set the first algorithm will yield $4.5$ on average, the second $0$. Thus according to the test the first algorithm is best -- a wrong conclusion.
 
 
 
@@ -1402,6 +1408,8 @@ In the present work we have argued that such theoretical foundations are availab
 \mynotep{Computationally more convenient (linear operation)}
 
 \mynotep{maybe refer to  \autocites{varoquauxetal2022}}
+
+\mynotep{Remark on the choice of test set}
 
 
 
