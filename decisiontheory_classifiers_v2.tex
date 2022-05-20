@@ -1,7 +1,7 @@
 \pdfoutput=1
 %% Author: PGL  Porta Mana
 %% Created: 2022-03-04T07:39:34+0200
-%% Last-Updated: 2022-05-20T18:39:25+0200
+%% Last-Updated: 2022-05-20T19:31:58+0200
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Decision theory for machine-learning classifiers
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -1254,7 +1254,7 @@ We see that the accuracy (first-row plots) always gives correct relative evaluat
 
 Metrics such as accuracy and true-positive rate, complying with formula~\eqref{eq:general_valuation_metric}, thus require us to rely on evaluation \emph{luck} only when they are used in the wrong classification problem.
 
-The plots for the $F_{1}$-measure (third-row plots) and Matthews correlation coefficient (fourth-row plots) show that these two metrics do not have any functional relationship with the actual utility yield. It is again always possible to find two or more confusion matrices for which either metric gives completely reversed evaluations with respect to the actual utility yield. But for these two metrics, unlike accuracy and true-positive rate, cases of incorrect evaluation will \emph{always} occur, for every classification problem and every underlying utility matrix.
+The plots for the $F_{1}$-measure (third-row plots) and Matthews correlation coefficient (fourth-row plots) show that these two metrics do not have any functional relationship with the actual utility yield. It is again always possible to find two or more confusion matrices for which either metric gives completely reversed evaluations with respect to the actual utility yield. But for these two metrics, unlike accuracy and true-positive rate, cases of incorrect evaluation will \emph{always} occur, in every classification problem.
 
 Metrics such as  $F_{1}$-measure and Matthews correlation coefficient, not complying with formula~\eqref{eq:general_valuation_metric}, thus \emph{always require us to rely on luck in our evaluations}. There are no classification problems for which these metrics lead to always correct evaluations.
 
@@ -1301,6 +1301,8 @@ If our uncertainty is symmetric with respect to the utilities conditional on the
 \medskip
 
 For a binary-classification problem the set of possible utility matrices can be represented as in \fig~\ref{fig:space_UM}, as discussed in \sect~\ref{sec:dt_space_util}. Our uncertainty about the true underlying utility matrix corresponds to a discrete or continuous distribution of probability over this set. Note, however, that the expected utility matrix~\eqref{eq:expe_UM} does \emph{not} correspond to the mass-centre of the distribution, because of the peculiar coordinate system used in that figure. The actual mass-centre is obtained by representing the set of utility matrices as a two-dimensional surface (a tetrahedron) in three-dimensional space; for brevity we do not discuss this representation in the present work.
+
+\mynotew{add discussion of average over classification problems}
 
 \subsection{Consequences of wrong utility assessments and comparison with common metrics}
 \label{sec:wrong_utility_assess}
@@ -1387,20 +1389,58 @@ An utility error with standard deviations around $0.25$ cover the whole space of
 
 Another very common metric to evaluate binary classifiers is the Area Under the Curve of the Receiver Operating Characteristic, or \enquote{area under the curve} for short. This metric can only be used for particular classifying algorithms, and its meaning is different from that of the metrics reviewed so far. For these reasons we leave a full discussion of it to future works, and only offer a couple of remarks.
 
-The area under the curve can only be computed for classifiers that output a continuous variable rather than a class. A threshold for this variable determines whether its value predicts of one class or the other. Different choices of threshold leads to different pairs of false-positive rate (which is $1-{}$true-negative rate) and true-positive rate in a given test set. These pairs can be plotted as a curve on a graph with corresponding axes. Given the proportion of classes in the test set, every point on such curve corresponds to a possible confusion matrix $C_{ij}(\theta)$ that the classifier can produce depending on the threshold $\theta$ chosen. The area subtended by such curve is a weighted average of true-positive rates with a peculiar choice of weights; the weights are uniform as a function of false-positive rate, but generally not uniform as a function of the threshold $\theta$.
+The area under the curve can only be computed for classifiers that output a continuous variable rather than a class. A threshold for this variable determines whether its value predicts of one class or the other. Different choices of threshold leads to different pairs of false-positive rate (which is $1-{}$true-negative rate) and true-positive rate in a given test set. These pairs can be plotted as a curve on a graph with corresponding axes. Given the proportion of classes in the test set, every point on such curve corresponds to a possible confusion matrix $C_{ij}(\theta)$ that the classifier can produce depending on the threshold $\theta$ chosen. The area subtended by such curve is a weighted average of true-positive rates with a peculiar choice of weights; the weights are uniform as a function of false-positive rate, but generally not uniform as a function of the threshold $\theta$. The meaning and proper use of the receiver operating characteristic are discussed in a classic by \textcites{metz1978}; see especially p.~290 and the section \emph{Cost/Benefit Analysis}, p.~295, which echoes some of the remarks below.
 
-The following remarks can be done
-from the standpoint of decision theory.
+The following remarks can be made from the standpoint of decision theory; they share many points with the discussions by \textcites{bakeretal2001}, \textcite{loboetal2008}, and Metz cited above.
 
-First, according to the principle of maximum expected utility, \sect~\ref{sec:dt_utilities} \eqn~\eqref{eq:max_expe_utility}, the threshold $\theta$ should be chosen such as to maximize the utility yield, given by \eqn~\eqref{eq:final_utility}:
+First, according to the principle of maximum expected utility, \sect~\ref{sec:dt_utilities}, the threshold $\theta$ should be chosen such as to maximize the utility yield, given by \eqn~\eqref{eq:final_utility}:
 \begin{equation}
   \label{eq:threshold_auc_maxutility}
   \text{choose threshold}\quad
-  \theta^{*} = \argmax_{\theta}\set[\bigg]{\sum_{ij} U_{ij}\ C_{ij}(\theta)} \ .
+  \theta^{*} = \argmax_{\theta}\set[\bigg]{\sum_{i,j=0}^{1} U_{ij}\ C_{ij}(\theta)} \ .
 \end{equation}
 Any other values of the threshold are irrelevant. Averages over threshold values are therefore irrelevant as well.
 
-Second, if we want an average of the performance over several classification problems, the quantity to be averaged is the utility matrix of those classification problems, as discussed in \sect~\ref{sec:unknown_utilities}. Once this average is computed we go back to a unique choice of threshold according to the first remark above.
+Second, if we want an average of the performance over several classification problems, the quantities to be averaged are the utility matrices of those classification problems, as discussed in \sect~\ref{sec:unknown_utilities}, giving an expected utility matrix. Once this is computed we go back to a unique choice of threshold according to the first remark above.
+
+Finally, if we wanted to somehow interpret the average implicit in the area under the curve as an average of utility matrices, in accord to the remark above, then such average would depend on the probabilities or frequencies appearing in the confusion matrix, and would therefore imply some sort of cognitive bias as discussed in \sect~\ref{sec:decision_theory}.
+
+Owing to the issues above, the area under the curve suffers from the same problems as the non-compliant metrics discussed in \sect~\ref{sec:common_metrics}: they always lead to some cases of incorrect evaluation, in every classification problem.
+
+Denoting the class balance by $B$ and the true-positive and false-positive rates by $t$ and $f$, the confusion matrix can be written
+\begin{equation}
+  \label{eq:CM_fromrates}
+  \begin{bmatrix}
+    C_{00} & C_{01}\\ C_{10} & C_{11}
+  \end{bmatrix}
+  =
+  \begin{bmatrix}
+    B\ t & (1-B)\ f \\ B\ (1-t) &(1-B)\ (1-f)
+  \end{bmatrix}
+\end{equation}
+
+
+
+\begin{equation}
+  \label{eq:threshold_auc_maxutility_rates}
+  \text{choose threshold}\quad
+  \theta^{*} = \argmax_{f}\set[\bigg]{
+    % U_{00}\  B\ t +
+    % U_{01}\ (1-B)\ f +
+    % U_{10}\ B\ (1-t) +
+    % U_{11}\ (1-B)\ (1-f)
+    (U_{00} - U_{10})\  B\ t(f) -
+    (U_{11} - U_{01})\ (1-B)\ f +
+    U_{10}\ B\ + U_{11}\ (1-B)
+}
+  \end{equation}
+\begin{equation}
+  \label{eq:threshold_auc_maxutility_derivat}
+  \text{choose threshold}\quad
+  \theta^{*} = 
+    (U_{00} - U_{10})\  B \frac{\di t}{\di f} =
+    (U_{11} - U_{01})\ (1-B)\
+  \end{equation}
 
 
 
