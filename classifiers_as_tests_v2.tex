@@ -1,0 +1,1354 @@
+\pdfoutput=1
+%% Author: PGL  Porta Mana
+%% Created: 2022-04-14T17:18:22+0200
+%% Last-Updated: 2022-05-21T13:09:22+0200
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% Probabilities for classifier outputs
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newif\ifarxiv
+\arxivfalse
+\iftrue\pdfmapfile{+classico.map}\fi
+\newif\ifafour
+\afourfalse% true = A4, false = A5
+\newif\iftypodisclaim % typographical disclaim on the side
+\typodisclaimtrue
+\newcommand*{\memfontfamily}{zplx}
+\newcommand*{\memfontpack}{newpxtext}
+\documentclass[\ifafour a4paper,12pt,\else a5paper,10pt,\fi%extrafontsizes,%
+onecolumn,oneside,article,%french,italian,german,swedish,latin,
+british%
+]{memoir}
+\newcommand*{\firstdraft}{14 April 2022}
+\newcommand*{\firstpublished}{\firstdraft}
+\newcommand*{\updated}{\ifarxiv***\else\today\fi}
+\newcommand*{\propertitle}{Probabilities for machine-learning classifiers\\ {\Large Classifiers as diagnostic tests}}
+% title uses LARGE; set Large for smaller
+\newcommand*{\pdftitle}{\propertitle}
+\newcommand*{\headtitle}{Classifiers as diagnostic tests}
+\newcommand*{\pdfauthor}{K. Dyrland, A. S. Lundervold, P.G.L.  Porta Mana}
+\newcommand*{\headauthor}{Dyrland, Lundervold, Porta Mana}
+\newcommand*{\reporthead}{\ifarxiv\else Open Science Framework \href{https://doi.org/10.31219/osf.io/***}{\textsc{doi}:10.31219/osf.io/***}\fi}% Report number
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%% Calls to packages (uncomment as needed)
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%\usepackage{pifont}
+
+%\usepackage{fontawesome}
+
+\usepackage[T1]{fontenc} 
+\input{glyphtounicode} \pdfgentounicode=1
+
+\usepackage[utf8]{inputenx}
+
+%\usepackage{newunicodechar}
+% \newunicodechar{Ĕ}{\u{E}}
+% \newunicodechar{ĕ}{\u{e}}
+% \newunicodechar{Ĭ}{\u{I}}
+% \newunicodechar{ĭ}{\u{\i}}
+% \newunicodechar{Ŏ}{\u{O}}
+% \newunicodechar{ŏ}{\u{o}}
+% \newunicodechar{Ŭ}{\u{U}}
+% \newunicodechar{ŭ}{\u{u}}
+% \newunicodechar{Ā}{\=A}
+% \newunicodechar{ā}{\=a}
+% \newunicodechar{Ē}{\=E}
+% \newunicodechar{ē}{\=e}
+% \newunicodechar{Ī}{\=I}
+% \newunicodechar{ī}{\={\i}}
+% \newunicodechar{Ō}{\=O}
+% \newunicodechar{ō}{\=o}
+% \newunicodechar{Ū}{\=U}
+% \newunicodechar{ū}{\=u}
+% \newunicodechar{Ȳ}{\=Y}
+% \newunicodechar{ȳ}{\=y}
+
+\newcommand*{\bmmax}{0} % reduce number of bold fonts, before font packages
+\newcommand*{\hmmax}{0} % reduce number of heavy fonts, before font packages
+
+\usepackage{textcomp}
+
+%\usepackage[normalem]{ulem}% package for underlining
+% \makeatletter
+% \def\ssout{\bgroup \ULdepth=-.35ex%\UL@setULdepth
+%  \markoverwith{\lower\ULdepth\hbox
+%    {\kern-.03em\vbox{\hrule width.2em\kern1.2\p@\hrule}\kern-.03em}}%
+%  \ULon}
+% \makeatother
+
+\usepackage{amsmath}
+
+\usepackage{mathtools}
+%\addtolength{\jot}{\jot} % increase spacing in multiline formulae
+\setlength{\multlinegap}{0pt}
+
+\usepackage{empheq}% automatically calls amsmath and mathtools
+\newcommand*{\widefbox}[1]{\fbox{\hspace{1em}#1\hspace{1em}}}
+
+%%%% empheq above seems more versatile than these:
+%\usepackage{fancybox}
+%\usepackage{framed}
+
+% \usepackage[misc]{ifsym} % for dice
+% \newcommand*{\diceone}{{\scriptsize\Cube{1}}}
+
+\usepackage{amssymb}
+
+\usepackage{amsxtra}
+
+\usepackage[main=british]{babel}\selectlanguage{british}
+%\newcommand*{\langnohyph}{\foreignlanguage{nohyphenation}}
+\newcommand{\langnohyph}[1]{\begin{hyphenrules}{nohyphenation}#1\end{hyphenrules}}
+
+\usepackage[autostyle=false,autopunct=false,english=british]{csquotes}
+\setquotestyle{british}
+\newcommand*{\defquote}[1]{`\,#1\,'}
+
+% \makeatletter
+% \renewenvironment{quotation}%
+%                {\list{}{\listparindent 1.5em%
+%                         \itemindent    \listparindent
+%                         \rightmargin=1em   \leftmargin=1em
+%                         \parsep        \z@ \@plus\p@}%
+%                 \item[]\footnotesize}%
+%                 {\endlist}
+% \makeatother                
+
+
+\usepackage{amsthm}
+%% from https://tex.stackexchange.com/a/404680/97039
+\makeatletter
+\def\@endtheorem{\endtrivlist}
+\makeatother
+
+\newcommand*{\QED}{\textsc{q.e.d.}}
+\renewcommand*{\qedsymbol}{\QED}
+\theoremstyle{remark}
+\newtheorem{note}{Note}
+\newtheorem*{remark}{Note}
+\newtheoremstyle{innote}{\parsep}{\parsep}{\footnotesize}{}{}{}{0pt}{}
+\theoremstyle{innote}
+\newtheorem*{innote}{}
+
+\usepackage[shortlabels,inline]{enumitem}
+\SetEnumitemKey{para}{itemindent=\parindent,leftmargin=0pt,listparindent=\parindent,parsep=0pt,itemsep=\topsep}
+% \begin{asparaenum} = \begin{enumerate}[para]
+% \begin{inparaenum} = \begin{enumerate*}
+\setlist{itemsep=0pt,topsep=\parsep}
+\setlist[enumerate,2]{label=(\roman*)}
+\setlist[enumerate]{label=(\alph*),leftmargin=1.5\parindent}
+\setlist[itemize]{leftmargin=1.5\parindent}
+\setlist[description]{leftmargin=1.5\parindent}
+% old alternative:
+% \setlist[enumerate,2]{label=\alph*.}
+% \setlist[enumerate]{leftmargin=\parindent}
+% \setlist[itemize]{leftmargin=\parindent}
+% \setlist[description]{leftmargin=\parindent}
+
+\usepackage[babel,theoremfont,largesc]{newpxtext}
+
+% For Baskerville see https://ctan.org/tex-archive/fonts/baskervillef?lang=en
+% and http://mirrors.ctan.org/fonts/baskervillef/doc/baskervillef-doc.pdf
+% \usepackage[p]{baskervillef}
+% \usepackage[varqu,varl,var0]{inconsolata}
+% \usepackage[scale=.95,type1]{cabin}
+% \usepackage[baskerville,vvarbb]{newtxmath}
+% \usepackage[cal=boondoxo]{mathalfa}
+
+
+\usepackage[bigdelims,nosymbolsc%,smallerops % probably arXiv doesn't have it
+]{newpxmath}
+%\useosf
+%\linespread{1.083}%
+%\linespread{1.05}% widely used
+\linespread{1.1}% best for text with maths
+%% smaller operators for old version of newpxmath
+\makeatletter
+\def\re@DeclareMathSymbol#1#2#3#4{%
+    \let#1=\undefined
+    \DeclareMathSymbol{#1}{#2}{#3}{#4}}
+%\re@DeclareMathSymbol{\bigsqcupop}{\mathop}{largesymbols}{"46}
+%\re@DeclareMathSymbol{\bigodotop}{\mathop}{largesymbols}{"4A}
+\re@DeclareMathSymbol{\bigoplusop}{\mathop}{largesymbols}{"4C}
+\re@DeclareMathSymbol{\bigotimesop}{\mathop}{largesymbols}{"4E}
+\re@DeclareMathSymbol{\sumop}{\mathop}{largesymbols}{"50}
+\re@DeclareMathSymbol{\prodop}{\mathop}{largesymbols}{"51}
+\re@DeclareMathSymbol{\bigcupop}{\mathop}{largesymbols}{"53}
+\re@DeclareMathSymbol{\bigcapop}{\mathop}{largesymbols}{"54}
+%\re@DeclareMathSymbol{\biguplusop}{\mathop}{largesymbols}{"55}
+\re@DeclareMathSymbol{\bigwedgeop}{\mathop}{largesymbols}{"56}
+\re@DeclareMathSymbol{\bigveeop}{\mathop}{largesymbols}{"57}
+%\re@DeclareMathSymbol{\bigcupdotop}{\mathop}{largesymbols}{"DF}
+%\re@DeclareMathSymbol{\bigcapplusop}{\mathop}{largesymbolsPXA}{"00}
+%\re@DeclareMathSymbol{\bigsqcupplusop}{\mathop}{largesymbolsPXA}{"02}
+%\re@DeclareMathSymbol{\bigsqcapplusop}{\mathop}{largesymbolsPXA}{"04}
+%\re@DeclareMathSymbol{\bigsqcapop}{\mathop}{largesymbolsPXA}{"06}
+\re@DeclareMathSymbol{\bigtimesop}{\mathop}{largesymbolsPXA}{"10}
+%\re@DeclareMathSymbol{\coprodop}{\mathop}{largesymbols}{"60}
+%\re@DeclareMathSymbol{\varprod}{\mathop}{largesymbolsPXA}{16}
+\makeatother
+%%
+%% With euler font cursive for Greek letters - the [1] means 100% scaling
+\DeclareFontFamily{U}{egreek}{\skewchar\font'177}%
+\DeclareFontShape{U}{egreek}{m}{n}{<-6>s*[1]eurm5 <6-8>s*[1]eurm7 <8->s*[1]eurm10}{}%
+\DeclareFontShape{U}{egreek}{m}{it}{<->s*[1]eurmo10}{}%
+\DeclareFontShape{U}{egreek}{b}{n}{<-6>s*[1]eurb5 <6-8>s*[1]eurb7 <8->s*[1]eurb10}{}%
+\DeclareFontShape{U}{egreek}{b}{it}{<->s*[1]eurbo10}{}%
+\DeclareSymbolFont{egreeki}{U}{egreek}{m}{it}%
+\SetSymbolFont{egreeki}{bold}{U}{egreek}{b}{it}% from the amsfonts package
+\DeclareSymbolFont{egreekr}{U}{egreek}{m}{n}%
+\SetSymbolFont{egreekr}{bold}{U}{egreek}{b}{n}% from the amsfonts package
+% Take also \sum, \prod, \coprod symbols from Euler fonts
+\DeclareFontFamily{U}{egreekx}{\skewchar\font'177}
+\DeclareFontShape{U}{egreekx}{m}{n}{%
+       <-7.5>s*[0.9]euex7%
+    <7.5-8.5>s*[0.9]euex8%
+    <8.5-9.5>s*[0.9]euex9%
+    <9.5->s*[0.9]euex10%
+}{}
+\DeclareSymbolFont{egreekx}{U}{egreekx}{m}{n}
+\DeclareMathSymbol{\sumop}{\mathop}{egreekx}{"50}
+\DeclareMathSymbol{\prodop}{\mathop}{egreekx}{"51}
+\DeclareMathSymbol{\coprodop}{\mathop}{egreekx}{"60}
+\makeatletter
+\def\sum{\DOTSI\sumop\slimits@}
+\def\prod{\DOTSI\prodop\slimits@}
+\def\coprod{\DOTSI\coprodop\slimits@}
+\makeatother
+\input{definegreek.tex}% Greek letters not usually given in LaTeX.
+
+%\usepackage%[scaled=0.9]%
+%{classico}%  Optima as sans-serif font
+\renewcommand\sfdefault{uop}
+\DeclareMathAlphabet{\mathsf}  {T1}{\sfdefault}{m}{sl}
+\SetMathAlphabet{\mathsf}{bold}{T1}{\sfdefault}{b}{sl}
+\newcommand*{\mathte}[1]{\textbf{\textit{\textsf{#1}}}}
+% Upright sans-serif math alphabet
+% \DeclareMathAlphabet{\mathsu}  {T1}{\sfdefault}{m}{n}
+% \SetMathAlphabet{\mathsu}{bold}{T1}{\sfdefault}{b}{n}
+
+% DejaVu Mono as typewriter text
+\usepackage[scaled=0.84]{DejaVuSansMono}
+
+\usepackage{mathdots}
+
+\usepackage[usenames]{xcolor}
+% Tol (2012) colour-blind-, print-, screen-friendly colours, alternative scheme; Munsell terminology
+\definecolor{mypurpleblue}{RGB}{68,119,170}
+\definecolor{myblue}{RGB}{102,204,238}
+\definecolor{mygreen}{RGB}{34,136,51}
+\definecolor{myyellow}{RGB}{204,187,68}
+\definecolor{myred}{RGB}{238,102,119}
+\definecolor{myredpurple}{RGB}{170,51,119}
+\definecolor{mygrey}{RGB}{187,187,187}
+% Tol (2012) colour-blind-, print-, screen-friendly colours; Munsell terminology
+% \definecolor{lbpurple}{RGB}{51,34,136}
+% \definecolor{lblue}{RGB}{136,204,238}
+% \definecolor{lbgreen}{RGB}{68,170,153}
+% \definecolor{lgreen}{RGB}{17,119,51}
+% \definecolor{lgyellow}{RGB}{153,153,51}
+% \definecolor{lyellow}{RGB}{221,204,119}
+% \definecolor{lred}{RGB}{204,102,119}
+% \definecolor{lpred}{RGB}{136,34,85}
+% \definecolor{lrpurple}{RGB}{170,68,153}
+\definecolor{lgrey}{RGB}{221,221,221}
+%\newcommand*\mycolourbox[1]{%
+%\colorbox{mygrey}{\hspace{1em}#1\hspace{1em}}}
+\colorlet{shadecolor}{lgrey}
+
+\usepackage{bm}
+
+\usepackage{microtype}
+
+\usepackage[backend=biber,mcite,%subentry,
+citestyle=authoryear-comp,bibstyle=pglpm-authoryear,autopunct=false,sorting=ny,sortcites=false,natbib=false,maxcitenames=2,maxbibnames=8,minbibnames=8,giveninits=true,uniquename=false,uniquelist=false,maxalphanames=1,block=space,hyperref=true,defernumbers=false,useprefix=true,sortupper=false,language=british,parentracker=false,autocite=footnote]{biblatex}
+\DeclareSortingTemplate{ny}{\sort{\field{sortname}\field{author}\field{editor}}\sort{\field{year}}}
+\iffalse\makeatletter%%% replace parenthesis with brackets
+\newrobustcmd*{\parentexttrack}[1]{%
+  \begingroup
+  \blx@blxinit
+  \blx@setsfcodes
+  \blx@bibopenparen#1\blx@bibcloseparen
+  \endgroup}
+\AtEveryCite{%
+  \let\parentext=\parentexttrack%
+  \let\bibopenparen=\bibopenbracket%
+  \let\bibcloseparen=\bibclosebracket}
+\makeatother\fi
+\DefineBibliographyExtras{british}{\def\finalandcomma{\addcomma}}
+\renewcommand*{\finalnamedelim}{\addspace\amp\space}
+% \renewcommand*{\finalnamedelim}{\addcomma\space}
+\renewcommand*{\textcitedelim}{\addcomma\space}
+% \setcounter{biburlnumpenalty}{1} % to allow url breaks anywhere
+% \setcounter{biburlucpenalty}{0}
+% \setcounter{biburllcpenalty}{1}
+\DeclareDelimFormat{multicitedelim}{\addsemicolon\addspace\space}
+\DeclareDelimFormat{compcitedelim}{\addsemicolon\addspace\space}
+\DeclareDelimFormat{postnotedelim}{\addspace}
+\ifarxiv\else\addbibresource{portamanabib.bib}\fi
+\renewcommand{\bibfont}{\footnotesize}
+%\appto{\citesetup}{\footnotesize}% smaller font for citations
+\defbibheading{bibliography}[\bibname]{\section*{#1}\addcontentsline{toc}{section}{#1}%\markboth{#1}{#1}
+}
+\newcommand*{\citep}{\footcites}
+\newcommand*{\citey}{\footcites}%{\parencites*}
+\newcommand*{\ibid}{\unspace\addtocounter{footnote}{-1}\footnotemark{}}
+%\renewcommand*{\cite}{\parencite}
+%\renewcommand*{\cites}{\parencites}
+\providecommand{\href}[2]{#2}
+\providecommand{\eprint}[2]{\texttt{\href{#1}{#2}}}
+\newcommand*{\amp}{\&}
+% \newcommand*{\citein}[2][]{\textnormal{\textcite[#1]{#2}}%\addtocategory{extras}{#2}
+% }
+\newcommand*{\citein}[2][]{\textnormal{\textcite[#1]{#2}}%\addtocategory{extras}{#2}
+}
+\newcommand*{\citebi}[2][]{\textcite[#1]{#2}%\addtocategory{extras}{#2}
+}
+\newcommand*{\subtitleproc}[1]{}
+\newcommand*{\chapb}{ch.}
+%
+%\def\UrlOrds{\do\*\do\-\do\~\do\'\do\"\do\-}%
+\def\myUrlOrds{\do\0\do\1\do\2\do\3\do\4\do\5\do\6\do\7\do\8\do\9\do\a\do\b\do\c\do\d\do\e\do\f\do\g\do\h\do\i\do\j\do\k\do\l\do\m\do\n\do\o\do\p\do\q\do\r\do\s\do\t\do\u\do\v\do\w\do\x\do\y\do\z\do\A\do\B\do\C\do\D\do\E\do\F\do\G\do\H\do\I\do\J\do\K\do\L\do\M\do\N\do\O\do\P\do\Q\do\R\do\S\do\T\do\U\do\V\do\W\do\X\do\Y\do\Z}%
+\makeatletter
+%\g@addto@macro\UrlSpecials{\do={\newline}}
+\g@addto@macro{\UrlBreaks}{\myUrlOrds}
+\makeatother
+\newcommand*{\arxiveprint}[1]{%
+arXiv \doi{10.48550/arXiv.#1}%
+}
+\newcommand*{\mparceprint}[1]{%
+\href{http://www.ma.utexas.edu/mp_arc-bin/mpa?yn=#1}{mp\_arc:\allowbreak\nolinkurl{#1}}%
+}
+\newcommand*{\haleprint}[1]{%
+\href{https://hal.archives-ouvertes.fr/#1}{\textsc{hal}:\allowbreak\nolinkurl{#1}}%
+}
+\newcommand*{\philscieprint}[1]{%
+\href{http://philsci-archive.pitt.edu/archive/#1}{PhilSci:\allowbreak\nolinkurl{#1}}%
+}
+\newcommand*{\doi}[1]{%
+\href{https://doi.org/#1}{\textsc{doi}:\allowbreak\nolinkurl{#1}}%
+}
+\newcommand*{\biorxiveprint}[1]{%
+bioRxiv \doi{10.1101/#1}%
+}
+\newcommand*{\osfeprint}[1]{%
+Open Science Framework \doi{10.31219/osf.io/#1}%
+}
+
+\usepackage{graphicx}
+
+%\usepackage{wrapfig}
+
+%\usepackage{tikz-cd}
+
+\PassOptionsToPackage{hyphens}{url}\usepackage[hypertexnames=false,pdfencoding=unicode,psdextra]{hyperref}
+
+\usepackage[depth=4]{bookmark}
+\hypersetup{colorlinks=true,bookmarksnumbered,pdfborder={0 0 0.25},citebordercolor={0.2667 0.4667 0.6667},citecolor=mypurpleblue,linkbordercolor={0.6667 0.2 0.4667},linkcolor=myredpurple,urlbordercolor={0.1333 0.5333 0.2},urlcolor=mygreen,breaklinks=true,pdftitle={\pdftitle},pdfauthor={\pdfauthor}}
+% \usepackage[vertfit=local]{breakurl}% only for arXiv
+\providecommand*{\urlalt}{\href}
+
+\usepackage[british]{datetime2}
+\DTMnewdatestyle{mydate}%
+{% definitions
+\renewcommand*{\DTMdisplaydate}[4]{%
+\number##3\ \DTMenglishmonthname{##2} ##1}%
+\renewcommand*{\DTMDisplaydate}{\DTMdisplaydate}%
+}
+\DTMsetdatestyle{mydate}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%% Layout. I do not know on which kind of paper the reader will print the
+%%% paper on (A4? letter? one-sided? double-sided?). So I choose A5, which
+%%% provides a good layout for reading on screen and save paper if printed
+%%% two pages per sheet. Average length line is 66 characters and page
+%%% numbers are centred.
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\ifafour\setstocksize{297mm}{210mm}%{*}% A4
+\else\setstocksize{210mm}{5.5in}%{*}% 210x139.7
+\fi
+\settrimmedsize{\stockheight}{\stockwidth}{*}
+\setlxvchars[\normalfont] %313.3632pt for a 66-characters line
+\setxlvchars[\normalfont]
+% \setlength{\trimtop}{0pt}
+% \setlength{\trimedge}{\stockwidth}
+% \addtolength{\trimedge}{-\paperwidth}
+%\settrims{0pt}{0pt}
+% The length of the normalsize alphabet is 133.05988pt - 10 pt = 26.1408pc
+% The length of the normalsize alphabet is 159.6719pt - 12pt = 30.3586pc
+% Bringhurst gives 32pc as boundary optimal with 69 ch per line
+% The length of the normalsize alphabet is 191.60612pt - 14pt = 35.8634pc
+\ifafour\settypeblocksize{*}{32pc}{1.618} % A4
+%\setulmargins{*}{*}{1.667}%gives 5/3 margins % 2 or 1.667
+\else\settypeblocksize{*}{26pc}{1.618}% nearer to a 66-line newpx and preserves GR
+\fi
+\setulmargins{*}{*}{1}%gives equal margins
+\setlrmargins{*}{*}{*}
+\setheadfoot{\onelineskip}{2.5\onelineskip}
+\setheaderspaces{*}{2\onelineskip}{*}
+\setmarginnotes{2ex}{10mm}{0pt}
+\checkandfixthelayout[nearest]
+%%% End layout
+%% this fixes missing white spaces
+%\pdfmapline{+dummy-space <dummy-space.pfb}
+%\pdfinterwordspaceon% seems to add a white margin to Sumatrapdf
+
+%%% Sectioning
+\newcommand*{\asudedication}[1]{%
+{\par\centering\textit{#1}\par}}
+\newenvironment{acknowledgements}{\section*{Thanks}\addcontentsline{toc}{section}{Thanks}}{\par}
+\makeatletter\renewcommand{\appendix}{\par
+  \bigskip{\centering
+   \interlinepenalty \@M
+   \normalfont
+   \printchaptertitle{\sffamily\appendixpagename}\par}
+  \setcounter{section}{0}%
+  \gdef\@chapapp{\appendixname}%
+  \gdef\thesection{\@Alph\c@section}%
+  \anappendixtrue}\makeatother
+\counterwithout{section}{chapter}
+\setsecnumformat{\upshape\csname the#1\endcsname\quad}
+\setsecheadstyle{\large\bfseries\sffamily%
+\centering}
+\setsubsecheadstyle{\bfseries\sffamily%
+\raggedright}
+%\setbeforesecskip{-1.5ex plus 1ex minus .2ex}% plus 1ex minus .2ex}
+%\setaftersecskip{1.3ex plus .2ex }% plus 1ex minus .2ex}
+%\setsubsubsecheadstyle{\bfseries\sffamily\slshape\raggedright}
+%\setbeforesubsecskip{1.25ex plus 1ex minus .2ex }% plus 1ex minus .2ex}
+%\setaftersubsecskip{-1em}%{-0.5ex plus .2ex}% plus 1ex minus .2ex}
+\setsubsecindent{0pt}%0ex plus 1ex minus .2ex}
+\setparaheadstyle{\bfseries\sffamily%
+\raggedright}
+\setcounter{secnumdepth}{2}
+\setlength{\headwidth}{\textwidth}
+\newcommand{\addchap}[1]{\chapter*[#1]{#1}\addcontentsline{toc}{chapter}{#1}}
+\newcommand{\addsec}[1]{\section*{#1}\addcontentsline{toc}{section}{#1}}
+\newcommand{\addsubsec}[1]{\subsection*{#1}\addcontentsline{toc}{subsection}{#1}}
+\newcommand{\addpara}[1]{\paragraph*{#1.}\addcontentsline{toc}{subsubsection}{#1}}
+\newcommand{\addparap}[1]{\paragraph*{#1}\addcontentsline{toc}{subsubsection}{#1}}
+
+%%% Headers, footers, pagestyle
+\copypagestyle{manaart}{plain}
+\makeheadrule{manaart}{\headwidth}{0.5\normalrulethickness}
+\makeoddhead{manaart}{%
+{\footnotesize%\sffamily%
+\scshape\headauthor}}{}{{\footnotesize\sffamily%
+\headtitle}}
+\makeoddfoot{manaart}{}{\thepage}{}
+\newcommand*\autanet{\includegraphics[height=\heightof{M}]{autanet.pdf}}
+\definecolor{mygray}{gray}{0.333}
+\iftypodisclaim%
+\ifafour\newcommand\addprintnote{\begin{picture}(0,0)%
+\put(245,149){\makebox(0,0){\rotatebox{90}{\tiny\color{mygray}\textsf{This
+            document is designed for screen reading and
+            two-up printing on A4 or Letter paper}}}}%
+\end{picture}}% A4
+\else\newcommand\addprintnote{\begin{picture}(0,0)%
+\put(176,112){\makebox(0,0){\rotatebox{90}{\tiny\color{mygray}\textsf{This
+            document is designed for screen reading and
+            two-up printing on A4 or Letter paper}}}}%
+\end{picture}}\fi%afourtrue
+\makeoddfoot{plain}{}{\makebox[0pt]{\thepage}\addprintnote}{}
+\else
+\makeoddfoot{plain}{}{\makebox[0pt]{\thepage}}{}
+\fi%typodisclaimtrue
+\makeoddhead{plain}{\scriptsize\reporthead}{}{}
+% \copypagestyle{manainitial}{plain}
+% \makeheadrule{manainitial}{\headwidth}{0.5\normalrulethickness}
+% \makeoddhead{manainitial}{%
+% \footnotesize\sffamily%
+% \scshape\headauthor}{}{\footnotesize\sffamily%
+% \headtitle}
+% \makeoddfoot{manaart}{}{\thepage}{}
+
+\pagestyle{manaart}
+
+\setlength{\droptitle}{-3.9\onelineskip}
+\pretitle{\begin{center}\LARGE\sffamily%
+\bfseries}
+\posttitle{\bigskip\end{center}}
+
+\makeatletter\newcommand*{\atf}{\includegraphics[totalheight=\heightof{@}]{atblack.png}}\makeatother
+\providecommand{\affiliation}[1]{\textsl{\textsf{\footnotesize #1}}}
+\providecommand{\epost}[1]{\texttt{\footnotesize\textless#1\textgreater}}
+\providecommand{\email}[2]{\href{mailto:#1ZZ@#2 ((remove ZZ))}{#1\protect\atf#2}}
+%\providecommand{\email}[2]{\href{mailto:#1@#2}{#1@#2}}
+
+\preauthor{\vspace{-0\baselineskip}\begin{center}
+\normalsize\sffamily%
+\lineskip  0.5em}
+\postauthor{\par\end{center}}
+\predate{\DTMsetdatestyle{mydate}\begin{center}\footnotesize}
+\postdate{\end{center}\vspace{-\medskipamount}}
+
+\setfloatadjustment{figure}{\footnotesize}
+\captiondelim{\quad}
+\captionnamefont{\footnotesize\sffamily%
+}
+\captiontitlefont{\footnotesize}
+%\firmlists*
+\midsloppy
+% handling orphan/widow lines, memman.pdf
+% \clubpenalty=10000
+% \widowpenalty=10000
+% \raggedbottom
+% Downes, memman.pdf
+\clubpenalty=9996
+\widowpenalty=9999
+\brokenpenalty=4991
+\predisplaypenalty=10000
+\postdisplaypenalty=1549
+\displaywidowpenalty=1602
+\raggedbottom
+
+\paragraphfootnotes
+\setlength{\footmarkwidth}{2ex}
+% \threecolumnfootnotes
+%\setlength{\footmarksep}{0em}
+\footmarkstyle{\textsuperscript{%\color{myred}
+\scriptsize\bfseries#1}~}
+%\footmarkstyle{\textsuperscript{\color{myred}\scriptsize\bfseries#1}~}
+%\footmarkstyle{\textsuperscript{[#1]}~}
+
+\selectlanguage{british}\frenchspacing
+
+\definecolor{notecolour}{RGB}{68,170,153}
+%\newcommand*{\puzzle}{\maltese}
+\newcommand*{\puzzle}{{\fontencoding{U}\fontfamily{fontawesometwo}\selectfont\symbol{225}}}
+\newcommand*{\wrench}{{\fontencoding{U}\fontfamily{fontawesomethree}\selectfont\symbol{114}}}
+\newcommand*{\pencil}{{\fontencoding{U}\fontfamily{fontawesometwo}\selectfont\symbol{210}}}
+\newcommand{\mynotew}[1]{{\footnotesize\color{notecolour}\wrench\ #1}}
+\newcommand{\mynotep}[1]{{\footnotesize\color{notecolour}\pencil\ #1}}
+\newcommand{\mynotez}[1]{{\footnotesize\color{notecolour}\puzzle\ #1}}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%% Paper's details
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\title{\propertitle}
+\author{%
+\hspace*{\stretch{1}}%
+%% uncomment if additional authors present
+\parbox{0.49\linewidth}%\makebox[0pt][c]%
+{\protect\centering K. Dyrland \href{https://orcid.org/0000-0002-7674-5733}{\protect\includegraphics[scale=0.16]{orcid_32x32.png}}\\\scriptsize\epost{\email{kjetil.dyrland}{gmail.com}}}%
+\hspace*{\stretch{1}}%
+\parbox{0.49\linewidth}%\makebox[0pt][c]%
+{\protect\centering A. S. Lundervold \href{https://orcid.org/0000-0001-8663-4247}{\protect\includegraphics[scale=0.16]{orcid_32x32.png}}\textsuperscript{\ensuremath{\dagger}} \\\scriptsize\epost{\email{alexander.selvikvag.lundervold}{hvl.no}}}%
+\hspace*{\stretch{1}}\\%
+\parbox{0.49\linewidth}%\makebox[0pt][c]%
+{\protect\centering P.G.L.  Porta Mana  \href{https://orcid.org/0000-0002-6070-0784}{\protect\includegraphics[scale=0.16]{orcid_32x32.png}}\\\scriptsize\epost{\email{pgl}{portamana.org}}}%
+% Mohn Medical Imaging and Visualization Centre, 
+%% uncomment if additional authors present
+% \hspace*{\stretch{1}}%
+% \parbox{0.5\linewidth}%\makebox[0pt][c]%
+% {\protect\centering ***\\%
+% \footnotesize\epost{\email{***}{***}}}%
+%\hspace*{\stretch{1}}%
+\\\tiny(listed alphabetically)
+\\\footnotesize Dept of Computer science, Electrical Engineering and Mathematical Sciences\\Western Norway University of Applied Sciences, Bergen, Norway
+\\\textsuperscript{\ensuremath{\dagger}}\amp\ Mohn Medical Imaging and Visualization Centre, Bergen, Norway
+}
+
+%\date{Draft of \today\ (first drafted \firstdraft)}
+\date{\textbf{Draft}. \firstpublished; updated \updated}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%% Macros @@@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% Common ones - uncomment as needed
+%\providecommand{\nequiv}{\not\equiv}
+%\providecommand{\coloneqq}{\mathrel{\mathop:}=}
+%\providecommand{\eqqcolon}{=\mathrel{\mathop:}}
+%\providecommand{\varprod}{\prod}
+\newcommand*{\de}{\partialup}%partial diff
+\newcommand*{\pu}{\piup}%constant pi
+\newcommand*{\delt}{\deltaup}%Kronecker, Dirac
+%\newcommand*{\eps}{\varepsilonup}%Levi-Civita, Heaviside
+%\newcommand*{\riem}{\zetaup}%Riemann zeta
+%\providecommand{\degree}{\textdegree}% degree
+%\newcommand*{\celsius}{\textcelsius}% degree Celsius
+%\newcommand*{\micro}{\textmu}% degree Celsius
+\newcommand*{\I}{\mathrm{i}}%imaginary unit
+\newcommand*{\e}{\mathrm{e}}%Neper
+\newcommand*{\di}{\mathrm{d}}%differential
+%\newcommand*{\Di}{\mathrm{D}}%capital differential
+%\newcommand*{\planckc}{\hslash}
+%\newcommand*{\avogn}{N_{\textrm{A}}}
+%\newcommand*{\NN}{\bm{\mathrm{N}}}
+%\newcommand*{\ZZ}{\bm{\mathrm{Z}}}
+%\newcommand*{\QQ}{\bm{\mathrm{Q}}}
+\newcommand*{\RR}{\bm{\mathrm{R}}}
+%\newcommand*{\CC}{\bm{\mathrm{C}}}
+%\newcommand*{\nabl}{\bm{\nabla}}%nabla
+%\DeclareMathOperator{\lb}{lb}%base 2 log
+%\DeclareMathOperator{\tr}{tr}%trace
+%\DeclareMathOperator{\card}{card}%cardinality
+%\DeclareMathOperator{\im}{Im}%im part
+%\DeclareMathOperator{\re}{Re}%re part
+%\DeclareMathOperator{\sgn}{sgn}%signum
+%\DeclareMathOperator{\ent}{ent}%integer less or equal to
+%\DeclareMathOperator{\Ord}{O}%same order as
+%\DeclareMathOperator{\ord}{o}%lower order than
+%\newcommand*{\incr}{\triangle}%finite increment
+\newcommand*{\defd}{\coloneqq}
+\newcommand*{\defs}{\eqqcolon}
+%\newcommand*{\Land}{\bigwedge}
+%\newcommand*{\Lor}{\bigvee}
+%\newcommand*{\lland}{\DOTSB\;\land\;}
+%\newcommand*{\llor}{\DOTSB\;\lor\;}
+\newcommand*{\limplies}{\mathbin{\Rightarrow}}%implies
+%\newcommand*{\suchthat}{\mid}%{\mathpunct{|}}%such that (eg in sets)
+%\newcommand*{\with}{\colon}%with (list of indices)
+%\newcommand*{\mul}{\times}%multiplication
+%\newcommand*{\inn}{\cdot}%inner product
+\newcommand*{\dotv}{\mathord{\,\cdot\,}}%variable place
+%\newcommand*{\comp}{\circ}%composition of functions
+%\newcommand*{\con}{\mathbin{:}}%scal prod of tensors
+%\newcommand*{\equi}{\sim}%equivalent to 
+\renewcommand*{\asymp}{\simeq}%equivalent to 
+%\newcommand*{\corr}{\mathrel{\hat{=}}}%corresponds to
+%\providecommand{\varparallel}{\ensuremath{\mathbin{/\mkern-7mu/}}}%parallel (tentative symbol)
+\renewcommand*{\le}{\leqslant}%less or equal
+\renewcommand*{\ge}{\geqslant}%greater or equal
+\DeclarePairedDelimiter\clcl{[}{]}
+%\DeclarePairedDelimiter\clop{[}{[}
+%\DeclarePairedDelimiter\opcl{]}{]}
+%\DeclarePairedDelimiter\opop{]}{[}
+\DeclarePairedDelimiter\abs{\lvert}{\rvert}
+%\DeclarePairedDelimiter\norm{\lVert}{\rVert}
+\DeclarePairedDelimiter\set{\{}{\}} %}
+%\DeclareMathOperator{\pr}{P}%probability
+\newcommand*{\p}{\mathrm{p}}%probability
+\renewcommand*{\P}{\mathrm{P}}%probability
+\newcommand*{\E}{\mathrm{E}}
+%% The "\:" space is chosen to correctly separate inner binary and external rels
+\renewcommand*{\|}[1][]{\nonscript\:#1\vert\nonscript\:\mathopen{}}
+%\DeclarePairedDelimiterX{\cp}[2]{(}{)}{#1\nonscript\:\delimsize\vert\nonscript\:\mathopen{}#2}
+%\DeclarePairedDelimiterX{\ct}[2]{[}{]}{#1\nonscript\;\delimsize\vert\nonscript\:\mathopen{}#2}
+%\DeclarePairedDelimiterX{\cs}[2]{\{}{\}}{#1\nonscript\:\delimsize\vert\nonscript\:\mathopen{}#2}
+%\newcommand*{\+}{\lor}
+%\renewcommand{\*}{\land}
+%% symbol = for equality statements within probabilities
+%% from https://tex.stackexchange.com/a/484142/97039
+% \newcommand*{\eq}{\mathrel{\!=\!}}
+% \let\texteq\=
+% \renewcommand*{\=}{\TextOrMath\texteq\eq}
+% \newcommand*{\eq}[1][=]{\mathrel{\!#1\!}}
+\newcommand*{\mo}[1][=]{\mathrel{\mkern-3.5mu#1\mkern-3.5mu}}
+%\newcommand*{\moo}[1][=]{\mathrel{\!#1\!}}
+%\newcommand*{\mo}[1][=]{\mathord{#1}}
+%\newcommand*{\mo}[1][=]{\mathord{\,#1\,}}
+%%
+\newcommand*{\sect}{\S}% Sect.~
+\newcommand*{\sects}{\S\S}% Sect.~
+\newcommand*{\chap}{ch.}%
+\newcommand*{\chaps}{chs}%
+\newcommand*{\bref}{ref.}%
+\newcommand*{\brefs}{refs}%
+%\newcommand*{\fn}{fn}%
+\newcommand*{\eqn}{eq.}%
+\newcommand*{\eqns}{eqs}%
+\newcommand*{\fig}{fig.}%
+\newcommand*{\figs}{figs}%
+\newcommand*{\vs}{{vs}}
+\newcommand*{\eg}{{e.g.}}
+\newcommand*{\etc}{{etc.}}
+\newcommand*{\ie}{{i.e.}}
+%\newcommand*{\ca}{{c.}}
+\newcommand*{\foll}{{ff.}}
+%\newcommand*{\viz}{{viz}}
+\newcommand*{\cf}{{cf.}}
+%\newcommand*{\Cf}{{Cf.}}
+%\newcommand*{\vd}{{v.}}
+\newcommand*{\etal}{{et al.}}
+%\newcommand*{\etsim}{{et sim.}}
+%\newcommand*{\ibid}{{ibid.}}
+%\newcommand*{\sic}{{sic}}
+%\newcommand*{\id}{\mathte{I}}%id matrix
+%\newcommand*{\nbd}{\nobreakdash}%
+%\newcommand*{\bd}{\hspace{0pt}}%
+%\def\hy{-\penalty0\hskip0pt\relax}
+%\newcommand*{\labelbis}[1]{\tag*{(\ref{#1})$_\text{r}$}}
+%\newcommand*{\mathbox}[2][.8]{\parbox[t]{#1\columnwidth}{#2}}
+%\newcommand*{\zerob}[1]{\makebox[0pt][l]{#1}}
+\newcommand*{\tprod}{\mathop{\textstyle\prod}\nolimits}
+\newcommand*{\tsum}{\mathop{\textstyle\sum}\nolimits}
+%\newcommand*{\tint}{\begingroup\textstyle\int\endgroup\nolimits}
+%\newcommand*{\tland}{\mathop{\textstyle\bigwedge}\nolimits}
+%\newcommand*{\tlor}{\mathop{\textstyle\bigvee}\nolimits}
+%\newcommand*{\sprod}{\mathop{\textstyle\prod}}
+%\newcommand*{\ssum}{\mathop{\textstyle\sum}}
+%\newcommand*{\sint}{\begingroup\textstyle\int\endgroup}
+%\newcommand*{\sland}{\mathop{\textstyle\bigwedge}}
+%\newcommand*{\slor}{\mathop{\textstyle\bigvee}}
+%\newcommand*{\T}{^\transp}%transpose
+%%\newcommand*{\QEM}%{\textnormal{$\Box$}}%{\ding{167}}
+%\newcommand*{\qem}{\leavevmode\unskip\penalty9999 \hbox{}\nobreak\hfill
+%\quad\hbox{\QEM}}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%% Custom macros for this file @@@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\newcommand*{\widebar}[1]{{\mkern1.5mu\skew{2}\overline{\mkern-1.5mu#1\mkern-1.5mu}\mkern 1.5mu}}
+
+% \newcommand{\explanation}[4][t]{%\setlength{\tabcolsep}{-1ex}
+% %\smash{
+% \begin{tabular}[#1]{c}#2\\[0.5\jot]\rule{1pt}{#3}\\#4\end{tabular}}%}
+% \newcommand*{\ptext}[1]{\text{\small #1}}
+\DeclareMathOperator*{\argmax}{arg\,max}
+\newcommand*{\dob}{degree of belief}
+\newcommand*{\dobs}{degrees of belief}
+\newcommand*{\ml}{machine-learning}
+\newcommand*{\Fs}{F_{\textrm{s}}}
+\newcommand*{\fs}{f_{\textrm{s}}}
+\newcommand*{\uF}{\bar{F}}
+\newcommand*{\uf}{\bar{f}}
+\newcommand*{\za}{\hat{0}}
+\newcommand*{\zb}{\hat{1}}
+\newcommand*{\U}{\mathrm{u}}
+\newcommand*{\UU}{\mathrm{U}}
+\newcommand*{\eu}{\bar{\U}}
+\newcommand*{\nd}{n_{\textrm{d}}}
+\newcommand*{\nc}{n_{\textrm{c}}}
+\newcommand*{\Po}{\mathord{+}}
+\newcommand*{\Ne}{\mathord{-}}
+\newcommand*{\tp}{\textrm{tp}}
+\newcommand*{\fp}{\textrm{fp}}
+\newcommand*{\fn}{\textrm{fn}}
+\newcommand*{\tn}{\textrm{tn}}
+\newcommand*{\itemyes}{{\fontencoding{U}\fontfamily{pzd}\selectfont\symbol{51}}}
+\newcommand*{\itemno}{{\fontencoding{U}\fontfamily{pzd}\selectfont\symbol{55}}}
+\newcommand*{\wf}{w}
+\newcommand*{\wfo}{w_{\textrm{g}}}
+
+%%% Custom macros end @@@
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%% Beginning of document
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%\firmlists
+\begin{document}
+\captiondelim{\quad}\captionnamefont{\footnotesize}\captiontitlefont{\footnotesize}
+\selectlanguage{british}\frenchspacing
+\maketitle
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%% Abstract
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\abstractrunin
+\abslabeldelim{}
+\renewcommand*{\abstractname}{}
+\setlength{\absleftindent}{0pt}
+\setlength{\absrightindent}{0pt}
+\setlength{\abstitleskip}{-\absparindent}
+\begin{abstract}\labelsep 0pt%
+  \noindent \mynotep{Abstract to be written}
+% \\\noindent\emph{\footnotesize Note: Dear Reader
+%     \amp\ Peer, this manuscript is being peer-reviewed by you. Thank you.}
+% \par%\\[\jot]
+% \noindent
+% {\footnotesize PACS: ***}\qquad%
+% {\footnotesize MSC: ***}%
+%\qquad{\footnotesize Keywords: ***}
+\end{abstract}
+\selectlanguage{british}\frenchspacing
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%% Epigraph
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% \asudedication{\small ***}
+% \vspace{\bigskipamount}
+% \setlength{\epigraphwidth}{.7\columnwidth}
+% %\epigraphposition{flushright}
+% \epigraphtextposition{flushright}
+% %\epigraphsourceposition{flushright}
+% \epigraphfontsize{\footnotesize}
+% \setlength{\epigraphrule}{0pt}
+% %\setlength{\beforeepigraphskip}{0pt}
+% %\setlength{\afterepigraphskip}{0pt}
+% \epigraph{\emph{text}}{source}
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%% BEGINNING OF MAIN TEXT
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\section{Sensible probabilities for classifiers}
+\label{sec:intro}
+
+Some machine-learning algorithms for classification, such as support-vector machines, typically output a class label. Others, such as deep networks, output a set of real numbers. These real numbers can be positive, normalized to unity, and can bear some qualitative relation to the plausibilities of the classes. But they cannot be reliably interpreted as sensible probabilities, that is, as the degrees of belief assigned to each possible class by a rational agent \autocites{mackay1992d,galetal2016}[\chaps~2, 12, 13]{russelletal1995_r2022}; or, in terms of \enquote{populations} \autocites{lindleyetal1981}[\sect~II.4]{fisher1956_r1967}, as the expected frequencies of the classes in the hypothetical population of units (degrees of belief and frequencies being related by de~Finetti's theorem \autocites[\chap~4]{bernardoetal1994_r2000}{dawid2013}).
+
+Algorithms that internally do perform probabilistic calculations, such as naive-Bayes or logistic-regression classifiers \autocites[\sect~3.5, \chap~8]{murphy2012}[\sects~8.2, 4.3]{bishop2006}[\chap~10, \sect~17.4]{barber2007_r2020}, unfortunately rest on probabilistic assumptions, such as independence and particular shapes of distributions, that are often unrealistic (and their consistency with the specific application is rarely checked). Only particular classifiers such as Bayesian neural networks \autocites{nealetal2006}[\sect~5.7]{bishop2006} output sensible probabilities.
+
+% It is difficult to assess sensible probabilities for the possible classes. Some \ml\ algorithms only output a class label. Others, including deep networks, output real numbers that, even if normalized and usually called \enquote{probabilities}, cannot be reliably interpreted as proper probabilities, that is, degrees of belief or frequencies in the population of interest \autocites{mackay1992d,galetal2016} conditional on the information given as input to the classifier (this is why we used the qualifier \enquote{sensible}). Algorithms that internally do perform probabilistic calculations, such as naive-Bayes or logistic-regression classifiers \autocites[\sect~3.5, \chap~8]{murphy2012}[\sects~8.2, 4.3]{bishop2006}[\chap~10, \sect~17.4]{barber2007_r2020}, unfortunately rest on probabilistic assumptions -- independence and particular shapes of distributions, for example -- that are often unrealistic (and their consistency with the specific application is rarely checked).
+% 
+% As already mentioned in \sect~\ref{sec:intro}, some \ml\ classifiers only output a class label. Others can output a set of real numbers that are positive, normalized to unity, and bear some qualitative relation to the plausibilities of the classes; but their values cannot be considered as the correct degrees of belief in the classes conditional on the input features. It is these values that we need for decision theory. Determining these probabilities would require an analysis that is computationally unfeasible at present for problems that involve very high-dimensional spaces, such as image classification; in fact if an exact probabilistic analysis were possible we would not be developing \ml\ classifiers in the first place \autocites[\chaps~2, 12]{russelletal1995_r2022}{pearl1988}. \mynotew{\puzzle~Maybe useful to add a reminder that probability theory is the \emph{learning} theory par excellence (even if there's no \enquote{learning} in its name)? Its rules are all about making logical updates given new data.} Only particular classifiers such as Bayesian neural networks \autocites{nealetal2006}[\sect~5.7]{bishop2006} output somewhat sensible  probabilities. But we would like to find a solution that can be applied to all commonly used classifiers, without being forced to use specific ones.
+
+
+
+Why are probability values important? As we argue in a companion work \mynotew{\pencil}, our ultimate purpose in classification is seldom only to guess a class; most often it is to choose a specific course of action, or to make a decision, among several available ones. A clinician, for example, does not simply tell a patient \enquote*{you will probably not contract the disease}, but has to decide among dismissal or different kinds of preventive treatment \autocites{soxetal1988_r2013,huninketal2001_r2014}. Said otherwise, in classification we must choose the \emph{optimal} class, not the probably true one.
+Making optimal choices in situations of uncertainty is the domain of Decision Theory \autocites[\chap~15]{russelletal1995_r2022}{jeffrey1965,north1968,raiffa1968_r1970}. In order to make an optimal choice, decision theory requires the use of probability values that properly reflect our state of uncertainty.
+
+Determining class probabilities conditional on the input features is unfortunately computationally unfeasible at present for problems that involve very high-dimensional spaces, such as image classification; in fact if an exact probabilistic analysis were possible we would not be developing \ml\ classifiers in the first place \autocites[\chaps~2, 12]{russelletal1995_r2022}{pearl1988}.
+\mynotew{\scriptsize\puzzle~Maybe useful to add a reminder that probability theory is the \emph{learning} theory par excellence (even if there's no \enquote{learning} in its name)? Its rules are all about making logical updates given new data.
+
+}
+
+In the present work we propose an alternative solution that has a low computational cost and that can be applied to all commonly used classifiers, even those that only output class labels.
+
+The essential idea comes from seeing an analogy between a classifier and a diagnostic test, such as any common diagnostic or prognostic test used in medicine for example. There are many parallels in the way \ml\ classifiers and diagnostic tests, a flu test for instance, are devised and work. Our basic motivation in using either is that we would like to assess some situational variable -- class, pathological condition -- by means of its correlation (in the general sense of the word, not the linear Pearson one; and including deterministic dependence as a particular case) with a set of \enquote{difficult} variables that are either too complex or hidden -- image pixels, presence of replicating viral agents~--:
+\[
+  \text{situational variable} \longleftrightarrow \text{difficult variables}
+\]
+We devise an auxiliary variable -- algorithm output, test result -- to be correlated with the difficult variables:
+\[
+    \text{situational variable} \longleftrightarrow \text{difficult variables}
+    \longleftrightarrow \text{aux variable}
+\]
+% \[
+%   \begin{aligned}
+%     \text{situation} &\leftrightarrow \text{complicated variables}
+%     \\[-\jot]
+% \mathrel{\mathrlap{\nwarrow}\mkern-5mu\searrow}&\hphantom{{}\:\text{aux variable}}\mathrel{\mathrlap{\nearrow}\mkern-5mu\swarrow}
+% \\[-2.5\jot] &{}\:\text{aux variable}
+%   \end{aligned}
+% \]
+We can now assess the situational variable by observing the more easily accessible auxiliary variable instead of the difficult ones. In probability language we are \emph{marginalizing} over the difficult variables. This is the procedure dictated by the probability calculus whenever we do not have informational access to a set of variables. The correlation of the auxiliary variable is achieved by the training process in the case of the \ml\ algorithm, and by the exploitation of biochemical processes or reactions in the case of the flu test.
+
+The situational variable is \emph{informationally screened} from the auxiliary variable by the difficult variables. That is, the auxiliary variable does not -- in fact, cannot -- contain any more information about the situational variable than that contained in the difficult variables. This means that the probability relationship between the three variables is as follows:
+\begin{multline}
+  \label{eq:screening}
+  \p\Bigl(
+  \text{\parbox[c]{\widthof{\footnotesize situational}}{\centering\footnotesize situational\\[-1\jot]variable}}
+  \|[\Big]
+  \text{\parbox[c]{\widthof{\footnotesize variable}}{\centering\footnotesize aux\\[-1\jot]variable}}
+  \Bigr)
+  ={}\\[\jot]
+\sum_{\mathclap{
+    \text{\parbox[c]{\widthof{\scriptsize variables}}{\centering\scriptsize difficult\\[-1\jot]variables}}
+}}
+\p\Bigr(
+  \text{\parbox[c]{\widthof{\footnotesize situational}}{\centering\footnotesize situational\\[-1\jot]variable}}
+  \|[\Big]
+  \text{\parbox[c]{\widthof{\footnotesize variables}}{\centering\footnotesize difficult\\[-1\jot]variables}}
+  \Bigr)  \times
+  \p\Bigl(
+  \text{\parbox[c]{\widthof{\footnotesize variables}}{\centering\footnotesize difficult\\[-1\jot]variables}}
+  \|[\Big]
+  \text{\parbox[c]{\widthof{\footnotesize variable}}{\centering\footnotesize aux\\[-1\jot]variable}}
+\Bigr)   \ ,
+\end{multline}
+the sum running over all possible values of the difficult variables.
+
+In the case of the diagnostic test we determine the probability %
+$\p\bigl(%
+\text{\parbox[c]{\widthof{\footnotesize situational}}{\centering\footnotesize situational\\[-1\jot]variable}}%
+\|[\big]%
+\text{\parbox[c]{\widthof{\footnotesize variable}}{\centering\footnotesize aux\\[-1\jot]variable}}%
+\bigr)$ %
+by carrying out the test on a representative sample of cases and collecting joint statistics between the test's output and the true situation, the presence of the flu in our example. These statistics are typically displayed in a so-called contingency table \autocites{fienberg1980_r2007,mostelleretal1983_r2013}, akin to a confusion matrix. % It is from this contingency table that we derive the probabilities of the virus's presence, given all possible test result.
+
+\medskip
+
+Unlike the case of a diagnostic test, the output of a \ml\ classifier is usually taken at face value: if the output is a class label, that label is regarded as the true class; if the output is a unity-normalized tuple of positive numbers, that tuple is regarded as the probability distribution for the classes.
+
+We instead propose \emph{to treat the classifier's output just like a diagnostic test's result}. This output, discrete or continuous, is regarded as a quantity that has some correlation with the true class. This correlation can be analysed in a set of representative samples and used to calculate a sensible probability for the class given the classifier's output. This analysis only needs to be made once and is computationally cheap, because the classifier output takes values in a discrete or low-dimensional space.
+
+% Analogously we can use the statistics of the application of \ml\ classifier on a test set to derive the probability of a class, given the classifier output. This can be seamlessly done for both a discrete and a continuous output.
+
+% Consider for example a flu test. Having a specific kind of flu means that a large number of agents of a specific virus are present and replicating in one's body. These agents cannot be simply seen by visual inspection. Instead we devise some kind of biochemical mechanism that creates a correlation between the presence of the viral agents and some more easily measurable quantity; in simple cases just the colour on some display for example. Such correlation is often statistical, even if it can be strong. When we train a \ml\ classifier we are creating a statistical correlation between features of a particular kind and a discrete or continuous quantity: the classifier's output.
+
+% In the case of the diagnostic test we do not take its output at face value. Its application on a representative sample of cases gives us a table of joint statistics -- a so-called contingency table \autocites{fienberg1980_r2007,mostelleretal1983_r2013}, akin to a confusion matrix -- between the test's output and the true situation, the presence of the flu in our example. It is from this contingency table that we derive the probabilities of the virus's presence, given all possible test result. Analogously we can use the statistics of the application of \ml\ classifier on a test set to derive the probability of a class, given the classifier output. This can be seamlessly done for both a discrete and a continuous output.
+
+% The idea is \emph{to treat the classifier as a diagnostic test}, such as any common diagnostic or prognostic test used in medicine for example. We consider its output, discrete or continuous, as a quantity that has some correlation (in the general sense of the word, not the linear Pearson one) with the true class. This correlation can be analysed and quantified with probability theory in a test set and used to calculate a sensible probability for the class given the output of the test -- of the classifier. This analysis needs to be made only once and is computationally cheap, because the classifier output takes values in a discrete or low-dimensional space.
+
+This approach differs from the computationally infeasible one discussed above in that we are calculating the computationally easier probability
+\begin{equation}
+  \label{eq:approach_p_test}
+  \p(\text{\small class} \| \text{\small output})
+\end{equation}
+rather than
+\begin{equation}
+  \label{eq:approach_p_feature}
+  \p(\text{\small class} \| \text{\small feature}) \ .
+\end{equation}
+The former probability, as we saw in \eqn~\eqref{eq:screening}, is the marginal
+\begin{equation}
+  \label{eq:approach_p_marginal}
+  \p(\text{\small class} \| \text{\small output}) =
+  \sum_{\text{\clap{feature}}}
+  \p(\text{\small class} \| \text{\small feature})\times
+  \p(\text{\small feature} \| \text{\small output}) \ .
+\end{equation}
+We can thus think of this approach as a marginalization over the possible features, which is a necessary operation as have no effective access to them.
+
+A hallmark of this approach is that we are calculating exact probabilities conditional on reduced information, rather than approximate probabilities conditional on full information. This protects us from biases that are typically present in the approximation method. The price of using reduced information is that the probabilities may be open to more variability as we collect more representative data. But as we shall see this variability is actually quite low, and moreover it can be exactly assessed.
+
+This approach also offers the following advantages:
+\begin{itemize}
+\item It does not require any changes of the standard training procedures.
+\item It is easily implemented as an additional low-cost computation of a function at the end of the classifier's output, or as a replacement of a softmax-like computation.
+%\item For one classifier, the assessment of this function needs to be done only once.
+\item It does not make any assumptions such as linearity or gaussianity.% , except for the (unavoidable) assumption of continuity \mynotew{\wrench\ need to explain this better}
+\item It yields not only the probability distribution for the classes, but also a measure of how much this distribution could change if we collected more test data (the \enquote{probability of the probability}, so to speak).
+\item It allows us to use the classifier both in a discriminative and generative way. That is, we can use either\; $\p(\text{\small class} \| \text{\small output})$, or\; $\p(\text{\small output} \| \text{\small class})$\; in conjunction with Bayes's theorem. The latter approach enables us to avoid possible base-rate fallacies \autocites[\sect~12.5]{russelletal1995_r2022}{axelsson2000,jennyetal2018}.
+\item It can be seamlessly integrated with a utility matrix to compute the optimal class, as shown in the companion work \mynotew{\pencil}.
+\end{itemize}
+
+\medskip
+
+In \sect~\ref{sec:prob_calc} we present some notation and the general procedure for the calculation of the probabilities; more technical details are given in appendix~\ref{sec:nonparam_regression_details}. Section~\ref{sec:implem_idea} explains how to augment a classifier's output with the probability calculation. Results of numerical experiments are presented in \sect~\ref{sec:results}.
+
+\mynotew{\wrench\ We could show that even if we used a biased test set, the method corrects the bias (provided we know what the bias is).}
+
+
+\section{Calculation of the probabilities: general procedure}
+\label{sec:prob_calc}
+
+Let us denote the class variable by $C$ and the classifier-output variable by $X$. We assume that $C$ is discrete and finite, its values can be simply renamed $1,2,3,\dotsc$. We assume that $X$ is either discrete and finite (it is isomorphic to $C$ for many classifying algorithms) or a low-dimensional tuple of real variables; a combination of both cases can also be easily accommodated. We assume to have a sample of $M$ such data pairs denoted collectively by $D$:
+\begin{equation}
+  \label{eq:sample_data_notation}
+  D \defd \set[\big]{(c_{1}, x_{1}), (c_{2}, x_{2}), \dotsc, (c_{M}, x_{M}) } \ .
+\end{equation}
+We call them \emph{calibration data}. Let us emphasize that these are not pairs of class\,\amp\,feature values, but pairs of class\,\amp\,classifier-output values, obtained as described in \sect~\ref{sec:implem_idea}.
+
+Instead of the conditional probability $\p(\text{\small class} \| \text{\small output})$, that is, $\p(C \| X)$,  we can actually calculate the joint probability
+\begin{equation}
+  \label{eq:approach_p_joint}
+  \p(C, X)
+\end{equation}
+given the sample data. The computational cost is the same, but from the joint probability we can easily derive both conditionals
+\begin{align}
+  \label{eq:approach_p_conditional_direct}
+  \p(C \| X) &= \frac{\p(C, X)}{ \sum_{C} \p(C, X) } \ ,
+  \\[\jot]
+  \label{eq:approach_p_conditional_inverse}
+  \p(X \| C) &= \frac{\p(C, X)}{ \sum_{X} \p(C, X) } \ .
+\end{align}
+It is advantageous to have both, as we shall see in \sect\mynotew{\pencil}: if one of them is biased owing to the way the test samples were obtained, we can still use the other.
+
+In our specific inference problem, where no time trends are assumed to exist in future data (the probability distribution for future data is exchangeable), probability theory dictates that the joint probability~\eqref{eq:approach_p_joint} for a new datapoint $(c_{0}, x_{0})$ is equal to the \emph{expected} frequency of that datapoint  in a hypothetically infinite run of observations, that is, the average
+\begin{equation}
+  \label{eq:prob_is_expe_freq}
+  \p(c_{0}, x_{0}) = \int\! F(c_{0}, x_{0})\ \wf(F)\ \di F \ .
+\end{equation}
+This formula is the so-called de~Finetti's theorem \autocites[\chap~4]{bernardoetal1994_r2000}{dawid2013,definetti1929,definetti1937}. It is derived from first principles but can be intuitively interpreted: We are considering every possible long-run frequency distribution $F(\dotv, \dotv)$, giving it a weight $\wf(F)$, and then taking the weighted sum of all such distributions. The result is still a distribution, and its value at $(c_{0}, x_{0})$ is the probability of this datapoint.
+
+The weight $\wf(F)$ -- a probability density -- given to a frequency distribution $F$ is proportional to two factors:
+\begin{equation}
+  \label{eq:weight_F_two_factors}
+  \wf(F) \propto F(D)\ \wfo(F) \ .
+\end{equation}
+\begin{itemize}
+  
+\item The first factor (\enquote{likelihood}) $F(D)$ quantifies how well $F$ \emph{fits} known data of the same kind, the sample data $D$ in our case. It is simply proportional to how frequent the known data would be, according to $F$:
+  \begin{equation}
+    \label{eq:factor_likelihood}
+F(D) = F(c_{1}, x_{1})\ F(c_{2}, x_{2})\ \dotsm\ F(c_{M}, x_{M}) \ .
+  \end{equation}
+
+\item The second factor (\enquote{prior}) $\wfo(F)$ quantifies how well $F$ \emph{generalizes} beyond the data we have seen, owing to reasons such as physical or biological constraints for example. In our case we expect $F$ to be somewhat smooth in $X$ when this variable is continuous \autocites[Cf.][]{goodetal1971} \mynotew{\wrench\ add a picture -- a sample from the prior over $F$ -- to illustrate the expected range of smoothness}. No assumptions are made about $F$ when $X$ is discrete. 
+\end{itemize}
+Formula~\eqref{eq:weight_F_two_factors} is just Bayes's theorem. Its normalization factor is the integral $\int F(D)\, \wfo(F)\, \di F$, which ensures that $\wf(F)$ is normalized.
+
+The first factor becomes larger as the number of known data increases. Thus a large amount of data indicating a non-smooth distribution $F$ will override any smoothness preferences embodied in the second factor. Note that no assumptions about the shape of $F$ -- no gaussians, logistic curves, sigmoids, and so on -- are made in this approach.
+
+The integral in~\eqref{eq:prob_is_expe_freq} is calculated in either of two ways, depending on whether $X$ is discrete or continuous. For $X$ discrete and taking on the same values as the class variable $C$, the integral is over $\RR^{\nc^{2}}$ where $\nc$ is the number of possible classes, and can be done analytically. For $X$ continuous, the integral is numerically approximated by a sum over a representative sample, obtained by Markov-chain Monte Carlo, of distributions $F$ according to the weights~\eqref{eq:weight_F_two_factors}. The error of this approximation can be calculated and made as small as required by increasing the number of Monte Carlo samples.
+
+The expected value~\eqref{eq:prob_is_expe_freq} is calculated for all possible values of $(c_{0}, x_{0})$, obtaining the full joint probability distribution $\p(C, X)$. From this joint distribution we calculate the direct and inverse conditional distributions
+\begin{align}
+  \label{eq:conditional_direct}
+  \p(C \| X) &= \frac{\p(C, X)}{\sum_{C} \p(C, X)} \ , \\
+  \label{eq:conditional_inverse}
+  \p(X \| C) &= \frac{\p(C, X)}{\sum_{X} \p(C, X)} \ .
+\end{align}
+It is very convenient to have both, as discussed in \sect~\ref{sec:biases}.
+
+The conditional distributions above are just matrices when $X$ is discrete. For continuous $X$ they can be regarded as $\nc$ tuples of functions in $X$. We can find convenient approximate expressions, such as polynomial interpolants, for faster numerical implementations of these functions.
+
+The integration procedure for~\eqref{eq:prob_is_expe_freq} also tells us how much the probability distribution $\p(C, X)$ would change if we acquired new data (a sort of \enquote{probability of the probability}).
+
+For further mathematical details see appendix~\ref{sec:nonparam_regression_details}.
+
+\section{Implementation in the classifier output}
+\label{sec:implem_idea}
+
+The implementation of our approach takes place after the training of the classifier has been carried out in the usual way. We assume that a collection of $M$ \emph{test data} were set aside as usual:
+\begin{equation}
+  \label{eq:testdata_features}
+  T \defd \set[\big]{(c_{1}, z_{1}), (c_{2}, z_{2}), \dotsc, (c_{M}, z_{M})} \ ,
+\end{equation}
+where the $c_{i}$ are the true classes and $z_{i}$ the corresponding feature values.
+
+The $M$ feature values $z_{i}$ are given as inputs to the classifier, which produces $M$ corresponding outputs $x_{i}$. We now consider data pairs consisting in the true classes $c_{i}$ and the outputs $x_{i}$: these are the \emph{calibration data} discussed in \sect~\ref{sec:prob_calc}:
+\begin{equation*}
+  D \defd \set[\big]{(c_{1}, x_{1}), (c_{2}, x_{2}), \dotsc, (c_{M}, x_{M}) } \ .
+\end{equation*}
+They are used to find the direct and inverse conditional probability distributions $\p(C \| X)$ and $\p(X \| C)$ as described in \sect~\ref{sec:prob_calc}.
+
+We can finally augment our classifier either in a \enquote{direct} or \enquote{discriminative} way, or an \enquote{inverse} or \enquote{generative} way, by adding one computation step at the end of the classifier's operation:
+\begin{description}
+\item[Direct:] from its output $x_{0}$ we obtain the probability for each class, $\p(c \| x_{0})$.
+\item[Inverse:] from its output $x_{0}$ we obtain the probability of the output itself, conditional on each class, $\p(x_{0} \| c)$. 
+\end{description}
+These $\nc$ probabilities are the final output of the augmented classifier.
+
+In the direct or discriminative case, at each new use of the classifier the output probabilities can be used together with a utility matrix to choose the \emph{optimal} class for that case, as discussed in the companion paper\mynotew{\pencil}.
+
+In the inverse or generative case, at each new use of the classifier the probabilities for the classes are obtained via Bayes's theorem:
+\begin{equation}
+  \label{eq:bayes_theorem}
+  \p(c) = \frac{\p(x_{0} \| c)\ B(c)}{\sum_{c} \p(x_{0}\| c)\ B(c)} \ ,
+\end{equation}
+where $B(c)$ is the base rate of class $c$. The probabilities $\p(c)$ can finally be used together with a utility matrix to choose the \emph{optimal} class.
+
+
+
+
+\section{Numerical experiments and results}
+\label{sec:results}
+
+\section{Circumventing biases}
+\label{sec:biases}
+
+\section{Alternative to ensembling}
+\label{sec:ensembling}
+
+\mynotew{\wrench\ The idea is to implement this output-to-probability conversion in several classifiers, \emph{in a generative way}. These probabilities can then be multiplied together and with a base rate, to obtain the \enquote{ensembled} probabilities of the classes. This way of doing ensembling would be a rigorous application of the probability calculus; should be superior to a majority vote or similar.}
+
+\section{Mathematical details of the nonparametric density regression}
+\label{sec:nonparam_regression_details}
+
+
+The joint probability~\eqref{eq:approach_p_joint} is calculated nonparametrically, that is, without making any assumptions such as linearity or gaussianity, besides very mild and reasonable assumptions of continuity.
+
+using the versatile computational approach by \textcites{dunsonetal2011}, and obtain the probability~\eqref{eq:approach_p_test} by conditionalization. The calculation requires Monte Carlo sampling \mynotew{\pencil\ refs here} but needs to be made only once.
+
+
+\section{Summary and discussion}
+\label{sec:summary_discussion}
+
+\mynotew{Add note about how (sequential) decision theory was used during World War I; see  \textcites{good1950} around \sect~6.2 }
+
+
+\clearpage
+
+
+%%%% examples use empheq
+%   \begin{empheq}[left={\mathllap{\begin{aligned}    \de\yF_{\yc}/\de\yp&=0\text{:} \\
+%         \de\yF_{\yc}/\de\ym&=0\text{:}\\ \de\yF_{\yc}/\de\yl&=0\text{:}\end{aligned}}\qquad}\empheqlbrace]{align}
+%     \label{eq:con_p}
+% %    \de\yF_{\yc}/\de\yp &\equiv
+%     -\ln\yp + \ln\yq + \yl\yM + \ym\yu &=0,\\
+%     \label{eq:con_u}
+% %    \de\yF_{\yc}/\de\ym &\equiv
+%     \yu\yp-1 &=0,\\
+%     \label{eq:con_l}
+%     %\de\yF_{\yc}/\de\yl &\equiv
+%     \yM\yp-\yc &=0.
+%   \end{empheq}
+%%%%
+% \begin{empheq}[box=\widefbox]{equation}
+%   \label{eq:maxent_question}
+%   \p\bigl[\yE{N+1}{k} \bigcond \tsum\yo\yf{N}\in\yA, \yM\bigr] = \mathord{?}
+% \end{empheq}
+
+
+%%\setlength{\intextsep}{0ex}% with wrapfigure
+%%\setlength{\columnsep}{0ex}% with wrapfigure
+%\begin{figure}[p!]% with figure
+%\begin{wrapfigure}{r}{0.4\linewidth} % with wrapfigure
+%  \centering\includegraphics[trim={12ex 0 18ex 0},clip,width=\linewidth]{maxent_saddle.png}\\
+%\caption{caption}\label{fig:comparison_a5}
+%\end{figure}% exp_family_maxent.nb
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%% Acknowledgements
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 
+\iffalse
+\begin{acknowledgements}
+  \ldots to Mari \amp\ Miri for continuous encouragement and affection, and
+  to Buster Keaton and Saitama for filling life with awe and inspiration.
+  To the developers and maintainers of \LaTeX, Emacs, AUC\TeX, Open Science
+  Framework, R, Python, Inkscape, Sci-Hub for making a free and impartial
+  scientific exchange possible.
+  % Our work was supported by the Trond Mohn Research Foundation, grant number BFS2018TMT07
+%\rotatebox{15}{P}\rotatebox{5}{I}\rotatebox{-10}{P}\rotatebox{10}{\reflectbox{P}}\rotatebox{-5}{O}.
+%\sourceatright{\autanet}
+\mbox{}\hfill\autanet
+\end{acknowledgements}
+\fi
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%% Appendices
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 
+%\clearpage
+\bigskip
+\renewcommand*{\appendixpagename}{}
+% \renewcommand*{\appendixname}{Appendix: test2}
+% %\appendixpage
+\appendix
+
+\addsec{Appendix: broader overview of binary classification}
+% \label{sec:test}
+
+Let us consider our binary-classification problem from a general perspective and summarize how it would be approached and solved from first principles\autocites[part~IV]{russelletal1995_r2022} if our computational resources had no constraints.
+
+In our long-term task we will receive \enquote{units} of a specific kind; the units for example could be gadgets, individuals, or investment portfolios. Each new unit will belong to one of two classes, which we can denote $X\mo 0$ and $X\mo 1$; for example they could be \enquote{defective} vs \enquote{non-defective}, \enquote{ill} vs \enquote{healthy}. The class will be unknown to us. For each new unit we shall need to decide among two possible actions, which we can denote $A\mo\za$ and $A\mo\zb$; for example \enquote{discard} vs \enquote{keep}, or \enquote{treat} vs \enquote{dismiss}. The utility of each action depends on the unknown class of the unit; we denote these utilities by $U(A \| X)$. For each new unit we will be able to measure a \enquote{feature} $Z$ of a specific kind common to all units; for example $Z$ could be a set of categorical and real quantities, or an image such as a brain scan. We have a set of units -- our \enquote{sample units} or \enquote{sample data} -- that are somehow \enquote*{representative} of the units we will receive in our long-term task \autocites[for a critical analysis of the sometimes hollow term \enquote{representative sample} see][]{kruskaletal1979,kruskaletal1979b,kruskaletal1979c,kruskaletal1980}. we know both the class and the feature of each of these sample units. Let us denote this sample information by $D$.
+
+According to the principles of decision theory and probability theory, for each new unit we would proceed as follows:
+\begin{enumerate}[label=\arabic*.]
+\item Assign probabilities to the two possible values of the unit's class, given the value of the unit's feature $Z\mo z$, our sample data $D$, and any other available information:
+  \begin{equation}
+    \p(X\mo 0 \| Z\mo z, D), \qquad \p(X\mo 1 \| Z\mo z,D) \equiv 1- \p(X\mo 0 \| Z\mo z,D) \ ,
+  \end{equation}
+  according to the rules of the probability calculus.
+\item Calculate the expected utilities $\eu$ of the two possible actions:
+  \begin{equation}
+    \begin{aligned}
+      \eu(\za) &\defd U(\za \| X\mo 0) \ 
+                 \p(X\mo 0 \| Z\mo z, D) + U(\za \| X\mo 1) \ 
+                 \p(X\mo 1 \| Z\mo z, D)
+      \\
+      \eu(\zb) &\defd U(\zb \| X\mo 0) \ 
+                 \p(X\mo 0 \| Z\mo z, D) + U(\zb \| X\mo 1) \ 
+                 \p(X\mo 1 \| Z\mo z, D)
+    \end{aligned}
+\end{equation}
+  and choose the action having maximal expected utility.
+\end{enumerate}
+
+\medskip
+
+How is the probability $\p(X \| Z\mo z, D)$ determined by the probability calculus? Here is a simplified, intuitive picture. First consider the case where the feature $Z$ can only assume a small number of possible values, so that many units can in principle have the same value of $Z$.
+
+Consider the collection of all units having $Z\mo z$ that we received in the past and will receive in the future. Among them, a proportion $F(X\mo 0 \| Z\mo z)$ belong to class $0$, and a proportion $1 - F(X\mo 0 \| Z\mo z) \equiv F(X\mo 1 \| Z\mo z)$ to class $1$. For example these two proportions could be 74\% and 26\%. Our present unit with $Z\mo z$ is a member of this collection. The probability $\p(X\mo 0 \| Z\mo z)$ that our unit belongs to class $0$, given that its feature has value $z$, is then intuitively equal to the proportion $F(X\mo 0 \| Z\mo z)$. Analogously for $X\mo 1$.
+
+The problem is that we do not know the proportion $F(X\mo 0 \| Z\mo z)$. However, we expect it to be roughly equal to the analogous proportion seen in our sample data; let us denote the latter by $\Fs(X\mo 0 \| Z\mo z)$:
+\begin{equation}
+  \label{eq:approx_repres}
+  F(X\mo 0 \| Z\mo z) \sim \Fs(X\mo 0 \| Z\mo z) \ .
+\end{equation}
+this is indeed what we mean by saying that our sample data are \enquote{representative} of the future units. Later we shall discuss the case in which such representativeness is of different kinds. We expect the discrepancy between $F(X\mo 0 \| Z\mo z)$ and $\Fs(X\mo 0 \| Z\mo z)$ to be smaller, the larger the number of sample data. Vice versa we expect it to be larger, the smaller the number of sample data.
+
+If $Z$ can assume a continuum of values, as is the case for a brain scan for example, then the collection of units having $Z\mo z$ is more difficult to imagine. In this case each unit will be unique in its feature value -- no two brains are exactly alike.
+
+
+
+
+\mynotew{\medskip\hrule old text below}
+
+Given the unit's feature $Z$ we will assign probabilities to the possible values of the unit's class:  according to the rules of the probability calculus.
+
+
+Suppose we have a population of units or individuals characterized by a possibly multidimensional variable $Z$ and a binary variable $X \in \set{0,1}$. Different joint combinations of $(X,Z)$ values can appear in this population. Denote by $F(X\mo x, Z\mo z)$, or more simply $F(x, z)$ when there is no confusion, the number of individuals having specific joint values $(X\mo x, Z\mo z)$. This is the absolute frequency of the values $(x,z)$. We can also count the number of individuals having a specific value of $Z\mo z$, regardless of $X$; this is the marginal absolute frequency $F(z)$. It is easy to see that
+\begin{equation}
+  \label{eq:marginal_prob}
+  F(z) = F(X\mo 0, z) + F(X\mo 1, z) \equiv \sum_{x} F(x,z)\ .
+\end{equation}
+Analogously for $F(x)$.
+
+Select only the subpopulation of individuals that have a specific value $Z\mo z$. In this subpopulation, the \emph{proportion} of individuals having a specific value $X\mo x$ is $f(x\| Z\mo z)$. This is the conditional relative frequency of $x$ given that $z$. It is easy to see that
+\begin{equation}
+  \label{eq:cond_prob}
+  f(x \| z) = \frac{F(x,z)}{F(z)} \ .
+\end{equation}
+
+Now suppose that we know all these statistics about this population. An
+individual coming from this population is presented to us. We measure its
+$Z$ and obtain the value $z$. What could be the value of $X$ for this
+individual? We know that among all individuals having $Z\mo z$ (and the
+individual before us is one of them) a proportion $f(x \| z)$ has $X\mo x$.
+Thus we can say that there is a probability $f(x \| z)$ that our individual
+has $X\mo x$. And this is all we can say if we only know $Z$.
+
+\medskip
+
+For this individual we must choose among two actions $\set{a, b}$. The
+utility of performing action $a$ if the individual has $X\mo x$, and given
+any other known circumstances, is $U(a \| x)$; similarly for $b$. If we
+knew the value of $X$, say $X\mo 0$, we would simply choose the action
+leading to maximal utility:
+\begin{equation}
+  \label{eq:choice_ex}
+  \begin{aligned}
+    &\text{if}\quad U(a \| X\mo 0) > U(b \| X\mo 0) \quad\text{then choose action $a$},
+\\
+      &\text{if}\quad U(a \| X\mo 0) < U(b \| X\mo 0) \quad\text{then choose action $b$},
+\\&\text{else}\quad\text{it does not matter which action is chosen}.
+  \end{aligned}
+\end{equation}
+But we do not know the actual value of $X$. We have probabilities for the
+possible values of $X$ given that $Z\mo z$ for our individual. Since $X$ is
+uncertain, the final utilities of the two actions are also uncertain; but we can
+calculate their \emph{expected} values $\bar{U}(a \| Z \mo z)$ and
+$\bar{U}(b \| Z \mo z)$:
+\begin{equation}
+  \label{eq:expe_util}
+  \begin{aligned}
+    &\bar{U}(a \| z) \defd
+    U(a \| X\mo 0)\ f(X\mo 0 \| z) + U(a \| X\mo 1)\ f(X\mo 1 \| z) \ ,
+    \\
+    &\bar{U}(b \| z) \defd
+    U(b \| X\mo 0)\ f(X\mo 0 \| z) + U(b \| X\mo 1)\ f(X\mo 1 \| z) \ .
+\end{aligned}
+\end{equation}
+Decision theory shows that the optimal action is the one having the maximal
+expected utility. Our choice therefore proceeds as follows:
+\begin{equation}
+  \label{eq:choice_uncertain}
+  \begin{aligned}
+    &\text{if}\quad \bar{U}(a \| z) > \bar{U}(b \| z) \quad\text{then choose action $a$},
+\\
+      &\text{if}\quad \bar{U}(a \| z) < \bar{U}(b \| z) \quad\text{then choose action $b$},
+\\&\text{else}\quad\text{it does not matter which action is chosen}.
+  \end{aligned}
+\end{equation}
+
+\medskip
+
+The decision procedure just discussed is very simple and does not need any machine-learning algorithms. It could be implemented in a simple algorithm that takes as input the full statistics $F(X,Z)$ of the population, the utilities, and yields an output according to~\eqref{eq:choice_uncertain}.
+
+Our main problem is that the full statistics $F(X,Z)$ is almost universally not known. Typically we only have the statistics $\Fs(X,Z)$ of a sample of individuals that come from the population of interest or from populations that are somewhat related to the one of interest. This is where probability theory steps in. It allows us to assign probabilities to all the possible statistics $F(X,Z)$. From these probabilities we can calculate the \emph{expected} value $\uf(x \| z)$ of the conditional frequencies $f(x \| z)$. Decision theory says that the expected value $\uf(x \| z)$ should then be used, in this uncertain case, in \eqn~\eqref{eq:expe_util} in place of the unknown $f(x \| z)$. The decision procedure~\eqref{eq:choice_uncertain} can then be used again.
+
+Probability theory says that in this particular situation the probability of a particular possible statistics $F(X,Z)$ is the product of two factors having intuitive interpretations:
+\begin{itemize}
+\item the probability of observing the statistics $\Fs(X,Z)$ of our data sample, assuming the full statistics to be $F(X,Z)$. With some combinatorics it can be shown that this probability is proportional to
+  \begin{equation}
+    \label{eq:likelihood_relentropy}
+%    \exp\biggl[\sum_{X,Z}\Fs(X,Z) \ln \frac{\Fs(X,Z)}{F(X,Z)}\biggr]
+    \exp\biggl[\sum_{X,Z}\Fs(X,Z) \ln F(X,Z)\biggr]
+  \end{equation}
+  The argument of the exponential is the cross-entropy between $\Fs(X,Z)$ and $F(X,Z)$; this is the reason of its appearance in the loss function used for classifiers \autocites{bridle1990,mackay1992d}.
+
+  This factor tells us how much the possible statistics \emph{fit} the sample data; it gives more weight to statistics with a better fit.
+  
+\item the probability of the full statistics $F(X,Z)$ for reasons not present in the data, for example because of physical laws, biological plausibility, or similar.
+
+This factor tells us whether the possible statistics should be favourably considered, or maybe even discarded instead, for reasons that go beyond the data we have seen; in other words, whether the hypothetical statistics would \emph{generalize} well beyond the sample data.  
+\end{itemize}
+The final probability comes from the balance between these \enquote{fit} and \enquote{generalization} factors. Note that the first factor becomes more important as the sample size and therefore $\Fs(X,Z)$ increases; the sample data eventually determine what the most probable statistics is, if the sample is large enough.
+
+A similar probabilistic reasoning applies if our sample data come not from
+the population of interest but from a population having at least the same
+\emph{conditional} frequencies of as the one of interest, either
+$f(X \| Z)$ or $f(Z \| X)$. The latter case must be examined with care when
+our purpose is to guess $X$ from $Z$. In this case we cannot use the
+conditional frequencies $\fs(X \| Z)$ that appear in the data to obtain the
+expected value $\uf(X \| Z)$: they could be completely different from the
+ones of the population of interest. We must instead use the sample
+conditional frequencies $\fs(Z \| X)$ to obtain the expected value
+$\uf(Z \| X)$, and then combine the latter with an appropriate probability
+$P(X)$ through Bayes's theorem:
+\begin{equation}
+  \label{eq:bayes_app}
+  \frac{\uf(Z \| X)\ P(X)}{\sum_{X} \uf(Z \| X)\ P(X)} \ .
+\end{equation}
+The probability $P(X)$ cannot be obtained from the data, but requires a separate study or survey. In medical applications, where $X$ represents for example the presence or absence of a disease, the probability $P(X)$ is the base rate of the disease. Direct use of $\fs(X \| Z)$ from the data instead of \eqref{eq:bayes_app} is the \enquote{base-rate fallacy} \autocites[\sect~12.5]{russelletal1995_r2022}{axelsson2000,jennyetal2018}.
+
+
+
+
+In supervised learning the classifier is trained to learn the most probable $f(X \| Z)$ from the data. The training finds the $f(X \| Z)$ that most closely fits the conditional frequency $\fs(X \| Z)$ of the sampled data; this roughly corresponds to maximizing the first factor \eqref{eq:likelihood_relentropy} described above. The architecture and the parameter regularizer of the classifier play the role of the second factor.
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%% Bibliography
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 
+\renewcommand*{\finalnamedelim}{\addcomma\space}
+\defbibnote{prenote}{{\footnotesize (\enquote{de $X$} is listed under D,
+    \enquote{van $X$} under V, and so on, regardless of national
+    conventions.)\par}}
+% \defbibnote{postnote}{\par\medskip\noindent{\footnotesize% Note:
+%     \arxivp \mparcp \philscip \biorxivp}}
+
+\printbibliography[prenote=prenote%,postnote=postnote
+]
+
+\end{document}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%% Cut text (won't be compiled)
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 
+
+\mynotew{\scriptsize\puzzle\ [Luca] I find it very difficult to structure the paper: there seems to be issues at several levels in the development and use of binary classifiers (and classifiers in general) within machine-learning.
+
+  Here are some relevant points:
+  \begin{itemize}
+  \item There should be a distinction between \enquote{inference} (or forecast, prediction, guess) and \enquote{decision} (or action, choice). In particular, the possible situations we may be uncertain about and the possible decisions available may be completely different things. A clinician, for example, may be uncertain about \enquote{cancer} vs \enquote{non-cancer}, while the choices are about \enquote{drug treatment 1} vs \enquote{drug treatment 2} vs \enquote{surgery}.
+
+  \item Probability theory \amp\ decision theory say that in order to make self-consistent decision we need two things: (a) the probabilities for the possible situations, (b) the utilities of the decisions given each possible situation.
+
+  \item A useful \ml\ algorithm should therefore give us one of two things:
+\begin{itemize}
+\item either the \emph{probabilities} of the uncertain situations
+  (\enquote{cancer} vs \enquote{non-cancer} in the example above),
+\item or the final decision (\enquote{drug treatment 1} vs \enquote{drug
+    treatment 2} vs \enquote{surgery} in the example above).
+\end{itemize}
+Current \ml\ classifiers do not give us either: the output in the example
+above would be \enquote{cancer} vs \enquote{non-cancer}, often without
+probabilities.
+
+\item So there are two possible solutions to the problem above:
+  \begin{itemize}
+  \item We must build a classifier that outputs probabilities. The 0--1
+    outputs of current classifiers cannot properly interpreted as
+    probabilities, for various reasons.
+  \item We must build a classifier that output \emph{decisions}: so not
+    \enquote{cancer} vs \enquote{non-cancer}, but \enquote{drug treatment
+      1} vs \etc.
+  \end{itemize}
+
+\end{itemize}
+}
+
+
+\mynotew{[\puzzle\ maybe the following discussion is unnecessary:]
+  
+Several conventions can be used to fix the two redundant degrees of freedom. We can choose them in such a way that the smallest utility is 0 and the largest is 1; this is achieved by subtracting the value of the smallest utility from all elements of the utility matrix and then dividing them by the value of the largest minus the smallest; in symbols
+\begin{equation}
+  \label{eq:standardize1}
+  U_{cd} \mapsto \frac{U_{cd} - \min(U_{cd})}{\max(U_{cd}) - \min(U_{cd})} \ .
+\end{equation}
+In the lottery example this leads to
+\begin{equation}
+  \label{eq:standardize1_lottery}
+  \begin{pmatrix}
+    +10 & -1 \\ 0 & 0
+  \end{pmatrix} \mapsto
+    \begin{pmatrix}
+    1 & 0 \\ 1/11 & 1/11
+  \end{pmatrix} \ .
+\end{equation}
+Another convention is to choose them in such a way that the smallest utility is 0 and the sum of all utilities is 1; this is achieved by the transformation
+\begin{equation}
+  \label{eq:standardize2}
+  U_{cd} \mapsto
+  \frac{U_{cd} - \min(U_{cd})}{\sum_{cd}U_{cd} - \nd\nc\min(U_{cd})} \ .
+\end{equation}
+In the lottery example this leads to
+\begin{equation}
+  \label{eq:standardize1_lottery}
+  \begin{pmatrix}
+    +10 & -1 \\ 0 & 0
+  \end{pmatrix} \mapsto
+    \begin{pmatrix}
+    11/13 & 0 \\ 1/13 & 1/13
+  \end{pmatrix} \ .
+\end{equation}
+}
+
+
+
+%%% Local Variables: 
+%%% mode: LaTeX
+%%% TeX-PDF-mode: t
+%%% TeX-master: t
+%%% End: 
