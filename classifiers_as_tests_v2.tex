@@ -1,7 +1,7 @@
 \pdfoutput=1
 %% Author: PGL  Porta Mana
 %% Created: 2022-04-14T17:18:22+0200
-%% Last-Updated: 2022-05-21T13:09:22+0200
+%% Last-Updated: 2022-05-21T13:11:41+0200
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Probabilities for classifier outputs
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -1019,6 +1019,57 @@ where $B(c)$ is the base rate of class $c$. The probabilities $\p(c)$ can finall
 \label{sec:ensembling}
 
 \mynotew{\wrench\ The idea is to implement this output-to-probability conversion in several classifiers, \emph{in a generative way}. These probabilities can then be multiplied together and with a base rate, to obtain the \enquote{ensembled} probabilities of the classes. This way of doing ensembling would be a rigorous application of the probability calculus; should be superior to a majority vote or similar.}
+
+%%%%% Kjetil's
+\section{Methods and materials}
+ 
+\subsection{Data} 
+  
+The data comes from a publicly open bioactivity database called CheMBL \cite{CheMBL}. The dataset that is used in this paper was introduced in the paper by Koutsoukas et. al. \cite{DL-investigating-bioactivity}. The dataset is a source of structure-activity relationship from version 20 of ChEMBL with protein target Carbonic Anhydrase II (ChEMBL205). 
+
+
+\subsection{Pre-processing} 
+
+For our pre-processing pipeline, we use two different methods to represent the molecule, one for the RF and one for the DNN. The first method turns the molecule into a hashed bit vector of circular fingerprints called ECFP (Extended Connectivity Fingerprints) \cite{Rogers-ECFP}. From our experiments, there was little to no improvement using a 2048-bit vector over a 1024-bit vector. 
+  
+For our DNN model, the data is represented by converting the molecule into images in 224x224 size. This is done by using the SMILES string from the dataset and using RdKit \cite{rdkit} to generate a canonical graph structure of the molecule. This differs from ECFP in that it represents the actual structure of the molecule rather than properties generated from the molecule. 
+
+The dataset has in total 1631 active compounds and 16310 non-active molecules which act as decoys. In training, the active molecules are oversampled to match the same number of non-active molecules.  
+% The data is therefore unbalanced and we solve this by giving the loss functions different weights for each class, which give the same result but have better performance as oversampling.
+
+\subsection{Prediction}
+
+Virtual screening is the process of finding chemical activity in the interaction between a compound (molecule) and a target (protein). The goal of the machine learning algorithms is to find structural features or chemical properties that show that the molecule is active against the protein. DNNs have previously been shown to outperform RF and other linear models in VHTS and quantitative structure-activity relationship (QSAR) problems \cite{DL-investigating-bioactivity}. 
+  
+\subsection{Models} 
+
+The algorithms and methods used to create the models have previously been shown to give great results for all different fields.
+  
+The second model is a pre-trained residual network (ResNet) \cite{resnet} with 18 hidden layers trained on the well-known ImageNet dataset \cite{ImageNet} by using the PyTorch framework \cite{PyTorch}. ResNet has shown to outperform other pre-trained CNN models \cite{resnet}. A ResNet with 34 hidden layers showed little to no performance gain, so we chose to go with the simpler model. The model is trained is with the following hyperparameters: 
+
+\vspace{5mm}
+\begin{itemize}
+    \item \textbf{Learning rate:} 0.003 
+    \item \textbf{Optimization technique:} Stochastic Gradient Descent (SGD) 
+    \item \textbf{Activation Function:} ReLU 
+    \item \textbf{Dropout:} 50\% 
+    \item \textbf{Number of epochs:} 20 
+    \item \textbf{Loss function:} Cross Entropy Loss
+\end{itemize}
+\vspace{5mm}
+
+\subsection{Train, Validation, Test split}
+
+The data is split into four parts:
+
+\begin{itemize}
+    \item Test set 1: Uses 20\% of the total dataset for the Bayesian inference. 
+    \item Test set 2: Uses 20\% of the dataset for evaluation.
+    \item Validation set: 25\% of the remaining data for validating the model after each epoch.
+    \item Training set: The rest of the dataset is used to train the model.
+\end{itemize}
+%%%%
+
 
 \section{Mathematical details of the nonparametric density regression}
 \label{sec:nonparam_regression_details}
