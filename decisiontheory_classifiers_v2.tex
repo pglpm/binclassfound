@@ -1,7 +1,7 @@
 \pdfoutput=1
 %% Author: PGL  Porta Mana
 %% Created: 2022-03-04T07:39:34+0200
-%% Last-Updated: 2022-05-21T04:00:23+0200
+%% Last-Updated: 2022-05-21T04:15:01+0200
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Decision theory for machine-learning classifiers
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -1491,7 +1491,7 @@ In the present work we have argued that theoretical foundations for the evaluati
 These are the main results of the application of decision theory to the evaluation of classifiers:
 \begin{itemize}[--,wide]
 \item The evaluation metric depends on the specific classification problem.
-\item Such metric is completely defined by $N^{2}$ parameters, the utilities, collected in a utility matrix. Two parameters are arbitrary and represent a zero and measurement unit of the utility scale. In the binary-classification case this means that we have a two-dimensional set of possible metrics.
+\item Such metric is completely defined by $n^{2}$ parameters, called utilities, collected in a utility matrix; $n$ is the number of classes. Two parameters are arbitrary and represent a zero and measurement unit of the utility scale. In the binary-classification case this means that we have a two-dimensional set of possible metrics.
 \item A utility matrix also appears when we are uncertain about the utilities underlying a classification problem, or when we want to consider the average performance over several classification problems.
 \item The score of a classifier on a test set is simply given by its utility yield: the grand sum of the products of the elements of the utility matrix and the confusion matrix of the classifier. It is therefore a simple linear expression in the confusion matrix elements.
 \item Some popular metrics such as precision, balanced accuracy, Matthews correlation coefficient, Fowlkes-Mallows index, $F_{1}$-measure, and area under the receiver-operating-characteristic curve do not comply with decision theory. As a consequence they are affected by cognitive biases and always lead to some erroneous comparative evaluations of classifiers in every classification problem.
