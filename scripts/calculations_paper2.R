@@ -1,6 +1,6 @@
 ## Author: PGL  Porta Mana
 ## Created: 2022-05-01T09:38:48+0200
-## Last-Updated: 2022-05-20T23:54:54+0200
+## Last-Updated: 2022-05-21T11:43:54+0200
 ################
 ## Calculations for the papers
 ################
@@ -1513,9 +1513,12 @@ line2 <- xspline(x=c(0,0.1,1), y=c(0,0.75,1), shape=c(0,0.5,0), lwd=3, lty=2, bo
 tplot(x=list(line1$x, line2$x), y=list(line1$y, line2$y),
     ## x=cbind(c(0, 0.8, 1), c(0,0.1,1)),
     ##   y=cbind(c(0, 0.8*mm+0.75, 1), c(0,0.6,1)),
-      asp=1, xgrid=F, ygrid=F, ylab=expression(t), xlab=expression(f),
+      asp=1, xgrid=F, ygrid=F,
+      ylab=bquote('true-positive rate'~~italic(t)),
+      xlab=bquote('false-positive rate'~~italic(f)),
       xlim=c(0,1), ylim=c(0,1),
-      lwd=3)
+      mar=c(3.5, 4, 0, 0)+c(1,1.1,1,0),
+      lwd=3, family='Palatino')
 cols <- c(7,7,2,1,7,7)
 ltys <- c(7,7,6,5,7,7)
 lwds <- c(1,1,3,3,1,1)/2
@@ -1526,14 +1529,14 @@ for(qq in seq(inte2-2*dinte,inte1+2*dinte,by=dinte)){
 }
 tplot(x=c(0,1,1,0,0), y=c(0,0,1,1,0), type='l', add=T, col='#000000', lwd=0.5)
 
-(y-1)/(0.8*mm+0.75 - 1) = (x-1)/(0.8-1)
-y= 
+## (y-1)/(0.8*mm+0.75 - 1) = (x-1)/(0.8-1)
+## y= 
 
-    0.6/(mm*0.1) =k
-1 = mm +k
+##     0.6/(mm*0.1) =k
+## 1 = mm +k
     
-    (y-1)/(0.6 - 1) = (x-1)/(0.1-1)
-y= - (0.6 - 1)/(0.1-1) + 1
+##     (y-1)/(0.6 - 1) = (x-1)/(0.1-1)
+## y= - (0.6 - 1)/(0.1-1) + 1
 
 
 
