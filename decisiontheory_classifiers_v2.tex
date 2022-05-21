@@ -1,7 +1,7 @@
 \pdfoutput=1
 %% Author: PGL  Porta Mana
 %% Created: 2022-03-04T07:39:34+0200
-%% Last-Updated: 2022-05-21T03:47:03+0200
+%% Last-Updated: 2022-05-21T04:00:23+0200
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Decision theory for machine-learning classifiers
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -514,6 +514,15 @@ Open Science Framework \doi{10.31219/osf.io/#1}%
 
 \selectlanguage{british}\frenchspacing
 
+\definecolor{notecolour}{RGB}{68,170,153}
+%\newcommand*{\puzzle}{\maltese}
+\newcommand*{\puzzle}{{\fontencoding{U}\fontfamily{fontawesometwo}\selectfont\symbol{225}}}
+\newcommand*{\wrench}{{\fontencoding{U}\fontfamily{fontawesomethree}\selectfont\symbol{114}}}
+\newcommand*{\pencil}{{\fontencoding{U}\fontfamily{fontawesometwo}\selectfont\symbol{210}}}
+\newcommand{\mynotew}[1]{{\footnotesize\color{notecolour}\wrench\ #1}}
+\newcommand{\mynotep}[1]{{\footnotesize\color{notecolour}\pencil\ #1}}
+\newcommand{\mynotez}[1]{{\footnotesize\color{notecolour}\puzzle\ #1}}
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%% Paper's details
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -537,6 +546,7 @@ Open Science Framework \doi{10.31219/osf.io/#1}%
 % \footnotesize\epost{\email{***}{***}}}%
 %\hspace*{\stretch{1}}%
 \\\scriptsize(listed alphabetically)
+\\\mynotew{need to add addresses}
 }
 
 %\date{Draft of \today\ (first drafted \firstdraft)}
@@ -680,14 +690,6 @@ Open Science Framework \doi{10.31219/osf.io/#1}%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%% Custom macros for this file @@@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\definecolor{notecolour}{RGB}{68,170,153}
-%\newcommand*{\puzzle}{\maltese}
-\newcommand*{\puzzle}{{\fontencoding{U}\fontfamily{fontawesometwo}\selectfont\symbol{225}}}
-\newcommand*{\wrench}{{\fontencoding{U}\fontfamily{fontawesomethree}\selectfont\symbol{114}}}
-\newcommand*{\pencil}{{\fontencoding{U}\fontfamily{fontawesometwo}\selectfont\symbol{210}}}
-\newcommand{\mynotew}[1]{{\footnotesize\color{notecolour}\wrench\ #1}}
-\newcommand{\mynotep}[1]{{\footnotesize\color{notecolour}\pencil\ #1}}
-\newcommand{\mynotez}[1]{{\footnotesize\color{notecolour}\puzzle\ #1}}
 
 \newcommand*{\widebar}[1]{{\mkern1.5mu\skew{2}\overline{\mkern-1.5mu#1\mkern-1.5mu}\mkern 1.5mu}}
 \newcommand*{\myhat}[1]{{\mkern1.5mu\skew{2}\hat{\mkern-1.5mu#1\mkern-1.5mu}\mkern 1.5mu}}
