@@ -1,7 +1,7 @@
 \pdfoutput=1
 %% Author: PGL  Porta Mana
 %% Created: 2022-03-04T07:39:34+0200
-%% Last-Updated: 2022-05-21T12:17:05+0200
+%% Last-Updated: 2022-05-21T12:19:15+0200
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Decision theory for machine-learning classifiers
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -1074,9 +1074,7 @@ In the present work we do not worry about such rules, in order not to complicate
 \subsection{Admissible evaluation metrics for classification problems}
 \label{sec:admissible_metrics}
 
-Maximization of expected utility is the ground rule for rational decision making\footnote{We discuss and use it in our companion work, in preparation.}.
-
-In the present work we focus on the stage where a large number of classifications has already been made by a classifier, for example on a test dataset with $N$ data. Denote by $F_{ij}$ the number of instances in which the classifier chose class $i$ and the true class was $j$. Then $(F_{ij})$ is the confusion matrix of the classifier on this particular test set. For all instances in which the classifier chose class $i$ and the true class was $j$, a utility $U_{ij}$ is eventually gained. The total utility yielded by the classifier on the test set is therefore $\sum_{ij} U_{ij}\ F_{ij}$. Dividing by $N$ we obtain the average utility per datum, which we call the \emph{utility yield}; it can be written as
+Maximization of expected utility is the ground rule for rational decision making\footnote{We discuss and use it in our companion work, in preparation.}. In the present work we focus on the stage where a large number of classifications has already been made by a classifier, for example on a test dataset with $N$ data. Denote by $F_{ij}$ the number of instances in which the classifier chose class $i$ and the true class was $j$. Then $(F_{ij})$ is the confusion matrix of the classifier on this particular test set. For all instances in which the classifier chose class $i$ and the true class was $j$, a utility $U_{ij}$ is eventually gained. The total utility yielded by the classifier on the test set is therefore $\sum_{ij} U_{ij}\ F_{ij}$. Dividing by $N$ we obtain the average utility per datum, which we call the \emph{utility yield}; it can be written as
 \begin{empheq}[box=\widefbox]{equation}
   \label{eq:final_utility}
   \sum_{ij} U_{ij}\ C_{ij}
