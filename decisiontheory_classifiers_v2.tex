@@ -1,7 +1,7 @@
 \pdfoutput=1
 %% Author: PGL  Porta Mana
 %% Created: 2022-03-04T07:39:34+0200
-%% Last-Updated: 2022-05-21T12:13:32+0200
+%% Last-Updated: 2022-05-21T12:17:05+0200
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Decision theory for machine-learning classifiers
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -1455,9 +1455,9 @@ t'(f^{*}) = \frac{(U_{11} - U_{01})\ (1-B)}{(U_{00} - U_{10})\  B} \ .
 If we have several classifiers, each with its own curve $t(f)$, then \emph{the best is the one tangent to the line
 \begin{equation}
   \label{eq:tangent_line}
-  t = \frac{(U_{11} - U_{01})\ (1-B)}{(U_{00} - U_{10})\  B} f + \textrm{\small const.}
+  t = \frac{(U_{11} - U_{01})\ (1-B)}{(U_{00} - U_{10})\  B} f + \text{\normalfont\small const.}
 \end{equation}
-having the highest intercept.}
+that has the highest intercept.}
 
 From this criterion it can be seen geometrically that if a classifier has its curve $t(f)$ \emph{completely above} the curve of another classifier, then it must have a higher utility yield. But nothing in general can be said if the curves of the two classifiers cross. It is the tangent of a receiver-operating-characteristic curve that matters, not its subtended area. Figure~\ref{fig:auc_example} shows an example of this.
 \begin{figure}[t]
