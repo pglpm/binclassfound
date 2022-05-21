@@ -1,7 +1,7 @@
 \pdfoutput=1
 %% Author: PGL  Porta Mana
 %% Created: 2022-03-04T07:39:34+0200
-%% Last-Updated: 2022-05-21T11:51:20+0200
+%% Last-Updated: 2022-05-21T12:09:07+0200
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Decision theory for machine-learning classifiers
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -545,9 +545,9 @@ Open Science Framework \doi{10.31219/osf.io/#1}%
 % {\protect\centering ***\\%
 % \footnotesize\epost{\email{***}{***}}}%
 %\hspace*{\stretch{1}}%
-\\\scriptsize(listed alphabetically)
+\\\tiny(listed alphabetically)
 \\\footnotesize Dept of Computer science, Electrical Engineering and Mathematical Sciences\\Western Norway University of Applied Sciences, Bergen, Norway
-\\\textsuperscript{\ensuremath{\dagger}}and Mohn Medical Imaging and Visualization Centre, Bergen, Norway
+\\\textsuperscript{\ensuremath{\dagger}}\amp\ Mohn Medical Imaging and Visualization Centre, Bergen, Norway
 }
 
 %\date{Draft of \today\ (first drafted \firstdraft)}
@@ -830,7 +830,7 @@ and normalized over the total number of evaluation data:
 \end{align}
 These matrices show that the factory produces on average 50\% short- and 50\% long-durability components.
 
-The confusion matrices above lead to the following values of common evaluation metrics\autocites[Balanced accuracy:][]{brodersenetal2010}[$F_{1}$ measure:][]{vanrijsbergen1974}[Matthews correlation coefficient:][]{matthews1975}[Fowlkes-Mallows index:][]{fowlkesetal1983} for the two classifiers; blue bold indicates the classifier favoured by the metric, red the disfavoured:
+The confusion matrices above lead to the following values of common evaluation metrics\autocites[Balanced accuracy:][]{brodersenetal2010}[$F_{1}$ measure:][]{vanrijsbergen1974}[Matthews correlation coefficient:][]{matthews1975}[Fowlkes-Mallows index:][]{fowlkesetal1983} for the two classifiers. Class~$0$ is \enquote{positive}, $1$ \enquote{negative}. \textbf{\color{mypurpleblue}Blue bold} indicates the classifier favoured by the metric, {\color{myred}red} the disfavoured:
   %    F1    MCC   Prec    Acc BalAcc    Kri    AUC    Rec   Spec 
   % 0.59   0.24   0.64   0.62   0.62   0.62   0.62   0.54   0.70
   % 0.77   0.51   0.70   0.75   0.75   0.75   0.75   0.86   0.64
@@ -842,14 +842,14 @@ The confusion matrices above lead to the following values of common evaluation m
     Accuracy (also balanced accuracy) & \bad{0.62} & \good{0.75} \\
     Precision & \bad{0.64} & \good{0.70} \\
     $F_{1}$ measure & \bad{0.59} & \good{0.77} \\
-    Matthews correlation coefficient & \bad{0.24} & \good{0.51} \\
+    Matthews Correlation Coefficient & \bad{0.24} & \good{0.51} \\
     Fowlkes-Mallows index & \bad{0.59} & \good{0.78} \\
 %    Balanced accuracy & \bad{0.62} & \good{0.75} \\
-    True-positive rate (recall) & \good{0.54} & \bad{0.86} \\
-    True-negative rate (specificity) & \bad{0.70} & \good{0.64}
+    True-positive rate (recall) & \bad{0.54} & \good{0.86} \\
+    True-negative rate (specificity) & \good{0.70} & \bad{0.64}
   \end{tabular}
 \end{table}\FloatBlock
-The majority of these metrics favours classifier $\Beta$, some of them by quite a wide relative difference. Only the true-negative rate favours classifier $\Alpha$, but only by a relative difference of 9\%. % Indeed classifier $\Beta$ classifies well the short-durability components, and neither classifier is especially good at classifying the short-durability ones.
+The majority of these metrics favour classifier $\Beta$, some of them by quite a wide relative difference. Only the true-negative rate favours classifier $\Alpha$, but only by a relative difference of 9\%. % Indeed classifier $\Beta$ classifies well the short-durability components, and neither classifier is especially good at classifying the short-durability ones.
 
 The developers of the classifiers therefore recommend the employment of classifier $\Beta$.
 
