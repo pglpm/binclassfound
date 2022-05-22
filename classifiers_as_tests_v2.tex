@@ -1,7 +1,7 @@
 \pdfoutput=1
 %% Author: PGL  Porta Mana
 %% Created: 2022-04-14T17:18:22+0200
-%% Last-Updated: 2022-05-22T20:03:46+0200
+%% Last-Updated: 2022-05-22T22:17:59+0200
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Probabilities for classifier outputs
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -823,7 +823,7 @@ In summary, there is place to improve classifiers so as to
 
 Although we know how to address all these issues in principle -- the theoretical framework is for example beautifully presented in the first 18 chapters or so of Russell \amp\ Norvig's \parencites*{russelletal1995_r2022} text\mynotew{add also refs to Cheeseman} -- some of them are extremely difficult to solve. The output of sensible probabilities, issue~\ref{item:determ_statist}, is especially difficult. Some machine-learning algorithms for classification, such as support-vector machines, output only a class label. Others, such as deep networks, can output a set of real numbers that can bear some qualitative relation to the plausibilities of the classes. But they cannot be reliably interpreted as sensible probabilities, that is, as the degrees of belief assigned to the classes by a rational agent \autocites{mackay1992d,galetal2016}[\chaps~2, 12, 13]{russelletal1995_r2022}; or, in terms of \enquote{populations} \autocites{lindleyetal1981}[\sect~II.4]{fisher1956_r1967}, as the expected frequencies of the classes in the hypothetical population of units (degrees of belief and frequencies being related by de~Finetti's theorem \autocites[\chap~4]{bernardoetal1994_r2000}{dawid2013}). Algorithms that internally do perform probabilistic calculations, for instance naive-Bayes or logistic-regression classifiers \autocites[\sect~3.5, \chap~8]{murphy2012}[\sects~8.2, 4.3]{bishop2006}[\chap~10, \sect~17.4]{barber2007_r2020}, unfortunately rest on probabilistic assumptions, such as independence and particular shapes of distributions, that are often unrealistic (and their consistency with the specific application is rarely checked). Only particular classifiers such as Bayesian neural networks \autocites{nealetal2006}[\sect~5.7]{bishop2006} output sensible probabilities, but they are computationally very expensive. The stumbling block is the extremely high dimensionality of the feature space, which makes the calculation of the probabilities
 \[\P(\text{\small class}, \text{\small feature} \| \text{\small training data}) \ ,\]
-a so-called density-regression or density-estimation problem, computationally unfeasible.
+(a so-opaquely-called density-regression or density-estimation problem \autocites{ferguson1983,thorburn1986,hjort1996,dunsonetal2007}), computationally unfeasible.
 
 If we solved the issue of outputting proper probabilities then the remaining three issues would be very easy to solve. We would simply need to enumerate the possible decisions, assess their gains and losses relative to the possible true classes, and finally combine gains and losses with probabilities to determine the optimal decision. The last operation amounts to a simple matrix multiplication and maximization.
 
