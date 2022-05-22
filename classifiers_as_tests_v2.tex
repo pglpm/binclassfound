@@ -1,7 +1,7 @@
 \pdfoutput=1
 %% Author: PGL  Porta Mana
 %% Created: 2022-04-14T17:18:22+0200
-%% Last-Updated: 2022-05-22T09:55:52+0200
+%% Last-Updated: 2022-05-22T11:11:39+0200
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Probabilities for classifier outputs
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -723,6 +723,12 @@ Open Science Framework \doi{10.31219/osf.io/#1}%
 \newcommand*{\itemno}{{\fontencoding{U}\fontfamily{pzd}\selectfont\symbol{55}}}
 \newcommand*{\wf}{w}
 \newcommand*{\wfo}{w_{\textrm{g}}}
+\newcommand*{\dI}{\textit{I}}
+\newcommand*{\dII}{\textit{II}}
+\newcommand*{\tA}{\textit{A}}
+\newcommand*{\tB}{\textit{B}}
+\newcommand*{\tC}{\textit{C}}
+
 %%% Custom macros end @@@
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -740,11 +746,13 @@ Open Science Framework \doi{10.31219/osf.io/#1}%
 \abstractrunin
 \abslabeldelim{}
 \renewcommand*{\abstractname}{}
-\setlength{\absleftindent}{0pt}
-\setlength{\absrightindent}{0pt}
+\renewcommand*{\abstracttextfont}{\normalfont\footnotesize}
+% \setlength{\absleftindent}{0pt}
+% \setlength{\absrightindent}{0pt}
 \setlength{\abstitleskip}{-\absparindent}
 \begin{abstract}\labelsep 0pt%
-  \noindent \mynotep{Abstract to be written}
+  \noindent \mynotep{}
+  The present work sells probabilities for \ml\ algorithms at a bargain price. It shows that these probabilities are just what those algorithms need in order to increase their sales.
 % \\\noindent\emph{\footnotesize Note: Dear Reader
 %     \amp\ Peer, this manuscript is being peer-reviewed by you. Thank you.}
 % \par%\\[\jot]
@@ -779,8 +787,45 @@ Open Science Framework \doi{10.31219/osf.io/#1}%
 \section{What is the goal of a classification?}
 \label{sec:goal_class}
 
-Imagine you're a clinician and must take care of a patient with a particular disease. The disease may appear in two variants, \enquote{I} and \enquote{II}. For this disease there are three kinds of treatment available at present: \enquote{A}, \enquote{B}, \enquote{C}, and you must choose one of them. Their efficacy depend on the disease
+As the potential of using \ml\ algorithms in important fields such as medicine increases, the \ml\ community ought to keep in mind what the actual needs and goals in such fields are. We must avoid trying to (consciously or unconsciously) convince such fields to change their needs just to fit \ml\ solutions that are available and fashionable at the moment. Rather, we must make sure the available solutions fit those needs, and amend them if they do not.
 
+For example, imagine you're a clinician and must take care of a patient with a particular disease. The disease may appear in two variants \dI\ and \dII, and you are not sure which type affects your patient. For this disease there are three kinds of treatment \tA, \tB, \tC\ available at present, and you must choose one of them. Their efficacies, measured on some scale, depend on the disease type according to the following table:
+% \begin{table}[!h]\centering\footnotesize
+%   \caption{}\label{tab:treat_effects}
+%   \begin{tabular}{lcc}
+%     Treatment & type \tI & type \tII \\
+%     \hline
+%     Accuracy (also balanced accuracy) & \bad{0.62} & \good{0.75} \\
+%     Precision & \bad{0.64} & \good{0.70} \\
+%     $F_{1}$ measure & \bad{0.59} & \good{0.77} \\
+%     Matthews Correlation Coefficient & \bad{0.24} & \good{0.51} \\
+%     Fowlkes-Mallows index & \bad{0.59} & \good{0.78} \\
+% %    Balanced accuracy & \bad{0.62} & \good{0.75} \\
+%     True-positive rate (recall) & \bad{0.54} & \good{0.86} \\
+%     True-negative rate (specificity) & \good{0.70} & \bad{0.64}
+%   \end{tabular}
+% \end{table}\FloatBlock
+\begin{equation*}
+  % \rotatebox[origin=c]{90}{
+  %   \clap{\textit{\parbox{5em}{\centering\scriptsize treatment\\C\hspace{1em}B\hspace{1em}A}}
+  %   }}\ 
+  \smash{\text{\rotatebox[origin=c]{90}{\scriptsize treatment}}}\ 
+  \begin{matrix} {\scriptsize\tA}\\
+    {\scriptsize\tB}\\
+    {\scriptsize\tC}
+  \end{matrix}\ 
+  \overbracket[0pt]{
+      \begin{bmatrix}
+    2 & -1 \\ 1 & 1 \\ -1 & 2
+      \end{bmatrix}}^{
+      \mathclap{\text{\parbox{8em}{\centering\scriptsize disease type\\\dI\hspace{2.5em}\dII}}
+    }}
+\end{equation*}
+Treatment \tA\ is very effective for disease type \dI\ but causes some amount of harm (hence the negative value) if administered to a patient with disease type \dII; vice versa for treatment $\tC$. Treatment \tB\ does not cause harm but is less effective on either disease type.
+
+Which treatment do you choose?
+
+The answer of course depends on the patient's disease 
 
 
 \section{Sensible probabilities for classifiers}
