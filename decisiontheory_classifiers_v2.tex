@@ -1,7 +1,7 @@
 \pdfoutput=1
 %% Author: PGL  Porta Mana
 %% Created: 2022-03-04T07:39:34+0200
-%% Last-Updated: 2022-05-21T13:07:26+0200
+%% Last-Updated: 2022-05-22T09:59:32+0200
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Decision theory for machine-learning classifiers
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -692,7 +692,7 @@ Open Science Framework \doi{10.31219/osf.io/#1}%
 %%% Custom macros for this file @@@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\newcommand*{\widebar}[1]{{\mkern1.5mu\skew{2}\overline{\mkern-1.5mu#1\mkern-1.5mu}\mkern 1.5mu}}
+% \newcommand*{\widebar}[1]{{\mkern1.5mu\skew{2}\overline{\mkern-1.5mu#1\mkern-1.5mu}\mkern 1.5mu}}
 \newcommand*{\myhat}[1]{{\mkern1.5mu\skew{2}\hat{\mkern-1.5mu#1\mkern-1.5mu}\mkern 1.5mu}}
 
 %\newcommand*{\myeuro}{{\fontencoding{U}\fontfamily{eurosym}\selectfont{}\symbol{22}}}
@@ -713,23 +713,7 @@ Open Science Framework \doi{10.31219/osf.io/#1}%
 \newcommand*{\cx}{X}
 \newcommand*{\cy}{Y}
 %%
-\newcommand*{\Fs}{F_{\textrm{s}}}
-\newcommand*{\fs}{f_{\textrm{s}}}
-\newcommand*{\uF}{\bar{F}}
-\newcommand*{\uf}{\bar{f}}
-\newcommand*{\za}{\hat{0}}
-\newcommand*{\zb}{\hat{1}}
-\newcommand*{\U}{\mathrm{u}}
-\newcommand*{\UU}{\mathrm{U}}
 \newcommand*{\eu}{\bar{U}}
-\newcommand*{\nd}{n_{\textrm{d}}}
-\newcommand*{\nc}{n_{\textrm{c}}}
-\newcommand*{\Po}{\mathord{+}}
-\newcommand*{\Ne}{\mathord{-}}
-\newcommand*{\tp}{\textrm{tp}}
-\newcommand*{\fp}{\textrm{fp}}
-\newcommand*{\fn}{\textrm{fn}}
-\newcommand*{\tn}{\textrm{tn}}
 \newcommand*{\aveu}{\myhat{\mathte{U}}}
 \newcommand*{\uncu}[1]{\mathte{U}^{(#1)}}
 %%% Custom macros end @@@
@@ -794,7 +778,7 @@ Open Science Framework \doi{10.31219/osf.io/#1}%
 %   *\quad*\quad*
 % \end{center}
 \begin{quotation}
-  \small The manager of a factory which produces a kind of electronic component wishes to employ a machine-learning classifier to assess the durability of each produced component, which determines whether the it will be used in one of two possible kinds of device. The classifier should take some complex features of the component as input, and output one of the two labels \enquote{0} for \enquote{long durability}, or \enquote{1} for \enquote{short durability}, depending on the component type.
+  \small The manager of a factory which produces a kind of electronic component wishes to employ a \ml\ classifier to assess the durability of each produced component, which determines whether the it will be used in one of two possible kinds of device. The classifier should take some complex features of the component as input, and output one of the two labels \enquote{0} for \enquote{long durability}, or \enquote{1} for \enquote{short durability}, depending on the component type.
 
 Two candidate classifiers, let us call them $\Alpha$ and $\Beta$, are trained on available training data. When employed on a separate evaluation set they yield the following confusion matrices, written in the format
 \begin{equation*}
@@ -906,7 +890,7 @@ Taking the sum of the products of the gains above by the respective percentages 
 \label{sec:issues}
 
 
-The story above illustrates several well-known issues of current popular evaluation procedures for machine-learning classifiers:
+The story above illustrates several well-known issues of current popular evaluation procedures for \ml\ classifiers:
 \begin{enumerate}%[label=(\roman*)]
 \item We are faced by an avalanche of possible evaluation metrics. Often it is not clear which is the most compelling. In the story above, one could argue that the true-negative rate was the appropriate metric, in view of the great difference in gains between correct and wrong classification for class~1, compared with that for class~0.
 
@@ -933,7 +917,7 @@ One could argue that also this case there is a great economic difference between
   
 \item\label{item:hope_medical} Let us assume that some of the popular metrics identify the best algorithm \enquote{in the majority of cases} -- although it is difficult to statistically define such a majority, and no real surveys have ever been conducted to back up such an assumption. Yet, do we expect the end user to simply \emph{hope} not to belong to the unlucky minority? Is such uncertainty inevitable?
 
-  We cannot have a cavalier attitude towards this problem: life and death can depend on it in some machine-learning applications \autocites[cf.][]{howard1980}. Imagine a story analogous to the factory one, but in a medical setting instead. The classifiers should distinguish between two tumour types, requiring two different types of medical intervention. The confusion matrices are the same~\eqref{eq:CM_A} and \eqref{eq:CM_B}. Correct or incorrect classification in this case leads to the following expected remaining life lengths for patients in a specific age range:
+  We cannot have a cavalier attitude towards this problem: life and death can depend on it in some \ml\ applications \autocites[cf.][]{howard1980}. Imagine a story analogous to the factory one, but in a medical setting instead. The classifiers should distinguish between two tumour types, requiring two different types of medical intervention. The confusion matrices are the same~\eqref{eq:CM_A} and \eqref{eq:CM_B}. Correct or incorrect classification in this case leads to the following expected remaining life lengths for patients in a specific age range:
 \begin{equation}
   \label{eq:utility_example_medicine}
   \rotatebox[origin=c]{90}{
@@ -1483,7 +1467,7 @@ From this criterion it can be seen geometrically that if a classifier has its cu
 
 The evaluation and ranking of classification algorithms is a critical stage in their development and deployment. Without such evaluation we cannot even say whether an algorithm is better than another, or whether a set of parameter values for a specific algorithm is better than another set.
 
-And yet at present we have not an evaluation theory, but only an evaluation folklore: different procedures, proposed only out of intuition and of analysis of special cases, with fuzzy criteria to decide which should be used, and without rigorous theoretical foundations that should guarantee uniqueness and universality properties and absence of biases. We believe that some of the surprising failures of machine-learning \emph{in actual applications}\autocites[see \eg][]{varoquauxetal2022} come not only from biases in the choice of test datasets and similar biases, but also from the use of wrong evaluation metrics.
+And yet at present we have not an evaluation theory, but only an evaluation folklore: different procedures, proposed only out of intuition and of analysis of special cases, with fuzzy criteria to decide which should be used, and without rigorous theoretical foundations that should guarantee uniqueness and universality properties and absence of biases. We believe that some of the surprising failures of machine learning \emph{in actual applications}\autocites[see \eg][]{varoquauxetal2022} come not only from biases in the choice of test datasets and similar biases, but also from the use of wrong evaluation metrics.
 
 In the present work we have argued that theoretical foundations for the evaluation process are available in \emph{decision theory}. Its main notions and principle -- utilities and their maximization -- are very intuitive, as shown (we hope) by the introductory story.
 
@@ -1586,7 +1570,7 @@ Third, the principles of the underlying theory guide us if we have to face new p
 %%% Cut text (won't be compiled)
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 
 
-\mynotez{[Luca] I find it very difficult to structure the paper: there seems to be issues at several levels in the development and use of binary classifiers (and classifiers in general) within machine-learning.
+\mynotez{[Luca] I find it very difficult to structure the paper: there seems to be issues at several levels in the development and use of binary classifiers (and classifiers in general) within machine learning.
 
   Here are some relevant points:
   \begin{itemize}
@@ -2006,7 +1990,7 @@ expected utility. Our choice therefore proceeds as follows:
 
 \medskip
 
-The decision procedure just discussed is very simple and does not need any machine-learning algorithms. It could be implemented in a simple algorithm that takes as input the full statistics $F(X,Z)$ of the population, the utilities, and yields an output according to~\eqref{eq:choice_uncertain}.
+The decision procedure just discussed is very simple and does not need any \ml\  algorithms. It could be implemented in a simple algorithm that takes as input the full statistics $F(X,Z)$ of the population, the utilities, and yields an output according to~\eqref{eq:choice_uncertain}.
 
 Our main problem is that the full statistics $F(X,Z)$ is almost universally not known. Typically we only have the statistics $\Fs(X,Z)$ of a sample of individuals that come from the population of interest or from populations that are somewhat related to the one of interest. This is where probability theory steps in. It allows us to assign probabilities to all the possible statistics $F(X,Z)$. From these probabilities we can calculate the \emph{expected} value $\uf(x \| z)$ of the conditional frequencies $f(x \| z)$. Decision theory says that the expected value $\uf(x \| z)$ should then be used, in this uncertain case, in \eqn~\eqref{eq:expe_util} in place of the unknown $f(x \| z)$. The decision procedure~\eqref{eq:choice_uncertain} can then be used again.
 
