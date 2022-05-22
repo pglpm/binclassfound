@@ -1,7 +1,7 @@
 \pdfoutput=1
 %% Author: PGL  Porta Mana
 %% Created: 2022-04-14T17:18:22+0200
-%% Last-Updated: 2022-05-22T11:11:39+0200
+%% Last-Updated: 2022-05-22T11:40:10+0200
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Probabilities for classifier outputs
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -723,8 +723,8 @@ Open Science Framework \doi{10.31219/osf.io/#1}%
 \newcommand*{\itemno}{{\fontencoding{U}\fontfamily{pzd}\selectfont\symbol{55}}}
 \newcommand*{\wf}{w}
 \newcommand*{\wfo}{w_{\textrm{g}}}
-\newcommand*{\dI}{\textit{I}}
-\newcommand*{\dII}{\textit{II}}
+\newcommand*{\tI}{\textit{I}}
+\newcommand*{\tII}{\textit{II}}
 \newcommand*{\tA}{\textit{A}}
 \newcommand*{\tB}{\textit{B}}
 \newcommand*{\tC}{\textit{C}}
@@ -787,9 +787,11 @@ Open Science Framework \doi{10.31219/osf.io/#1}%
 \section{What is the goal of a classification?}
 \label{sec:goal_class}
 
-As the potential of using \ml\ algorithms in important fields such as medicine increases, the \ml\ community ought to keep in mind what the actual needs and goals in such fields are. We must avoid trying to (consciously or unconsciously) convince such fields to change their needs just to fit \ml\ solutions that are available and fashionable at the moment. Rather, we must make sure the available solutions fit those needs, and amend them if they do not.
+As the potential of using \ml\ algorithms in important fields such as medicine increases, the \ml\ community ought to keep in mind what the actual needs and goals in such fields are. We must avoid trying (consciously or unconsciously) to convince such fields to change their needs just to fit \ml\ solutions that are available and fashionable at the moment. Rather, we must make sure the available solutions fit those needs, and amend them if they do not.
 
-For example, imagine you're a clinician and must take care of a patient with a particular disease. The disease may appear in two variants \dI\ and \dII, and you are not sure which type affects your patient. For this disease there are three kinds of treatment \tA, \tB, \tC\ available at present, and you must choose one of them. Their efficacies, measured on some scale, depend on the disease type according to the following table:
+\medskip
+
+An example. Imagine you're a clinician and must attend to a patient with a particular disease. The disease may appear in two variants \tI\ and \tII; you are not sure which type affects your patient. For this disease there are three kinds of treatment \tA, \tB, \tC\ available at present, and you must choose one of them. Their efficacies, measured on some scale, depend on the disease type according to the following table:
 % \begin{table}[!h]\centering\footnotesize
 %   \caption{}\label{tab:treat_effects}
 %   \begin{tabular}{lcc}
@@ -813,17 +815,19 @@ For example, imagine you're a clinician and must take care of a patient with a p
   \begin{matrix} {\scriptsize\tA}\\
     {\scriptsize\tB}\\
     {\scriptsize\tC}
-  \end{matrix}\ 
+  \end{matrix}\quad
   \overbracket[0pt]{
-      \begin{bmatrix}
+      \begin{matrix}
     2 & -1 \\ 1 & 1 \\ -1 & 2
-      \end{bmatrix}}^{
-      \mathclap{\text{\parbox{8em}{\centering\scriptsize disease type\\\dI\hspace{2.5em}\dII}}
+      \end{matrix}}^{
+      \mathclap{\text{\parbox{8em}{\centering\scriptsize disease type\\\tI\hspace{2.5em}\tII}}
     }}
 \end{equation*}
-Treatment \tA\ is very effective for disease type \dI\ but causes some amount of harm (hence the negative value) if administered to a patient with disease type \dII; vice versa for treatment $\tC$. Treatment \tB\ does not cause harm but is less effective on either disease type.
+Treatment \tA\ is very effective for disease type \tI\ but causes some harm (hence the negative value) if administered to a patient of type \tII; vice versa for treatment $\tC$. Treatment \tB\ does not cause harm but is less effective on either disease type.
 
 Which treatment do you choose?
+
+You could say \enquote{the answer depends on the patient's disease type}. This would be correct if you knew the disease type: type \tI, choose treatment \tA; type \tII, choose treatment \tC. But you do \emph{not} know the disease type, so your answer cannot depend on such unavailable knowledge. Rather, the answer depends \emph{on how sure you are about the disease type}, given whatever evidence you have. This is clear in the case where you are completely uncertain about the type (and have no way to dispel your uncertainty), which could equally be either way. The rational, safest choice in this case is treatment \tB: the patient will have some relief for sure, albeit not the maximal one, and no harm will be done.
 
 The answer of course depends on the patient's disease 
 
