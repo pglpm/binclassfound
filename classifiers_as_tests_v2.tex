@@ -1,7 +1,7 @@
 \pdfoutput=1
 %% Author: PGL  Porta Mana
 %% Created: 2022-04-14T17:18:22+0200
-%% Last-Updated: 2022-05-22T11:40:10+0200
+%% Last-Updated: 2022-05-22T12:45:58+0200
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Probabilities for classifier outputs
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -818,18 +818,27 @@ An example. Imagine you're a clinician and must attend to a patient with a parti
   \end{matrix}\quad
   \overbracket[0pt]{
       \begin{matrix}
-    2 & -1 \\ 1 & 1 \\ -1 & 2
+    3 & -3 \\ 1 & 1 \\ -3 & 3
       \end{matrix}}^{
       \mathclap{\text{\parbox{8em}{\centering\scriptsize disease type\\\tI\hspace{2.5em}\tII}}
     }}
 \end{equation*}
-Treatment \tA\ is very effective for disease type \tI\ but causes some harm (hence the negative value) if administered to a patient of type \tII; vice versa for treatment $\tC$. Treatment \tB\ does not cause harm but is less effective on either disease type.
+Treatment \tA\ is very effective for disease type \tI\ but causes harm (hence the negative value) if administered to a patient of type \tII; vice versa for treatment $\tC$. Treatment \tB\ never causes harm but is much less effective on either disease type.
 
 Which treatment do you choose?
 
-You could say \enquote{the answer depends on the patient's disease type}. This would be correct if you knew the disease type: type \tI, choose treatment \tA; type \tII, choose treatment \tC. But you do \emph{not} know the disease type, so your answer cannot depend on such unavailable knowledge. Rather, the answer depends \emph{on how sure you are about the disease type}, given whatever evidence you have. This is clear in the case where you are completely uncertain about the type (and have no way to dispel your uncertainty), which could equally be either way. The rational, safest choice in this case is treatment \tB: the patient will have some relief for sure, albeit not the maximal one, and no harm will be done.
+You could say \enquote*{the answer depends on the patient's disease type}. This would be correct if you knew the disease type: type \tI, choose treatment \tA; type \tII, choose treatment \tC. But you do \emph{not} know the disease type, so cannot make your answer depend on unavailable knowledge.
 
-The answer of course depends on the patient's disease 
+Rather, the answer depends \emph{on how sure you are about the disease type}, given whatever evidence you have. This is clear in the case where you are completely uncertain about the type (and have no way to dispel your uncertainty), which could equally be either way. The rational, safest choice in this case is treatment \tB: the patient will have some relief for sure, albeit not the highest, and no harm will be done. If you are \emph{extremely sure}  that the disease type is \tI\ instead, then you recommend your patient to go for treatment \tA, as there's low risk for harm  and greater benefits to be reaped (surgical treatments are typical examples of this case: there's always some minimal risk that a surgery goes awry, but such risk may be offset by the benefits of the more likely successful surgery). Analogously if you are sure about type \tII\ instead, recommending treatment \tC.
+
+Now suppose that a shiny new \ml\ algorithm has been acquired by your clinic to help diagnosing the disease type quickly and with minimal expenses. This algorithm takes as input the results of various cheap clinical tests performed on a patient, and outputs the disease type. You use it for a new patient, it outputs \enquote{\tI}, so you go for treatment \tA, and the patient indeed gets better. You use it for further patients. Depending on the outputs \tI\ or \tII\ you administer treatments \tA\ or \tC. Every patient gets better. Bliss! At the tenth patient clinical tests are made as usual and their results fed into the algorithm. It outputs \enquote{\tII}. You therefore administer treatment \tC. But the patient is badly harmed and gets worse (and possibly sues you). To check for human error, new tests are made; the algorithm consistently outputs \enquote{\tII}. Eventually you perform an expensive and invasive but reliable test, and it turns out the disease type is \tI, not \tII. The algorithm is simply wrong; you chose the worst treatment.
+
+You ask the algorithm's vendor or developers for an explanation: \enquote*{isn't the algorithm supposed to tell me the actual disease type?}. They tell you that no, there's always a chance that the algorithm is wrong. For some input values (test results) the prediction is virtually certain, but for others there may be a larger margin of error. You tell them:
+\begin{quote}
+  Sorry, but there has been a misunderstanding then. I don't need an algorithm which gives me a best guess and at times make me almost kill my patients. I need an algorithm that tells me \emph{how sure a disease type is}. Because if there's much uncertainty I can give my patients a treatment that's guaranteed harm-free even if not the best!
+\end{quote}
+
+
 
 
 \section{Sensible probabilities for classifiers}
