@@ -1,7 +1,7 @@
 \pdfoutput=1
 %% Author: PGL  Porta Mana
 %% Created: 2022-04-14T17:18:22+0200
-%% Last-Updated: 2022-05-22T17:59:04+0200
+%% Last-Updated: 2022-05-22T20:03:46+0200
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Probabilities for classifier outputs
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -789,30 +789,48 @@ Open Science Framework \doi{10.31219/osf.io/#1}%
 
 As the potential of using \ml\ algorithms in important fields such as medicine or drug discovery increases, the \ml\ community ought to keep in mind what the actual needs and inference contexts in such fields are. We must avoid trying (consciously or unconsciously) to convince such fields to change their needs or ignore their contexts just to fit \ml\ solutions that are available and fashionable at the moment. Rather, we must make sure the that solutions fit needs \amp\ context, and amend them if they do not.
 
-Unfortunately the \ml\ mindset and approach to problems such as classification in such new important fields is often still inadequate in many respects. It reflects the simpler needs and contexts of the typical early inference problems successfully tackled by machine learning.
+The \ml\ mindset and approach to problems such as classification in such new important fields is often still inadequate in many respects. It reflects simpler needs and contexts of many early inference problems successfully tackled by machine learning.
 
 A stereotypical \enquote{cat vs dog} image classification, for instance, has four very important differences from a \enquote{disease \tI\ vs disease \tII} medical classification, or from an \enquote{active vs inactive} drug classification:
 \begin{enumerate}[label=(\roman*),wide]
-\item Nobody presumably dies or loses large amounts of money if a cat image is misclassified as dog or vice versa. But a person can die if a disease is misdiagnosed; huge capitals can be lost if an ultimately ineffective drug candidate is pursued. The \emph{gains and losses} of correct and incorrect classifications in the former problem and in the two latter problems are vastly different.
 
-\item The relation from image pixels to house-pet subject may be almost deterministic; so we are effectively extrapolating or looking for a function pixels${}\!\mapsto\!{}$pet. But the relation between medical-test scores or biochemical features on one side, and disease or drug activity on the other, is typically \emph{probabilistic}; so a function scores${}\!\mapsto\!{}$disease or features${}\!\mapsto\!{}$activity does not even exist: \emph{we are assessing a statistical relationship} instead.
+\item\label{item:gain_loss}Nobody presumably dies or loses large amounts of money if a cat image is misclassified as dog or vice versa. But a person can die if a disease is misdiagnosed; huge capitals can be lost if an ultimately ineffective drug candidate is pursued. The \emph{gains and losses} of correct and incorrect classifications in the former problem and in the two latter problems are vastly different.
 
-\item To what purpose do we try to guess whether an image's subject is a cat or a dog? For example because we must decide whether to put it in the folder \enquote{cats} or in the folder \enquote{dogs}. To what purpose do we try to guess a patient's disease or a compound's chemical activity? A clinician does not simply tell a patient \enquote*{You probably have such-and-such disease. Goodbye!}, but has to decide among many different kinds of treatments. The candidate drug compound may be discarded, pursued as it is, modified, and so on. \emph{The ultimate goal of a classification is always some kind of decision}, not just a class guess. In the cat-vs-dog problem there is a natural one-one correspondence between classes and decisions. But in the medical or drug-discovery problems \emph{the set of classes and the set of decisions are very different}, and have even different numbers of elements.
+\item\label{item:decisions_classes} To what purpose do we try to guess whether an image's subject is a cat or a dog? For example because we must decide whether to put it in the folder \enquote{cats} or in the folder \enquote{dogs}. To what purpose do we try to guess a patient's disease or a compound's chemical activity? A clinician does not simply tell a patient \enquote*{You probably have such-and-such disease. Goodbye!}, but has to decide among many different kinds of treatments. The candidate drug compound may be discarded, pursued as it is, modified, and so on. \emph{The ultimate goal of a classification is always some kind of decision}, not just a class guess. In the cat-vs-dog problem there is a natural one-one correspondence between classes and decisions. But in the medical or drug-discovery problems \emph{the set of classes and the set of decisions are very different}, and have even different numbers of elements.
 
-\item If there is a 70\% probability that an image's subject is a cat, then it is natural to put it in the folder \enquote{cats} rather than \enquote{dogs} (if the decision is only between these two folders). If there is a 70\% probability that a patient has a particular health condition, it may nonetheless be better to dismiss the patient -- that is, to behave as if there was no condition. This is the optimal decision, for example, when the only available treatment for the condition would severely harm the patient if the condition were not present. Such treatment would be recommended only if the probability for the condition were much higher than 70\%. Similarly, even if there is a 70\% probability that a candidate drug is active it may nonetheless be best to discard it. This is the economically most advantageous choice if pursuing a false-positive leads to large economic losses. \emph{The target of a classification is not what’s most probable, but what’s optimal.}
+\item\label{item:optimal_truth} If there is a 70\% probability that an image's subject is a cat, then it is natural to put it in the folder \enquote{cats} rather than \enquote{dogs} (if the decision is only between these two folders). If there is a 70\% probability that a patient has a particular health condition, it may nonetheless be better to dismiss the patient -- that is, to behave as if there was no condition. This is the optimal decision, for example, when the only available treatment for the condition would severely harm the patient if the condition were not present. Such treatment would be recommended only if the probability for the condition were much higher than 70\%. Similarly, even if there is a 70\% probability that a candidate drug is active it may nonetheless be best to discard it. This is the economically most advantageous choice if pursuing a false-positive leads to large economic losses. \emph{The target of a classification is not what’s most probable, but what’s optimal.} \mynotep{add something on proper probabilities, connecting to~\ref{item:determ_statist}}
+
+  
+\item\label{item:determ_statist} The relation from image pixels to house-pet subject may be almost deterministic; so we are effectively extrapolating or looking for a function pixels${}\!\mapsto\!{}$pet. But the relation between medical-test scores or biochemical features on one side, and disease or drug activity on the other, is typically \emph{probabilistic}; so a function scores${}\!\mapsto\!{}$disease or features${}\!\mapsto\!{}$activity does not even exist: \emph{we are assessing a statistical relationship} instead.
+
 \end{enumerate}
 
-Yet the design, training, validation of many \ml\ classifiers still
+In summary, there is place to improve classifiers so as to
 \begin{enumerate*}[label=(\roman*)]
-\item neglect actual gains and losses or treat them only qualitatively,
-\item neglect proper probabilities and often demotes density regression (statistical inference) to functional regression (interpolation),
-\item confuse classes and decisions,
-\item mistake truth for optimality.
+\item quantitatively take into account actual gains and losses,
+\item separate classes from decisions,
+\item target optimality rather than \enquote{truth}, %-- which cannot be targeted because it is unknown.
+\item output and use proper probabilities.
 \end{enumerate*}
+% \begin{enumerate*}[label=(\roman*)]
+% \item neglect actual gains and losses or treat them only qualitatively,
+% \item neglect proper probabilities and often demotes density regression (statistical inference) to functional regression (interpolation),
+% \item confuse classes and decisions,
+% \item mistake truth for optimality.
+% \end{enumerate*}
 
 \medskip
 
-The theoretical framework to correctly address all these points in a classification problem is (or ought to be) well-known in Artificial Intelligence and Machine Learning. It is for example beautifully presented in the first 18 chapters or so of Russell \amp\ Norvig's \parencites*{russelletal1995_r2022} text\mynotew{add also refs to Cheeseman}.
+Although we know how to address all these issues in principle -- the theoretical framework is for example beautifully presented in the first 18 chapters or so of Russell \amp\ Norvig's \parencites*{russelletal1995_r2022} text\mynotew{add also refs to Cheeseman} -- some of them are extremely difficult to solve. The output of sensible probabilities, issue~\ref{item:determ_statist}, is especially difficult. Some machine-learning algorithms for classification, such as support-vector machines, output only a class label. Others, such as deep networks, can output a set of real numbers that can bear some qualitative relation to the plausibilities of the classes. But they cannot be reliably interpreted as sensible probabilities, that is, as the degrees of belief assigned to the classes by a rational agent \autocites{mackay1992d,galetal2016}[\chaps~2, 12, 13]{russelletal1995_r2022}; or, in terms of \enquote{populations} \autocites{lindleyetal1981}[\sect~II.4]{fisher1956_r1967}, as the expected frequencies of the classes in the hypothetical population of units (degrees of belief and frequencies being related by de~Finetti's theorem \autocites[\chap~4]{bernardoetal1994_r2000}{dawid2013}). Algorithms that internally do perform probabilistic calculations, for instance naive-Bayes or logistic-regression classifiers \autocites[\sect~3.5, \chap~8]{murphy2012}[\sects~8.2, 4.3]{bishop2006}[\chap~10, \sect~17.4]{barber2007_r2020}, unfortunately rest on probabilistic assumptions, such as independence and particular shapes of distributions, that are often unrealistic (and their consistency with the specific application is rarely checked). Only particular classifiers such as Bayesian neural networks \autocites{nealetal2006}[\sect~5.7]{bishop2006} output sensible probabilities, but they are computationally very expensive. The stumbling block is the extremely high dimensionality of the feature space, which makes the calculation of the probabilities
+\[\P(\text{\small class}, \text{\small feature} \| \text{\small training data}) \ ,\]
+a so-called density-regression or density-estimation problem, computationally unfeasible.
+
+If we solved the issue of outputting proper probabilities then the remaining three issues would be very easy to solve. We would simply need to enumerate the possible decisions, assess their gains and losses relative to the possible true classes, and finally combine gains and losses with probabilities to determine the optimal decision. The last operation amounts to a simple matrix multiplication and maximization.
+
+
+\bigskip
+
+In the present work we propose a way to calculate class probabilities that has a low computational cost, can be applied to all commonly used classifiers and even to simple regression algorithms, does not need any architecture changes or changes in standard training procedures, and is grounded on first principles.
 
 
 \section{An example}
@@ -896,9 +914,9 @@ Clearly $\tA'$ is best for type \tI, and $\tB'$ for type \tII, but we would choo
 \section{Sensible probabilities for classifiers}
 \label{sec:intro}
 
-Some machine-learning algorithms for classification, such as support-vector machines, typically output a class label. Others, such as deep networks, output a set of real numbers. These real numbers can be positive, normalized to unity, and can bear some qualitative relation to the plausibilities of the classes. But they cannot be reliably interpreted as sensible probabilities, that is, as the degrees of belief assigned to each possible class by a rational agent \autocites{mackay1992d,galetal2016}[\chaps~2, 12, 13]{russelletal1995_r2022}; or, in terms of \enquote{populations} \autocites{lindleyetal1981}[\sect~II.4]{fisher1956_r1967}, as the expected frequencies of the classes in the hypothetical population of units (degrees of belief and frequencies being related by de~Finetti's theorem \autocites[\chap~4]{bernardoetal1994_r2000}{dawid2013}).
+% Some machine-learning algorithms for classification, such as support-vector machines, typically output a class label. Others, such as deep networks, output a set of real numbers. These real numbers can be positive, normalized to unity, and can bear some qualitative relation to the plausibilities of the classes. But they cannot be reliably interpreted as sensible probabilities, that is, as the degrees of belief assigned to each possible class by a rational agent \autocites{mackay1992d,galetal2016}[\chaps~2, 12, 13]{russelletal1995_r2022}; or, in terms of \enquote{populations} \autocites{lindleyetal1981}[\sect~II.4]{fisher1956_r1967}, as the expected frequencies of the classes in the hypothetical population of units (degrees of belief and frequencies being related by de~Finetti's theorem \autocites[\chap~4]{bernardoetal1994_r2000}{dawid2013}).
 
-Algorithms that internally do perform probabilistic calculations, such as naive-Bayes or logistic-regression classifiers \autocites[\sect~3.5, \chap~8]{murphy2012}[\sects~8.2, 4.3]{bishop2006}[\chap~10, \sect~17.4]{barber2007_r2020}, unfortunately rest on probabilistic assumptions, such as independence and particular shapes of distributions, that are often unrealistic (and their consistency with the specific application is rarely checked). Only particular classifiers such as Bayesian neural networks \autocites{nealetal2006}[\sect~5.7]{bishop2006} output sensible probabilities.
+% Algorithms that internally do perform probabilistic calculations, such as naive-Bayes or logistic-regression classifiers \autocites[\sect~3.5, \chap~8]{murphy2012}[\sects~8.2, 4.3]{bishop2006}[\chap~10, \sect~17.4]{barber2007_r2020}, unfortunately rest on probabilistic assumptions, such as independence and particular shapes of distributions, that are often unrealistic (and their consistency with the specific application is rarely checked). Only particular classifiers such as Bayesian neural networks \autocites{nealetal2006}[\sect~5.7]{bishop2006} output sensible probabilities.
 
 % It is difficult to assess sensible probabilities for the possible classes. Some \ml\ algorithms only output a class label. Others, including deep networks, output real numbers that, even if normalized and usually called \enquote{probabilities}, cannot be reliably interpreted as proper probabilities, that is, degrees of belief or frequencies in the population of interest \autocites{mackay1992d,galetal2016} conditional on the information given as input to the classifier (this is why we used the qualifier \enquote{sensible}). Algorithms that internally do perform probabilistic calculations, such as naive-Bayes or logistic-regression classifiers \autocites[\sect~3.5, \chap~8]{murphy2012}[\sects~8.2, 4.3]{bishop2006}[\chap~10, \sect~17.4]{barber2007_r2020}, unfortunately rest on probabilistic assumptions -- independence and particular shapes of distributions, for example -- that are often unrealistic (and their consistency with the specific application is rarely checked).
 % 
