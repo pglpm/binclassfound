@@ -1,7 +1,7 @@
 \pdfoutput=1
 %% Author: PGL  Porta Mana
 %% Created: 2022-04-14T17:18:22+0200
-%% Last-Updated: 2022-05-23T14:07:18+0200
+%% Last-Updated: 2022-05-23T14:32:26+0200
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Probabilities for classifier outputs
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -21,10 +21,10 @@ british%
 \newcommand*{\firstdraft}{14 April 2022}
 \newcommand*{\firstpublished}{\firstdraft}
 \newcommand*{\updated}{\ifarxiv***\else\today\fi}
-\newcommand*{\propertitle}{Probabilities for machine-learning classifiers\\ {\Large Classifiers as diagnostic tests}}
+\newcommand*{\propertitle}{A probability transducer\\for machine-learning classifiers}%\\ {\Large}}
 % title uses LARGE; set Large for smaller
 \newcommand*{\pdftitle}{\propertitle}
-\newcommand*{\headtitle}{Classifiers as diagnostic tests}
+\newcommand*{\headtitle}{Probability transducer for classifiers}
 \newcommand*{\pdfauthor}{K. Dyrland, A. S. Lundervold, P.G.L.  Porta Mana}
 \newcommand*{\headauthor}{Dyrland, Lundervold, Porta Mana}
 \newcommand*{\reporthead}{\ifarxiv\else Open Science Framework \href{https://doi.org/10.31219/osf.io/***}{\textsc{doi}:10.31219/osf.io/***}\fi}% Report number
@@ -904,7 +904,7 @@ For algorithms that yield an output much simpler than the features, such as a ve
 
 The idea above can also be informally understood in two ways. First: the classifier's output is regarded as a proxy for the feature. Second: the classifier is regarded as something analogous to a \emph{diagnostic test}, such as any common diagnostic or prognostic test used in medicine for example. We do not take diagnostic-test results at face value -- if a flu test is \enquote{positive} we do not conclude that the patient has the flu -- but rather arrive at a probability that the patient has the flu, given some statistics about results of tests performed on \enquote{verified samples} of true-positive and true-negative patients \autocites[\chap~5]{soxetal1988_r2013}[\chap~5]{huninketal2001_r2014}[see also][]{jennyetal2018}.
 
-The probability~\eqref{eq:prob_output} for a fixed class and variable output give us a sort of \enquote{calibration curve} (or calibration hypersurface for multidimensional outputs) of the classifier. See \fig\mynotep{\ldots} as an example. It must be stressed that such curve needs to be calculated only once, and it can be used for all further applications of the classifier to new units.
+The probability values~\eqref{eq:prob_output} for a fixed class and variable output give us a sort of \enquote{calibration curve} (or calibration hypersurface for multidimensional outputs) of the output-to-probability transducer for the classifier. See \fig\mynotep{\ldots} as an example. It must be stressed that such curve needs to be calculated only once, and it can be used for all further applications of the classifier to new units.
 
 \medskip
 
@@ -919,7 +919,7 @@ What is the relation between the ideal incomputable probability~\eqref{eq:prob_e
   \P(\texts{class} \| \texts{feature},\,
   \texts{classes \amp\ features of training data}) \ .
 \end{multline}
-This means that the proxy probability is generally less sharp -- and therefore more conservative, that is farther away from $0$ and $1$ -- than the ideal one.
+This means that the proxy probability is generally less sharp, that is, farther away from $0$ and $1$, than the ideal one. This is an obvious consequence of the loss of information about the feature value. Such mixing, on the other hand, only leads to more conservative probabilities and not to over-confident ones.
 
 
 
