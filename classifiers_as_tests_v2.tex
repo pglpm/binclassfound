@@ -1,7 +1,7 @@
 \pdfoutput=1
 %% Author: PGL  Porta Mana
 %% Created: 2022-04-14T17:18:22+0200
-%% Last-Updated: 2022-05-23T10:37:21+0200
+%% Last-Updated: 2022-05-23T11:48:24+0200
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Probabilities for classifier outputs
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -856,27 +856,38 @@ In order to explain the main idea, let us consider first the essentials behind a
 \end{itemize}
 which together form our \emph{training data}; and
 \begin{itemize}[resume]
-\item the feature value of a new unit.
+\item the feature value of a new unit,
 \end{itemize}
-From these we would like to infer the class of the new unit. This inference consists in probability values
+where the \enquote{units} can be widgets, images, patients, drug compounds, and so on, depending on the classification problem. From these quantities we would like to infer the class of the new unit. This inference consists in probability values (we omit \enquote{new} in equations for brevity)
 \begin{equation}
   \label{eq:prob_essential}
-  \P(\texts{class of new unit} \|
-  \texts{feature of new unit}, \texts{training data})
+  \P(\texts{class of unit} \|
+  \texts{feature of unit}, \texts{training data})
 \end{equation}
-for each possible class, obtained through the rules of the probability calculus \autocites{jaynes1994_r2003}[\chaps~12--13]{russelletal1995_r2022}{gregory2005,hailperin2011,jeffreys1939_r1983}. Combined with a set of utilities, these probabilities allow us to determine an optimal, further decision to be made among a set of alternatives. Note that the inference~\eqref{eq:prob_essential} includes deterministic interpolation, \ie\ the assessment of a function $\texts{class} \mo f(\texts{feature})$, as a special case, when the probabilities are essentially $0$s and $1$s.
+for each possible class.
+
+These probabilities are obtained through the rules of the probability calculus \autocites{jaynes1994_r2003}[\chaps~12--13]{russelletal1995_r2022}{gregory2005,hailperin2011,jeffreys1939_r1983}; in this case specifically through the so-called de~Finetti theorem \autocites[\chap~4]{bernardoetal1994_r2000}{dawid2013} which connects training data and new unit.
+
+Combined with a set of utilities, these probabilities allow us to determine an optimal, further decision to be made among a set of alternatives. Note that the inference~\eqref{eq:prob_essential} includes deterministic interpolation, \ie\ the assessment of a function $\texts{class} \mo f(\texts{feature})$, as a special case, when the probabilities are essentially $0$s and $1$s.
 
 A trained classifier should ideally output the probabilities above when applied to the new unit. Machine-learning classifiers trade this capability for computational speed -- with an increase in the latter of several orders of magnitude \autocites[to understand this trade-off in the case of neural-network classifiers see \eg][]{mackay1992,mackay1992b,mackay1992d}[\sect~16.5 esp.~16.5.7]{murphy2012}[see also the discussion by][]{selfetal1987}. Thus their output cannot be considered a probability, but \emph{it still carries information about both class and feature variables}.
 
-We can introduce the known output variable provided by the classifier in the probability~\eqref{eq:prob_essential}:
-\begin{equation}
-  \label{eq:prob_essential_output}
-  \P(\texts{class of new unit} \| \texts{output for new unit}, 
-  \texts{feature of new unit}, \texts{training data}) \ .
-\end{equation}
-This probability must be numerically equal to~\eqref{eq:prob_essential} because the classifier's output cannot give more information about the class than is already present in the feature and in the training data (the classifier would be biased otherwise).
+% We can introduce the known output variable provided by the classifier in the probability~\eqref{eq:prob_essential}:
+% \begin{equation}
+%   \label{eq:prob_essential_output}
+%   \P(\texts{class of unit} \| \texts{output for unit}, 
+%   \texts{feature of unit}, \texts{training data}) \ .
+% \end{equation}
+% This probability must be numerically equal to~\eqref{eq:prob_essential} because the classifier's output cannot give more information about the class than is already present in the feature and in the training data (the classifier would be biased otherwise).
 
-Now we acknowledge the fact that the information contained in the feature, relevant to the class, is simply inaccessible to us because of computational reasons.
+Now we acknowledge the fact that the information contained in the feature and in the training data, relevant to the class of the new unit, is simply inaccessible to us because of computational reasons. We do have access to the output for the new unit, however, which does carry information. Thus what is available to us is the probability
+\begin{equation}
+  \label{eq:prob_only_output}
+  \P(\texts{class of unit} \| \texts{output for unit}) \ .
+\end{equation}
+
+
+
 
 
 
