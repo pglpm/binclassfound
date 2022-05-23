@@ -1,7 +1,7 @@
 \pdfoutput=1
 %% Author: PGL  Porta Mana
 %% Created: 2022-04-14T17:18:22+0200
-%% Last-Updated: 2022-05-23T14:47:32+0200
+%% Last-Updated: 2022-05-23T15:23:56+0200
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Probabilities for classifier outputs
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -928,10 +928,21 @@ where $w$ are positive and normalized weights. This means that the proxy probabi
 \subsection{Calculation of the probabilities}
 \label{sec:calculation_transducer}
 
+Let us denote by $c$ the class value of a new unit, by $y$ the output of the classifier for the new unit, and by $D \defd \set{c_{i}, y_{i}}$ the classes and classifier outputs for the test data.
 
+The probabilities~\eqref{eq:prob_output}, which we rewrite as
+\begin{equation}
+  \label{eq:prob_output}
+  \p(c \| y, D) \ ,
+\end{equation}
+are calculated using standard non-parametric Bayesian methods \autocites[for introductions and reviews see \eg][]{walker2013,muelleretal2004b,hjort1996}. \enquote{Non-parametric} in this case means that we do not make any assumptions about the shape of the probability curve as a function of $y$ (contrast this with logistic regression, for instance), or about special independence between the variables (contrast this with naive-Bayes). The only assumption made -- and we believe it is quite realistic -- is that the curve must have some minimal degree of smoothness. This is an extremely elastic assumption: \fig\mynotep{\ldots} for instance shows that the probability curve can still have very sharp bends.
 
-
-
+Non-parametric methods differ from one another in the kind of \enquote{coordinate system} they select on the infinite-dimensional space of all possible probability curves, that is, in the way they represent a general positive normalized function. We choose the representation discussed by Dunson \amp\ Bhattacharya\autocites{dunsonetal2011}[see also the special case presented by][]{rasmussen1999}: a probability density $p(c,y)$, where $c$ is assumed discrete and $y$ continuous and possibly multi-dimensional, is expressed as a sum
+\begin{equation}
+  \label{eq:representation_P}
+  p(c, y) = \sum_{k} q_{k}\ A(c \| \alpha_{k})\ B(y \| \beta_{k})
+\end{equation}
+with potentially infinite terms,
 
 
 
