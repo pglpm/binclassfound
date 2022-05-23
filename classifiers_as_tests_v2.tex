@@ -1,7 +1,7 @@
 \pdfoutput=1
 %% Author: PGL  Porta Mana
 %% Created: 2022-04-14T17:18:22+0200
-%% Last-Updated: 2022-05-23T11:48:24+0200
+%% Last-Updated: 2022-05-23T14:07:18+0200
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Probabilities for classifier outputs
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -836,9 +836,11 @@ If we solved the issue of outputting proper probabilities then the remaining thr
 
 \bigskip
 
-In the present work we propose an alternative solution to calculate proper class probabilities. It consists in a sort of \enquote{transducer} that transforms the algorithm raw output into a probability. It has a low computational cost, can be applied to all commonly used classifiers and even to simple regression algorithms, does not need any changes in algorithm architecture or in training procedures, and is grounded on first principles.
+In the present work we propose an alternative solution to calculate proper class probabilities. It consists in a sort of \enquote{transducer} or \enquote{calibration curve} that transforms the algorithm's raw output into a probability. It has a low computational cost, can be applied to all commonly used classifiers and even to simple regression algorithms, does not need any changes in algorithm architecture or in training procedures, and is grounded on first principles.
 
-Moreover, this transducer allows us to calculate both the probability of class conditional on features, and \emph{the probability of features conditional on class}. In other words it allows us to use the classification algorithm in both \enquote{discriminative} and \enquote{generative} modes \autocites[\sect~21.2.3]{russelletal1995_r2022}[\sect~8.6]{murphy2012}, even if the algorithm was not designed for a generative use. The probability thus obtained is also combined with utilities to perform the final classification task.
+Moreover, this transducer has two great benefits. First, it allows us to calculate both the probability of class conditional on features, and \emph{the probability of features conditional on class}. In other words it allows us to use the classification algorithm in both \enquote{discriminative} and \enquote{generative} modes \autocites[\sect~21.2.3]{russelletal1995_r2022}[\sect~8.6]{murphy2012}, even if the algorithm was not designed for a generative use. Second, its computation automatically also yields a \enquote{probability of the probability}, or more precisely a quantification of how much the probability would change if we had further training data.
+
+The probability thus obtained is also combined with utilities to perform the final classification task.
 
 We show on a concrete dataset that this solution always leads to an improvement in classification, in some cases with a relative increase as high as 30\%.
 
@@ -849,7 +851,9 @@ The main idea is explained in \sect~\ref{sec:transducer}. Section\mynotep{\ldots
 \section{An output-to-probability transducer}
 \label{sec:transducer}
 
-In order to explain the main idea, let us consider first the essentials behind a classification (or regression) problem. We have the following quantities:
+We here explain the main idea in informal and intuitive terms, and leave to appendix\mynotep{\ldots} stricter logical derivation with more mathematical details.
+
+Let us consider first the essentials behind a classification (or regression) problem. We have the following quantities:
 \begin{itemize}
 \item the \emph{feature} values of a set of known units,
 \item the \emph{classes} of the same set of units,
@@ -861,8 +865,8 @@ which together form our \emph{training data}; and
 where the \enquote{units} can be widgets, images, patients, drug compounds, and so on, depending on the classification problem. From these quantities we would like to infer the class of the new unit. This inference consists in probability values (we omit \enquote{new} in equations for brevity)
 \begin{equation}
   \label{eq:prob_essential}
-  \P(\texts{class of unit} \|
-  \texts{feature of unit}, \texts{training data})
+  \P(\texts{class of unit} \| \texts{feature of unit},\,
+  \texts{classes \amp\ features of training data})
 \end{equation}
 for each possible class.
 
@@ -880,11 +884,44 @@ A trained classifier should ideally output the probabilities above when applied 
 % \end{equation}
 % This probability must be numerically equal to~\eqref{eq:prob_essential} because the classifier's output cannot give more information about the class than is already present in the feature and in the training data (the classifier would be biased otherwise).
 
-Now we acknowledge the fact that the information contained in the feature and in the training data, relevant to the class of the new unit, is simply inaccessible to us because of computational reasons. We do have access to the output for the new unit, however, which does carry information. Thus what is available to us is the probability
+Now we acknowledge the fact that the information contained in the feature and in the training data, relevant to the class of the new unit, is simply inaccessible to us because of computational limitations. We do have access to the output for the new unit, however, which does carry relevant information. Thus want to calculate a probability such as $\P(\texts{class of unit} \| \texts{output for unit})$.
+
+To calculate this probability, however, it is necessary to have examples of further pairs $(\texts{class of unit}, \texts{output for unit})$, of which the new unit's pair can be considered a representative sample and vice versa -- exactly for the same reason why we need training data in the first place.
+
+For this purpose, can we use the pairs $(\texts{class of unit}, \texts{output for unit})$ of the training data? This would be very convenient, as those pairs are readily available. But answer is no. The reason is that the outputs of the training data are produced from the features \emph{and the classes} jointly; this is the very point of the training phase. There is therefore a direct informational dependence between the classes and the outputs of the training data. For the new unit, on the other hand, the classifier produces its output from the feature alone. The new unit is not a representative sample of the training data.
+
+We need a data set where the outputs are generated by simple application of the algorithm to the feature, as it would occur in its concrete use, and the classes are known. The \emph{test data} of standard \ml\ procedures are exactly what we need. The new unit can be considered a representative sample of the test data and vice versa.
+
+The probability we arrive at is therefore
 \begin{equation}
-  \label{eq:prob_only_output}
-  \P(\texts{class of unit} \| \texts{output for unit}) \ .
+  \label{eq:prob_output}
+  \P(\texts{class of unit} \| \texts{output for unit},\,
+  \texts{classes \amp\ outputs for test data}) \ .
 \end{equation}
+For algorithms that yield an output much simpler than the features, such as a vector of few real components, the probability above can be exactly calculated. Thus, once we obtain the classifier's output for the new unit, we can calculate a probability for the new unit's class.
+
+\medskip
+
+The idea above can also be informally understood in two ways. First: the classifier's output is regarded as a proxy for the feature. Second: the classifier is regarded as something analogous to a \emph{diagnostic test}, such as any common diagnostic or prognostic test used in medicine for example. We do not take diagnostic-test results at face value -- if a flu test is \enquote{positive} we do not conclude that the patient has the flu -- but rather arrive at a probability that the patient has the flu, given some statistics about results of tests performed on \enquote{verified samples} of true-positive and true-negative patients \autocites[\chap~5]{soxetal1988_r2013}[\chap~5]{huninketal2001_r2014}[see also][]{jennyetal2018}.
+
+The probability~\eqref{eq:prob_output} for a fixed class and variable output give us a sort of \enquote{calibration curve} (or calibration hypersurface for multidimensional outputs) of the classifier. See \fig\mynotep{\ldots} as an example. It must be stressed that such curve needs to be calculated only once, and it can be used for all further applications of the classifier to new units.
+
+\medskip
+
+What is the relation between the ideal incomputable probability~\eqref{eq:prob_essential} and the probability~\eqref{eq:prob_output} obtained by proxy? It can be shown that the two are related by convex combination or mixing:
+\begin{multline}
+  \label{eq:relation_two_probs}
+  \P(\texts{class} \| \texts{output},\,
+  \texts{classes \amp\ outputs for test data}) ={}\\[\jot]
+  \shoveleft{\sum_{\mathclap{\substack{\text{feature}\\\text{training data}}}}
+  w(\texts{feature}, \texts{training data})
+\times{}}\\[-1.5em]
+  \P(\texts{class} \| \texts{feature},\,
+  \texts{classes \amp\ features of training data}) \ .
+\end{multline}
+This means that the proxy probability is generally less sharp -- and therefore more conservative, that is farther away from $0$ and $1$ -- than the ideal one.
+
+
 
 
 
