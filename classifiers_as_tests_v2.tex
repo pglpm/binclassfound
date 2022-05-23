@@ -1,7 +1,7 @@
 \pdfoutput=1
 %% Author: PGL  Porta Mana
 %% Created: 2022-04-14T17:18:22+0200
-%% Last-Updated: 2022-05-23T09:41:46+0200
+%% Last-Updated: 2022-05-23T10:37:21+0200
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Probabilities for classifier outputs
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -729,7 +729,7 @@ Open Science Framework \doi{10.31219/osf.io/#1}%
 \newcommand*{\tA}{\textit{A}}
 \newcommand*{\tB}{\textit{B}}
 \newcommand*{\tC}{\textit{C}}
-
+\newcommand*{\texts}[1]{\text{\small #1}}
 %%% Custom macros end @@@
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -802,11 +802,11 @@ A stereotypical \enquote{cat vs dog} image classification, for instance, has fou
 \item\label{item:optimal_truth} If there is a 70\% probability that an image's subject is a cat, then it is natural to put it in the folder \enquote{cats} rather than \enquote{dogs} (if the decision is only between these two folders). If there is a 70\% probability that a patient has a particular health condition, it may nonetheless be better to dismiss the patient -- that is, to behave as if there was no condition. This is the optimal decision, for example, when the only available treatment for the condition would severely harm the patient if the condition were not present. Such treatment would be recommended only if the probability for the condition were much higher than 70\%. Similarly, even if there is a 70\% probability that a candidate drug is active it may nonetheless be best to discard it. This is the economically most advantageous choice if pursuing a false-positive leads to large economic losses. \emph{The target of a classification is not what’s most probable, but what’s optimal.} \mynotep{add something on proper probabilities, connecting to~\ref{item:determ_statist}}
 
   
-\item\label{item:determ_statist} The relation from image pixels to house-pet subject may be almost deterministic; so we are effectively extrapolating or looking for a function $\text{\small pet} \mo f(\text{\small pixels})$ contaminated by little noise. But the relation between medical-test scores or biochemical features on one side, and disease or drug activity on the other, is typically \emph{probabilistic}; so a function $\text{\small disease} \mo f(\text{\small scores})$
+\item\label{item:determ_statist} The relation from image pixels to house-pet subject may be almost deterministic; so we are effectively extrapolating or looking for a function $\texts{pet} \mo f(\texts{pixels})$ contaminated by little noise. But the relation between medical-test scores or biochemical features on one side, and disease or drug activity on the other, is typically \emph{probabilistic}; so a function $\texts{disease} \mo f(\texts{scores})$
   % scores${}\!\mapsto\!{}$disease
-  or $\text{\small activity} \mo f(\text{\small features})$
+  or $\texts{activity} \mo f(\texts{features})$
   % features${}\!\mapsto\!{}$activity
-  does not even exist. \emph{We are assessing statistical relationships} $\P(\text{\small disease} , \text{\small scores})$ or $\P(\text{\small activity} , \text{\small features})$ instead, which include deterministic ones as special cases.
+  does not even exist. \emph{We are assessing statistical relationships} $\P(\texts{disease} , \texts{scores})$ or $\P(\texts{activity} , \texts{features})$ instead, which include deterministic ones as special cases.
 
 \end{enumerate}
 
@@ -827,7 +827,7 @@ In summary, there is place to improve classifiers so as to
 \medskip
 
 Although we know how to address all these issues in principle -- the theoretical framework is for example beautifully presented in the first 18 chapters or so of Russell \amp\ Norvig's \parencites*{russelletal1995_r2022} text\mynotew{add also refs to Cheeseman} -- some of them are extremely difficult to solve. The output of sensible probabilities, issue~\ref{item:determ_statist}, is especially difficult. Some machine-learning algorithms for classification, such as support-vector machines, output only a class label. Others, such as deep networks, output a set of real numbers that can bear some qualitative relation to the plausibilities of the classes. But these numbers cannot be reliably interpreted as proper probabilities, that is, as the degrees of belief assigned to the classes by a rational agent \autocites{mackay1992d,galetal2016}[\chaps~2, 12, 13]{russelletal1995_r2022}; or, in terms of \enquote{populations} \autocites{lindleyetal1981}[\sect~II.4]{fisher1956_r1967}, as the expected frequencies of the classes in the hypothetical population of units (degrees of belief and frequencies being related by de~Finetti's theorem \autocites[\chap~4]{bernardoetal1994_r2000}{dawid2013}). Algorithms that internally do perform probabilistic calculations, for instance naive-Bayes or logistic-regression classifiers \autocites[\sect~3.5, \chap~8]{murphy2012}[\sects~8.2, 4.3]{bishop2006}[\chap~10, \sect~17.4]{barber2007_r2020}, unfortunately rest on probabilistic assumptions, such as independence and particular shapes of distributions, that are often unrealistic (and their consistency with the specific application is rarely checked). Only particular classifiers such as Bayesian neural networks \autocites{nealetal2006}[\sect~5.7]{bishop2006} output sensible probabilities, but they are computationally very expensive. The stumbling block is the extremely high dimensionality of the feature space, which makes the calculation of the probabilities
-\[\P(\text{\small class}, \text{\small feature} \| \text{\small training data}) \ ,\]
+\[\P(\texts{class}, \texts{feature} \| \texts{training data}) \ ,\]
 (a problem opaquely called \enquote{density regression} or \enquote{density estimation}\autocites{ferguson1983,thorburn1986,hjort1996,dunsonetal2007}), computationally unfeasible.
 
 If we solved the issue of outputting proper probabilities then the remaining three issues would be very easy to solve. We would simply need to enumerate the possible decisions, assess their utilities relative to the possible true classes, and finally combine utilities with probabilities to determine the optimal decision. The last operation amounts to a simple matrix multiplication and maximization.
@@ -854,20 +854,29 @@ In order to explain the main idea, let us consider first the essentials behind a
 \item the \emph{feature} values of a set of known units,
 \item the \emph{classes} of the same set of units,
 \end{itemize}
-which together form our \emph{training data},
+which together form our \emph{training data}; and
 \begin{itemize}[resume]
 \item the feature value of a new unit.
 \end{itemize}
 From these we would like to infer the class of the new unit. This inference consists in probability values
 \begin{equation}
   \label{eq:prob_essential}
-  \P(\text{\small class of new unit} \|
-  \text{\small feature of new unit}, \text{\small training data})
+  \P(\texts{class of new unit} \|
+  \texts{feature of new unit}, \texts{training data})
 \end{equation}
-for each possible class, obtained through the rules of the probability calculus \autocites{jaynes1994_r2003}[\chaps~12--13]{russelletal1995_r2022,gregory2005,hailperin2011,jeffreys1939_r1983}. Combined with a set of utilities, these probabilities allow us to determine an optimal, further decision to be made among a set of alternatives. Note that the inference~\eqref{eq:prob_essential} includes deterministic interpolation, that is the assessment of a function $\text{\small class} \mo f(\text{\small feature})$, as a special case, when the probabilities are essentially $0$s and $1$s.
+for each possible class, obtained through the rules of the probability calculus \autocites{jaynes1994_r2003}[\chaps~12--13]{russelletal1995_r2022}{gregory2005,hailperin2011,jeffreys1939_r1983}. Combined with a set of utilities, these probabilities allow us to determine an optimal, further decision to be made among a set of alternatives. Note that the inference~\eqref{eq:prob_essential} includes deterministic interpolation, \ie\ the assessment of a function $\texts{class} \mo f(\texts{feature})$, as a special case, when the probabilities are essentially $0$s and $1$s.
 
-A trained classifier should ideally yield the probabilities above. Machine-learning classifiers trade this capability for computational speed -- with an increase in the latter of several orders of magnitude \autocites[to understand this trade-off in the case of neural-network classifiers see \eg][]{mackay1992,mackay1992b}[\sect~16.5, esp.~16.5.7]{murphy2012}.
+A trained classifier should ideally output the probabilities above when applied to the new unit. Machine-learning classifiers trade this capability for computational speed -- with an increase in the latter of several orders of magnitude \autocites[to understand this trade-off in the case of neural-network classifiers see \eg][]{mackay1992,mackay1992b,mackay1992d}[\sect~16.5 esp.~16.5.7]{murphy2012}[see also the discussion by][]{selfetal1987}. Thus their output cannot be considered a probability, but \emph{it still carries information about both class and feature variables}.
 
+We can introduce the known output variable provided by the classifier in the probability~\eqref{eq:prob_essential}:
+\begin{equation}
+  \label{eq:prob_essential_output}
+  \P(\texts{class of new unit} \| \texts{output for new unit}, 
+  \texts{feature of new unit}, \texts{training data}) \ .
+\end{equation}
+This probability must be numerically equal to~\eqref{eq:prob_essential} because the classifier's output cannot give more information about the class than is already present in the feature and in the training data (the classifier would be biased otherwise).
+
+Now we acknowledge the fact that the information contained in the feature, relevant to the class, is simply inaccessible to us because of computational reasons.
 
 
 
@@ -969,20 +978,20 @@ We instead propose \emph{to treat the classifier's output just like a diagnostic
 This approach differs from the computationally infeasible one discussed above in that we are calculating the computationally easier probability
 \begin{equation}
   \label{eq:approach_p_test}
-  \p(\text{\small class} \| \text{\small output})
+  \p(\texts{class} \| \texts{output})
 \end{equation}
 rather than
 \begin{equation}
   \label{eq:approach_p_feature}
-  \p(\text{\small class} \| \text{\small feature}) \ .
+  \p(\texts{class} \| \texts{feature}) \ .
 \end{equation}
 The former probability, as we saw in \eqn~\eqref{eq:screening}, is the marginal
 \begin{equation}
   \label{eq:approach_p_marginal}
-  \p(\text{\small class} \| \text{\small output}) =
+  \p(\texts{class} \| \texts{output}) =
   \sum_{\text{\clap{feature}}}
-  \p(\text{\small class} \| \text{\small feature})\times
-  \p(\text{\small feature} \| \text{\small output}) \ .
+  \p(\texts{class} \| \texts{feature})\times
+  \p(\texts{feature} \| \texts{output}) \ .
 \end{equation}
 We can thus think of this approach as a marginalization over the possible features, which is a necessary operation as have no effective access to them.
 
@@ -995,7 +1004,7 @@ This approach also offers the following advantages:
 %\item For one classifier, the assessment of this function needs to be done only once.
 \item It does not make any assumptions such as linearity or gaussianity.% , except for the (unavoidable) assumption of continuity \mynotew{\wrench\ need to explain this better}
 \item It yields not only the probability distribution for the classes, but also a measure of how much this distribution could change if we collected more test data (the \enquote{probability of the probability}, so to speak).
-\item It allows us to use the classifier both in a discriminative and generative way. That is, we can use either\; $\p(\text{\small class} \| \text{\small output})$, or\; $\p(\text{\small output} \| \text{\small class})$\; in conjunction with Bayes's theorem. The latter approach enables us to avoid possible base-rate fallacies \autocites[\sect~12.5]{russelletal1995_r2022}{axelsson2000,jennyetal2018}.
+\item It allows us to use the classifier both in a discriminative and generative way. That is, we can use either\; $\p(\texts{class} \| \texts{output})$, or\; $\p(\texts{output} \| \texts{class})$\; in conjunction with Bayes's theorem. The latter approach enables us to avoid possible base-rate fallacies \autocites[\sect~12.5]{russelletal1995_r2022}{axelsson2000,jennyetal2018}.
 \item It can be seamlessly integrated with a utility matrix to compute the optimal class, as shown in the companion work \mynotew{\pencil}.
 \end{itemize}
 
@@ -1016,7 +1025,7 @@ Let us denote the class variable by $C$ and the classifier-output variable by $X
 \end{equation}
 We call them \emph{calibration data}. Let us emphasize that these are not pairs of class\,\amp\,feature values, but pairs of class\,\amp\,classifier-output values, obtained as described in \sect~\ref{sec:implem_idea}.
 
-Instead of the conditional probability $\p(\text{\small class} \| \text{\small output})$, that is, $\p(C \| X)$,  we can actually calculate the joint probability
+Instead of the conditional probability $\p(\texts{class} \| \texts{output})$, that is, $\p(C \| X)$,  we can actually calculate the joint probability
 \begin{equation}
   \label{eq:approach_p_joint}
   \p(C, X)
@@ -1396,11 +1405,11 @@ In using \ml\ classifiers one typically considers situations where the set of av
 %   \label{eq:utility_testset}
 %   \begin{aligned}
 % %  \sum_{d=1}^{\nd}\sum_{c=1}^{\nc} U_{dc}\, M_{dc}
-% \text{\small total:}&\quad  \sum_{d=1}^{\nd  - 1}\sum_{c=1}^{\nc} (U_{dc} - U_{\nd c})\, M_{dc}
+% \texts{total:}&\quad  \sum_{d=1}^{\nd  - 1}\sum_{c=1}^{\nc} (U_{dc} - U_{\nd c})\, M_{dc}
 %   + \sum_{c=1}^{\nc} U_{\nd c}\,N_{c}
 %    \\
 %   % \sum_{d=1}^{\nd}\sum_{c=1}^{\nc} U_{dc}\, \frac{M_{dc}}{N}
-% \text{\small average:}&\quad  \sum_{d=1}^{\nd  - 1}\sum_{c=1}^{\nc} (U_{dc} - U_{\nd c})\, \frac{M_{dc}}{N}
+% \texts{average:}&\quad  \sum_{d=1}^{\nd  - 1}\sum_{c=1}^{\nc} (U_{dc} - U_{\nd c})\, \frac{M_{dc}}{N}
 %   + \sum_{c=1}^{\nc} U_{\nd c}\,\frac{N_{c}}{N} \ .
 %   \end{aligned}
 % \end{equation}
@@ -1427,11 +1436,11 @@ In using \ml\ classifiers one typically considers situations where the set of av
 % \begin{equation}
 %   \label{eq:utility_testset_binary}
 %   \begin{aligned}
-%     \text{\small total:}&\quad
+%     \texts{total:}&\quad
 %                           x_{\tp}\, M_{\tp} + x_{\fp}\, M_{\fp} +
 %                           (y_{\Po}\, N_{\Po} + y_{\Ne}\, N_{\Ne})
 %     \\
-%     \text{\small average:}&\quad
+%     \texts{average:}&\quad
 %                             x_{\tp}\, \frac{M_{\tp}}{N} + x_{\fp}\, \frac{M_{\fp}}{N} +
 %                             \Bigl(y_{\Po}\, \frac{N_{\Po}}{N} + y_{\Ne}\, \frac{N_{\Ne}}{N}\Bigr) \ .
 %   \end{aligned}
