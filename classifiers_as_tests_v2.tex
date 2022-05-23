@@ -1,7 +1,7 @@
 \pdfoutput=1
 %% Author: PGL  Porta Mana
 %% Created: 2022-04-14T17:18:22+0200
-%% Last-Updated: 2022-05-23T06:34:12+0200
+%% Last-Updated: 2022-05-23T09:41:46+0200
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Probabilities for classifier outputs
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -264,6 +264,7 @@ british%
 \usepackage[backend=biber,mcite,%subentry,
 citestyle=authoryear-comp,bibstyle=pglpm-authoryear,autopunct=false,sorting=ny,sortcites=false,natbib=false,maxcitenames=2,maxbibnames=8,minbibnames=8,giveninits=true,uniquename=false,uniquelist=false,maxalphanames=1,block=space,hyperref=true,defernumbers=false,useprefix=true,sortupper=false,language=british,parentracker=false,autocite=footnote]{biblatex}
 \DeclareSortingTemplate{ny}{\sort{\field{sortname}\field{author}\field{editor}}\sort{\field{year}}}
+\DeclareFieldFormat{postnote}{#1}
 \iffalse\makeatletter%%% replace parenthesis with brackets
 \newrobustcmd*{\parentexttrack}[1]{%
   \begingroup
@@ -835,81 +836,39 @@ If we solved the issue of outputting proper probabilities then the remaining thr
 
 \bigskip
 
-In the present work we propose an alternative solution to calculate proper class probabilities. It has a low computational cost, can be applied to all commonly used classifiers and even to simple regression algorithms, does not need any changes in algorithm architecture or in training procedures, and is grounded on first principles. It consists in a sort of \enquote{transducer} that transforms the algorithm raw output into a probability. We moreover combine the probability thus obtained with utilities to perform the final classification.
+In the present work we propose an alternative solution to calculate proper class probabilities. It consists in a sort of \enquote{transducer} that transforms the algorithm raw output into a probability. It has a low computational cost, can be applied to all commonly used classifiers and even to simple regression algorithms, does not need any changes in algorithm architecture or in training procedures, and is grounded on first principles.
+
+Moreover, this transducer allows us to calculate both the probability of class conditional on features, and \emph{the probability of features conditional on class}. In other words it allows us to use the classification algorithm in both \enquote{discriminative} and \enquote{generative} modes \autocites[\sect~21.2.3]{russelletal1995_r2022}[\sect~8.6]{murphy2012}, even if the algorithm was not designed for a generative use. The probability thus obtained is also combined with utilities to perform the final classification task.
 
 We show on a concrete dataset that this solution always leads to an improvement in classification, in some cases with a relative increase as high as 30\%.
 
+The main idea is explained in \sect~\ref{sec:transducer}. Section\mynotep{\ldots} explains how the resulting probabilities are combined with utilities to perform classification. In \sect\mynotep{\ldots} we apply the transducer to\mynotep{\ldots}
 
-\section{An example}
-\label{sec:example}
-\mynotew{will delete this section}
+\mynotew{finish synopsis}
+
+\section{An output-to-probability transducer}
+\label{sec:transducer}
+
+In order to explain the main idea, let us consider first the essentials behind a classification (or regression) problem. We have the following quantities:
+\begin{itemize}
+\item the \emph{feature} values of a set of known units,
+\item the \emph{classes} of the same set of units,
+\end{itemize}
+which together form our \emph{training data},
+\begin{itemize}[resume]
+\item the feature value of a new unit.
+\end{itemize}
+From these we would like to infer the class of the new unit. This inference consists in probability values
+\begin{equation}
+  \label{eq:prob_essential}
+  \P(\text{\small class of new unit} \|
+  \text{\small feature of new unit}, \text{\small training data})
+\end{equation}
+for each possible class, obtained through the rules of the probability calculus \autocites{jaynes1994_r2003}[\chaps~12--13]{russelletal1995_r2022,gregory2005,hailperin2011,jeffreys1939_r1983}. Combined with a set of utilities, these probabilities allow us to determine an optimal, further decision to be made among a set of alternatives. Note that the inference~\eqref{eq:prob_essential} includes deterministic interpolation, that is the assessment of a function $\text{\small class} \mo f(\text{\small feature})$, as a special case, when the probabilities are essentially $0$s and $1$s.
+
+A trained classifier should ideally yield the probabilities above. Machine-learning classifiers trade this capability for computational speed -- with an increase in the latter of several orders of magnitude \autocites[to understand this trade-off in the case of neural-network classifiers see \eg][]{mackay1992,mackay1992b}[\sect~16.5, esp.~16.5.7]{murphy2012}.
 
 
-An example. Imagine you're a clinician and must attend to a patient with a particular disease. The disease may appear in two variants \tI\ and \tII; you are not sure which type affects your patient. For this disease there are three kinds of treatment \tA, \tB, \tC\ available at present, and you must choose one of them. Their efficacies, measured on some scale, depend on the disease type according to the following table:
-% \begin{table}[!h]\centering\footnotesize
-%   \caption{}\label{tab:treat_effects}
-%   \begin{tabular}{lcc}
-%     Treatment & type \tI & type \tII \\
-%     \hline
-%     Accuracy (also balanced accuracy) & \bad{0.62} & \good{0.75} \\
-%     Precision & \bad{0.64} & \good{0.70} \\
-%     $F_{1}$ measure & \bad{0.59} & \good{0.77} \\
-%     Matthews Correlation Coefficient & \bad{0.24} & \good{0.51} \\
-%     Fowlkes-Mallows index & \bad{0.59} & \good{0.78} \\
-% %    Balanced accuracy & \bad{0.62} & \good{0.75} \\
-%     True-positive rate (recall) & \bad{0.54} & \good{0.86} \\
-%     True-negative rate (specificity) & \good{0.70} & \bad{0.64}
-%   \end{tabular}
-% \end{table}\FloatBlock
-\begin{equation*}
-  {\text{\rotatebox[origin=c]{90}{\scriptsize treatment}}}\ 
-  \begin{matrix} {\scriptsize\tA}\\
-    {\scriptsize\tB}\\
-    {\scriptsize\tC}
-  \end{matrix}\quad
-  \overbracket[0pt]{
-      \begin{matrix*}[r]
-    2 & -2 \\ 1 & 1 \\ -2 & 2
-      \end{matrix*}}^{
-      \mathclap{\text{\parbox{8em}{\centering\scriptsize disease type\\\hphantom{$-{}$}\tI\hspace{2em}\hphantom{$-{}$}\tII}}
-    }}
-\end{equation*}
-Treatment \tA\ is very effective for disease type \tI\ but causes harm (hence the negative value) if administered to a patient of type \tII; vice versa for treatment $\tC$. Treatment \tB\ never causes harm but is less effective on either disease type.
-
-Which treatment do you choose?
-
-You could say \enquote*{the answer depends on the patient's disease type}. This would be correct if you knew the disease type: type \tI, choose treatment \tA; type \tII, choose treatment \tC. But you do \emph{not} know the disease type, so cannot make your answer depend on unavailable knowledge.
-
-Rather, the answer depends \emph{on how sure you are about the disease type}, given whatever evidence you have. This is clear in the case where you are completely uncertain about the type (and have no way to dispel your uncertainty), which could equally be either way. The rational, safest choice in this case is treatment \tB: the patient will have some relief for sure, albeit not the highest, and no harm will be done. If you are \emph{extremely sure}  that the disease type is \tI\ instead, then you recommend your patient to go for treatment \tA, as there's low risk for harm  and greater benefits to be reaped (surgical treatments are typical examples of this case: there's always some minimal risk that a surgery goes awry, but such risk may be offset by the benefits of the more likely successful surgery). Analogously if you are sure about type \tII\ instead, recommending treatment \tC.
-
-Now suppose that a shiny new \ml\ algorithm has been acquired by your clinic to help diagnosing the disease type quickly and with minimal expenses. This algorithm takes as input the results of various cheap clinical tests performed on a patient, and outputs the disease type. You use it for your patient, it outputs \enquote{\tI}, so you go for treatment \tA, and the patient indeed gets better. You use it for two more patients. The outputs are \tII\ and \tI, so you administer treatments \tC\ and \tA. Both patients get better. Bliss! You use the algorithm for a third patient. Clinical tests are again made and their results fed into the algorithm. It outputs \enquote{\tII}. You therefore administer treatment \tC. But the patient is badly harmed and gets worse (and possibly sues you). To check for human error, the tests are repeated; the algorithm consistently outputs \enquote{\tII}. Eventually you perform an expensive and invasive but reliable test. It turns out the disease type is \tI, not \tII. The algorithm is simply wrong, and you chose the worst treatment.
-
-You ask the algorithm's vendor or developers for an explanation: \enquote*{isn't the algorithm supposed to tell me the actual disease type?}. They tell you that no, there's always a chance that the algorithm is wrong, depending on the case. For some input values (test results) the prediction is virtually certain, but for others there may be a larger margin of error. You tell them:
-\begin{quote}
-  Sorry, but there has been a misunderstanding then. I don't need an algorithm that gives me a best guess, making me sometimes almost kill my patients. \emph{I need an algorithm that tells me how sure a disease type is}. Because if there's much uncertainty I can give my patients a treatment that's guaranteed harm-free even if not the best!
-\end{quote}
-
-\bigskip
-
-This example exposes several misconceptions and issues in how classification problems and also some regression problems are often stated and faced in machine learning:
-\begin{enumerate}[label=(\roman*),wide]
-\item\label{item:choice_vs_guess} The ultimate goal in a classification is often not the guess a class, but the choice among a set of alternative decisions. In a \enquote{cat vs dog} image classification the classes are \enquote{cat} and \enquote{dog}, and the decisions might be \enquote{put into folder Cats} vs \enquote{put into folder Dogs}. A clinician, however, does not simply tell a patient \enquote*{you probably have such-and-such disease}, but has to decide among different kinds of treatment \autocites{soxetal1988_r2013,huninketal2001_r2014}.
-\item The alternative decisions, for example treatments in medicine, often do not correspond to the unknown classes in a one-one way; they may be more numerous than the classes.
-\item The target is not what's most probable, but what's \emph{optimal}. The two may be different. In the clinical example above, the clinician and patients would opt for treatment \tB, rather than \tA, even if type \tI\ had slightly higher probability than \tII\ -- say 60\% vs 40\% (we shall show later that the threshold for this case is 70\%). This is also true when the decisions have some natural one-one correspondence with the classes. Consider for example two other treatments $\tA'$, $\tB'$ with this efficiency table:
-  \begin{equation*}
-  {\text{\rotatebox[origin=c]{90}{\scriptsize treatment}}}\ 
-  \begin{matrix} {\scriptsize\tA'}\\
-    {\scriptsize\tB'}
-  \end{matrix}\quad
-  \overbracket[0pt]{
-      \begin{matrix*}[r]
-    2 & -2 \\ 1 & 1
-      \end{matrix*}}^{
-      \mathclap{\text{\parbox{8em}{\centering\scriptsize disease type\\\tI\hspace{2em}\hphantom{$-{}$}\tII}}
-    }}
-\end{equation*}
-Clearly $\tA'$ is best for type \tI, and $\tB'$ for type \tII, but we would choose $\tA'$ only if type \tI\ had quite  a higher probability than \tII\ (the threshold is again 70\%).
-\end{enumerate}
 
 
 \section{Difficulty of implementing a full decision-theoretic classification}
@@ -1229,10 +1188,86 @@ using the versatile computational approach by \textcites{dunsonetal2011}, and ob
 
 \clearpage
 
+{\color{mygreen}
+  \hrule
+PIECES OF TEXT
 \hrule
-{\color{mygreen}PIECES OF TEXT}
-\hrule
+}
 \bigskip
+
+
+
+\section{An example}
+\label{sec:example}
+\mynotew{will delete this section}
+
+
+An example. Imagine you're a clinician and must attend to a patient with a particular disease. The disease may appear in two variants \tI\ and \tII; you are not sure which type affects your patient. For this disease there are three kinds of treatment \tA, \tB, \tC\ available at present, and you must choose one of them. Their efficacies, measured on some scale, depend on the disease type according to the following table:
+% \begin{table}[!h]\centering\footnotesize
+%   \caption{}\label{tab:treat_effects}
+%   \begin{tabular}{lcc}
+%     Treatment & type \tI & type \tII \\
+%     \hline
+%     Accuracy (also balanced accuracy) & \bad{0.62} & \good{0.75} \\
+%     Precision & \bad{0.64} & \good{0.70} \\
+%     $F_{1}$ measure & \bad{0.59} & \good{0.77} \\
+%     Matthews Correlation Coefficient & \bad{0.24} & \good{0.51} \\
+%     Fowlkes-Mallows index & \bad{0.59} & \good{0.78} \\
+% %    Balanced accuracy & \bad{0.62} & \good{0.75} \\
+%     True-positive rate (recall) & \bad{0.54} & \good{0.86} \\
+%     True-negative rate (specificity) & \good{0.70} & \bad{0.64}
+%   \end{tabular}
+% \end{table}\FloatBlock
+\begin{equation*}
+  {\text{\rotatebox[origin=c]{90}{\scriptsize treatment}}}\ 
+  \begin{matrix} {\scriptsize\tA}\\
+    {\scriptsize\tB}\\
+    {\scriptsize\tC}
+  \end{matrix}\quad
+  \overbracket[0pt]{
+      \begin{matrix*}[r]
+    2 & -2 \\ 1 & 1 \\ -2 & 2
+      \end{matrix*}}^{
+      \mathclap{\text{\parbox{8em}{\centering\scriptsize disease type\\\hphantom{$-{}$}\tI\hspace{2em}\hphantom{$-{}$}\tII}}
+    }}
+\end{equation*}
+Treatment \tA\ is very effective for disease type \tI\ but causes harm (hence the negative value) if administered to a patient of type \tII; vice versa for treatment $\tC$. Treatment \tB\ never causes harm but is less effective on either disease type.
+
+Which treatment do you choose?
+
+You could say \enquote*{the answer depends on the patient's disease type}. This would be correct if you knew the disease type: type \tI, choose treatment \tA; type \tII, choose treatment \tC. But you do \emph{not} know the disease type, so cannot make your answer depend on unavailable knowledge.
+
+Rather, the answer depends \emph{on how sure you are about the disease type}, given whatever evidence you have. This is clear in the case where you are completely uncertain about the type (and have no way to dispel your uncertainty), which could equally be either way. The rational, safest choice in this case is treatment \tB: the patient will have some relief for sure, albeit not the highest, and no harm will be done. If you are \emph{extremely sure}  that the disease type is \tI\ instead, then you recommend your patient to go for treatment \tA, as there's low risk for harm  and greater benefits to be reaped (surgical treatments are typical examples of this case: there's always some minimal risk that a surgery goes awry, but such risk may be offset by the benefits of the more likely successful surgery). Analogously if you are sure about type \tII\ instead, recommending treatment \tC.
+
+Now suppose that a shiny new \ml\ algorithm has been acquired by your clinic to help diagnosing the disease type quickly and with minimal expenses. This algorithm takes as input the results of various cheap clinical tests performed on a patient, and outputs the disease type. You use it for your patient, it outputs \enquote{\tI}, so you go for treatment \tA, and the patient indeed gets better. You use it for two more patients. The outputs are \tII\ and \tI, so you administer treatments \tC\ and \tA. Both patients get better. Bliss! You use the algorithm for a third patient. Clinical tests are again made and their results fed into the algorithm. It outputs \enquote{\tII}. You therefore administer treatment \tC. But the patient is badly harmed and gets worse (and possibly sues you). To check for human error, the tests are repeated; the algorithm consistently outputs \enquote{\tII}. Eventually you perform an expensive and invasive but reliable test. It turns out the disease type is \tI, not \tII. The algorithm is simply wrong, and you chose the worst treatment.
+
+You ask the algorithm's vendor or developers for an explanation: \enquote*{isn't the algorithm supposed to tell me the actual disease type?}. They tell you that no, there's always a chance that the algorithm is wrong, depending on the case. For some input values (test results) the prediction is virtually certain, but for others there may be a larger margin of error. You tell them:
+\begin{quote}
+  Sorry, but there has been a misunderstanding then. I don't need an algorithm that gives me a best guess, making me sometimes almost kill my patients. \emph{I need an algorithm that tells me how sure a disease type is}. Because if there's much uncertainty I can give my patients a treatment that's guaranteed harm-free even if not the best!
+\end{quote}
+
+\bigskip
+
+This example exposes several misconceptions and issues in how classification problems and also some regression problems are often stated and faced in machine learning:
+\begin{enumerate}[label=(\roman*),wide]
+\item\label{item:choice_vs_guess} The ultimate goal in a classification is often not the guess a class, but the choice among a set of alternative decisions. In a \enquote{cat vs dog} image classification the classes are \enquote{cat} and \enquote{dog}, and the decisions might be \enquote{put into folder Cats} vs \enquote{put into folder Dogs}. A clinician, however, does not simply tell a patient \enquote*{you probably have such-and-such disease}, but has to decide among different kinds of treatment \autocites{soxetal1988_r2013,huninketal2001_r2014}.
+\item The alternative decisions, for example treatments in medicine, often do not correspond to the unknown classes in a one-one way; they may be more numerous than the classes.
+\item The target is not what's most probable, but what's \emph{optimal}. The two may be different. In the clinical example above, the clinician and patients would opt for treatment \tB, rather than \tA, even if type \tI\ had slightly higher probability than \tII\ -- say 60\% vs 40\% (we shall show later that the threshold for this case is 70\%). This is also true when the decisions have some natural one-one correspondence with the classes. Consider for example two other treatments $\tA'$, $\tB'$ with this efficiency table:
+  \begin{equation*}
+  {\text{\rotatebox[origin=c]{90}{\scriptsize treatment}}}\ 
+  \begin{matrix} {\scriptsize\tA'}\\
+    {\scriptsize\tB'}
+  \end{matrix}\quad
+  \overbracket[0pt]{
+      \begin{matrix*}[r]
+    2 & -2 \\ 1 & 1
+      \end{matrix*}}^{
+      \mathclap{\text{\parbox{8em}{\centering\scriptsize disease type\\\tI\hspace{2em}\hphantom{$-{}$}\tII}}
+    }}
+\end{equation*}
+Clearly $\tA'$ is best for type \tI, and $\tB'$ for type \tII, but we would choose $\tA'$ only if type \tI\ had quite  a higher probability than \tII\ (the threshold is again 70\%).
+\end{enumerate}
+
 
 
 \subsection{Actual utility yield}
