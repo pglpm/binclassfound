@@ -1,7 +1,7 @@
 \pdfoutput=1
 %% Author: PGL  Porta Mana
 %% Created: 2022-04-14T17:18:22+0200
-%% Last-Updated: 2022-05-23T15:23:56+0200
+%% Last-Updated: 2022-05-23T21:42:24+0200
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Probabilities for classifier outputs
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -851,10 +851,12 @@ The main idea is explained in \sect~\ref{sec:transducer}. Section\mynotep{\ldots
 \section{An output-to-probability transducer}
 \label{sec:transducer}
 
-\subsection{Essentials of the idea}
-\label{sec:essential_idea}
+In the present section we explain the main idea in informal and intuitive terms, and give its  mathematical essentials only. Stricter logical derivation and more mathematical details are left to appendix\mynotep{\ldots}.
 
-We here explain the main idea in informal and intuitive terms, and leave to appendix\mynotep{\ldots} stricter logical derivation with more mathematical details.
+
+
+\subsection{Main idea: algorithm output as a proxy for the features}
+\label{sec:essential_idea}
 
 Let us consider first the essentials behind a classification (or regression) problem. We have the following quantities:
 \begin{itemize}
@@ -920,7 +922,7 @@ What is the relation between the ideal incomputable probability~\eqref{eq:prob_e
   w(\texts{feature}, \texts{training data})\times
   \P(\texts{class} \| \texts{feature},\, \texts{training data})
 \end{multline}
-where $w$ are positive and normalized weights. This means that the proxy probability is generally less sharp, that is, farther away from $0$ and $1$, than the ideal one. This is an obvious consequence of the loss of information about the feature value. Such mixing, on the other hand, only leads to more conservative probabilities, not to over-confident ones.
+where $w$ are positive and normalized functions. This means that the proxy probability is generally less sharp, that is, farther away from $0$ and $1$, than the ideal one. This is an obvious consequence of the loss of information about the feature value. Such mixing, on the other hand, only leads to more conservative probabilities, not to over-confident ones.
 
 \mynotep{add note about the fact that the goodness of the results still greatly depends on the goodness of the classifier.}
 
@@ -935,15 +937,56 @@ The probabilities~\eqref{eq:prob_output}, which we rewrite as
   \label{eq:prob_output}
   \p(c \| y, D) \ ,
 \end{equation}
-are calculated using standard non-parametric Bayesian methods \autocites[for introductions and reviews see \eg][]{walker2013,muelleretal2004b,hjort1996}. \enquote{Non-parametric} in this case means that we do not make any assumptions about the shape of the probability curve as a function of $y$ (contrast this with logistic regression, for instance), or about special independence between the variables (contrast this with naive-Bayes). The only assumption made -- and we believe it is quite realistic -- is that the curve must have some minimal degree of smoothness. This is an extremely elastic assumption: \fig\mynotep{\ldots} for instance shows that the probability curve can still have very sharp bends.
+are calculated using standard non-parametric Bayesian methods \autocites[for introductions and reviews see \eg][]{walker2013,muelleretal2004b,hjort1996}. \enquote{Non-parametric} in this case means that we do not make any assumptions about the shape of the probability curve as a function of $y$ (contrast this with logistic regression, for instance), or about special independence between the variables (contrast this with naive-Bayes). The only assumption made -- and we believe it is quite realistic -- is that the curve must have some minimal degree of smoothness. This assumption allows for much leeway, however: \fig\mynotep{\ldots} for instance shows that the probability curve can still have very sharp bends, as long as they are not cusps.
 
-Non-parametric methods differ from one another in the kind of \enquote{coordinate system} they select on the infinite-dimensional space of all possible probability curves, that is, in the way they represent a general positive normalized function. We choose the representation discussed by Dunson \amp\ Bhattacharya\autocites{dunsonetal2011}[see also the special case presented by][]{rasmussen1999}: a probability density $p(c,y)$, where $c$ is assumed discrete and $y$ continuous and possibly multi-dimensional, is expressed as a sum
+Non-parametric methods differ from one another in the kind of \enquote{coordinate system} they select on the infinite-dimensional space of all possible probability curves, that is, in the way they represent a general positive normalized function.
+
+We choose the representation discussed by Dunson \amp\ Bhattacharya\autocites{dunsonetal2011}[see also the special case presented by][]{rasmussen1999}. The end result of interest in this section is that the probability density $p(c,y)$, with $c$ is discrete and $y$ continuous and possibly multi-dimensional, is expressed as a sum
 \begin{equation}
   \label{eq:representation_P}
   p(c, y) = \sum_{k} q_{k}\ A(c \| \alpha_{k})\ B(y \| \beta_{k})
 \end{equation}
-with potentially infinite terms,
+of a finite but large number of terms. Each term is the product of a positive weight $q_{k}$, a probability distribution $A(c \| \alpha_{k})$ for $c$ depending on parameters $\alpha_{k}$, and a probability density $B(c \| \beta_{k})$ for $y$ depending on parameters $\beta_{k}$. The parameter values can be different from term to term, as indicated by the index ${}_{k}$. The weights $\set{q_{k}}$ are normalized.
 
+This mathematical representation can approximate (under some norm) any smooth probability density in $c$ and $y$. It has the advantages of being automatically positive and normalized, and of readily producing the marginal distributions for $c$ and for $y$:
+\begin{equation}
+  \label{eq:marginals}
+  p(c) = \sum_{k} q_{k}\ A(c \| \alpha_{k})\ ,
+  \qquad
+  p(y) = \sum_{k} q_{k}\ B(y \| \beta_{k}) \ ,
+\end{equation}
+from which also the conditional distributions are easily obtained:
+\begin{subequations} \label{eq:conditionals}
+  \begin{align}
+    p(c \| y) &= \sum_{k} \frac{q_{k}\ B(y \| \beta_{k})
+                }{\sum_{l} q_{l}\ B(y \| \beta_{l})}\
+                A(c \| \alpha_{k})\  \ ,
+    \\
+    p(y \| c) &= \sum_{k} \frac{q_{k}\ A(c \| \alpha_{k})
+                }{\sum_{l} q_{l}\ A(c \| \alpha_{l})}\
+                B(y \| \beta_{k}) \ .
+  \end{align}
+\end{subequations}
+These will be important in the following discussion.
+
+The parametric distributions $A(c \| \alpha)$ and $B(y \| \beta)$ are chosen by us according to convenience. The first is simply a categorical distribution with probabilities $\alpha$. In a binary-classification case, where the class variable $c$ assumes conventional values $\set{0,1}$, it is
+\begin{equation}
+  \label{eq:distr_class}
+  A(c \| \alpha) = c\ \alpha + (1-c)\ (1-\alpha) \equiv
+  \begin{dcases*}
+    \alpha& if $c=1$, \\ 1-\alpha & if $c=0$.
+  \end{dcases*}
+\end{equation}
+The second is a gaussian distribution, $\beta \equiv (\mu,\sigma)$ being its mean and standard deviation:
+\begin{equation}
+  \label{eq:distr_output}
+  B(y \| \beta) = \frac{1}{\sqrt{2\pu\sigma^{2}}} \exp\biggl[-\frac{(y-\mu)^{2}}{2\sigma^{2}}\biggr] \ ,
+\end{equation}
+or a product of such gaussians for multidimensional $y$. If the classifier's output $y$ is a bounded variable we perform a transformation of its range onto the real line first.
+
+\medskip
+
+The weights $\set{q_{k}}$ and the parameters $\set{\alpha_{k}}$, $\set{\beta_{k}}$ are the heart of this representation, because the shape of the probability curve $p(c \| y, D)$ depends on their values. They are determined by the test data $D$. Their calculation is done via Markon-chain Monte Carlo sampling, which we discuss in appendix\mynotep{\ldots}. For low-dimensional $y$ and discrete $c$ (or even continuous, low-dimensional $c$, which means we are working with a regression algorithm), this calculation can be done in a matter of hours, and \emph{it only needs to be done once}.
 
 
 \section{Sensible probabilities for classifiers}
