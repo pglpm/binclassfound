@@ -1,7 +1,7 @@
 \pdfoutput=1
 %% Author: PGL  Porta Mana
 %% Created: 2022-04-14T17:18:22+0200
-%% Last-Updated: 2022-05-23T14:32:26+0200
+%% Last-Updated: 2022-05-23T14:47:32+0200
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Probabilities for classifier outputs
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -851,6 +851,9 @@ The main idea is explained in \sect~\ref{sec:transducer}. Section\mynotep{\ldots
 \section{An output-to-probability transducer}
 \label{sec:transducer}
 
+\subsection{Essentials of the idea}
+\label{sec:essential_idea}
+
 We here explain the main idea in informal and intuitive terms, and leave to appendix\mynotep{\ldots} stricter logical derivation with more mathematical details.
 
 Let us consider first the essentials behind a classification (or regression) problem. We have the following quantities:
@@ -913,29 +916,28 @@ What is the relation between the ideal incomputable probability~\eqref{eq:prob_e
   \label{eq:relation_two_probs}
   \P(\texts{class} \| \texts{output},\,
   \texts{classes \amp\ outputs for test data}) ={}\\[\jot]
-  \shoveleft{\sum_{\mathclap{\substack{\text{feature}\\\text{training data}}}}
-  w(\texts{feature}, \texts{training data})
-\times{}}\\[-1.5em]
-  \P(\texts{class} \| \texts{feature},\,
-  \texts{classes \amp\ features of training data}) \ .
+  \sum_{\mathclap{\substack{\text{feature}\\\text{training data}}}}
+  w(\texts{feature}, \texts{training data})\times
+  \P(\texts{class} \| \texts{feature},\, \texts{training data})
 \end{multline}
-This means that the proxy probability is generally less sharp, that is, farther away from $0$ and $1$, than the ideal one. This is an obvious consequence of the loss of information about the feature value. Such mixing, on the other hand, only leads to more conservative probabilities and not to over-confident ones.
+where $w$ are positive and normalized weights. This means that the proxy probability is generally less sharp, that is, farther away from $0$ and $1$, than the ideal one. This is an obvious consequence of the loss of information about the feature value. Such mixing, on the other hand, only leads to more conservative probabilities, not to over-confident ones.
+
+\mynotep{add note about the fact that the goodness of the results still greatly depends on the goodness of the classifier.}
+
+
+\subsection{Calculation of the probabilities}
+\label{sec:calculation_transducer}
 
 
 
 
-
-
-
-
-\section{Difficulty of implementing a full decision-theoretic classification}
-\label{sec:difficulty_dt}
 
 
 
 
 \section{Sensible probabilities for classifiers}
 \label{sec:intro}
+\mynotew{only pieces will be taken from this section}
 
 % Some machine-learning algorithms for classification, such as support-vector machines, typically output a class label. Others, such as deep networks, output a set of real numbers. These real numbers can be positive, normalized to unity, and can bear some qualitative relation to the plausibilities of the classes. But they cannot be reliably interpreted as sensible probabilities, that is, as the degrees of belief assigned to each possible class by a rational agent \autocites{mackay1992d,galetal2016}[\chaps~2, 12, 13]{russelletal1995_r2022}; or, in terms of \enquote{populations} \autocites{lindleyetal1981}[\sect~II.4]{fisher1956_r1967}, as the expected frequencies of the classes in the hypothetical population of units (degrees of belief and frequencies being related by de~Finetti's theorem \autocites[\chap~4]{bernardoetal1994_r2000}{dawid2013}).
 
