@@ -1,7 +1,7 @@
 \pdfoutput=1
 %% Author: PGL  Porta Mana
 %% Created: 2022-03-04T07:39:34+0200
-%% Last-Updated: 2022-05-24T18:13:59+0200
+%% Last-Updated: 2022-05-24T21:01:54+0200
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Decision theory for machine-learning classifiers
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -782,8 +782,7 @@ Open Science Framework \doi{10.31219/osf.io/#1}%
 % \begin{center}
 %   *\quad*\quad*
 % \end{center}
-\begin{quotation}
-  \small The manager of a factory which produces a sort of electronic component wishes to employ a \ml\ classifier to assess the durability of each produced component. The durability determines whether the component will be used in one of two possible kinds of device. The classifier should take some complex features of the component as input, and output one of the two labels \enquote{0} for \enquote{long durability}, or \enquote{1} for \enquote{short durability}, depending on the component type.
+The manager of a factory which produces a sort of electronic component wishes to employ a \ml\ classifier to assess the durability of each produced component. The durability determines whether the component will be used in one of two possible kinds of device. The classifier should take some complex features of the component as input, and output one of the two labels \enquote{0} for \enquote{long durability}, or \enquote{1} for \enquote{short durability}, depending on the component type.
 
 Two candidate classifiers, let us call them $\Alpha$ and $\Beta$, are trained on available training data. When employed on a separate evaluation set they yield the following confusion matrices, written in the format
 \begin{equation*}
@@ -872,10 +871,10 @@ The reason behind these values is that short-durability components (class~1) pro
 
 Taking the sum of the products of the gains above by the respective percentages of occurrence -- that is, the elements of the confusion matrix -- yields the final average gain. The final average gain returned by the use of classifier~$\Alpha$, for example, is
 \begin{equation*}
-  0.27\cdot 15\,\text{\texteuro} +
-  0.15\cdot (-335)\,\text{\texteuro}+
-  0.23\cdot (-35)\,\text{\texteuro} +
-  0.35\cdot 165\,\text{\texteuro} =
+  15\,\text{\texteuro} \times 0.27 
+  -335\,\text{\texteuro} \times 0.15 
+  -35\,\text{\texteuro} \times 0.23 
+  + 165\,\text{\texteuro} \times 0.35 =
   3.5 \,\text{\texteuro} \ .
 \end{equation*}
 In the present case the confusion matrices~\eqref{eq:CM_A} and \eqref{eq:CM_B} lead to the amounts \eqref{eq:final_gains} found by the manager.
@@ -894,7 +893,6 @@ In the present case the confusion matrices~\eqref{eq:CM_A} and \eqref{eq:CM_B} l
 %     classifier #1 led to a net gain of €12.55/gadget
 %     classifier #2 led to a net gain of €3.45/gadget
 
-\end{quotation}
 % \begin{center}
 %   *\quad*\quad*
 % \end{center}
