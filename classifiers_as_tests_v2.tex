@@ -1,7 +1,7 @@
 \pdfoutput=1
 %% Author: PGL  Porta Mana
 %% Created: 2022-04-14T17:18:22+0200
-%% Last-Updated: 2022-05-24T20:28:58+0200
+%% Last-Updated: 2022-05-24T22:05:30+0200
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Probabilities for classifier outputs
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -1000,7 +1000,7 @@ Once calculated, these parameters are saved in memory and can be used to compute
 Note that the role of the classifier in this calculation is simply to produce the outputs $y$ for the calibration data, after having been trained in any standard way on a training data set. No changes in its architecture or in its training procedure have been made, nor are any required.
 
 
-\subsection{Effecting the probability transduction: discriminative and generative modes}
+\subsection{Applying the probability transduction: discriminative and generative modes}
 \label{sec:effect_transd}
 
 Let us now discuss the application of the various probability functions presented above. For simplicity we shall omit the dependence \enquote{$\dotsc, D$} on the calibration data, leaving it implicitly understood.
@@ -1275,8 +1275,6 @@ where $B(c)$ is the base rate of class $c$. The probabilities $\p(c)$ can finall
 
 
 
-\section{Numerical experiments and results}
-\label{sec:results}
 
 \section{Circumventing biases}
 \label{sec:biases}
@@ -1298,16 +1296,16 @@ The data comes from the open-access CheMBL bioactivity database \autocites{bento
 
 For our pre-processing pipeline, we use two different methods to represent the molecule, one for the Random Forest and one for the Convolutional Neural Network. The first method turns the molecule into a hashed bit vector of circular fingerprints called Extended Connectivity Fingerprints (ECFP) \autocites{rogersetal2010}. From our numerical analysis, there was little to no improvement using a 2048-bit vector over a 1024-bit vector. 
   
-For our convolutional neural network, the data is represented by converting the molecule into images in 224\texttimes 224 size. This is done by using the SMILES string from the dataset and using RdKit \autocites{rdkit2017} to generate a canonical graph structure of the molecule. This differs from ECFP in that it represents the actual structure of the molecule rather than properties generated from the molecule. 
+For our convolutional neural network, the data is represented by converting the molecule into images of 224~pixels \texttimes\ 224~pixels. This is done by taking a molecule's SMILES (Simplified Molecular Input Line Entry System) string \autocites{davidetal2020} from the dataset and converting it into a canonical graph structure by means of RdKit \autocites{rdkit2017}. This differs from ECFP in that it represents the actual spatial and chemical structure (or something very close to it) of the molecule rather than properties generated from the molecule.
 
-The dataset has in total 1631 active compounds and 16310 non-active molecules which act as decoys. In training, the active molecules are oversampled to match the same number of non-active molecules.  
+The dataset has in total 1631 active molecules and 16310 non-active molecules which act as decoys. For training, the active molecules are oversampled, as usually done with imbalanced datasets \autocites{provost2000}, to match the same number of non-active molecules.
 % The data is therefore unbalanced and we solve this by giving the loss functions different weights for each class, which give the same result but have better performance as oversampling.
 
 \subsection{Prediction}
 
-Virtual screening is the process of finding chemical activity in the interaction between a compound (molecule) and a target (protein). The goal of the machine learning algorithms is to find structural features or chemical properties that show that the molecule is active against the protein. Deep neural networks have previously been shown to outperform random forests and various linear models in virtual high-throughput screening and quantitative structure-activity relationship (QSAR) problems \autocite{koutsoukasetal2017}. 
+Virtual screening is the process of assessing chemical activity in the interaction between a compound (molecule) and a target (protein). The goal of the machine learning algorithms is to find structural features or chemical properties that show that the molecule is active towards the protein \autocites{green2019}. Deep neural networks have previously been shown to outperform random forests and various linear models in virtual high-throughput screening and in quantitative structure-activity relationship (QSAR) problems \autocite{koutsoukasetal2017}.
   
-\subsection{Models} 
+\subsection{Classifiers} 
 
 The algorithms and methods used to create the models have previously been shown to give great results for all different fields.
   
@@ -1332,14 +1330,6 @@ The data set is split into four parts:
 \end{itemize}
 %%%%
 
-
-\section{Mathematical details of the nonparametric density regression}
-\label{sec:nonparam_regression_details}
-
-
-The joint probability~\eqref{eq:approach_p_joint} is calculated nonparametrically, that is, without making any assumptions such as linearity or gaussianity, besides very mild and reasonable assumptions of continuity.
-
-using the versatile computational approach by \textcites{dunsonetal2011}, and obtain the probability~\eqref{eq:approach_p_test} by conditionalization. The calculation requires Monte Carlo sampling \mynotew{\pencil\ refs here} but needs to be made only once.
 
 
 \section{Summary and discussion}
