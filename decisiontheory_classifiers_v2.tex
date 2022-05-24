@@ -1,7 +1,7 @@
 \pdfoutput=1
 %% Author: PGL  Porta Mana
 %% Created: 2022-03-04T07:39:34+0200
-%% Last-Updated: 2022-05-24T08:47:09+0200
+%% Last-Updated: 2022-05-24T09:06:16+0200
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Decision theory for machine-learning classifiers
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -1495,7 +1495,7 @@ We believe that the decision-theoretic evaluation of classifiers also has remark
 
 First, it translates the fuzzy problem \enquote*{which of the numerous scores should I rely on?} into a more structured, thus easier to confront, one: to assess, at least semi-quantitatively, how many times more valuable, desirable, or useful is the correct classification of a class than its incorrect classification, than the correct classification of another class, and so on. Such utilities usually have a more immediate, problem-dependent interpretation than other metrics.
 
-Second, it leads to a mathematically simple, computationally convenient metric: a linear combination of confusion-matrix elements. No need of non-linear functions or of the integration of curves.
+Second, it leads to a mathematically simple, computationally convenient metric: a linear combination of confusion-matrix elements. No need of non-linear functions or of integration of curves.
 
 Third, the principles of the underlying theory guide us if we have to face new peculiar problems. Imagine for instance a classification problem where we cannot say, in general, whether true positives are more important than true negatives and so on, because such valuation can \emph{vary from one tested item to another}. Decision theory in this case requires an item-wise assessment of utilities, and still provides an item-wise score, which can be accumulated across items to obtain a total evaluation score for the performance of candidate classifiers.
 
