@@ -1,7 +1,7 @@
 \pdfoutput=1
 %% Author: PGL  Porta Mana
 %% Created: 2022-04-14T17:18:22+0200
-%% Last-Updated: 2022-05-24T12:20:30+0200
+%% Last-Updated: 2022-05-24T20:05:22+0200
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Probabilities for classifier outputs
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -529,16 +529,19 @@ Open Science Framework \doi{10.31219/osf.io/#1}%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \title{\propertitle}
 \author{%
-\hspace*{\stretch{1}}%
+%\hspace*{\stretch{0}}%
 %% uncomment if additional authors present
-\parbox{0.49\linewidth}%\makebox[0pt][c]%
+\parbox{\linewidth}%\makebox[0pt][c]%
 {\protect\centering K. Dyrland \href{https://orcid.org/0000-0002-7674-5733}{\protect\includegraphics[scale=0.16]{orcid_32x32.png}}\\\scriptsize\epost{\email{kjetil.dyrland}{gmail.com}}}%
-\hspace*{\stretch{1}}%
-\parbox{0.49\linewidth}%\makebox[0pt][c]%
+%\hspace*{\stretch{1}}%
+\\%
+\parbox{\linewidth}%\makebox[0pt][c]%
 {\protect\centering A. S. Lundervold \href{https://orcid.org/0000-0001-8663-4247}{\protect\includegraphics[scale=0.16]{orcid_32x32.png}}\textsuperscript{\ensuremath{\dagger}} \\\scriptsize\epost{\email{alexander.selvikvag.lundervold}{hvl.no}}}%
-\hspace*{\stretch{1}}\\%
-\parbox{0.49\linewidth}%\makebox[0pt][c]%
+%\hspace*{\stretch{1}}%
+\\%
+\parbox{\linewidth}%\makebox[0pt][c]%
 {\protect\centering P.G.L.  Porta Mana  \href{https://orcid.org/0000-0002-6070-0784}{\protect\includegraphics[scale=0.16]{orcid_32x32.png}}\\\scriptsize\epost{\email{pgl}{portamana.org}}}%
+%\hspace*{\stretch{0}}%
 % Mohn Medical Imaging and Visualization Centre, 
 %% uncomment if additional authors present
 % \hspace*{\stretch{1}}%
@@ -1018,13 +1021,24 @@ The discriminative mode is the standard way of proceeding in classification and 
     p(c \| y,\, \texts{prevalences}) = \frac{p(y \| c)\ \br_{c}}{ \sum_{c} p(y \| c)\ \br_{c} } \ .
   \end{equation}
 \end{description}
-The population prevalences \autocites[\chap~3]{soxetal1988_r2013}[\sect~5.1]{huninketal2001_r2014}, also called \emph{base rates} \autocites{barhillel1980,axelsson2000}, are the relative frequencies of occurrence of the various classes in the population whence our unit originates. This notion is very familiar in medicine and epidemiology: for example, a particular type of tumour can have a prevalence of 0.01\% among people of a given age and sex, meaning that 1 person in 10\,000 among them has that kind of tumour, as obtained through a large survey.
+The population prevalences \autocites[\chap~3]{soxetal1988_r2013}[\sect~5.1]{huninketal2001_r2014}, also called \emph{base rates} \autocites{barhillel1980,axelsson2000}, are the relative frequencies of occurrence of the various classes in the population whence our unit originates. This notion is very familiar in medicine and epidemiology. For example, a particular type of tumour can have a prevalence of 0.01\% among people of a given age and sex, meaning that 1 person in 10\,000 among them has that kind of tumour, as obtained through a large survey.
 
-The generative mode, which is generally not available for classifiers with a discriminative design, is the required way to calculate the class probabilities if the calibration set does not have the same statistics as the population on which the classifier is employed; or in other words if it is not representative of that population. This may occur quite often, for several reasons. 
+\mynotew{maybe move parts below to independent section}
 
-\mynotep{situation may occur not because calibration set was badly chosen, but because we want to use classifier in a new situation, or if population has changed}
+The generative mode, generally not available for classifiers with a discriminative design, is the required way to calculate the class probabilities if the calibration set does not have the same class frequencies as the population on which the classifier will be employed -- let us call the latter the \enquote{real population}. For example, two classes may appear in a 50\%/50\% proportion in the calibration set but in a  90\%/10\% proportion in the real population. This frequency discrepancy can occur for several reasons.  Examples: samples of the real population are unavailable or too expensive to be used for calibration purposes; the class statistics of the real population has suddenly changed right after the deployment of the classifier; it is necessary to use the classifier on a slightly different population; the sampling of calibration data was poorly designed.
 
-\mynotep{add use for combining evidence}
+The generative mode is also required if we want to combine the outputs $y_{1}, y_{2}, \dotsc$ of several independent classifiers. According to the probability calculus, the probability of class $c$ is in this case proportional to the probabilities of the outputs \emph{given the class}\autocites[\sect~8.9]{jaynes1994_r2003}{hailperin2006}:
+\begin{equation}
+  \label{eq:combine_probs}
+  \p(c \| y_{1}, y_{2}, \dotsc) \propto \p(c) \times
+  \p(y_{1} \| c) \times \p(y_{2} \| c)\times \dotsm
+\end{equation}
+where $\p(c)$ is a population prevalence or an initial probability assessment.
+
+\section{Demonstration and results}
+\label{sec:demonstration}
+
+We show a concrete example of implementation and use of the probability transducer for two classifying algorithms on one data set. The algorithms are a convolutional neural network and a random forest. The data come from the ChEMBL database \autocites{chembl2014}.
 
 
 
@@ -1277,48 +1291,44 @@ where $B(c)$ is the base rate of class $c$. The probabilities $\p(c)$ can finall
  
 \subsection{Data} 
   
-The data comes from a publicly open bioactivity database called CheMBL \cite{CheMBL}. The dataset that is used in this paper was introduced in the paper by Koutsoukas et. al. \cite{DL-investigating-bioactivity}. The dataset is a source of structure-activity relationship from version 20 of ChEMBL with protein target Carbonic Anhydrase II (ChEMBL205). 
+The data comes from the open-access CheMBL bioactivity database \autocites{chembl2014}. The dataset that is used in this paper was introduced in the paper by  \textcite{koutsoukasetal2017}. The dataset is a source of structure-activity relationship from version 20 of ChEMBL with protein target Carbonic Anhydrase II (ChEMBL205). 
 
 
 \subsection{Pre-processing} 
 
-For our pre-processing pipeline, we use two different methods to represent the molecule, one for the RF and one for the DNN. The first method turns the molecule into a hashed bit vector of circular fingerprints called ECFP (Extended Connectivity Fingerprints) \cite{Rogers-ECFP}. From our experiments, there was little to no improvement using a 2048-bit vector over a 1024-bit vector. 
+For our pre-processing pipeline, we use two different methods to represent the molecule, one for the Random Forest and one for the Convolutional Neural Network. The first method turns the molecule into a hashed bit vector of circular fingerprints called Extended Connectivity Fingerprints (ECFP) \autocites{rogersetal2010}. From our numerical analysis, there was little to no improvement using a 2048-bit vector over a 1024-bit vector. 
   
-For our DNN model, the data is represented by converting the molecule into images in 224x224 size. This is done by using the SMILES string from the dataset and using RdKit \cite{rdkit} to generate a canonical graph structure of the molecule. This differs from ECFP in that it represents the actual structure of the molecule rather than properties generated from the molecule. 
+For our convolutional neural network, the data is represented by converting the molecule into images in 224\texttimes 224 size. This is done by using the SMILES string from the dataset and using RdKit \autocites{rdkit2017} to generate a canonical graph structure of the molecule. This differs from ECFP in that it represents the actual structure of the molecule rather than properties generated from the molecule. 
 
 The dataset has in total 1631 active compounds and 16310 non-active molecules which act as decoys. In training, the active molecules are oversampled to match the same number of non-active molecules.  
 % The data is therefore unbalanced and we solve this by giving the loss functions different weights for each class, which give the same result but have better performance as oversampling.
 
 \subsection{Prediction}
 
-Virtual screening is the process of finding chemical activity in the interaction between a compound (molecule) and a target (protein). The goal of the machine learning algorithms is to find structural features or chemical properties that show that the molecule is active against the protein. DNNs have previously been shown to outperform RF and other linear models in VHTS and quantitative structure-activity relationship (QSAR) problems \cite{DL-investigating-bioactivity}. 
+Virtual screening is the process of finding chemical activity in the interaction between a compound (molecule) and a target (protein). The goal of the machine learning algorithms is to find structural features or chemical properties that show that the molecule is active against the protein. Deep neural networks have previously been shown to outperform random forests and various linear models in virtual high-throughput screening and quantitative structure-activity relationship (QSAR) problems \autocite{koutsoukasetal2017}. 
   
 \subsection{Models} 
 
 The algorithms and methods used to create the models have previously been shown to give great results for all different fields.
   
-The second model is a pre-trained residual network (ResNet) \cite{resnet} with 18 hidden layers trained on the well-known ImageNet dataset \cite{ImageNet} by using the PyTorch framework \cite{PyTorch}. ResNet has shown to outperform other pre-trained CNN models \cite{resnet}. A ResNet with 34 hidden layers showed little to no performance gain, so we chose to go with the simpler model. The model is trained is with the following hyperparameters: 
-
-\vspace{5mm}
-\begin{itemize}
-    \item \textbf{Learning rate:} 0.003 
-    \item \textbf{Optimization technique:} Stochastic Gradient Descent (SGD) 
-    \item \textbf{Activation Function:} ReLU 
-    \item \textbf{Dropout:} 50\% 
-    \item \textbf{Number of epochs:} 20 
-    \item \textbf{Loss function:} Cross Entropy Loss
-\end{itemize}
-\vspace{5mm}
+The second model is a pre-trained residual network (ResNet) \autocites{heetal2016} with 18 hidden layers trained on the well-known ImageNet dataset  \autocites{russakovskyetal2015} by using the PyTorch framework \autocites{paszkeetal2019}. ResNet has shown to outperform other pre-trained convolutional neural network models \autocites{heetal2016}. A ResNet with 34 hidden layers showed little to no performance gain, so we chose to go with the simpler model. The model is trained with the following hyperparameters:
+\begin{description}
+    \item[Learning rate:] 0.003 
+    \item[Optimization technique:] Stochastic Gradient Descent 
+    \item[Activation Function:] Rectified linear unit (ReLU) 
+    \item[Dropout:] 50\% 
+    \item[Number of epochs:] 20 
+    \item[Loss function:] Cross-entropy loss
+\end{description}
 
 \subsection{Train, Validation, Test split}
 
-The data is split into four parts:
-
+The data set is split into four parts:
 \begin{itemize}
-    \item Test set 1: Uses 20\% of the total dataset for the Bayesian inference. 
-    \item Test set 2: Uses 20\% of the dataset for evaluation.
-    \item Validation set: 25\% of the remaining data for validating the model after each epoch.
-    \item Training set: The rest of the dataset is used to train the model.
+\item Training set: 45\% of the dataset to train the model.
+\item Validation set: 15\%, for validating the model after each epoch.
+\item Calibration set: 20\%, for calibrating the probability transducer.
+\item Test set: 20\%, for evaluation.
 \end{itemize}
 %%%%
 
