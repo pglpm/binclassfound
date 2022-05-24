@@ -1,6 +1,6 @@
 ## Author: PGL  Porta Mana
 ## Created: 2022-05-01T09:38:48+0200
-## Last-Updated: 2022-05-24T15:30:03+0200
+## Last-Updated: 2022-05-24T20:48:29+0200
 ################
 ## Calculations for the papers
 ################
@@ -166,8 +166,9 @@ um2xy <- function(um,norm=TRUE){
 
 
 
-####################################################################
-
+######################################################################
+#### Example of bad sampling from dataset, need of inverse probability
+######################################################################
 
 mm <- 80
 aa <- 1:(mm-1)
@@ -1363,7 +1364,7 @@ for(i in 1:(lem+length(errorums))){
     tplot(x=list(func(ldut[1:nn2][groupok2]),func(ldut[1:nn2][!groupok2])),
           y=list(func(ldmetr[1:nn2][groupok2]),func(ldmetr[1:nn2][!groupok2])),
           family='Palatino', 
-          type='p', pch=c(20,17), cex=c(0.5,0.65),
+          type='p', pch=c(16,17), cex=c(0.5,0.65),
           mar=(if(i<lem+length(errorums)-2){c(3, 5.2, 2, 2)}else{c(4.1, 5.2, 2, 2)}),
           xlabels=(i>lem+length(errorums)-2), 
           xlab=(if(i>(lem+length(errorums)-2)){bquote(Delta~'utility yield')}else{NA}),
