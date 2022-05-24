@@ -1,7 +1,7 @@
 \pdfoutput=1
 %% Author: PGL  Porta Mana
 %% Created: 2022-04-14T17:18:22+0200
-%% Last-Updated: 2022-05-24T22:05:30+0200
+%% Last-Updated: 2022-05-25T00:33:42+0200
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Probabilities for classifier outputs
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -712,9 +712,7 @@ Open Science Framework \doi{10.31219/osf.io/#1}%
 \newcommand*{\uf}{\bar{f}}
 \newcommand*{\za}{\hat{0}}
 \newcommand*{\zb}{\hat{1}}
-\newcommand*{\U}{\mathrm{u}}
-\newcommand*{\UU}{\mathrm{U}}
-\newcommand*{\eu}{\bar{\U}}
+\newcommand*{\eu}{\bar{U}}
 \newcommand*{\nd}{n_{\textrm{d}}}
 \newcommand*{\nc}{n_{\textrm{c}}}
 \newcommand*{\Po}{\mathord{+}}
@@ -831,17 +829,25 @@ In summary, there is place to improve classifiers so as to
 
 \medskip
 
-Although we know how to address all these issues in principle -- the theoretical framework is for example beautifully presented in the first 18 chapters or so of Russell \amp\ Norvig's \parencites*{russelletal1995_r2022} text\mynotew{add also refs to Cheeseman} -- some of them are extremely difficult to solve. The output of sensible probabilities, issue~\ref{item:determ_statist}, is especially difficult. Some machine-learning algorithms for classification, such as support-vector machines, output only a class label. Others, such as deep networks, output a set of real numbers that can bear some qualitative relation to the plausibilities of the classes. But these numbers cannot be reliably interpreted as proper probabilities, that is, as the degrees of belief assigned to the classes by a rational agent \autocites{mackay1992d,galetal2016}[\chaps~2, 12, 13]{russelletal1995_r2022}; or, in terms of \enquote{populations} \autocites{lindleyetal1981}[\sect~II.4]{fisher1956_r1967}, as the expected frequencies of the classes in the hypothetical population of units (degrees of belief and frequencies being related by de~Finetti's theorem \autocites[\chap~4]{bernardoetal1994_r2000}{dawid2013}). Algorithms that internally do perform probabilistic calculations, for instance naive-Bayes or logistic-regression classifiers \autocites[\sect~3.5, \chap~8]{murphy2012}[\sects~8.2, 4.3]{bishop2006}[\chap~10, \sect~17.4]{barber2007_r2020}, unfortunately rest on probabilistic assumptions, such as independence and particular shapes of distributions, that are often unrealistic (and their consistency with the specific application is rarely checked). Only particular classifiers such as Bayesian neural networks \autocites{nealetal2006}[\sect~5.7]{bishop2006} output sensible probabilities, but they are computationally very expensive. The stumbling block is the extremely high dimensionality of the feature space, which makes the calculation of the probabilities
-\[\P(\texts{class}, \texts{feature} \| \texts{training data}) \ ,\]
-(a problem opaquely called \enquote{density regression} or \enquote{density estimation}\autocites{ferguson1983,thorburn1986,hjort1996,dunsonetal2007}), computationally unfeasible.
+In artificial intelligence and machine learning it is known how to address all these issues in principle -- the theoretical framework is for example beautifully presented in the first 18 chapters or so of Russell \amp\ Norvig's \parencites*{russelletal1995_r2022} text\mynotew{add also refs to Cheeseman}.
 
-If we solved the issue of outputting proper probabilities then the remaining three issues would be very easy to solve. We would simply need to enumerate the possible decisions, assess their utilities relative to the possible true classes, and finally combine utilities with probabilities to determine the optimal decision. The last operation amounts to a simple matrix multiplication and maximization.
+Issues~\ref{item:gain_loss}--\ref{item:optimal_truth} are simply solved by adopting the standpoint of \emph{Decision Theory}, which we briefly review in \sect~\ref{sec:decision_theory} and we discuss at length in our companion work\mynotep{\ldots}. In short: The set of decisions and the set of classes pertinent to a problem are separated if necessary. A utility is associated to each decision, relative to the occurrence of each particular class; these utilities are assembled into a utility matrix: one row per decision, one column per class. This matrix is multiplied by a column vector consisting in the probability for the classes. The resulting vector of numbers contains the expected utility of each decision. Finally we select the decision having \emph{maximal expected utility}, according to the principle bearing this name. Such procedure also takes care of the class imbalance problem; \cf\ the analysis by \cite{drummondetal2005} (they use the term \enquote{cost} instead of \enquote{utility}).
 
-\mynotew{find a connection with imbalanced data}
+Clearly this procedure is computationally inexpensive and ridiculously easy to implement in any \ml\ classifier. The difficulty is that this procedure requires \emph{sensible probabilities} for the classes, which brings us to issue~\ref{item:determ_statist}, the most difficult.
+
+Some machine-learning algorithms for classification, such as support-vector machines, output only a class label. Others, such as deep networks, output a set of real numbers that can bear some qualitative relation to the plausibilities of the classes. But these numbers cannot be reliably interpreted as proper probabilities, that is, as the degrees of belief assigned to the classes by a rational agent \autocites{mackay1992d,galetal2016}[\chaps~2, 12, 13]{russelletal1995_r2022}; or, in terms of \enquote{populations} \autocites{lindleyetal1981}[\sect~II.4]{fisher1956_r1967}, as the expected frequencies of the classes in the hypothetical population of units (degrees of belief and frequencies being related by de~Finetti's theorem \autocites[\chap~4]{bernardoetal1994_r2000}{dawid2013}). Algorithms that internally do perform probabilistic calculations, for instance naive-Bayes or logistic-regression classifiers \autocites[\sect~3.5, \chap~8]{murphy2012}[\sects~8.2, 4.3]{bishop2006}[\chap~10, \sect~17.4]{barber2007_r2020}, unfortunately rest on probabilistic assumptions, such as independence and particular shapes of distributions, that are often unrealistic (and their consistency with the specific application is rarely checked). Only particular classifiers such as Bayesian neural networks \autocites{nealetal2006}[\sect~5.7]{bishop2006} output sensible probabilities, but they are computationally very expensive. The stumbling block is the extremely high dimensionality of the feature space, which makes the calculation of the probabilities
+\[
+  \P(\texts{class}, \texts{feature} \| \texts{training data})
+\]
+(a problem opaquely called \enquote{density regression} or \enquote{density estimation}\autocites{ferguson1983,thorburn1986,hjort1996,dunsonetal2007}) computationally unfeasible.
+
+If we solved the issue of outputting proper probabilities then the remaining three issues would be easy to solve, as discussed above.
 
 \bigskip
 
-In the present work we propose an alternative solution to calculate proper class probabilities. It consists in a sort of \enquote{transducer} or \enquote{calibration curve} that transforms the algorithm's raw output into a probability. It has a low computational cost, can be applied to all commonly used classifiers and even to simple regression algorithms, does not need any changes in algorithm architecture or in training procedures, and is grounded on first principles.
+In the present work we propose an alternative solution to calculate proper class probabilities, which can then be used in conjunction with utilities to perform the final classification or decision.
+
+This solution consists in a sort of \enquote{transducer} or \enquote{calibration curve} that transforms the algorithm's raw output into a probability. It has a low computational cost, can be applied to all commonly used classifiers and even to simple regression algorithms, does not need any changes in algorithm architecture or in training procedures, and is grounded on first principles.
 
 Moreover, this transducer has two great benefits. First, it allows us to calculate both the probability of class conditional on features, and \emph{the probability of features conditional on class}. In other words it allows us to use the classification algorithm in both \enquote{discriminative} and \enquote{generative} modes \autocites[\sect~21.2.3]{russelletal1995_r2022}[\sect~8.6]{murphy2012}, even if the algorithm was not designed for a generative use. Second, its computation automatically also yields a \enquote{probability of the probability}, or more precisely a quantification of how much the probability would change if we had further training data.
 
@@ -1035,11 +1041,47 @@ The generative mode is also required if we want to combine the outputs $y_{1}, y
 \end{equation}
 where $\p(c)$ is a population prevalence or an initial probability assessment.
 
+\section{Utility-based classification}
+\label{sec:utility_classification}
+
+We refer to our companion work\mynotep{\ldots}, \sect~2, for a more detailed presentation of decision theory and for references. In the following we assume familiarity with the material presented there.
+
+Our classification or decision problem has a set of decisions, which we can index by $i = 1,2,\dotsc$. As discussed in \sect~\ref{sec:goal_class}, these need not be the same as the possible classes; the two sets may even be different in number. But the true class, which is unknown, determines the \emph{utility} that a decision yields. If we choose decision $i$ and the class $c$ is true, our eventual utility will be $U_{ic}$.\footnote{We apologize for the difference in notation from our companion work, where the class variable is \enquote{$j$} and the utilities \enquote{$U_{ij}$}} These utilities are assembled into a rectangular matrix $(U_{ic})$ with one row per decision and one column per class. Note that the case where decisions and classes are in a natural one-one correspondence, as in the cat-vs-dog classification example of \sect~\ref{sec:goal_class}, is just a particular case of this more general point of view. In such a specific case we may replace \enquote{decision} with \enquote{class} in the following discussion, and the utility matrix is square.
+
+Denote by $(p_{c})$ the probabilities for the classes, calculated as described in \sect~\ref{sec:effect_transd} above, and collect them into a column vector.
+
+The expected utility $\eu_{i}$ of decision $i$ is then given by the product of the matrix $(U_{ic})$ and the column vector $(p_{c})$:
+\begin{equation}
+  \label{eq:expe_utilities}
+  \eu_{i} \defd \sum_{c} U_{ic}\ p_{c} \ .
+\end{equation}
+
+Finally, according to the principle of maximum expected utility, we choose the decision $i^{*}$ having largest $\eu_{i}$:
+\begin{equation}
+  \label{eq:max_expe_utility}
+  \text{choose}\quad
+  i^{*} = \argmax_{i}\set{\eu_{i}} \equiv \argmax_{i}\set[\bigg]{\sum_{c} U_{ic}\ p_{c}} \ .
+\end{equation}
+
+These matrix multiplication and subsequent selection are computationally inexpensive; they can be considered as substitutes of the \enquote{argmax} selection that typically happen at the continuous output of a classifier.
+
 \section{Demonstration and results}
 \label{sec:demonstration}
 
-We show a concrete example of implementation and use of the probability transducer for two classifying algorithms on one data set. The algorithms are a convolutional neural network and a random forest. The data come from the ChEMBL database \autocites{chembl2014}.
+We show a concrete example of implementation and use of the probability transducer for two classifying algorithms on one data set.
 
+The classification problem is binary: to determine whether a molecule is chemically inactive or active towards one specific target protein. Inactivity is denoted by $0$, activity by $1$.
+
+The classifiers chosen for this task are a random forest and a residual convolutional neural network, details of which are given in appendix\mynotep{\ldots}. The random forest takes a set of particular fingerprints of the molecule as input, and outputs a real number in the range $\clcl{0,1}$, corresponding to the fraction of decision threes that select class~$0$ (inactive molecule). The residual neural network takes an image representing the chemical and spatial structure of the molecule, and output two real numbers roughly corresponding to scores for the two classes.
+
+We use data from the ChEMBL database \autocites{bentoetal2014}, previously used in the literature for other studies of \ml\ applications to drug discovery \autocites{koutsoukasetal2017}. One set of data is used to train and validate the two classifiers. One set is used for the calibration of the probability transducer. Finally one set is used as a test set to compare the performance of the classifiers with and without the transducer and the utility-maximization layer.
+
+\begin{figure}[t]
+  \centering
+  \includegraphics[width=\linewidth]{comparison_schema2.pdf}\\
+  \caption{Comparison scheme}
+  \label{fig:comparison scheme}
+\end{figure}
 
 
 \section{Sensible probabilities for classifiers}
@@ -1305,7 +1347,7 @@ The dataset has in total 1631 active molecules and 16310 non-active molecules wh
 
 Virtual screening is the process of assessing chemical activity in the interaction between a compound (molecule) and a target (protein). The goal of the machine learning algorithms is to find structural features or chemical properties that show that the molecule is active towards the protein \autocites{green2019}. Deep neural networks have previously been shown to outperform random forests and various linear models in virtual high-throughput screening and in quantitative structure-activity relationship (QSAR) problems \autocite{koutsoukasetal2017}.
   
-\subsection{Classifiers} 
+\subsection{Chosen classifiers} 
 
 The algorithms and methods used to create the models have previously been shown to give great results for all different fields.
   

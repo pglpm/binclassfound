@@ -1,6 +1,6 @@
 ## Author: PGL  Porta Mana
 ## Created: 2022-05-01T09:38:48+0200
-## Last-Updated: 2022-05-24T20:48:29+0200
+## Last-Updated: 2022-05-25T00:02:18+0200
 ################
 ## Calculations for the papers
 ################
@@ -905,7 +905,7 @@ metrlist <- list(
     ##  }
     )
 ##
-lp <- rep(0.9,nn)
+lp <- rep(0.5,nn)
 la1 <- 0.5+0.5*rbeta(nn, shape1=shape1, shape2=shape2)
 ## test <- thist(la1);tplot(x=test$breaks, y=test$density)
 ## summary(la1)
@@ -1045,7 +1045,7 @@ for(ii in 1:length(umlist)){
         ## diffm <- ldmetr[1:(nn/2)]-ldmetr[(nn/2+1):nn]
         ## okp <- which( diffu*diffm < 0)[1]
         tplot(x=ldut, y=ldmetr,
-              type='p', pch=20, cex=0.5, alpha=alpha,
+              type='p', pch=16, cex=0.5, alpha=alpha,
               cex.axis=1.5,cex.lab=1.5, ly=3, n=5, family='Palatino',
               mar=c((if(i%/%lem!=1){4}else{6.1}),
               (if(ii%/%2!=1){4.1}else{4.1}),
