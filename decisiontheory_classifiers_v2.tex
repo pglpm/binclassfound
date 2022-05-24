@@ -1,7 +1,7 @@
 \pdfoutput=1
 %% Author: PGL  Porta Mana
 %% Created: 2022-03-04T07:39:34+0200
-%% Last-Updated: 2022-05-24T08:28:52+0200
+%% Last-Updated: 2022-05-24T08:47:09+0200
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Decision theory for machine-learning classifiers
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -867,7 +867,7 @@ The average gains above are easy to calculate from some additional information. 
 \end{equation}
 The reason behind these values is that short-durability components (class~1) provide more power and are used in high-end, costly devices; but they cause extreme damage and consequent repair costs and refunds if used in devices that require long-durability components (class~0). Long-durability components provide less power and are used in low-end, cheaper devices; they cause some damage if used in devices that require short-durability components, but with lower consequent costs.
 
-Taking the sum of the products of the gains above by the respective percentages of occurrence -- that is, the elements of the confusion matrix -- yields the final average gain. The final average gain returned by the use of classifier~$\Alpha$, for example, is obtained by multiplying matrices~\eqref{eq:utility_example} and \eqref{eq:CM_A} element-wise, and then taking the grand sum:
+Taking the sum of the products of the gains above by the respective percentages of occurrence -- that is, the elements of the confusion matrix -- yields the final average gain. The final average gain returned by the use of classifier~$\Alpha$, for example, is
 \begin{equation*}
   0.27\cdot 15\,\text{\texteuro} +
   0.15\cdot (-335)\,\text{\texteuro}+
@@ -918,12 +918,12 @@ The story above illustrates several well-known issues of current popular evaluat
       \clap{\textit{\parbox{6em}{\centering\scriptsize true class\\$0\hspace{4em}1$}}
     }} \ .
 \end{equation}
-One could argue that also this case there is a great economic difference between correct and wrong classification for class~1, as compared with class~0. The true-negative rate should therefore still be the appropriate metric. Yet a simple calculation shows that in this case it is classifier~$\Beta$ which actually leads to the best average revenue: $7.3\,\text{\texteuro/component}$, vs $4.7\,\text{\texteuro/component}$ for classifier $\Alpha$. Hence the true-negative rate is \emph{not} the appropriate metric and our intuitive reasoning failed us here.
+One could argue that also this case there is a great economic difference between correct and wrong classification for class~1, as compared with class~0. The true-negative rate should therefore still be the appropriate metric. Yet a simple calculation shows that in this case it is classifier~$\Beta$ which actually leads to the best average revenue: $7.3\,\text{\texteuro/component}$, vs $4.7\,\text{\texteuro/component}$ for classifier $\Alpha$. Hence the true-negative rate is \emph{not} the appropriate metric here and our intuitive reasoning failed us.
 
 
 \item A classifier favoured by the majority of available metrics can still turn out \emph{not} to be the best one in practice.
 
-\item\label{item:ad_hoc} Most popular metrics were introduced by intuitive reasoning, ad hoc mathematical operations, special assumptions (such as gaussianity\autocites[e.g.][\sect~31 p.~183 for the Matthews correlation coefficient]{fisher1925_r1963}), and analysis of special cases. Unfortunately such derivations do not guarantee generalization to all cases, nor that the proposed metric satisfies all basic requirements or that it is uniquely determined by them. By contrast, compare for instance the derivation of the Shannon entropy \autocites{shannon1948}[\sect~3.2]{woodward1953_r1964}[also][]{goodetal1968} as the \emph{unique} metric universally satisfying a set of general, basic requirements for the amount of information; or the derivation of the probability calculus\footnote{\cites{cox1946,fine1973}[\chaps~1--2]{jaynes1994_r2003}. Some literature cites \cite{halpern1999} as a critique of Cox's proof, but curiously does not cite Halpern's \cite*{halpern1999b} partial rebuttal of his own critique, as well as the rebuttals by \cite{snow1998,snow2001}.} as the \emph{unique} set of rules satisfying general desiderata for inductive reasoning, learning, and prediction \autocites{selfetal1987,cheeseman1988}[\chap~12]{russelletal1995_r2022}.
+\item\label{item:ad_hoc} Most popular metrics were introduced by intuitive reasoning, ad hoc mathematical operations, special assumptions (such as gaussianity\autocites[e.g.][\sect~31 p.~183 for the Matthews correlation coefficient]{fisher1925_r1963}), and analysis of special cases. Unfortunately such derivations do not guarantee generalization to all cases, nor that the proposed metric is uniquely determined by the assumptions, nor that it satisfies other basic but neglected requirements. By contrast, compare for instance the derivation of the Shannon entropy \autocites{shannon1948}[\sect~3.2]{woodward1953_r1964}[also][]{goodetal1968} as the \emph{unique} metric universally satisfying a set of general, basic requirements for the amount of information; or the derivation of the probability calculus\footnote{\cites{cox1946,fine1973}[\chaps~1--2]{jaynes1994_r2003}. Some literature cites \cite{halpern1999} as a critique of Cox's proof, but curiously does not cite Halpern's \cite*{halpern1999b} partial rebuttal of his own critique, as well as the rebuttals by \cite{snow1998,snow2001}.} as the \emph{unique} set of rules satisfying general desiderata for inductive reasoning, learning, and prediction \autocites{selfetal1987,cheeseman1988}[\chap~12]{russelletal1995_r2022}.
   
 \item\label{item:hope_medical} Let us assume that some of the popular metrics identify the best algorithm \enquote{in the majority of cases} -- although it is difficult to statistically define such a majority, and no real surveys have ever been conducted to back up such an assumption. Yet, do we expect the end user to simply \emph{hope} not to belong to the unlucky minority? Is such uncertainty inevitable?
 
@@ -944,7 +944,7 @@ One could argue that also this case there is a great economic difference between
 This matrix is numerically equivalent to~\eqref{eq:utility_example} up to a common additive constant of $335$, so the final net gains are also simply shifted by this amount. The value 0 means immediate death. It is easy to see that the metrics are exactly as is Table~\ref{tab:example_metrics}, the majority favouring classifier~$\Beta$. And yet the use of classifier~$\Alpha$ leads to a more than six-month longer expected remaining life than classifier~$\Beta$.
 
 
-\item Often it is not possible to temporarily deploy all candidate classifiers, as our fictitious manager did, in order to observe which factually leads to the best results. Or it may even be unethical: consider situation as the medical one above, where a classifier may lead to more immediate deaths than another.
+\item Often it is not possible to temporarily deploy all candidate classifiers, as our fictitious manager did, in order to observe which factually leads to the best results. Or it may even be unethical: consider a situation as the medical one above, where a classifier may lead to more immediate deaths than another.
 
 \item Finally, all issues listed above are not caused by class imbalance (the occurrence of one class with higher frequency than another), even though they can become worse for imbalanced classes \autocites{jenietal2013,zhu2020}. In our story the two classes were perfectly balanced.
 
@@ -1161,7 +1161,7 @@ We can also use this freedom to include the term $a\ f_{0}\ U_{10} + a\ f_{1}\ U
   a(N, f_{0}, f_{1})\ \cy\  C_{11} +
   b(N, f_{0}, f_{1})
 \end{equation}
-\emph{where $\cx,\cy$ are constants that do not depend on $C_{00}, C_{11}, N, f_{0}, f_{1}$, and $a(\dotv)>0$, $b(\dotv)$ are arbitrary functions of $N, f_{0}, f_{1}$ only.}
+\emph{where $\cx,\cy$ are constants that do not depend on $C_{00}, C_{11}, N, f_{0}, f_{1}$; and $a(\dotv)>0$, $b(\dotv)$ are arbitrary functions of $N, f_{0}, f_{1}$ only.}
 
 A monotonic function (such as an exponential) of such form is also admissible, if we only require a comparison score to rank several classifiers from best to worst.
 
@@ -1477,27 +1477,27 @@ From this criterion it can be seen geometrically that if a classifier has its cu
 
 The evaluation and ranking of classification algorithms is a critical stage in their development and deployment. Without such evaluation we cannot even say whether an algorithm is better than another, or whether a set of parameter values for a specific algorithm is better than another set.
 
-And yet at present we have not an evaluation theory, but only an evaluation folklore: different procedures, proposed only out of intuition and of analysis of special cases, with fuzzy criteria to decide which should be used, and without rigorous theoretical foundations that should guarantee uniqueness and universality properties and absence of biases. We believe that some of the surprising failures of machine learning \emph{in actual applications}\autocites[see \eg][]{varoquauxetal2022} come not only from biases in the choice of test datasets and similar biases, but also from the use of wrong evaluation metrics.
+And yet at present we have not an evaluation theory, but only an evaluation folklore: different procedures, proposed only out of intuition and of analysis of special cases, with fuzzy criteria to decide which should be used, and without rigorous theoretical foundations that should guarantee uniqueness and universality properties and absence of biases. We believe that some of the surprising failures of machine learning \emph{in actual applications}\autocites[see \eg][]{varoquauxetal2022} come not only from biases in the choice of test datasets and similar biases, but also from the use of wrong evaluation metrics in the development stage.
 
-In the present work we have argued that theoretical foundations for the evaluation process are available in \emph{decision theory}. Its main notions and principle -- utilities and their maximization -- are very intuitive, as shown (we hope) by the introductory story.
+In the present work we have argued that theoretical foundations for the evaluation process are available in \emph{Decision Theory}. Its main notions and principle -- utilities and their maximization -- are very intuitive, as shown (we hope) by the introductory story.
 
 These are the main results of the application of decision theory to the evaluation of classifiers:
 \begin{itemize}[--,wide]
-\item The evaluation metric depends on the specific classification problem.
+\item The evaluation metric must depend on the specific classification problem.
 \item Such metric is completely defined by $n^{2}$ parameters, called utilities, collected in a utility matrix; $n$ is the number of classes. Two parameters are arbitrary and represent a zero and measurement unit of the utility scale. In the binary-classification case this means that we have a two-dimensional set of possible metrics.
-\item A utility matrix also appears when we are uncertain about the utilities underlying a classification problem, or when we want to consider the average performance over several classification problems.
-\item The score of a classifier on a test set is simply given by its utility yield: the grand sum of the products of the elements of the utility matrix and the confusion matrix of the classifier. It is therefore a simple linear expression in the confusion matrix elements.
-\item Some popular metrics such as precision, balanced accuracy, Matthews correlation coefficient, Fowlkes-Mallows index, $F_{1}$-measure, and area under the receiver-operating-characteristic curve do not comply with decision theory. As a consequence they are affected by cognitive biases and always lead to some erroneous comparative evaluations of classifiers in every classification problem.
+\item The score of a classifier on a test set is simply given by its utility yield: the grand sum of the products of the elements of the utility matrix and the confusion matrix of the classifier. It is therefore a simple linear expression in the confusion-matrix elements.
+\item A utility matrix, obtained from an average, is also used when we are uncertain about the utilities underlying a classification problem, or when we want to consider the average performance over several classification problems.
+\item Some popular metrics such as precision, balanced accuracy, Matthews correlation coefficient, Fowlkes-Mallows index, $F_{1}$-measure, and area under the receiver-operating-characteristic curve do not comply with decision theory. As a consequence they are affected by cognitive biases and always lead to some erroneous comparative evaluations of classifiers in every classification problem, even when all utilities and frequencies are correctly assessed.
 \item Using a utility matrix with incorrectly assessed utilities still leads on average to fewer wrong comparative evaluations than using other popular metrics.
 \end{itemize}
 
-We believe that the decision-theoretic evaluation of classifiers has remarkable advantages.
+We believe that the decision-theoretic evaluation of classifiers also has remarkable advantages:
 
 First, it translates the fuzzy problem \enquote*{which of the numerous scores should I rely on?} into a more structured, thus easier to confront, one: to assess, at least semi-quantitatively, how many times more valuable, desirable, or useful is the correct classification of a class than its incorrect classification, than the correct classification of another class, and so on. Such utilities usually have a more immediate, problem-dependent interpretation than other metrics.
 
-Second, it leads to a mathematically extremely simple, computationally convenient metric: a linear combination of confusion-matrix elements. No need of transcendental functions or of the integration of curves.
+Second, it leads to a mathematically simple, computationally convenient metric: a linear combination of confusion-matrix elements. No need of non-linear functions or of the integration of curves.
 
-Third, the principles of the underlying theory guide us if we have to face new peculiar problems. Imagine for instance a classification problem where we cannot say, in general, whether true positives are more important than true negatives and so on, because such valuation can vary from one tested item to another. Decision theory in this case requires an item-wise assessment of utilities, and still provides an item-wise score, which can be accumulated across items to obtain a total evaluation score for the performance of candidate classifiers.
+Third, the principles of the underlying theory guide us if we have to face new peculiar problems. Imagine for instance a classification problem where we cannot say, in general, whether true positives are more important than true negatives and so on, because such valuation can \emph{vary from one tested item to another}. Decision theory in this case requires an item-wise assessment of utilities, and still provides an item-wise score, which can be accumulated across items to obtain a total evaluation score for the performance of candidate classifiers.
 
 
 % \mynotep{We recommend to avoid metrics not complying with decision theory -- not of the form~\eqref{eq:general_valuation_metric} -- and to try to get an estimate of the utilities involved instead.}
