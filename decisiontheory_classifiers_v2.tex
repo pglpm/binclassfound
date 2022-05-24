@@ -1,7 +1,7 @@
 \pdfoutput=1
 %% Author: PGL  Porta Mana
 %% Created: 2022-03-04T07:39:34+0200
-%% Last-Updated: 2022-05-23T07:23:56+0200
+%% Last-Updated: 2022-05-24T08:28:52+0200
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Decision theory for machine-learning classifiers
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -780,7 +780,7 @@ Open Science Framework \doi{10.31219/osf.io/#1}%
 %   *\quad*\quad*
 % \end{center}
 \begin{quotation}
-  \small The manager of a factory which produces a kind of electronic component wishes to employ a \ml\ classifier to assess the durability of each produced component, which determines whether the it will be used in one of two possible kinds of device. The classifier should take some complex features of the component as input, and output one of the two labels \enquote{0} for \enquote{long durability}, or \enquote{1} for \enquote{short durability}, depending on the component type.
+  \small The manager of a factory which produces a sort of electronic component wishes to employ a \ml\ classifier to assess the durability of each produced component. The durability determines whether the component will be used in one of two possible kinds of device. The classifier should take some complex features of the component as input, and output one of the two labels \enquote{0} for \enquote{long durability}, or \enquote{1} for \enquote{short durability}, depending on the component type.
 
 Two candidate classifiers, let us call them $\Alpha$ and $\Beta$, are trained on available training data. When employed on a separate evaluation set they yield the following confusion matrices, written in the format
 \begin{equation*}
@@ -839,7 +839,7 @@ The majority of these metrics favour classifier $\Beta$, some of them by quite a
 
 The developers of the classifiers therefore recommend the employment of classifier $\Beta$.
 
-The factory manager does not fully trust this kind of metrics and decides to employ both classifiers for a trial period, to see which factually leads to the best revenue. The two classifiers are integrated in two separate but otherwise identical parallel production lines.
+The factory manager does not fully trust these metrics, asking \enquote*{how do I know they are appropriate?}. The developers assure that these metrics are widely used. The manager (of engineering background) comments \enquote*{I don't remember `widely used' being a criterion of scientific correctness -- not after Galileo at least}, and decides to employ both classifiers for a trial period, to see which factually leads to the best revenue. The two classifiers are integrated in two separate but otherwise identical parallel production lines.
 
 During the trial period the classifiers perform according to the classification statistics of the confusion matrices~\eqref{eq:CM_A} and \eqref{eq:CM_B} above. At the end of this period the factory manager finds that the average net gains per assessed component yielded by the two classifiers are
 \begin{equation}
@@ -867,7 +867,15 @@ The average gains above are easy to calculate from some additional information. 
 \end{equation}
 The reason behind these values is that short-durability components (class~1) provide more power and are used in high-end, costly devices; but they cause extreme damage and consequent repair costs and refunds if used in devices that require long-durability components (class~0). Long-durability components provide less power and are used in low-end, cheaper devices; they cause some damage if used in devices that require short-durability components, but with lower consequent costs.
 
-Taking the sum of the products of the gains above by the respective percentages of occurrence -- that is, the elements of the confusion matrix -- yields the final average gain. The final average gain returned by the use of classifier~$\Alpha$, for example, is obtained by multiplying matrices~\eqref{eq:utility_example} and \eqref{eq:CM_A} element-wise, and then taking the grand sum. In the present case, the confusion matrices~\eqref{eq:CM_A} and \eqref{eq:CM_B} lead to the amounts \eqref{eq:final_gains} found by the manager.
+Taking the sum of the products of the gains above by the respective percentages of occurrence -- that is, the elements of the confusion matrix -- yields the final average gain. The final average gain returned by the use of classifier~$\Alpha$, for example, is obtained by multiplying matrices~\eqref{eq:utility_example} and \eqref{eq:CM_A} element-wise, and then taking the grand sum:
+\begin{equation*}
+  0.27\cdot 15\,\text{\texteuro} +
+  0.15\cdot (-335)\,\text{\texteuro}+
+  0.23\cdot (-35)\,\text{\texteuro} +
+  0.35\cdot 165\,\text{\texteuro} =
+  3.5 \,\text{\texteuro} \ .
+\end{equation*}
+In the present case the confusion matrices~\eqref{eq:CM_A} and \eqref{eq:CM_B} lead to the amounts \eqref{eq:final_gains} found by the manager.
 
 
 % TP: 0.37    FP: 0.22
