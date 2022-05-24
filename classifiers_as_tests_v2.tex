@@ -1,7 +1,7 @@
 \pdfoutput=1
 %% Author: PGL  Porta Mana
 %% Created: 2022-04-14T17:18:22+0200
-%% Last-Updated: 2022-05-24T10:43:55+0200
+%% Last-Updated: 2022-05-24T11:46:13+0200
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Probabilities for classifier outputs
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -893,7 +893,7 @@ A trained classifier should ideally output the probabilities above when applied 
 
 Now we acknowledge the fact that the information contained in the feature and in the training data, relevant to the class of the new unit, is simply inaccessible to us because of computational limitations. We do have access to the output for the new unit, however, which does carry relevant information. Thus want to calculate a probability such as $\P(\texts{class of unit} \| \texts{output for unit})$.
 
-To calculate this probability, however, it is necessary to have examples of further pairs $(\texts{class of unit}, \texts{output for unit})$, of which the new unit's pair can be considered a representative sample and vice versa -- exactly for the same reason why we need training data in the first place.
+To calculate this probability, however, it is necessary to have examples of further pairs $(\texts{class of unit}, \texts{output for unit})$, of which the new unit's pair can be considered a \enquote{representative sample} \autocites[for a critical analysis of the sometimes hollow term \enquote{representative sample} see][]{kruskaletal1979,kruskaletal1979b,kruskaletal1979c,kruskaletal1980} and vice versa -- exactly for the same reason why we need training data in the first place.
 
 For this purpose, can we use the pairs $(\texts{class of unit}, \texts{output for unit})$ of the training data? This would be very convenient, as those pairs are readily available. But answer is no. The reason is that the outputs of the training data are produced from the features \emph{and the classes} jointly; this is the very point of the training phase. There is therefore a direct informational dependence between the classes and the outputs of the training data. For the new unit, on the other hand, the classifier produces its output from the feature alone. The new unit is not a representative sample of the training data.
 
@@ -1012,17 +1012,19 @@ The discriminative mode is the standard way of proceeding in classification and 
 
 \begin{description}[resume, font=\textit]
 \item[Generative mode:] \textit{probability of class given output and base rates}\\
-  We calculate $p(y \| c)$ from formula~\eqref{eq:conditional_y_given_c}, again for each value of $c$. The probability of each class $c$ is then obtained via Bayes's theorem supplying the \emph{population prevalence} $\br_{c}$ of the class:
+  We calculate $p(y \| c)$ from formula~\eqref{eq:conditional_y_given_c}, again for each value of $c$. The probability of each class $c$ is then obtained through Bayes's theorem after supplying the \emph{population prevalence} $\br_{c}$ of the class:
   \begin{equation}
     \label{eq:bayes_baserate}
-    p(c \| y,\, \texts{base rates}) = \frac{p(y \| c)\ \br_{c}}{ \sum_{c} p(y \| c)\ \br_{c} } \ .
+    p(c \| y,\, \texts{prevalences}) = \frac{p(y \| c)\ \br_{c}}{ \sum_{c} p(y \| c)\ \br_{c} } \ .
   \end{equation}
 \end{description}
-The population prevalences \autocites[\chap~3]{soxetal1988_r2013}[\sect~5.1]{huninketal2001_r2014}, also called \emph{base rates} \autocites{barhillel1980,axelsson2000}, are the relative frequencies of occurrence of the various classes in the population whence our unit originates. This notion is very familiar in medicine: for example
+The population prevalences \autocites[\chap~3]{soxetal1988_r2013}[\sect~5.1]{huninketal2001_r2014}, also called \emph{base rates} \autocites{barhillel1980,axelsson2000}, are the relative frequencies of occurrence of the various classes in the population whence our unit originates. This notion is very familiar in medicine and epidemiology: for example, a particular type of tumour can have a prevalence of 0.01\% among people of a given age and sex, meaning that 1 person in 10\,000 among them has that kind of tumour, as obtained through a large survey.
 
-The generative mode, which is generally not available for classifiers with a discriminative design, is the correct way 
+The generative mode, which is generally not available for classifiers with a discriminative design, is the required way to calculate the class probabilities if the calibration set does not have the same statistics as the population on which the classifier is employed; or in other words if it is not representative of that population.
 
+\mynotep{situation may occur not because calibration set was badly chosen, but because we want to use classifier in a new situation, or if population has changed}
 
+\mynotep{add use for combining evidence}
 
 
 
