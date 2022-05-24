@@ -1,7 +1,7 @@
 \pdfoutput=1
 %% Author: PGL  Porta Mana
 %% Created: 2022-03-04T07:39:34+0200
-%% Last-Updated: 2022-05-24T21:20:50+0200
+%% Last-Updated: 2022-05-25T00:48:12+0200
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Decision theory for machine-learning classifiers
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -399,6 +399,7 @@ Open Science Framework \doi{10.31219/osf.io/#1}%
 \newcommand*{\asudedication}[1]{%
 {\par\centering\textit{#1}\par}}
 \newenvironment{acknowledgements}{\section*{Thanks}\addcontentsline{toc}{section}{Thanks}}{\par}
+\newenvironment{contributions}{\section*{Author contributions}\addcontentsline{toc}{section}{Author contributions}}{\par}
 \makeatletter\renewcommand{\appendix}{\par
   \bigskip{\centering
    \interlinepenalty \@M
@@ -1542,6 +1543,9 @@ Third, the principles of the underlying theory guide us if we have to face new p
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%% Acknowledgements
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 
+\begin{contributions}
+  All authors have contributed equally to the present work, especially KD.
+\end{contributions}
 \begin{acknowledgements}
   PGLPM thanks Maja, Mari, Miri, Emma for continuous encouragement and affection;  Buster Keaton and Saitama for filling life with awe and inspiration; and the developers and maintainers of \LaTeX, Emacs, AUC\TeX, Open Science Framework, R, Python, Inkscape, LibreOffice, Sci-Hub for making a free and impartial scientific exchange possible.
   % Our work was supported by the Trond Mohn Research Foundation, grant number BFS2018TMT07
