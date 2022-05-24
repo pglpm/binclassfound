@@ -1,7 +1,7 @@
 \pdfoutput=1
 %% Author: PGL  Porta Mana
 %% Created: 2022-04-14T17:18:22+0200
-%% Last-Updated: 2022-05-24T10:32:31+0200
+%% Last-Updated: 2022-05-24T10:43:55+0200
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Probabilities for classifier outputs
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -1012,13 +1012,13 @@ The discriminative mode is the standard way of proceeding in classification and 
 
 \begin{description}[resume, font=\textit]
 \item[Generative mode:] \textit{probability of class given output and base rates}\\
-  We calculate $p(y \| c)$ from formula~\eqref{eq:conditional_y_given_c}, again for each value of $c$. The probability of each class $c$ is then obtained via Bayes's theorem, supplying the actual \emph{population prevalence} $\br_{c}$ of the class:
+  We calculate $p(y \| c)$ from formula~\eqref{eq:conditional_y_given_c}, again for each value of $c$. The probability of each class $c$ is then obtained via Bayes's theorem supplying the \emph{population prevalence} $\br_{c}$ of the class:
   \begin{equation}
     \label{eq:bayes_baserate}
     p(c \| y,\, \texts{base rates}) = \frac{p(y \| c)\ \br_{c}}{ \sum_{c} p(y \| c)\ \br_{c} } \ .
   \end{equation}
 \end{description}
-The population prevalences \autocites[\chap~3]{soxetal1988_r2013}[\sect~5.1]{huninketal2001_r2014}, also called \emph{base rates} \autocites{barhillel1980,axelsson2000}, are the relative frequencies of occurrence of the various classes in the population whence our unit originates.
+The population prevalences \autocites[\chap~3]{soxetal1988_r2013}[\sect~5.1]{huninketal2001_r2014}, also called \emph{base rates} \autocites{barhillel1980,axelsson2000}, are the relative frequencies of occurrence of the various classes in the population whence our unit originates. This notion is very familiar in medicine: for example
 
 The generative mode, which is generally not available for classifiers with a discriminative design, is the correct way 
 

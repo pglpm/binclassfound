@@ -1,7 +1,7 @@
 \pdfoutput=1
 %% Author: PGL  Porta Mana
 %% Created: 2022-03-04T07:39:34+0200
-%% Last-Updated: 2022-05-24T09:06:16+0200
+%% Last-Updated: 2022-05-24T10:46:54+0200
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Decision theory for machine-learning classifiers
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -927,7 +927,7 @@ One could argue that also this case there is a great economic difference between
   
 \item\label{item:hope_medical} Let us assume that some of the popular metrics identify the best algorithm \enquote{in the majority of cases} -- although it is difficult to statistically define such a majority, and no real surveys have ever been conducted to back up such an assumption. Yet, do we expect the end user to simply \emph{hope} not to belong to the unlucky minority? Is such uncertainty inevitable?
 
-  We cannot have a cavalier attitude towards this problem: life and death can depend on it in some \ml\ applications \autocites[cf.][]{howard1980}. Imagine a story analogous to the factory one, but in a medical setting instead. The classifiers should distinguish between two tumour types, requiring two different types of medical intervention. The confusion matrices are the same~\eqref{eq:CM_A} and \eqref{eq:CM_B}. Correct or incorrect classification in this case leads to the following expected remaining life lengths for patients in a specific age range:
+  We cannot have a cavalier attitude towards this problem: life and death can depend on it in some \ml\ applications \autocites[cf.][]{howard1980}. Imagine a story analogous to the factory one, but in a medical setting instead. The classifiers should distinguish between two tumour types, requiring two different types of medical intervention. The confusion matrices are the same~\eqref{eq:CM_A} and \eqref{eq:CM_B}. Correct or incorrect classification in this case leads to the following expected remaining life lengths \autocites[\cf\ the discussion in][\sect~11.2.9]{soxetal1988_r2013} for patients in a specific age range:
 \begin{equation}
   \label{eq:utility_example_medicine}
   \rotatebox[origin=c]{90}{
@@ -1056,7 +1056,7 @@ In formulae, this principle of \emph{maximization of expected utility}  is
 
 A very important result in decision theory is that basic requirements of rational decision-making imply that there \emph{must} be a set of utilities underlying the decisions of a rational agent, and the decisions must obey the principle of maximization of expected utility\autocites[\sect~15.2]{russelletal1995_r2022}[\chaps~2--3]{neumannetal1944_r1955}.
 
-How are utilities determined? They are obviously problem-specific and cannot be given by the theory (which would otherwise be a model rather than a theory). Utilities can be obvious in decision problems involving gains or losses of measurable quantities such as money or energy (the utility of money is usually not equal to the amount of money, the relationship between the two being somewhat logarithmic \autocites[\eg][pp.~203--204]{north1968}[\chap~4]{raiffa1968_r1970}). In medical problems they can correspond to life expectancy and quality of life; see for example \cite[esp. \chap~8]{soxetal1988_r2013} and \cite[esp. \chap~4]{huninketal2001_r2014} on how such health factors are transformed into utilities.
+How are utilities determined? They are obviously problem-specific and cannot be given by the theory (which would otherwise be a model rather than a theory). Utilities can be obvious in decision problems involving gains or losses of measurable quantities such as money or energy (the utility of money is usually not equal to the amount of money, the relationship between the two being somewhat logarithmic \autocites[\eg][pp.~203--204]{north1968}[\chap~4]{raiffa1968_r1970}). In medical problems they can correspond to life expectancy and quality of life; see for example \cite[esp. \chap~8 and \sect~11.2.9]{soxetal1988_r2013} and \cite[esp. \chap~4]{huninketal2001_r2014} on how such health factors are transformed into utilities.
 
 In some cases the final utility of a single classification instance depends on a sequence of further uncertain events and further decisions. In the story of \sect~\ref{sec:intro}, for instance, the misclassification of a short-durability component as a long-durability one leads the final device to break only in a high fraction of cases, and in such cases the end customer requires a refund in a high fraction of subcases; the refunded amount may even depend on further circumstances. The negative utility $U_{01} = -335\,\text{\texteuro}$ in table~\eqref{eq:utility_example} comes from a statistical average of the losses in all these possible end results. This is the topic of so-called decision networks or influence diagrams \autocites[Besides the general references already given:][\sect~15.5]{russelletal1995_r2022}{howardetal1984b_r2005}. The decision-theory subfield of \emph{utility theory} gives rules that guarantee the mutual consistency of a set of utilities in single decisions or decision networks. For simple introductions to utility theory see \cite[\sect~15.2]{russelletal1995_r2022}, \cite[pp.~201--205]{north1968}, and the references given at the beginning of the present section.
 
