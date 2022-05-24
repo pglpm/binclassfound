@@ -1,7 +1,7 @@
 \pdfoutput=1
 %% Author: PGL  Porta Mana
 %% Created: 2022-03-04T07:39:34+0200
-%% Last-Updated: 2022-05-24T21:11:50+0200
+%% Last-Updated: 2022-05-24T21:16:54+0200
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Decision theory for machine-learning classifiers
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -1377,15 +1377,15 @@ Each point represents a pair of confusion matrices (step~\ref{item:draw_cm}); it
 
 The plots are displayed in order (left-rigt, top-bottom) of decreasing percentages of incorrect rankings. The accuracy metric proves to be the best among the ones considered, leading to $8.7\%$ incorrect pairwise rankings. But we see that a utility matrix affected by gaussian errors with $0.1$ standard deviation is even better, yielding $4\%$ incorrect pairwise rankings.
 
-The dependence of the fraction of incorrect rankings on the standard deviation of the error affecting the utilities is shown in the plots of \fig~\ref{fig:percentage_vs_error}, for the case of uniform distribution (top plot) and gaussian distribution (bottom plot) of true utility matrices. It is approximately linear. The plots also report the fractions of incorrect rankings for the other metrics. We see that evaluations based on a utility matrix affected by errors with standard deviation up to $0.15$ or even $0.25$ are still more reliable than evaluations based on the other reported metrics. This is a remarkable fact, considering that errors with such standard deviations are quite large, as can be seen in \fig~\ref{fig:error_distr_um}.
+The dependence of the fraction of incorrect rankings on the standard deviation of the error affecting the utilities is shown in the plots of \fig~\ref{fig:percentage_vs_error}, for the case of uniform distribution (top plot) and gaussian distribution (bottom plot) of true utility matrices. It is approximately linear. The plots also report the fractions of incorrect rankings for the other metrics. We see that evaluations based on a utility matrix affected by errors with standard deviation up to $0.15$ or even $0.25$ are still more reliable than evaluations based on the other reported metrics. This is a remarkable fact, considering that errors with such standard deviations are quite large, as was shown in \fig~\ref{fig:error_distr_um}.
 
-An utility error with standard deviations around $0.25$ cover the whole space of utility matrices almost uniformly (cf \fig~\ref{fig:error_distr_um}). Such large error means that we were completely uncertain about the utilities to start with. It therefore makes sense that the accuracy, equivalent to using the identity utility matrix, becomes a more reliable metric when this error level is reached. Indeed we saw in \sect~\ref{sec:unknown_utilities} that the identity utility matrix is the natural one to use in a state of complete uncertainty about the utilities.
+A utility error with standard deviations around $0.25$ covers the whole space of utility matrices almost uniformly (cf \fig~\ref{fig:error_distr_um}). Such large error means that we are almost completely uncertain about the utilities to start with. It therefore makes sense that the accuracy, equivalent to using the identity utility matrix, becomes a more reliable metric when this error level is reached: as we saw in \sect~\ref{sec:unknown_utilities}, the identity utility matrix is the natural one to use in a state of complete uncertainty about the utilities.
 
 
 \section{What about the area under the curve of the receiver operating characteristic?}
 \label{sec:auc}
 
-Another very common metric to evaluate binary classifiers is the Area Under the Curve of the Receiver Operating Characteristic, or \enquote{area under the curve} for short. This metric can only be used for particular classifying algorithms, and its meaning is different from that of the metrics reviewed so far. For these reasons we leave a full discussion of it to future works, and only offer a couple of remarks.
+Another very common metric for evaluating binary classifiers is the Area Under the Curve of the Receiver Operating Characteristic, or \enquote{area under the curve} for short. This metric can only be used for particular classifying algorithms, and its meaning is different from that of the metrics reviewed so far. For these reasons we leave a full discussion of it to future works, and only offer a couple of remarks here.
 
 The area under the curve can only be computed for classifiers that output a continuous variable rather than a class. A threshold for this variable determines whether its value predicts of one class or the other. Different choices of threshold leads to different pairs of false-positive rate $f$ (which is $1-{}$true-negative rate) and true-positive rate $t$ in a given test set. These pairs can be plotted as a curve $f \mapsto t(f)$ on a graph with corresponding axes. Given the proportion of classes in the test set, every point on such curve corresponds to a possible confusion matrix $C_{ij}(f)$ that the classifier can produce depending on the threshold chosen. The area subtended by such curve is a weighted average of true-positive rates with a peculiar choice of weights; the weights are uniform as a function of false-positive rate, but generally not uniform as a function of the threshold, for example. The meaning and proper use of the receiver operating characteristic are discussed in a classic by \cites{metz1978}; see especially p.~290.
 
