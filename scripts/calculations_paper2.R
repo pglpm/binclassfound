@@ -1,6 +1,6 @@
 ## Author: PGL  Porta Mana
 ## Created: 2022-05-01T09:38:48+0200
-## Last-Updated: 2022-05-21T11:43:54+0200
+## Last-Updated: 2022-05-24T15:29:36+0200
 ################
 ## Calculations for the papers
 ################
@@ -166,6 +166,43 @@ um2xy <- function(um,norm=TRUE){
 
 
 
+####################################################################
+
+
+mm <- 80
+aa <- 1:(mm-1)
+testx <- outer(aa, aa, function(y,x){x})
+testx2 <- outer(aa, aa, function(y,x){mm-x})
+testy <- outer(aa, aa, function(y,x){y})
+testy2 <- outer(aa, aa, function(y,x){mm-y})
+sele <- which(
+    testx*testy/mm==round(testx*testy/mm) &
+    testx2*testy/mm==round(testx2*testy/mm) &
+    testx*testy2/mm==round(testx*testy2/mm) &
+    testx2*testy2/mm==round(testx2*testy2/mm) &
+    mm*testx*testy/(testx*testy+testx2*testy2)==round(mm*testx*testy/(testx*testy+testx2*testy2)) &
+    mm*testx*testy2/(testx*testy2+testx2*testy)==round(mm*testx*testy2/(testx*testy2+testx2*testy)) &
+   ,
+    arr.ind=T
+)
+sele <- sele[sele[,1]!=mm/2 & sele[,2]!=mm/2,]
+sele
+
+cho <- 5
+y <- sele[cho,1]
+x <- sele[cho,2]
+##
+m1 <- matrix(c(aa[x], mm-aa[x], rep(mm/4,2), mm-aa[x], aa[x]),2,3)
+#m1 <- matrix(c(aa[x], mm-aa[x], mm-aa[x], aa[x]),2,2)
+m2 <- m1*c(aa[y], mm-aa[y])
+m1
+m2
+m1/rowSums(m1)
+m2/rowSums(m2)
+t(t(m1)/colSums(m1))
+t(t(m2)/colSums(m2))
+
+
 
 ####################################################################
 
@@ -323,10 +360,10 @@ signif(diffscores[ok1,],2)
 ## > [1] "% Dutility CM1 - CM2"
 ## > [1] 2.6e+17
 ## > > > [1] "scores CM1"
-## >     F1    MCC   Prec    Acc BalAcc    Kri  Fo-Ma    AUC    Rec   Spec 
+## >   F1    MCC   Prec    Acc BalAcc    Kri  Fo-Ma    AUC    Rec   Spec 
 ##   0.77   0.51   0.70   0.75   0.75   0.75   0.78   0.75   0.86   0.64 
 ## > > [1] "scores CM2"
-## >     F1    MCC   Prec    Acc BalAcc    Kri  Fo-Ma    AUC    Rec   Spec 
+## >   F1    MCC   Prec    Acc BalAcc    Kri  Fo-Ma    AUC    Rec   Spec 
 ##   0.59   0.24   0.64   0.62   0.62   0.62   0.59   0.62   0.54   0.70 
 ## > [1] "% Dscores CM1 - CM2"
 ## >     F1    MCC   Prec    Acc BalAcc    Kri  Fo-Ma    AUC    Rec   Spec 
@@ -3657,4 +3694,22 @@ print('Recalls:')
 com(ta1, ta2)
 print('Specificities:')
 com(tb1, tb2)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
