@@ -1,7 +1,7 @@
 \pdfoutput=1
 %% Author: PGL  Porta Mana
 %% Created: 2022-03-04T07:39:34+0200
-%% Last-Updated: 2022-05-24T21:11:07+0200
+%% Last-Updated: 2022-05-24T21:11:50+0200
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Decision theory for machine-learning classifiers
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -1336,7 +1336,7 @@ A precise answer to these questions is extremely difficult if not impossible bec
   \hspace{\stretch{1}}
 \end{figure}
 
-Under these assumptions we calculate how often a pair of classifiers, represented by two confusion matrices with the same class proportions, is evaluated in reverse order, with respect to their true utility yield, when an incorrect utility matrix or another metric is used for the evaluation. This calculation is an integration problem that we solve by Monte Carlo sampling. The procedure is intuitive:
+Under these assumptions we calculate how often a pair of classifiers, having two confusion matrices with the same class proportions, is evaluated in reverse order, with respect to their true utility yield, when an incorrect utility matrix or another metric is used for the evaluation. This calculation is an integration problem that we solve by Monte Carlo sampling. The procedure is intuitive:
 \begin{enumerate}[label=\arabic*.,ref=\arabic*]
 \item\label{item:draw_um} Select a \enquote{true} utility matrix according to the distribution~\ref{item:distr_um}.
 \item\label{item:draw_wrongum} Select errors around the elements of the true utility matrix, according to the distribution~\ref{item:distr_error}, and add them to it.
