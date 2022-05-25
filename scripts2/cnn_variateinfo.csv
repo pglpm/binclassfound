@@ -1,0 +1,4 @@
+variate,type,min,max,transfM,transfW,origvariate
+class,binary,0,1,,,class
+output0,double,-Inf,Inf,,,output0
+output1,double,-Inf,Inf,,,output1

@@ -1,6 +1,6 @@
 ## Author: PGL  Porta Mana
 ## Created: 2022-03-17T14:21:57+0100
-## Last-Updated: 2022-05-25T16:56:39+0200
+## Last-Updated: 2022-05-25T20:06:51+0200
 ################
 ## Exploration of several issues for binary classifiers
 ################
@@ -48,8 +48,28 @@ baseversion <- '_rfcont_1'
 maincov <- 'class'
 family <- 'Palatino'
 saveinfofile <- 'rfcont_variateinfo.csv'
-datafile <- 'RF_bayesian_prob_test2.csv'
-#64K, 3588D, 1024I: 7 min + 3 min
+rfcalibfile <- 'modCHEMBL205_predictions_RF_test1_calibration.csv'
+cnncalibfile <- 'modCHEMBL205_predictions_CNN_test1_calibration.csv'
+rfdemofile <- 'modCHEMBL205_predictions_RF_test2_demonstration.csv'
+cnndemofile <- 'modCHEMBL205_predictions_CNN_test2_demonstration.csv'
+
+
+odataRc <- fread(rfcalibfile, sep=',')
+odataCc <- fread(cnncalibfile, sep=',')
+odataRd <- fread(rfdemofile, sep=',')
+odataCd <- fread(cnndemofile, sep=',')
+
+transf <- X2Y[[1]](odataRc$output1)
+odataRc$transf_output1 <- transf
+##
+fwrite(odataRc, paste0('t',rfcalibfile), sep=',')
+
+transf <- X2Y[[1]](odataRd$output1)
+odataRd$transf_output1 <- transf
+fwrite(odataRd, paste0('t',rfdemofile), sep=',')
+
+
+##64K, 3588D, 1024I: 7 min + 3 min
 X2Y <- list(
     'prediction_lnodds'=function(x){
         epsi <- 1 - 2^-10
@@ -71,7 +91,7 @@ covTypes <- variateinfo$type
 covMins <- variateinfo$min
 covMaxs <- variateinfo$max
 names(covTypes) <- names(covMins) <- names(covMaxs) <- covNames
-odata <- fread(datafile, sep=',')
+odata <- fread(calibfile, sep=',')
 ##odata2 <- fread('modCHEMBL205_predictions_RF.csv', sep=',')
 transf <- X2Y[[1]](odata$pred_0)
 ##

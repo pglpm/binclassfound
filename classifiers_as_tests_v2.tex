@@ -1,7 +1,7 @@
 \pdfoutput=1
 %% Author: PGL  Porta Mana
 %% Created: 2022-04-14T17:18:22+0200
-%% Last-Updated: 2022-05-25T18:39:00+0200
+%% Last-Updated: 2022-05-25T19:38:51+0200
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Probabilities for classifier outputs
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -993,12 +993,12 @@ The parametric distributions $A(c \| \alpha)$ and $B(y \| \beta)$ are chosen by 
     \alpha& if $c=1$, \\ 1-\alpha & if $c=0$.
   \end{dcases*}
 \end{equation}
-For the second we use a gaussian distribution, $\beta \equiv (\mu,\sigma)$ being its mean and standard deviation:
+For the second we use a Gaussian distribution, $\beta \equiv (\mu,\sigma)$ being its mean and standard deviation:
 \begin{equation}
   \label{eq:distr_output}
   B(y \| \beta) = \No(y \| \mu, \sigma) \defd \frac{1}{\sqrt{2\pu\sigma^{2}}} \exp\biggl[-\frac{(y-\mu)^{2}}{2\sigma^{2}}\biggr] \ ,
 \end{equation}
-or a product of such gaussians, each with its own parameters, if $y$ is multidimensional. If the classifier's output $y$ is a bounded variable we perform a transformation of its range onto the real line first (taking due care of Jacobian determinants for density transformations).
+or a product of such Gaussians, each with its own parameters, if $y$ is multidimensional. If the classifier's output $y$ is a bounded variable we perform a transformation of its range onto the real line first (taking due care of Jacobian determinants for density transformations).
 
 \medskip
 
@@ -1095,17 +1095,56 @@ We use data from the ChEMBL database \autocites{bentoetal2014}, previously used 
 
 It must be strongly emphasized that \emph{the additional demonstration dataset has an illustrative purpose only} for the sake of the present work. It does not test or evaluate anything. At most it can be used to check for bugs in the design or coding of the classifiers and their probability transducers. In a real design \amp\ evaluation phase, the calibration set will at the same time be the evaluation test set, as explained in \sect~\ref{sec:role_calibration_set}.
 
+The classes $0$ (inactive) and $1$ (active) occur in the dataset with a proportion of roughly 10 to 1: the dataset is imbalanced.
+
+\mynotew{consider standard identity utility matrix, and then matrix where importance of low-frequency class is much higher.
+
+We assume the cost of a false positive is high (utility is very low)
+\begin{equation*}
+  \begin{bmatrix}
+    1 & 0 \\ -10 & 10
+  \end{bmatrix}
+\end{equation*}
+}
+
 \subsection{Probability-transducer curves}
 \label{sec:example_calc_transduc}
 %% RF: 30 min; CNN: 75 min
-The joint probability of class $c$ and output $y$, \eqn~\eqref{eq:representation_P}, for the random forest is more specifically given by
+
+\subsubsection{Random forest}
+\label{sec:curve_RF}
+
+The joint probability of class $c$ and output $y$, \eqn~\eqref{eq:representation_P}, for the random forest is expressed by the sum
 \begin{equation}
   \label{eq:P_c_out_RF}
   p(c, y) = \sum_{k} q_{k}\
-  [c\ \alpha_{k} + (1-c)\ (1-\alpha_{k})]\
+  [c\ \alpha_{k} + (1-c)\ (1-\alpha_{k})]\ 
   \No[L(y) \| \mu_{k}, \sigma_{k}]\ L'(y)
 \end{equation}
-where $\No$ is a gaussian, \eqn~\eqref{eq:distr_output}, $L(y)$ is a logit transformation (together with a small contraction around $0.5$ to take care of $0$ and $1$ values) that maps the output $y\in \clcl{0,1}$ onto the real numbers \autocites[\cf][\sect~3.3 \eqn~(19)]{johnson1949}, and $L'(y)$ its Jacobian determinant. 
+where $\No(\cdot)$ is a Gaussian as in \eqn~\eqref{eq:distr_output}; $L(y)$ is a logit transformation composed with a small contraction around $0.5$, to take care of $0$ and $1$ values, which maps the output $y\in \clcl{0,1}$ onto the real numbers \autocites[\cf][\sect~3.3 \eqn~(19)]{johnson1949}; $L'(y)$ is its Jacobian determinant; and the sum contains $2^{18} \approx 260\,000$ terms.
+
+The calculation of the parameters $\set{q_{k}, \alpha_{k}, \mu_{k}, \sigma_{k}}$ from the calibration data took roughly 60\:min. Figure\mynotep{\ldots} shows the probability $p(c\| y)$, for each class $c\in \set{0,1}$, conditional on the random-forest output $y$, as a function of the latter. We note that \mynotep{\ldots}.
+
+\subsubsection{Neural network}
+\label{sec:curve_NN}
+
+The joint probability of class $c$ and output $y$ for the neural network is expressed by the sum
+\begin{equation}
+  \label{eq:P_c_out_CNN}
+  p(c, y_{0}, y_{1}) = \sum_{k} q_{k}\
+  [c\ \alpha_{k} + (1-c)\ (1-\alpha_{k})]\
+  \No(y_{0} \| \mu_{0k}, \sigma_{0k})\ 
+  \No(y_{1} \| \mu_{1k}, \sigma_{1k})
+\end{equation}
+again containing $2^{18} \approx 260\,000$ terms.
+
+The calculation of the parameters $\set{q_{k}, \alpha_{k}, \mu_{0k}, \sigma_{0k}, \mu_{1k}, \sigma_{1k}}$ from the calibration data took roughly 75\:min. Figure\mynotep{\ldots} shows the probability $p(c\| y_{0}, y_{1})$, for each class $c\in \set{0,1}$, conditional on the neural-network outputs $y_{0}, y_{1}$, as a function of the latter. We note that \mynotep{\ldots}.
+
+
+
+
+
+
 
 \begin{figure}[t]
   \centering
@@ -1232,7 +1271,7 @@ This approach also offers the following advantages:
 \item It does not require any changes of the standard training procedures.
 \item It is easily implemented as an additional low-cost computation of a function at the end of the classifier's output, or as a replacement of a softmax-like computation.
 %\item For one classifier, the assessment of this function needs to be done only once.
-\item It does not make any assumptions such as linearity or gaussianity.% , except for the (unavoidable) assumption of continuity \mynotew{\wrench\ need to explain this better}
+\item It does not make any assumptions such as linearity or Gaussianity.% , except for the (unavoidable) assumption of continuity \mynotew{\wrench\ need to explain this better}
 \item It yields not only the probability distribution for the classes, but also a measure of how much this distribution could change if we collected more test data (the \enquote{probability of the probability}, so to speak).
 \item It allows us to use the classifier both in a discriminative and generative way. That is, we can use either\; $\p(\texts{class} \| \texts{output})$, or\; $\p(\texts{output} \| \texts{class})$\; in conjunction with Bayes's theorem. The latter approach enables us to avoid possible base-rate fallacies \autocites[\sect~12.5]{russelletal1995_r2022}{axelsson2000,jennyetal2018}.
 \item It can be seamlessly integrated with a utility matrix to compute the optimal class, as shown in the companion work \mynotew{\pencil}.
@@ -1294,7 +1333,7 @@ F(D) = F(c_{1}, x_{1})\ F(c_{2}, x_{2})\ \dotsm\ F(c_{M}, x_{M}) \ .
 \end{itemize}
 Formula~\eqref{eq:weight_F_two_factors} is just Bayes's theorem. Its normalization factor is the integral $\int F(D)\, \wfo(F)\, \di F$, which ensures that $\wf(F)$ is normalized.
 
-The first factor becomes larger as the number of known data increases. Thus a large amount of data indicating a non-smooth distribution $F$ will override any smoothness preferences embodied in the second factor. Note that no assumptions about the shape of $F$ -- no gaussians, logistic curves, sigmoids, and so on -- are made in this approach.
+The first factor becomes larger as the number of known data increases. Thus a large amount of data indicating a non-smooth distribution $F$ will override any smoothness preferences embodied in the second factor. Note that no assumptions about the shape of $F$ -- no Gaussians, logistic curves, sigmoids, and so on -- are made in this approach.
 
 The integral in~\eqref{eq:prob_is_expe_freq} is calculated in either of two ways, depending on whether $X$ is discrete or continuous. For $X$ discrete and taking on the same values as the class variable $C$, the integral is over $\RR^{\nc^{2}}$ where $\nc$ is the number of possible classes, and can be done analytically. For $X$ continuous, the integral is numerically approximated by a sum over a representative sample, obtained by Markov-chain Monte Carlo, of distributions $F$ according to the weights~\eqref{eq:weight_F_two_factors}. The error of this approximation can be calculated and made as small as required by increasing the number of Monte Carlo samples.
 
@@ -1568,7 +1607,7 @@ In comparing, evaluating, and using \ml\ classifiers we face a number of questio
   
 \item\label{item:metrics}\textsf{\textbf{Choice of valuation metric.}}\enspace When we have to evaluate and compare different classifying algorithms or different hyperparameter values for one algorithm, we are avalanched by a choice of possible evaluation metrics: accuracy, area under curve, $F_{1}$-measure, mean square contingency \autocites[denoted \enquote{$r$} there]{yule1912} also known as Matthews correlation coefficient \autocites{matthews1975}[\sect~31 p.~183]{fisher1925_r1963}, precision, recall, sensitivity, specificity, and many others \autocites{sammutetal2011_r2017}[see also the analysis in ][]{goodmanetal1954,goodmanetal1959,goodmanetal1963,goodmanetal1972b}. Only vague guidelines are usually given to face this choice. Typically one computes several of such scores and hopes that they will lead to similar ranking.
 
-\item\label{item:rationale}\textsf{\textbf{Rationale and consistency.}}\enspace Most or all of such metrics were proposed only on intuitive grounds, from the exploration of specific problems and relying on tacit assumptions, then heedlessly applied to new problems. The Matthews correlation coefficient, for example, relies on several assumptions of gaussianity \autocites[\sect~31 p.~183 first paragraph]{fisher1925_r1963}, which for instance do not apply to skewed population distributions \autocites{jenietal2013,zhu2020}. The area under the receiver-operating-characteristic curve is heavily affected by values of false-positive and false-negative frequencies, as well as by misclassification costs, that have nothing to do with those of the specific application of the classifier \autocites{bakeretal2001,loboetal2008}. The $F_{1}$-measure implicitly gives correct classifications a weight that depends on their frequency or probability \autocites{handetal2018}; such dependence amounts to saying, for example, \enquote*{this class is rare, \emph{therefore} its correct classification leads to high gains}, which is a form of scarcity cognitive bias \autocites{camereretal1989,kimetal1999,mittoneetal2009}.
+\item\label{item:rationale}\textsf{\textbf{Rationale and consistency.}}\enspace Most or all of such metrics were proposed only on intuitive grounds, from the exploration of specific problems and relying on tacit assumptions, then heedlessly applied to new problems. The Matthews correlation coefficient, for example, relies on several assumptions of Gaussianity \autocites[\sect~31 p.~183 first paragraph]{fisher1925_r1963}, which for instance do not apply to skewed population distributions \autocites{jenietal2013,zhu2020}. The area under the receiver-operating-characteristic curve is heavily affected by values of false-positive and false-negative frequencies, as well as by misclassification costs, that have nothing to do with those of the specific application of the classifier \autocites{bakeretal2001,loboetal2008}. The $F_{1}$-measure implicitly gives correct classifications a weight that depends on their frequency or probability \autocites{handetal2018}; such dependence amounts to saying, for example, \enquote*{this class is rare, \emph{therefore} its correct classification leads to high gains}, which is a form of scarcity cognitive bias \autocites{camereretal1989,kimetal1999,mittoneetal2009}.
 
   We are therefore led to ask: are there valuation metrics that can be proven, from first principles, to be free from biases and unnecessary assumptions?
 
