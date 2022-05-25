@@ -1,7 +1,7 @@
 \pdfoutput=1
 %% Author: PGL  Porta Mana
 %% Created: 2022-04-14T17:18:22+0200
-%% Last-Updated: 2022-05-25T17:28:02+0200
+%% Last-Updated: 2022-05-25T18:39:00+0200
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Probabilities for classifier outputs
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -1102,10 +1102,10 @@ The joint probability of class $c$ and output $y$, \eqn~\eqref{eq:representation
 \begin{equation}
   \label{eq:P_c_out_RF}
   p(c, y) = \sum_{k} q_{k}\
-  [c\ alpha + (1-c)\ (1-\alpha)]\
+  [c\ \alpha_{k} + (1-c)\ (1-\alpha_{k})]\
   \No[L(y) \| \mu_{k}, \sigma_{k}]\ L'(y)
 \end{equation}
-where $\No$ is a gaussian, \eqn~\eqref{eq:distr_output}, $L(y)$ is a logit transformation (together with a small contraction around $0.5$ to take care of $0$ and $1$ values) that maps the output $y\in \clcl{0,1}$ onto the real numbers \autocites[\cf][\sect~3.3 esp.\ \eqn~(19)]{johnson1949}, and $L'(y)$ its Jacobian determinant. 
+where $\No$ is a gaussian, \eqn~\eqref{eq:distr_output}, $L(y)$ is a logit transformation (together with a small contraction around $0.5$ to take care of $0$ and $1$ values) that maps the output $y\in \clcl{0,1}$ onto the real numbers \autocites[\cf][\sect~3.3 \eqn~(19)]{johnson1949}, and $L'(y)$ its Jacobian determinant. 
 
 \begin{figure}[t]
   \centering

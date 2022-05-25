@@ -1,6 +1,6 @@
 ## Author: PGL  Porta Mana
 ## Created: 2022-03-17T14:21:57+0100
-## Last-Updated: 2022-05-25T17:03:18+0200
+## Last-Updated: 2022-05-25T18:35:03+0200
 ################
 ## Exploration of several issues for binary classifiers
 ################
@@ -51,21 +51,6 @@ family <- 'Palatino'
 saveinfofile <- 'cnn_variateinfo.csv'
 datafile <- 'modCHEMBL205_predictions_CNN.csv'
 #64K, 3588D, 1024I: 7 min + 3 min
-## X2Y <- list(
-##     'prediction_lnodds'=function(x){
-##         epsi <- 1 - 2^-10
-##         x <- 0.5 + (x-0.5)*epsi
-##         log(x/(1-x))
-##     }
-## )
-## Xjacobian <- list(
-##     'prediction_lnodds'=function(x){
-##         epsi <- 1 - 2^-10
-##         x <- 0.5 + (x-0.5)*epsi
-##         4*epsi/(1 - (2*epsi*(x-0.5))^2)
-##     }
-## )
-## Xrange <- list('prediction_lnodds'=c(0,1))
 ##
 variateinfo <- fread(saveinfofile, sep=',')
 covNames <- variateinfo$variate
