@@ -1,7 +1,7 @@
 \pdfoutput=1
 %% Author: PGL  Porta Mana
 %% Created: 2022-04-14T17:18:22+0200
-%% Last-Updated: 2022-05-25T11:35:22+0200
+%% Last-Updated: 2022-05-25T11:58:25+0200
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Probabilities for classifier outputs
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -1046,13 +1046,13 @@ where $\p(c)$ is a population prevalence or an initial probability assessment.
 \subsection{The double role of the calibration data set}
 \label{sec:role_calibration_set}
 
-The preceding analysis shows that the construction of the probability transducer requires a calibration set separate from the training \amp\ validation set. Do we then need an additional separate \enquote{test set} for the final evaluation and comparison of candidate classifiers or hyperparameters? This would be inconvenient, as it would reduce the amount of data available for training.
+In the preceding analysis we discussed why the construction of the probability transducer requires a calibration set separate from the training \amp\ validation set. Do we then need a third, separate \enquote{test set} for the final evaluation and comparison of candidate classifiers or hyperparameters? This would be inconvenient: it would reduce the amount of data available for training.
 
 The answer is no: \emph{the calibration set automatically also serves as a test set}.
 
-It may be useful to explain why this is the case, especially for \ml\ practitioners who take the necessity of a test set as given.
+It may be useful to explain why this is the case, especially for those who may take for granted the necessity of a test set.
 
-A test set is necessary in inference with standard \ml\ methodologies because the latter are only an approximation of ideal inference performed with the probability calculus. The latter needs no division of available data into different sets: something analogous to such division is automatically made internally, so to speak. It can be shown \autocites{portamana2019b,fongetal2020}[many examples of this fact are scattered across the text by][]{jaynes1994_r2003} that the mathematical operations behind the probability rules correspond to making \emph{all possible} divisions of available data between \enquote{training} and \enquote{test}, as well as all possible cross-validations with folds of all orders. This is the reason why ideal inference by means of the probability calculus is almost computationally impossible in some cases, and we have to resort to approximate but faster \ml\ methods.
+Many standard \ml\ methodologies need a test set because they are only an approximation of ideal inference performed with the probability calculus. The latter needs no division of available data into different sets: something analogous to such division is automatically made internally, so to speak. It can be shown \autocites{portamana2019b,fongetal2020}[many examples of this fact are scattered across the text by][]{jaynes1994_r2003} that the mathematical operations behind the probability rules correspond to making \emph{all possible} divisions of available data between \enquote{training} and \enquote{test}, as well as all possible cross-validations with folds of all orders. This is the reason why ideal inference by means of the probability calculus is almost computationally impossible in some cases, and we have to resort to approximate but faster \ml\ methods. The latter typically do not do such data partitions automatically; the latter need to be made -- and only approximately -- by hand.
 
 
 \mynotep{explain how testing is done}
