@@ -1,6 +1,6 @@
 ## Author: PGL  Porta Mana
 ## Created: 2022-03-17T14:21:57+0100
-## Last-Updated: 2022-05-25T18:35:03+0200
+## Last-Updated: 2022-05-25T23:42:22+0200
 ################
 ## Exploration of several issues for binary classifiers
 ################
@@ -45,12 +45,14 @@ library('plotly')
 #### End custom setup ####
 
 set.seed(707)
-baseversion <- '_cnn_3'
+baseversion <- '_cnn_new'
 maincov <- 'class'
+outputcov <- c('output0', 'output1')
 family <- 'Palatino'
 saveinfofile <- 'cnn_variateinfo.csv'
-datafile <- 'modCHEMBL205_predictions_CNN.csv'
-#64K, 3588D, 1024I: 7 min + 3 min
+calibfile <- 'modCHEMBL205_predictions_CNN_test1_calibration.csv'
+demofile <- 'modCHEMBL205_predictions_CNN_test2_demonstration.csv'
+
 ##
 variateinfo <- fread(saveinfofile, sep=',')
 covNames <- variateinfo$variate
@@ -58,8 +60,7 @@ covTypes <- variateinfo$type
 covMins <- variateinfo$min
 covMaxs <- variateinfo$max
 names(covTypes) <- names(covMins) <- names(covMaxs) <- covNames
-odata <- fread(datafile, sep=',')
-odata2 <- fread('modCHEMBL205_predictions_CNN.csv', sep=',')
+cdata <- fread(calibfile, sep=',')
 ##
 realCovs <- covNames[covTypes=='double']
 integerCovs <- covNames[covTypes=='integer']
@@ -69,12 +70,12 @@ nrcovs <- length(realCovs)
 nicovs <- length(integerCovs)
 nbcovs <- length(binaryCovs)
 ncovs <- length(covNames)
-if(!exists('ndata') || is.null(ndata) || is.na(ndata)){ndata <- nrow(odata)}
-alldata <- odata[1:ndata, ..covNames]
+if(!exists('ndata') || is.null(ndata) || is.na(ndata)){ndata <- nrow(cdata)}
+alldata <- cdata[1:ndata, ..covNames]
 ##
-if(!exists('X2Y')){X2Y <- list()}
-if(!exists('Xjacobian')){Xjacobian <- list()}
-if(!exists('Xrange')){Xrange <- list()}
+X2Y <- list()
+Xjacobian <- list()
+Xrange <- list()
 for(avar in realCovs){
     if(is.null(X2Y[[avar]])){X2Y[[avar]] <- identity}
     if(is.null(Xjacobian[[avar]])){Xjacobian[[avar]] <- function(x){1}}
@@ -85,18 +86,266 @@ for(avar in realCovs){
 }
 ##
 source('functions_mcmc.R')
-dirname <- '_cnn_3-V3-D3589-K64-I2048'
+dirname <- '_cnn_new-V3-D3589-K64-I2048'
 
 npar <- 16
 ntotal <- 1024*4
-nskip <- 8
+nskip <- 4
 parmlist <- mcsamples2parmlist(
     foreach(i=1:npar, .combine=rbind)%dopar%{
-        temp <- readRDS(paste0(dirname, '/_mcsamples-R_cnn_3_',i,'_1-V3-D3589-K64-I2048.rds'))
+        temp <- readRDS(paste0(dirname, '/_mcsamples-R_cnn_new_',i,'_1-V3-D3589-K64-I2048.rds'))
         if(any(is.na(nrow(temp)+1-rev(seq(1,nrow(temp),by=nskip)[1:(ntotal/npar)])))){print('WARNING! not enough points')}
         temp[nrow(temp)+1-rev(seq(1,nrow(temp),by=nskip)[1:(ntotal/npar)]),]
 }
 )
+
+#########################################################
+## transducer curve p(c | y)
+#########################################################
+
+xr <- range(unlist(Xrange))
+cseq <- seq(xr[1], xr[2], length.out=128)
+##
+vpoints <- cbind(rep(cseq, length(cseq)), rep(cseq, each=length(cseq)))
+colnames(vpoints) <- realCovs
+
+system.time(opgrid <- samplesF(Y=cbind(class=1), X=vpoints, parmList=parmlist, inorder=F))
+##
+
+## system.time(opgrid2 <- samplesFp(Y=cbind(class=1), X=vpoints, batchsize=1024, parmList=parmlist, inorder=F))
+
+
+mpgrid <- rowMeans(opgrid)
+dim(mpgrid) <- rep(length(cseq), 2)
+
+fig <- plot_ly(z=t(mpgrid), x=cseq, y=cseq, cmin=0, cmax=1)
+fig <- fig %>% add_surface(colors='Blues')
+fig <- fig %>% layout(scene = list(
+                          xaxis = list(title = "output 0"),
+                          yaxis = list(title = "output 1"),
+                          zaxis = list(title = 'P(class 1 | outputs)', range=c(0,1)),
+                          camera = list(projection = list(type = 'orthographic'))
+                      ), title=NA)
+fig
+orca(fig, '../transducer_surface_CNN.pdf')
+
+
+####
+iqrgrid <- apply(opgrid,1,IQR)
+dim(iqrgrid) <- rep(length(cseq), 2)
+
+fig <- plot_ly(z=t(iqrgrid), x=cseq, y=cseq, cmin=0, cmax=1)
+fig <- fig %>% add_surface(colors='Reds')
+fig <- fig %>% layout(scene = list(xaxis = list(title = "output 0"), yaxis = list(title = "output 1"), zaxis = list(title = "interquartile range around probability of class 1", range=c(0,1))))
+fig
+
+####
+q1grid <- apply(opgrid,1,function(x){quantile(x, 1/8)})
+dim(q1grid) <- rep(length(cseq), 2)
+q2grid <- apply(opgrid,1,function(x){quantile(x, 7/8)})
+dim(q2grid) <- rep(length(cseq), 2)
+
+fig <- plot_ly(x=cseq, y=cseq, cmin=0, cmax=1)
+fig <- fig %>% add_surface(z = t(mpgrid), opacity = 0.5, colorscale='Blues')
+fig <- fig %>% add_surface(z = t(q1grid), opacity = 0.5, colorscale='Reds')
+fig <- fig %>% add_surface(z = t(q2grid), opacity = 0.5, colorscale='Reds')
+fig <- fig %>% layout(scene = list(xaxis = list(title = "output 0"), yaxis = list(title = "output 1"), zaxis = list(title = "probability of class 1", range=c(0,1))))
+fig
+
+
+#########################################################
+## Put all parameters into one list
+#########################################################
+oneparmlist <- list(
+    q=rbind(c(parmlist$q))/nrow(parmlist$q),
+    meanR=array(aperm(parmlist$meanR, c(2,1,3)),
+                dim=c(1, dim(parmlist$meanR)[2], length(parmlist$q)),
+                dimnames=dimnames(parmlist$meanR)),
+    tauR=array(aperm(parmlist$tauR, c(2,1,3)),
+                dim=c(1, dim(parmlist$tauR)[2], length(parmlist$q)),
+                dimnames=dimnames(parmlist$tauR)),
+    probI=array(aperm(parmlist$probI, c(2,1,3)),
+                dim=c(1, dim(parmlist$probI)[2], length(parmlist$q)),
+                dimnames=dimnames(parmlist$probI)),
+    sizeI=array(aperm(parmlist$sizeI, c(2,1,3)),
+                dim=c(1, dim(parmlist$sizeI)[2], length(parmlist$q)),
+                dimnames=dimnames(parmlist$sizeI)),
+    probB=array(aperm(parmlist$probB, c(2,1,3)),
+                dim=c(1, dim(parmlist$probB)[2], length(parmlist$q)),
+                dimnames=dimnames(parmlist$probB))
+)
+##
+qorder <- order(c(oneparmlist$q), decreasing=FALSE)
+shortparmlist <- list(
+    q=oneparmlist$q[,qorder, drop=F]/sum(oneparmlist$q[,qorder]),
+    meanR=oneparmlist$meanR[,,qorder, drop=F],
+    tauR=oneparmlist$tauR[,,qorder, drop=F],
+    probI=oneparmlist$probI[,,qorder, drop=F],
+    sizeI=oneparmlist$sizeI[,,qorder, drop=F],
+    probB=oneparmlist$probB[,,qorder, drop=F]
+)
+fwrite(data.table(w=c(shortparmlist$q),
+               p=c(shortparmlist$probB),
+               mu=c(shortparmlist$meanR),
+               sigma=1/sqrt(c(shortparmlist$tauR))
+               ), '_CNN_transducer_parameters.csv', sep=',')
+
+
+
+#########################################################
+## Calculation of utility yields on demonstration set
+#########################################################
+ddata <- fread(demofile, sep=',')
+classes <- ddata$class
+outputs2 <- data.matrix(ddata[,c('output0','output1')])
+##
+probs1 <- rowMeans(samplesF(Y=cbind(class=1), X=outputs2, parmList=parmlist, inorder=F))
+
+## These functions make sure to chose equally in case of tie
+maxdraw <- function(x){ (if(x[1]==x[2]){-1}else{which.max(x)-1}) }
+##
+buildcm <- function(trueclasses, probs, um=diag(2)){
+    if(is.null(dim(probs))){probs <- rbind(1-probs, probs)}
+    choices <- apply(um %*% probs, 2, maxdraw)
+    ##
+    cm <- matrix(c(
+        sum(trueclasses==0 & choices==0),
+        sum(trueclasses==0 & choices==1),
+        sum(trueclasses==1 & choices==0),
+        sum(trueclasses==1 & choices==1)
+    ), 2, 2) +
+        matrix(c(
+            sum(trueclasses==0 & choices==-1),
+            sum(trueclasses==0 & choices==-1),
+            sum(trueclasses==1 & choices==-1),
+            sum(trueclasses==1 & choices==-1)
+        ), 2, 2)/2
+    cm
+}
+##
+comparescores <- function(trueclasses, um, outputs, probs){
+    c('standard'=sum(buildcm(trueclasses, outputs) * um),
+      'transducer'=sum(buildcm(trueclasses, probs, um) * um),
+      'mixed'=sum(buildcm(trueclasses, outputs, um) * um)
+      )
+}
+
+umlist <- lapply(
+    list(c(1,0,0,1),
+         c(1,0,-1,1),
+         c(1,-1,0,1),
+         c(10,0,0,1),
+         c(1,0,0,10),
+         c(1,0,-10,1),
+         c(1,-10,0,1),
+         c(5,0,0,1),
+         c(100,0,0,1),
+         c(1,0,0,5),
+         c(1,0,0,100),
+         c(1,-5,0,1),
+         c(1,0,-5,1),
+         c(1,-100,0,1),
+         c(1,0,-100,1),
+         c(1,0,-10,10)),
+    function(x){
+        ## x <- x-min(x)
+        ## x <- x/max(x)
+        matrix(x,2,2)
+    }
+)
+
+## using Luca's probabilities
+results1 <- t(sapply(umlist, function(um){
+    comparescores(trueclasses=classes, um=um, outputs=t(outputs2), probs=probs1)/length(classes)}))
+
+rresults <- round(results1,3)
+cbind(rresults,
+      'rel.diff.1'=round(100*apply(rresults,1,function(x){diff(x[1:2])/x[1]}),1),
+      'rel.diff.2'=round(100*apply(rresults,1,function(x){diff(x[c(3,2)])/x[3]}),1))
+
+##       standard transducer mixed rel.diff.1 rel.diff.2
+##  [1,]    0.959      0.961 0.959        0.2        0.2
+##  [2,]    0.973      0.973 0.972        0.0        0.1
+##  [3,]    0.966      0.972 0.962        0.6        1.0
+##  [4,]    0.890      0.909 0.868        2.1        4.7
+##  [5,]    0.165      0.168 0.153        1.8        9.8
+##  [6,]    0.984      0.987 0.971        0.3        1.6
+##  [7,]    0.972      0.992 0.949        2.1        4.5
+##  [8,]    0.898      0.910 0.883        1.3        3.1
+##  [9,]    0.883      0.909 0.852        2.9        6.7
+## [10,]    0.254      0.255 0.245        0.4        4.1
+## [11,]    0.086      0.096 0.069       11.6       39.1
+## [12,]    0.971      0.985 0.953        1.4        3.4
+## [13,]    0.982      0.984 0.972        0.2        1.2
+## [14,]    0.973      0.999 0.942        2.7        6.1
+## [15,]    0.986      0.996 0.969        1.0        2.8
+## [16,]    0.576      0.582 0.561        1.0        3.7
+
+#### With original utility values
+##       standard transducer  mixed
+##  [1,]    0.959      0.961  0.959
+##  [2,]    0.946      0.945  0.944
+##  [3,]    0.932      0.944  0.924
+##  [4,]    8.898      9.091  8.681
+##  [5,]    1.654      1.682  1.530
+##  [6,]    0.823      0.856  0.676
+##  [7,]    0.689      0.909  0.437
+##  [8,]    4.488      4.549  4.414
+##  [9,]   88.288     90.914 85.201
+## [10,]    1.268      1.276  1.223
+## [11,]    8.602      9.637  6.860
+## [12,]    0.824      0.909  0.721
+## [13,]    0.891      0.907  0.832
+## [14,]   -1.744      0.909 -4.862
+## [15,]   -0.406      0.640 -2.166
+## [16,]    1.518      1.646  1.219
+
+
+#########################################################
+## 
+#########################################################
+
+
+
+
+
+
+
+
+
+
+
+
+xgrid <- seq(0, 1, length.out=256)
+ygrid <- X2Y[[outputcov]](xgrid)
+##
+vpoints <- cbind(ygrid)
+colnames(vpoints) <- outputcov
+##
+opgrid <- samplesF(Y=cbind(class=1), X=vpoints, parmList=parmlist, inorder=F)
+##
+qgrid <- apply(opgrid,1,function(x){quantile(x, c(1,7)/8)})
+##
+
+tplot(x=xgrid, y=cbind(rowMeans(opgrid), 1- rowMeans(opgrid)), xlab='output',
+##      ylab=expression(p~group('(',class~output,')')),
+      ylab=bquote('P'~group('(','class', '.')~group('|', ' output',')')),
+      mar=c(4.5,5.5,1,1),
+      ylim=c(0,1), lwd=3, family='Palatino', asp=1)
+legend(x=0.25,y=1.05, c('class 1', 'class 0'), lty=c(1,2), col=c(1,2), lwd=3, bty='n', cex=1.25)
+##
+polygon(x=c(xgrid,rev(xgrid)), y=c(qgrid[1,],rev(qgrid[2,])), col=paste0(palette()[1],'40'), border=NA)
+polygon(x=c(xgrid,rev(xgrid)), y=1-c(qgrid[1,],rev(qgrid[2,])), col=paste0(palette()[2],'40'), border=NA)
+
+
+
+## legend('topleft', legend=c(
+##                        paste0(paste0(rownames(qgrid),collapse='\u2013'), ' uncertainty')
+##                    ),
+##        lty=c('solid'), lwd=c(10),
+##        col=paste0(palette()[1],c('40')),
+##        bty='n', cex=1.25)
+
 
 #########################################################
 ## Check of Kjetil's calculations test set 2

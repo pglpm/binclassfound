@@ -1,6 +1,6 @@
 ## Author: PGL  Porta Mana
 ## Created: 2022-03-17T14:21:57+0100
-## Last-Updated: 2022-05-25T20:06:51+0200
+## Last-Updated: 2022-05-25T23:47:07+0200
 ################
 ## Exploration of several issues for binary classifiers
 ################
@@ -43,47 +43,33 @@ if(file.exists("/cluster/home/pglpm/R")){
 ## library('nimble')
 #### End custom setup ####
 
+#########################################################
+## Setup and read calibration data
+#########################################################
 set.seed(707)
-baseversion <- '_rfcont_1'
+baseversion <- '_rfcont_new'
 maincov <- 'class'
+outputcov <- 'transf_output1'
 family <- 'Palatino'
 saveinfofile <- 'rfcont_variateinfo.csv'
-rfcalibfile <- 'modCHEMBL205_predictions_RF_test1_calibration.csv'
-cnncalibfile <- 'modCHEMBL205_predictions_CNN_test1_calibration.csv'
-rfdemofile <- 'modCHEMBL205_predictions_RF_test2_demonstration.csv'
-cnndemofile <- 'modCHEMBL205_predictions_CNN_test2_demonstration.csv'
-
-
-odataRc <- fread(rfcalibfile, sep=',')
-odataCc <- fread(cnncalibfile, sep=',')
-odataRd <- fread(rfdemofile, sep=',')
-odataCd <- fread(cnndemofile, sep=',')
-
-transf <- X2Y[[1]](odataRc$output1)
-odataRc$transf_output1 <- transf
+calibfile <- 'tmodCHEMBL205_predictions_RF_test1_calibration.csv'
+demofile <- 'tmodCHEMBL205_predictions_RF_test2_demonstration.csv'
 ##
-fwrite(odataRc, paste0('t',rfcalibfile), sep=',')
-
-transf <- X2Y[[1]](odataRd$output1)
-odataRd$transf_output1 <- transf
-fwrite(odataRd, paste0('t',rfdemofile), sep=',')
-
-
-##64K, 3588D, 1024I: 7 min + 3 min
 X2Y <- list(
-    'prediction_lnodds'=function(x){
+    function(x){
         epsi <- 1 - 2^-10
         x <- 0.5 + (x-0.5)*epsi
         log(x/(1-x))
     }
 )
 Xjacobian <- list(
-    'prediction_lnodds'=function(x){
+    function(x){
         epsi <- 1 - 2^-10
         4*epsi/(1 - (epsi*(1-2*x))^2)
     }
 )
-Xrange <- list('prediction_lnodds'=c(0,1))
+Xrange <- list(c(0,1))
+names(X2Y) <- names(Xjacobian) <- names(Xrange) <- outputcov
 
 variateinfo <- fread(saveinfofile, sep=',')
 covNames <- variateinfo$variate
@@ -91,9 +77,7 @@ covTypes <- variateinfo$type
 covMins <- variateinfo$min
 covMaxs <- variateinfo$max
 names(covTypes) <- names(covMins) <- names(covMaxs) <- covNames
-odata <- fread(calibfile, sep=',')
-##odata2 <- fread('modCHEMBL205_predictions_RF.csv', sep=',')
-transf <- X2Y[[1]](odata$pred_0)
+cdata <- fread(calibfile, sep=',')
 ##
 realCovs <- covNames[covTypes=='double']
 integerCovs <- covNames[covTypes=='integer']
@@ -103,8 +87,8 @@ nrcovs <- length(realCovs)
 nicovs <- length(integerCovs)
 nbcovs <- length(binaryCovs)
 ncovs <- length(covNames)
-if(!exists('ndata') || is.null(ndata) || is.na(ndata)){ndata <- nrow(odata)}
-alldata <- odata[1:ndata, ..covNames]
+if(!exists('ndata') || is.null(ndata) || is.na(ndata)){ndata <- nrow(cdata)}
+alldata <- cdata[1:ndata, ..covNames]
 ##
 if(!exists('X2Y')){X2Y <- list()}
 if(!exists('Xjacobian')){Xjacobian <- list()}
@@ -119,18 +103,219 @@ for(avar in realCovs){
 }
 ##
 source('functions_mcmc.R')
-dirname <- '_rfcont_1-V2-D3588-K64-I1024'
+dirname <- '_rfcont_new-V2-D3589-K64-I1024'
 
 npar <- 16
 ntotal <- 1024*4
 nskip <- 4
 parmlist <- mcsamples2parmlist(
-mcsamples <- foreach(i=1:npar, .combine=rbind)%dopar%{
-        temp <- readRDS(paste0(dirname, '/_mcsamples-R_rfcont_1_',i,'_0-V2-D3588-K64-I1024.rds'))
+    foreach(i=1:npar, .combine=rbind)%dopar%{
+        temp <- readRDS(paste0(dirname, '/_mcsamples-R_rfcont_new_',i,'_1-V2-D3589-K64-I1024.rds'))
         if(any(is.na(nrow(temp)+1-rev(seq(1,nrow(temp),by=nskip)[1:(ntotal/npar)])))){print('WARNING! not enough points')}
         temp[nrow(temp)+1-rev(seq(1,nrow(temp),by=nskip)[1:(ntotal/npar)]),]
 }
 )
+
+#########################################################
+## transducer curve p(c | y)
+#########################################################
+
+xgrid <- seq(0, 1, length.out=256)
+ygrid <- X2Y[[outputcov]](xgrid)
+##
+vpoints <- cbind(ygrid)
+colnames(vpoints) <- outputcov
+##
+opgrid <- samplesF(Y=cbind(class=1), X=vpoints, parmList=parmlist, inorder=F)
+##
+qgrid <- apply(opgrid,1,function(x){quantile(x, c(1,7)/8)})
+##
+
+tplot(x=xgrid, y=cbind(rowMeans(opgrid), 1- rowMeans(opgrid)), xlab='output',
+##      ylab=expression(p~group('(',class~output,')')),
+      ylab=bquote('P'~group('(','class', '.')~group('|', ' output',')')),
+      mar=c(4.5,5.5,1,1),
+      ylim=c(0,1), lwd=3, family='Palatino', asp=1)
+legend(x=0.25,y=1.05, c('class 1', 'class 0'), lty=c(1,2), col=c(1,2), lwd=3, bty='n', cex=1.25)
+##
+polygon(x=c(xgrid,rev(xgrid)), y=c(qgrid[1,],rev(qgrid[2,])), col=paste0(palette()[1],'40'), border=NA)
+polygon(x=c(xgrid,rev(xgrid)), y=1-c(qgrid[1,],rev(qgrid[2,])), col=paste0(palette()[2],'40'), border=NA)
+
+
+
+## legend('topleft', legend=c(
+##                        paste0(paste0(rownames(qgrid),collapse='\u2013'), ' uncertainty')
+##                    ),
+##        lty=c('solid'), lwd=c(10),
+##        col=paste0(palette()[1],c('40')),
+##        bty='n', cex=1.25)
+
+
+#########################################################
+## Put all parameters into one list
+#########################################################
+oneparmlist <- list(
+    q=rbind(c(parmlist$q))/nrow(parmlist$q),
+    meanR=array(aperm(parmlist$meanR, c(2,1,3)),
+                dim=c(1, dim(parmlist$meanR)[2], length(parmlist$q)),
+                dimnames=dimnames(parmlist$meanR)),
+    tauR=array(aperm(parmlist$tauR, c(2,1,3)),
+                dim=c(1, dim(parmlist$tauR)[2], length(parmlist$q)),
+                dimnames=dimnames(parmlist$tauR)),
+    probI=array(aperm(parmlist$probI, c(2,1,3)),
+                dim=c(1, dim(parmlist$probI)[2], length(parmlist$q)),
+                dimnames=dimnames(parmlist$probI)),
+    sizeI=array(aperm(parmlist$sizeI, c(2,1,3)),
+                dim=c(1, dim(parmlist$sizeI)[2], length(parmlist$q)),
+                dimnames=dimnames(parmlist$sizeI)),
+    probB=array(aperm(parmlist$probB, c(2,1,3)),
+                dim=c(1, dim(parmlist$probB)[2], length(parmlist$q)),
+                dimnames=dimnames(parmlist$probB))
+)
+##
+qorder <- order(c(oneparmlist$q), decreasing=FALSE)
+shortparmlist <- list(
+    q=oneparmlist$q[,qorder, drop=F]/sum(oneparmlist$q[,qorder]),
+    meanR=oneparmlist$meanR[,,qorder, drop=F],
+    tauR=oneparmlist$tauR[,,qorder, drop=F],
+    probI=oneparmlist$probI[,,qorder, drop=F],
+    sizeI=oneparmlist$sizeI[,,qorder, drop=F],
+    probB=oneparmlist$probB[,,qorder, drop=F]
+)
+fwrite(data.table(w=c(shortparmlist$q),
+               p=c(shortparmlist$probB),
+               mu=c(shortparmlist$meanR),
+               sigma=1/sqrt(c(shortparmlist$tauR))
+               ), '_RF_transducer_parameters.csv', sep=',')
+
+
+#########################################################
+## Calculation of utility yields on demonstration set
+#########################################################
+ddata <- fread(demofile, sep=',')
+classes <- ddata$class
+outputs1 <- ddata$output1
+transfoutputs1 <- cbind(X2Y[[1]](outputs1))
+colnames(transfoutputs1) <- outputcov
+##
+probs1 <- rowMeans(samplesF(Y=cbind(class=1), X=transfoutputs1, parmList=parmlist, inorder=F))
+
+## These functions make sure to chose equally in case of tie
+maxdraw <- function(x){ (if(x[1]==x[2]){-1}else{which.max(x)-1}) }
+##
+buildcm <- function(trueclasses, probs, um=diag(2)){
+    if(is.null(dim(probs))){probs <- rbind(1-probs, probs)}
+    choices <- apply(um %*% probs, 2, maxdraw)
+    ##
+    cm <- matrix(c(
+        sum(trueclasses==0 & choices==0),
+        sum(trueclasses==0 & choices==1),
+        sum(trueclasses==1 & choices==0),
+        sum(trueclasses==1 & choices==1)
+    ), 2, 2) +
+        matrix(c(
+            sum(trueclasses==0 & choices==-1),
+            sum(trueclasses==0 & choices==-1),
+            sum(trueclasses==1 & choices==-1),
+            sum(trueclasses==1 & choices==-1)
+        ), 2, 2)/2
+    cm
+}
+##
+comparescores <- function(trueclasses, um, outputs, probs){
+    c('standard'=sum(buildcm(trueclasses, outputs) * um),
+      'transducer'=sum(buildcm(trueclasses, probs, um) * um),
+      'mixed'=sum(buildcm(trueclasses, outputs, um) * um)
+      )
+}
+
+umlist <- lapply(
+    list(c(1,0,0,1),
+         c(1,0,-1,1),
+         c(1,-1,0,1),
+         c(10,0,0,1),
+         c(1,0,0,10),
+         c(1,0,-10,1),
+         c(1,-10,0,1),
+         c(5,0,0,1),
+         c(100,0,0,1),
+         c(1,0,0,5),
+         c(1,0,0,100),
+         c(1,-5,0,1),
+         c(1,0,-5,1),
+         c(1,-100,0,1),
+         c(1,0,-100,1),
+         c(1,0,-10,10)),
+    function(x){
+        ## x <- x-min(x)
+        ## x <- x/max(x)
+        matrix(x,2,2)
+    }
+)
+
+## using Luca's probabilities
+results1 <- t(sapply(umlist, function(um){
+    comparescores(trueclasses=classes, um=um, outputs=outputs1, probs=probs1)/length(classes)}))
+
+rresults <- round(results1,3)
+cbind(rresults,
+      'rel.diff.1'=round(100*apply(rresults,1,function(x){diff(x[1:2])/x[1]}),1),
+      'rel.diff.2'=round(100*apply(rresults,1,function(x){diff(x[c(3,2)])/x[3]}),1))
+
+##       standard transducer mixed rel.diff.1 rel.diff.2
+##  [1,]    0.968      0.974 0.968        0.6        0.6
+##  [2,]    0.973      0.984 0.981        1.1        0.3
+##  [3,]    0.979      0.979 0.974        0.0        0.5
+##  [4,]    0.906      0.909 0.909        0.3        0.0
+##  [5,]    0.159      0.175 0.171       10.1        2.3
+##  [6,]    0.977      0.994 0.988        1.7        0.6
+##  [7,]    0.988      0.992 0.991        0.4        0.1
+##  [8,]    0.913      0.912 0.911       -0.1        0.1
+##  [9,]    0.900      0.909 0.909        1.0        0.0
+## [10,]    0.248      0.263 0.262        6.0        0.4
+## [11,]    0.078      0.098 0.092       25.6        6.5
+## [12,]    0.986      0.986 0.986        0.0        0.0
+## [13,]    0.976      0.991 0.990        1.5        0.1
+## [14,]    0.989      0.999 0.999        1.0        0.0
+## [15,]    0.978      0.998 0.992        2.0        0.6
+## [16,]    0.568      0.586 0.578        3.2        1.4
+
+#### With original utility values
+##       standard transducer  mixed
+##  [1,]    0.968      0.974  0.968
+##  [2,]    0.945      0.967  0.962
+##  [3,]    0.957      0.959  0.948
+##  [4,]    9.057      9.092  9.089
+##  [5,]    1.586      1.749  1.710
+##  [6,]    0.746      0.933  0.871
+##  [7,]    0.864      0.911  0.906
+##  [8,]    4.563      4.562  4.554
+##  [9,]   89.952     90.914 90.915
+## [10,]    1.242      1.315  1.312
+## [11,]    7.769      9.752  9.214
+## [12,]    0.916      0.919  0.916
+## [13,]    0.857      0.946  0.939
+## [14,]   -0.064      0.909  0.910
+## [15,]   -1.248      0.756  0.219
+## [16,]    1.364      1.719  1.555
+
+
+#########################################################
+## 
+#########################################################
+
+
+#########################################################
+## 
+#########################################################
+
+
+#########################################################
+## 
+#########################################################
+
+
+
 
 
 #########################################################
@@ -890,8 +1075,8 @@ posterior <- TRUE
 saveinfofile <- 'variate_info2.csv'
 datafile <- 'softmaxdata_test2_shuffled.csv'
 #64K, 8192D, 1024I: 0.5 h
-odata <- fread(datafile, sep=',')
-alldata <- odata[1:ndata, ..covNames]
+cdata <- fread(datafile, sep=',')
+alldata <- cdata[1:ndata, ..covNames]
 source('functions_mcmc.R')
 
 
@@ -993,7 +1178,7 @@ max(abs((testpc-testj/testc)/(testpc+testj/testc)))
 
 
 
-orange <- c(-1,1)*ceiling(max(abs(as.matrix(odata[,..realCovs]))))
+orange <- c(-1,1)*ceiling(max(abs(as.matrix(cdata[,..realCovs]))))
 
 cseq <- seq(orange[1], orange[2], length.out=128)
 
