@@ -1,3 +1,3 @@
 variate,type,min,max,transfM,transfW,origvariate
 class,binary,0,1,,,class
-pred_0_lnodds,double,-Inf,Inf,,,prediction
+prediction_lnodds,double,-Inf,Inf,,,prediction

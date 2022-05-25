@@ -1,7 +1,7 @@
 \pdfoutput=1
 %% Author: PGL  Porta Mana
 %% Created: 2022-04-14T17:18:22+0200
-%% Last-Updated: 2022-05-25T12:01:26+0200
+%% Last-Updated: 2022-05-25T17:23:58+0200
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Probabilities for classifier outputs
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -732,6 +732,7 @@ Open Science Framework \doi{10.31219/osf.io/#1}%
 \newcommand*{\tC}{\textit{C}}
 \newcommand*{\texts}[1]{\text{\small #1}}
 \newcommand*{\br}{r}
+\newcommand*{\No}{\mathrm{N}}
 
 %%% Custom macros end @@@
 
@@ -995,7 +996,7 @@ The parametric distributions $A(c \| \alpha)$ and $B(y \| \beta)$ are chosen by 
 For the second we use a gaussian distribution, $\beta \equiv (\mu,\sigma)$ being its mean and standard deviation:
 \begin{equation}
   \label{eq:distr_output}
-  B(y \| \beta) = \frac{1}{\sqrt{2\pu\sigma^{2}}} \exp\biggl[-\frac{(y-\mu)^{2}}{2\sigma^{2}}\biggr] \ ,
+  B(y \| \beta) = \No(y \| \mu, \sigma) \defd \frac{1}{\sqrt{2\pu\sigma^{2}}} \exp\biggl[-\frac{(y-\mu)^{2}}{2\sigma^{2}}\biggr] \ ,
 \end{equation}
 or a product of such gaussians, each with its own parameters, if $y$ is multidimensional. If the classifier's output $y$ is a bounded variable we perform a transformation of its range onto the real line first (taking due care of Jacobian determinants for density transformations).
 
@@ -1050,9 +1051,9 @@ In the preceding analysis we discussed why the construction of the probability t
 
 The answer is no: \emph{the calibration set automatically also serves as a test set}.
 
-It may be useful to explain why this is the case, especially for those who may take for granted the necessity of a test set.
+It may be useful to explain why this is the case, especially for those who may take for granted the universal necessity of a test set.
 
-Many standard \ml\ methodologies need a test set because they are only an approximation of ideal inference performed with the probability calculus. The latter needs no division of available data into different sets: something analogous to such division is automatically made internally, so to speak. It can be shown \autocites{portamana2019b,fongetal2020}[many examples of this fact are scattered across the text by][]{jaynes1994_r2003} that the mathematical operations behind the probability rules correspond to making \emph{all possible} divisions of available data between \enquote{training} and \enquote{test}, as well as all possible cross-validations with folds of all orders. This is the reason why ideal inference by means of the probability calculus is almost computationally impossible in some cases, and we have to resort to approximate but faster \ml\ methods. The latter typically do not do such data partitions automatically; the latter need to be made -- and only approximately -- by hand.
+Many standard \ml\ methodologies need a test set because they are only an approximation of ideal inference performed with the probability calculus. The latter needs no division of available data into different sets: something analogous to such division is automatically made internally, so to speak. It can be shown \autocites{portamana2019b,fongetal2020,wald1949}[many examples of this fact are scattered across the text by][]{jaynes1994_r2003} that the mathematical operations behind the probability rules correspond to making \emph{all possible} divisions of available data between \enquote{training} and \enquote{test}, as well as all possible cross-validations with folds of all orders. This is the reason why ideal inference by means of the probability calculus is almost computationally impossible in some cases, and we have to resort to approximate but faster \ml\ methods. The latter typically do not do such data partitions automatically; the latter need to be made -- and only approximately -- by hand.
 
 
 \mynotep{explain how testing is done}
@@ -1076,7 +1077,7 @@ Finally, according to the principle of maximum expected utility, we choose the d
 \begin{equation}
   \label{eq:max_expe_utility}
   \text{choose}\quad
-  i^{*} = \argmax_{i}\set{\eu_{i}} \equiv \argmax_{i}\set[\bigg]{\sum_{c} U_{ic}\ p_{c}} \ .
+  i^{*} = \argmax_{i}\set*{\eu_{i}} \equiv \argmax_{i}\set[\bigg]{\sum_{c} U_{ic}\ p_{c}} \ .
 \end{equation}
 
 The matrix multiplication and subsequent selection are computationally inexpensive; they can be considered as substitutes of the \enquote{argmax} selection that typically happen at the continuous output of a classifier.
@@ -1084,18 +1085,27 @@ The matrix multiplication and subsequent selection are computationally inexpensi
 \section{Demonstration and results}
 \label{sec:demonstration}
 
-We show a concrete example of implementation and use of the probability transducer and utility-based classification for two \ml\ classifiers on one data set.
+We show a concrete example of implementation of the probability transducer and its use for utility-based classification, for a binary-classification task, two \ml\ classifiers, and one data set.
 
-The classification problem is binary: to determine whether a molecule is chemically inactive or active towards one specific target protein. Inactivity is denoted by $0$, activity by $1$.
+The classification task is a simplified version of an early-stage drug-discovery problem: to determine whether a molecule is chemically \enquote{inactive} (class~$0$) or \enquote{active} (class~$1$) towards one specific target protein.
 
-The classifiers chosen for this task are a random forest and a residual convolutional neural network, details of which are given in appendix\mynotep{\ldots}. The random forest takes as input a set of particular fingerprints of the molecule, and outputs a real number in the range $\clcl{0,1}$, corresponding to the fraction of decision threes which vote for class~$0$ (inactive molecule). The residual neural network takes as input an image representing the chemical and spatial structure of the molecule, and outputs two real numbers roughly corresponding to scores for the two classes.
+The classifiers chosen for this task are a Random Forest and a residual Convolutional Neural Network, details of which are given in appendix\mynotep{\ldots}. The random forest takes as input a set of particular fingerprints of the molecule, and outputs a real number in the range $\clcl{0,1}$, corresponding to the fraction of decision threes which vote for class~$0$ (inactive molecule). The residual neural network takes as input an image representing the chemical and spatial structure of the molecule, and outputs two real numbers roughly corresponding to scores for the two classes.
 
 We use data from the ChEMBL database \autocites{bentoetal2014}, previously used in the literature for other studies of \ml\ applications to drug discovery \autocites{koutsoukasetal2017}. One set of data is used to train and validate the two classifiers. One set is used for the calibration of the probability transducer and evaluation of the classifiers. One further data set is here used as fictive \enquote{real data} to demonstrate the results of our procedure; we call this the \enquote{demonstration set}.
 
-It must be strongly emphasized that \emph{the additional demonstration dataset has an illustrative purpose only} for the sake of the present work. It does not test or evaluate anything. At most it can be used to check for bugs in the design or coding of the classifiers and their probability transducers. In a concrete design, configuration, optimization, and evaluation of one or several candidate classifiers and their probability transducer, the calibration set will at the same time be the evaluation test set from which we can choose the optimal algorithm, as explained in \sect~\ref{sec:role_calibration_set}.
+It must be strongly emphasized that \emph{the additional demonstration dataset has an illustrative purpose only} for the sake of the present work. It does not test or evaluate anything. At most it can be used to check for bugs in the design or coding of the classifiers and their probability transducers. In a real design \amp\ evaluation phase, the calibration set will at the same time be the evaluation test set, as explained in \sect~\ref{sec:role_calibration_set}.
 
-
-as a test set to compare the performance of the classifiers with and without the transducer and the utility-maximization layer.
+\subsection{Probability-transducer curves}
+\label{sec:example_calc_transduc}
+%% RF: 30 min; CNN: 75 min
+The joint probability of class $c$ and output $y$, \eqn~\eqref{eq:representation_P}, for the random forest is more specifically given by
+\begin{equation}
+  \label{eq:P_c_out_RF}
+  p(c, y) = \sum_{k} q_{k}\
+  [c\ alpha + (1-c)\ (1-\alpha)]\
+  \No[L(y) \| \mu_{k}, \sigma_{k}]\ L'(y)
+\end{equation}
+where $\No$ is a gaussian, \eqn~\eqref{eq:distr_output}, $L(y)$ is a logit transformation (together with a small contraction around $0.5$ to take care of $0$ and $1$ values) that maps the output $y\in \clcl{0,1}$ onto the real numbers \autocites[\cf][\sect~3.3 esp.\ \eqn~(19)]{johnson1949}, and $L'(y)$ its Jacobian determinant. 
 
 \begin{figure}[t]
   \centering
@@ -1892,11 +1902,9 @@ In supervised learning the classifier is trained to learn the most probable $f(X
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 
 \iffalse
 \begin{acknowledgements}
-  \ldots to Mari \amp\ Miri for continuous encouragement and affection, and
-  to Buster Keaton and Saitama for filling life with awe and inspiration.
-  To the developers and maintainers of \LaTeX, Emacs, AUC\TeX, Open Science
-  Framework, R, Python, Inkscape, Sci-Hub for making a free and impartial
-  scientific exchange possible.
+  The computations of the parameters for the probability transducer were performed on resources provided by Sigma2 -- the National Infrastructure for High Performance Computing and Data Storage in Norway.
+  
+  PGLPM thanks Maja, Mari, Miri, Emma for continuous encouragement and affection;  Buster Keaton and Saitama for filling life with awe and inspiration; and the developers and maintainers of \LaTeX, Emacs, AUC\TeX, Open Science Framework, R, Python, Inkscape, LibreOffice, Sci-Hub for making a free and impartial scientific exchange possible.
   % Our work was supported by the Trond Mohn Research Foundation, grant number BFS2018TMT07
 %\rotatebox{15}{P}\rotatebox{5}{I}\rotatebox{-10}{P}\rotatebox{10}{\reflectbox{P}}\rotatebox{-5}{O}.
 %\sourceatright{\autanet}

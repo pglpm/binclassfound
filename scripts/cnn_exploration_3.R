@@ -1,6 +1,6 @@
 ## Author: PGL  Porta Mana
 ## Created: 2022-03-17T14:21:57+0100
-## Last-Updated: 2022-05-11T13:01:13+0200
+## Last-Updated: 2022-05-25T17:03:18+0200
 ################
 ## Exploration of several issues for binary classifiers
 ################
@@ -74,6 +74,7 @@ covMins <- variateinfo$min
 covMaxs <- variateinfo$max
 names(covTypes) <- names(covMins) <- names(covMaxs) <- covNames
 odata <- fread(datafile, sep=',')
+odata2 <- fread('modCHEMBL205_predictions_CNN.csv', sep=',')
 ##
 realCovs <- covNames[covTypes=='double']
 integerCovs <- covNames[covTypes=='integer']
