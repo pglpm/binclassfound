@@ -1,7 +1,7 @@
 \pdfoutput=1
 %% Author: PGL  Porta Mana
 %% Created: 2022-04-14T17:18:22+0200
-%% Last-Updated: 2022-05-25T11:58:25+0200
+%% Last-Updated: 2022-05-25T12:01:26+0200
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Probabilities for classifier outputs
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -1092,7 +1092,7 @@ The classifiers chosen for this task are a random forest and a residual convolut
 
 We use data from the ChEMBL database \autocites{bentoetal2014}, previously used in the literature for other studies of \ml\ applications to drug discovery \autocites{koutsoukasetal2017}. One set of data is used to train and validate the two classifiers. One set is used for the calibration of the probability transducer and evaluation of the classifiers. One further data set is here used as fictive \enquote{real data} to demonstrate the results of our procedure; we call this the \enquote{demonstration set}.
 
-It must be strongly emphasized that \emph{the additional demonstration dataset has an illustrative purpose only} for the sake of the present work. It does not test or evaluate anything. At most it can be used to check for  bugs in the design or coding of the classifiers and their probability transducers. In a concrete design, configuration, optimization, and evaluation of one or several candidate classifiers and their probability transducer, the calibration set will at the same time be the evaluation test set from which we can choose the optimal algorithm.
+It must be strongly emphasized that \emph{the additional demonstration dataset has an illustrative purpose only} for the sake of the present work. It does not test or evaluate anything. At most it can be used to check for bugs in the design or coding of the classifiers and their probability transducers. In a concrete design, configuration, optimization, and evaluation of one or several candidate classifiers and their probability transducer, the calibration set will at the same time be the evaluation test set from which we can choose the optimal algorithm, as explained in \sect~\ref{sec:role_calibration_set}.
 
 
 as a test set to compare the performance of the classifiers with and without the transducer and the utility-maximization layer.
