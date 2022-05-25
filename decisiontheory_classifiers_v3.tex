@@ -744,6 +744,10 @@ Open Science Framework \doi{10.31219/osf.io/#1}%
 \setlength{\abstitleskip}{-\absparindent}
 \begin{abstract}\labelsep 0pt%
   \noindent \mynotep{Abstract to be written}
+  % purpose, method, scope, results, conclusion
+Machine Learning algorithms nowadays rely on a set of popular, well-known evaluation metrics, then trying to get the highest 'score' possible. Is it only the highest 'score' that matters? How can we evaluate the evaluation metrics?
+
+We show that a machine learning classifier that is favored by the majority of evaluation metrics might not be the most optimal, thus leading to the classifier 'guessing' the most optimal class.
 % \\\noindent\emph{\footnotesize Note: Dear Reader
 %     \amp\ Peer, this manuscript is being peer-reviewed by you. Thank you.}
 % \par%\\[\jot]
@@ -943,7 +947,7 @@ One could argue that also this case there is a great economic difference between
       \clap{\textit{\parbox{8em}{\scriptsize\centering true class\\$0\hspace{7em}1$}}
     }} \ .
 \end{equation}
-This matrix is numerically equivalent to~\eqref{eq:utility_example} up to a common additive constant of $335$, so the final net gains are also simply shifted by this amount. The value 0 means immediate death. It is easy to see that the metrics are exactly as is Table~\ref{tab:example_metrics}, the majority favouring classifier~$\Beta$. And yet the use of classifier~$\Alpha$ leads to a more than six-month longer expected remaining life than classifier~$\Beta$. \mynotew{Maybe a short reasoning for why the expected months left is as they are is good here, just something like: If the classifier predicts that the patient has a tomour, the patient goes straight into medical treatment, if the precition is wrong, the patient immediately dies etc.}
+This matrix is numerically equivalent to~\eqref{eq:utility_example} up to a common additive constant of $335$, so the final net gains are also simply shifted by this amount. The value 0 means immediate death. It is easy to see that the metrics are exactly as is Table~\ref{tab:example_metrics}, the majority favouring classifier~$\Beta$. And yet the use of classifier~$\Alpha$ leads to a more than six-month longer expected remaining life than classifier~$\Beta$. \mynotew{Maybe a short reasoning for why the expected months left is as they are is good here, just something like: If the classifier predicts that the patient has a tomour, the patient goes straight into medical treatment, if the predictions is wrong, the patient immediately dies etc.}
 
 
 \item Often it is not possible to temporarily deploy all candidate classifiers, as our fictitious manager did, in order to observe which factually leads to the best results. Or it may even be unethical: consider a situation as the medical one above, where a classifier may lead to more immediate deaths than another.
