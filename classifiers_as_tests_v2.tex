@@ -1,7 +1,7 @@
 \pdfoutput=1
 %% Author: PGL  Porta Mana
 %% Created: 2022-04-14T17:18:22+0200
-%% Last-Updated: 2022-05-25T09:19:00+0200
+%% Last-Updated: 2022-05-25T11:32:51+0200
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Probabilities for classifier outputs
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -831,7 +831,7 @@ In summary, there is place to improve classifiers so as to
 
 In artificial intelligence and machine learning it is known how to address all these issues in principle -- the theoretical framework is for example beautifully presented in the first 18 chapters or so of Russell \amp\ Norvig's \parencites*{russelletal1995_r2022} text\mynotew{add also refs to Cheeseman}.
 
-Issues~\ref{item:gain_loss}--\ref{item:optimal_truth} are simply solved by adopting the standpoint of \emph{Decision Theory}, which we briefly review in \sect~\ref{sec:decision_theory} and we discuss at length in our companion work\mynotep{\ldots}. In short: The set of decisions and the set of classes pertinent to a problem are separated if necessary. A utility is associated to each decision, relative to the occurrence of each particular class; these utilities are assembled into a utility matrix: one row per decision, one column per class. This matrix is multiplied by a column vector consisting in the probability for the classes. The resulting vector of numbers contains the expected utility of each decision. Finally we select the decision having \emph{maximal expected utility}, according to the principle bearing this name. Such procedure also takes care of the class imbalance problem; \cf\ the analysis by \cite{drummondetal2005} (they use the term \enquote{cost} instead of \enquote{utility}).
+Issues~\ref{item:gain_loss}--\ref{item:optimal_truth} are simply solved by adopting the standpoint of \emph{Decision Theory}, which we briefly review in \sect~\ref{sec:decision_theory} and we discuss at length in our companion work \autocites{dyrlandetal2022}. In short: The set of decisions and the set of classes pertinent to a problem are separated if necessary. A utility is associated to each decision, relative to the occurrence of each particular class; these utilities are assembled into a utility matrix: one row per decision, one column per class. This matrix is multiplied by a column vector consisting in the probability for the classes. The resulting vector of numbers contains the expected utility of each decision. Finally we select the decision having \emph{maximal expected utility}, according to the principle bearing this name. Such procedure also takes care of the class imbalance problem; \cf\ the analysis by \cite{drummondetal2005} (they use the term \enquote{cost} instead of \enquote{utility}).
 
 Clearly this procedure is computationally inexpensive and ridiculously easy to implement in any \ml\ classifier. The difficulty is that this procedure requires \emph{sensible probabilities} for the classes, which brings us to issue~\ref{item:determ_statist}, the most difficult.
 
@@ -1043,10 +1043,22 @@ The generative mode is also required if we want to combine the outputs $y_{1}, y
 \end{equation}
 where $\p(c)$ is a population prevalence or an initial probability assessment.
 
+\subsection{The double role of the calibration data set}
+\label{sec:role_calibration_set}
+
+The preceding analysis shows that the construction of the probability transducer requires a calibration set separate from the training \amp\ validation set. Do we then need an additional separate \enquote{test set} for the final evaluation and comparison of candidate classifiers or hyperparameters? This would be inconvenient, as it would reduce the amount of data available for training.
+
+The answer is no: \emph{the calibration set automatically also serves as a test set}.
+
+It may be useful to explain why, especially for \ml\ practitioners who take the necessity of a test set as given.
+
+A test set is necessary in inference with standard \ml\ methodologies because the latter are only an approximation of ideal inference performed with the probability calculus. The latter needs no division of available data into different sets, because something analogous to such division is automatically made internally, so to speak. It can be shown \autocites{portamana2019b,fongetal2020}[many examples of this fact are scattered across the text by][]{jaynes1994_r2003} that the mathematical operations behind the probability rules correspond to making \emph{all possible} divisions of the data between \enquote{training} and \enquote{test}, as well as all possible cross-validations with folds of all orders. This is the reason why ideal inference by means of the probability calculus is almost computationally impossible in some cases and we have to resort to approximate but faster \ml\ methods.
+
+
 \section{Utility-based classification}
 \label{sec:utility_classification}
 
-We refer to our companion work\mynotep{\ldots}, \sect~2, for a more detailed presentation of decision theory and for references. In the following we assume familiarity with the material presented there.
+We refer to our companion work \cite{dyrlandetal2022}, \sect~2, for a more detailed presentation of decision theory and for references. In the following we assume familiarity with the material presented there.
 
 Our classification or decision problem has a set of decisions, which we can index by $i = 1,2,\dotsc$. As discussed in \sect~\ref{sec:goal_class}, these need not be the same as the possible classes; the two sets may even be different in number. But the true class, which is unknown, determines the \emph{utility} that a decision yields. If we choose decision $i$ and the class $c$ is true, our eventual utility will be $U_{ic}$.\footnote{We apologize for the difference in notation from our companion work, where the class variable is \enquote{$j$} and the utilities \enquote{$U_{ij}$}} These utilities are assembled into a rectangular matrix $(U_{ic})$ with one row per decision and one column per class. Note that the case where decisions and classes are in a natural one-one correspondence, as in the cat-vs-dog classification example of \sect~\ref{sec:goal_class}, is just a particular case of this more general point of view. In such a specific case we may replace \enquote{decision} with \enquote{class} in the following discussion, and the utility matrix is square.
 
@@ -1065,18 +1077,23 @@ Finally, according to the principle of maximum expected utility, we choose the d
   i^{*} = \argmax_{i}\set{\eu_{i}} \equiv \argmax_{i}\set[\bigg]{\sum_{c} U_{ic}\ p_{c}} \ .
 \end{equation}
 
-These matrix multiplication and subsequent selection are computationally inexpensive; they can be considered as substitutes of the \enquote{argmax} selection that typically happen at the continuous output of a classifier.
+The matrix multiplication and subsequent selection are computationally inexpensive; they can be considered as substitutes of the \enquote{argmax} selection that typically happen at the continuous output of a classifier.
 
 \section{Demonstration and results}
 \label{sec:demonstration}
 
-We show a concrete example of implementation and use of the probability transducer for two classifying algorithms on one data set.
+We show a concrete example of implementation and use of the probability transducer and utility-based classification for two \ml\ classifiers on one data set.
 
 The classification problem is binary: to determine whether a molecule is chemically inactive or active towards one specific target protein. Inactivity is denoted by $0$, activity by $1$.
 
-The classifiers chosen for this task are a random forest and a residual convolutional neural network, details of which are given in appendix\mynotep{\ldots}. The random forest takes a set of particular fingerprints of the molecule as input, and outputs a real number in the range $\clcl{0,1}$, corresponding to the fraction of decision threes that select class~$0$ (inactive molecule). The residual neural network takes an image representing the chemical and spatial structure of the molecule, and output two real numbers roughly corresponding to scores for the two classes.
+The classifiers chosen for this task are a random forest and a residual convolutional neural network, details of which are given in appendix\mynotep{\ldots}. The random forest takes as input a set of particular fingerprints of the molecule, and outputs a real number in the range $\clcl{0,1}$, corresponding to the fraction of decision threes which vote for class~$0$ (inactive molecule). The residual neural network takes as input an image representing the chemical and spatial structure of the molecule, and outputs two real numbers roughly corresponding to scores for the two classes.
 
-We use data from the ChEMBL database \autocites{bentoetal2014}, previously used in the literature for other studies of \ml\ applications to drug discovery \autocites{koutsoukasetal2017}. One set of data is used to train and validate the two classifiers. One set is used for the calibration of the probability transducer. Finally one set is used as a test set to compare the performance of the classifiers with and without the transducer and the utility-maximization layer.
+We use data from the ChEMBL database \autocites{bentoetal2014}, previously used in the literature for other studies of \ml\ applications to drug discovery \autocites{koutsoukasetal2017}. One set of data is used to train and validate the two classifiers. One set is used for the calibration of the probability transducer and evaluation of the classifiers. One further data set is here used as fictive \enquote{real data} to demonstrate the results of our procedure; we call this the \enquote{demonstration set}.
+
+It must be strongly emphasized that \emph{the additional demonstration dataset has an illustrative purpose only} for the sake of the present work. It does not test or evaluate anything. At most it can be used to check for  bugs in the design or coding of the classifiers and their probability transducers. In a concrete design, configuration, optimization, and evaluation of one or several candidate classifiers and their probability transducer, the calibration set will at the same time be the evaluation test set from which we can choose the optimal algorithm.
+
+
+as a test set to compare the performance of the classifiers with and without the transducer and the utility-maximization layer.
 
 \begin{figure}[t]
   \centering
