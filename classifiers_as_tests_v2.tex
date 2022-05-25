@@ -1,7 +1,7 @@
 \pdfoutput=1
 %% Author: PGL  Porta Mana
 %% Created: 2022-04-14T17:18:22+0200
-%% Last-Updated: 2022-05-25T11:32:51+0200
+%% Last-Updated: 2022-05-25T11:35:22+0200
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Probabilities for classifier outputs
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -1050,10 +1050,12 @@ The preceding analysis shows that the construction of the probability transducer
 
 The answer is no: \emph{the calibration set automatically also serves as a test set}.
 
-It may be useful to explain why, especially for \ml\ practitioners who take the necessity of a test set as given.
+It may be useful to explain why this is the case, especially for \ml\ practitioners who take the necessity of a test set as given.
 
-A test set is necessary in inference with standard \ml\ methodologies because the latter are only an approximation of ideal inference performed with the probability calculus. The latter needs no division of available data into different sets, because something analogous to such division is automatically made internally, so to speak. It can be shown \autocites{portamana2019b,fongetal2020}[many examples of this fact are scattered across the text by][]{jaynes1994_r2003} that the mathematical operations behind the probability rules correspond to making \emph{all possible} divisions of the data between \enquote{training} and \enquote{test}, as well as all possible cross-validations with folds of all orders. This is the reason why ideal inference by means of the probability calculus is almost computationally impossible in some cases and we have to resort to approximate but faster \ml\ methods.
+A test set is necessary in inference with standard \ml\ methodologies because the latter are only an approximation of ideal inference performed with the probability calculus. The latter needs no division of available data into different sets: something analogous to such division is automatically made internally, so to speak. It can be shown \autocites{portamana2019b,fongetal2020}[many examples of this fact are scattered across the text by][]{jaynes1994_r2003} that the mathematical operations behind the probability rules correspond to making \emph{all possible} divisions of available data between \enquote{training} and \enquote{test}, as well as all possible cross-validations with folds of all orders. This is the reason why ideal inference by means of the probability calculus is almost computationally impossible in some cases, and we have to resort to approximate but faster \ml\ methods.
 
+
+\mynotep{explain how testing is done}
 
 \section{Utility-based classification}
 \label{sec:utility_classification}
