@@ -1,7 +1,7 @@
 \pdfoutput=1
 %% Author: PGL  Porta Mana
 %% Created: 2022-04-14T17:18:22+0200
-%% Last-Updated: 2022-05-25T00:33:42+0200
+%% Last-Updated: 2022-05-25T09:19:00+0200
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Probabilities for classifier outputs
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -937,6 +937,8 @@ where $w$ are positive and normalized functions. This means that the proxy proba
 
 \mynotep{add note about the fact that the goodness of the results still greatly depends on the goodness of the classifier.}
 
+\mynotew{add that \emph{no new test set is needed}! The calibration set also works as \enquote{test set} thanks to the probability calculus}
+
 
 \subsection{Calculation of the probabilities}
 \label{sec:calculation_transducer}
@@ -995,7 +997,7 @@ For the second we use a gaussian distribution, $\beta \equiv (\mu,\sigma)$ being
   \label{eq:distr_output}
   B(y \| \beta) = \frac{1}{\sqrt{2\pu\sigma^{2}}} \exp\biggl[-\frac{(y-\mu)^{2}}{2\sigma^{2}}\biggr] \ ,
 \end{equation}
-or a product of such gaussians if $y$ is multidimensional. If the classifier's output $y$ is a bounded variable we perform a transformation of its range onto the real line first (taking due care of Jacobian determinants for density transformations).
+or a product of such gaussians, each with its own parameters, if $y$ is multidimensional. If the classifier's output $y$ is a bounded variable we perform a transformation of its range onto the real line first (taking due care of Jacobian determinants for density transformations).
 
 \medskip
 
