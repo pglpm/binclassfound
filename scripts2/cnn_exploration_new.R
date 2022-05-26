@@ -1,6 +1,6 @@
 ## Author: PGL  Porta Mana
 ## Created: 2022-03-17T14:21:57+0100
-## Last-Updated: 2022-05-26T15:46:24+0200
+## Last-Updated: 2022-05-26T23:57:03+0200
 ################
 ## Exploration of several issues for binary classifiers
 ################
@@ -109,8 +109,10 @@ cseq <- seq(xr[1], xr[2], length.out=129)
 vpoints <- cbind(rep(cseq, length(cseq)), rep(cseq, each=length(cseq)))
 colnames(vpoints) <- realCovs
 
-system.time(opgrid <- samplesF(Y=cbind(class=1), X=vpoints, parmList=parmlist, inorder=F))
+##system.time(opgrid <- samplesF(Y=cbind(class=1), X=vpoints, parmList=parmlist, inorder=F))
 ##
+##saveRDS(opgrid, '_opgrid_cnn_exploration_new.rds')
+opgrid <- readRDS('_opgrid_cnn_exploration_new.rds')
 
 ## system.time(opgrid2 <- samplesFp(Y=cbind(class=1), X=vpoints, batchsize=1024, parmList=parmlist, inorder=F))
 
