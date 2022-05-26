@@ -1406,9 +1406,9 @@ The data comes from the open-access CheMBL bioactivity database \autocites{bento
 
 \subsection{Pre-processing} 
 
-For our pre-processing pipeline, we use two different methods to represent the molecule, one for the Random Forest and one for the Convolutional Neural Network. The first method turns the molecule into a hashed bit vector of circular fingerprints called Extended Connectivity Fingerprints (ECFP) \autocites{rogersetal2010}. From our numerical analysis, there was little to no improvement using a 2048-bit vector over a 1024-bit vector. 
+For our pre-processing pipeline, we use two different methods to represent the molecule, one for the Random Forest (RF) and one for the Convolutional Neural Network. The first method turns the molecule into a hashed bit vector of circular fingerprints called Extended Connectivity Fingerprints (ECFP) \autocites{rogersetal2010}. From our numerical analysis, there was little to no improvement using a 2048-bit vector over a 1024-bit vector. 
   
-For our convolutional neural network, the data is represented by converting the molecule into images of 224~pixels \texttimes\ 224~pixels. This is done by taking a molecule's SMILES (Simplified Molecular Input Line Entry System) string \autocites{davidetal2020} from the dataset and converting it into a canonical graph structure by means of RdKit \autocites{rdkit2017}. This differs from ECFP in that it represents the actual spatial and chemical structure (or something very close to it) of the molecule rather than properties generated from the molecule.
+For our convolutional neural network (CNN), the data is represented by converting the molecule into images of 224~pixels \texttimes\ 224~pixels. This is done by taking a molecule's SMILES (Simplified Molecular Input Line Entry System) string \autocites{davidetal2020} from the dataset and converting it into a canonical graph structure by means of RdKit \autocites{rdkit2017}. This differs from ECFP in that it represents the actual spatial and chemical structure (or something very close to it) of the molecule rather than properties generated from the molecule.
 
 The dataset has in total 1631 active molecules and 16310 non-active molecules which act as decoys. For training, the active molecules are oversampled, as usually done with imbalanced datasets \autocites{provost2000}, to match the same number of non-active molecules.
 % The data is therefore unbalanced and we solve this by giving the loss functions different weights for each class, which give the same result but have better performance as oversampling.
@@ -1419,9 +1419,54 @@ Virtual screening is the process of assessing chemical activity in the interacti
   
 \subsection{Chosen classifiers} 
 
-The algorithms and methods used to create the models have previously been shown to give great results for all different fields.
-  
+The algorithms and methods used to create the models have previously been shown to give great results for a lot of different fields.
+
+\subsubsection{\textit{Random Forest}}
+
+%@article{pedregosa2011,
+  %title={Scikit-learn: Machine learning in Python},
+  %author={Pedregosa, Fabian and Varoquaux, Ga{\"e}l and Gramfort, Alexandre and Michel, Vincent and Thirion, Bertrand and Grisel, Olivier and %Blondel, Mathieu and Prettenhofer, Peter and Weiss, Ron and Dubourg, Vincent and others},
+%  journal={Journal of machine learning research},
+%  volume={12},
+%  number={Oct},
+%  pages={2825--2830},
+%  year={2011}
+%} 
+
+%@article{svetnik2003,
+%	title = {Random {Forest}:  {A} {Classification} and {Regression} {Tool} %for {Compound} {Classification} and {QSAR} {Modeling}},
+	%volume = {43},
+	%issn = {0095-2338},
+	%shorttitle = {Random {Forest}},
+	%url = {https://doi.org/10.1021/ci034160g},
+	%doi = {10.1021/ci034160g}},
+	%number = {6},
+	%urldate = {2022-05-26},
+	%journal = {Journal of Chemical Information and Computer Sciences},
+	%author = {Svetnik, Vladimir and Liaw, Andy and Tong, Christopher and %Culberson, J. Christopher and Sheridan, Robert P. and Feuston, Bradley P.},
+	%month = nov,
+	%year = {2003},
+	%note = {Publisher: American Chemical Society},
+	%pages = {1947--1958},
+%}
+
+
+The first machine learning model used in the experiments is an RF model implemented in sci-kit learn \autocites{pedrogosa2011}. RF is an ensemble of classifying or regression trees where the majority of votes is chosen as the predicted class \autocites{breiman2001}. It is known for being robust when dealing with a large number of features (as in our case), being resilient to over-fitting, and achieving good performance. And has already been shown to deliver powerful and accurate results in compound classification and QSAR analysis \autocites{svetnik2003}. The following parameters were used when training the model: 
+
+\medskip
+
+\fbox{\parbox{\textwidth}{
+\begin{description}
+    \item[Number of trees:] 200 
+    \item[Criterion:] Entropy 
+    \item[Max Features:] Square root
+\end{description}}}
+
+\subsubsection{\textit{Convolutional Neural Network}} 
 The second model is a pre-trained residual network (ResNet) \autocites{heetal2016} with 18 hidden layers trained on the well-known ImageNet dataset  \autocites{russakovskyetal2015} by using the PyTorch framework \autocites{paszkeetal2019}. ResNet has shown to outperform other pre-trained convolutional neural network models \autocites{heetal2016}. A ResNet with 34 hidden layers showed little to no performance gain, so we chose to go with the simpler model. The model is trained with the following hyperparameters:
+\medskip
+
+\fbox{\parbox{\textwidth}{
 \begin{description}
     \item[Learning rate:] 0.003 
     \item[Optimization technique:] Stochastic Gradient Descent 
@@ -1429,7 +1474,7 @@ The second model is a pre-trained residual network (ResNet) \autocites{heetal201
     \item[Dropout:] 50\% 
     \item[Number of epochs:] 20 
     \item[Loss function:] Cross-entropy loss
-\end{description}
+\end{description}}}
 
 \subsection{Train, Validation, Test split}
 
