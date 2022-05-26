@@ -1,6 +1,6 @@
 ## Author: PGL  Porta Mana
 ## Created: 2022-05-01T09:38:48+0200
-## Last-Updated: 2022-05-26T07:48:05+0200
+## Last-Updated: 2022-05-26T15:50:23+0200
 ################
 ## Calculations for the papers
 ################
@@ -533,8 +533,21 @@ tplot(x=c(-1,-1,0,1,1,0,-1), y=c(0,-1,-1,0,1,1,0), type='l', add=T, col='#000000
 
 
 ######################################################################
-#### 
+#### probability of tp/tn rate
 ######################################################################
+
+test <- rbeta(10^5, shape1=2, shape2=1)/2+0.5
+test2 <- hist(test,n=100)
+
+
+
+pdff('../TP_TN_prob',asp=1)
+tplot(x=c(1/2,1), y=8*(c(1/2,1)-1/2), lwd=2,
+      xlab='true-positive/negative rate',
+      ylab='probability density',
+      mar=c(4.5,4.5,0.5,0.5))
+polygon(x=c(1/2,1,1), y=c(0,0,4), col=paste0(palette()[1],'40'), border=NA)
+dev.off()
 
 
 

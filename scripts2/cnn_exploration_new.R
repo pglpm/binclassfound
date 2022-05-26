@@ -1,6 +1,6 @@
 ## Author: PGL  Porta Mana
 ## Created: 2022-03-17T14:21:57+0100
-## Last-Updated: 2022-05-26T12:18:28+0200
+## Last-Updated: 2022-05-26T15:46:24+0200
 ################
 ## Exploration of several issues for binary classifiers
 ################
@@ -242,8 +242,10 @@ shortparmlist <- list(
 )
 fwrite(data.table(w=c(shortparmlist$q),
                p=c(shortparmlist$probB),
-               mu=c(shortparmlist$meanR),
-               sigma=1/sqrt(c(shortparmlist$tauR))
+               mu0=c(shortparmlist$meanR[,'output0',]),
+               sigma0=1/sqrt(c(shortparmlist$tauR[,'output0',])),
+               mu1=c(shortparmlist$meanR[,'output1',]),
+               sigma1=1/sqrt(c(shortparmlist$tauR[,'output1',]))
                ), '_CNN_transducer_parameters.csv', sep=',')
 
 
