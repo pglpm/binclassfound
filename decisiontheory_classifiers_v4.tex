@@ -1,7 +1,7 @@
 \pdfoutput=1
 %% Author: PGL  Porta Mana
 %% Created: 2022-03-04T07:39:34+0200
-%% Last-Updated: 2022-05-26T20:07:46+0200
+%% Last-Updated: 2022-05-26T23:30:19+0200
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Decision theory for machine-learning classifiers
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -555,7 +555,7 @@ Open Science Framework \doi{10.31219/osf.io/#1}%
 \\[\jot]\textsuperscript{\ensuremath{\dagger}}\amp\ Mohn Medical Imaging and Visualization Centre, Dept of Radiology,\\Haukeland University Hospital, Bergen, Norway}
 
 %\date{Draft of \today\ (first drafted \firstdraft)}
-\date{\textbf{Draft}. \firstpublished; updated \updated}
+\date{\firstpublished; updated \updated}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%% Macros @@@
@@ -745,12 +745,12 @@ Open Science Framework \doi{10.31219/osf.io/#1}%
 \begin{abstract}\labelsep 0pt%
   \noindent 
   % purpose, method, scope, results, conclusion
-  How can we measure something, if our meter does not follow any standard and expands or shrinks depending on the measured object? The present work argues that current evaluation and comparison practices for \ml\ classifiers are affected by exactly this kind of problems; the correctness of an evaluation often relies more on luck than on principles. Negative consequences then appear when classifiers are put to real use. It proposes to ground evaluation on Decision Theory. The main result is that any evaluation metric must be a linear combination of the confusion-matrix elements, with coefficients that depend on the specific classification problem. For binary classification, the space of such possible metrics is effectively two-dimensional. It is shown that popular metrics such as precision, balanced accuracy, Matthews Correlation Coefficient, Fowlkes-Mallows index, and $F_{1}$-measure do not satisfy basic decision-theoretic principles and always lead to incorrect rankings, in every classification problem. They 
+  How can one measure something, if the meter does not conform to any standard and expands or shrinks depending on the measured object? In the present work it is argued that current evaluation practices for \ml\ classifiers are affected by exactly this kind of problems. Evaluation often relies unnecessarily on luck; negative consequences, which could have been avoided, then arise when classifiers are put to real use. It is proposed that evaluation be grounded on Decision Theory. The main result is that every evaluation metrics must be a linear combination of confusion-matrix elements, with coefficients -- \enquote{utilities} -- that depend on the specific classification problem. For binary classification, the space of such possible metrics is effectively two-dimensional. It is shown that popular metrics such as precision, balanced accuracy, Matthews Correlation Coefficient, Fowlkes-Mallows index, $F_{1}$-measure, and Area Under the Curve are never optimal: they always give rise to an avoidable fraction of incorrect evaluations. This fraction is larger than would be caused by the use of a decision-theoretic metric with moderately wrong coefficients.
 
 
-  Machine Learning algorithms nowadays rely on a set of popular, well-known evaluation metrics, then trying to get the highest 'score' possible. Is it only the highest 'score' that matters? How can we evaluate the evaluation metrics?
+%   Machine Learning algorithms nowadays rely on a set of popular, well-known evaluation metrics, then trying to get the highest 'score' possible. Is it only the highest 'score' that matters? How can we evaluate the evaluation metrics?
 
-We show that a machine learning classifier that is favored by the majority of evaluation metrics might not be the most optimal, thus leading to the classifier 'guessing' the most optimal class.
+% We show that a machine learning classifier that is favored by the majority of evaluation metrics might not be the most optimal, thus leading to the classifier 'guessing' the most optimal class.
 % \\\noindent\emph{\footnotesize Note: Dear Reader
 %     \amp\ Peer, this manuscript is being peer-reviewed by you. Thank you.}
 % \par%\\[\jot]
@@ -849,7 +849,7 @@ The majority of these metrics favour classifier $\Beta$, some of them by quite a
 
 The developers of the classifiers therefore recommend the employment of classifier $\Beta$.
 
-The factory manager does not fully trust these metrics, asking, \enquote*{how do I know they are appropriate?}. The developers assure that these metrics are widely used. The manager (of engineering background) comments, \enquote*{I don't remember `widely used' being a criterion of scientific correctness -- not after Galileo at least}, and decides to employ both classifiers for a trial period to see which factually leads to the best revenue. The two classifiers are integrated into two separate but otherwise identical parallel production lines.
+The factory manager does not fully trust these metrics, asking, \enquote*{how do I know they are appropriate?}. The developers assure that these metrics are widely used. The manager (of engineering background) comments, \enquote*{I don't remember `widely used' being a criterion of scientific correctness -- not after Galileo at least}, and decides to employ both classifiers for a trial period, to see which factually leads to the best revenue. The two classifiers are integrated into two separate but otherwise identical parallel production lines.
 
 During the trial period, the classifiers perform according to the classification statistics of the confusion matrices~\eqref{eq:CM_A} and \eqref{eq:CM_B} above. At the end of this period the factory manager finds that the average net gains per assessed component yielded by the two classifiers are
 \begin{equation}
@@ -927,12 +927,12 @@ The story above illustrates several well-known issues of currently popular evalu
       \clap{\textit{\parbox{6em}{\centering\scriptsize true class\\$0\hspace{4em}1$}}
     }} \ .
 \end{equation}
-One could argue that also this case there is a great economic difference between correct and wrong classification for class~1, as compared with class~0. The true-negative rate should, therefore, still be the appropriate metric. Yet a simple calculation shows that, in this case, it is classifier~$\Beta$ that actually leads to the best average revenue: $7.3\,\text{\texteuro/component}$, vs $4.7\,\text{\texteuro/component}$ for classifier $\Alpha$. Hence the true-negative rate is \emph{not} the appropriate metric here and our intuitive reasoning failed us.
+One could argue that also this case there is a great economic difference between correct and wrong classification for class~1, as compared with class~0. The true-negative rate should, therefore, still be the appropriate metric. Yet a simple calculation shows that, in this case, it is classifier~$\Beta$ that actually leads to the best average revenue: $7.3\,\text{\texteuro/component}$, vs $4.7\,\text{\texteuro/component}$ for classifier $\Alpha$. Hence the true-negative rate is \emph{not} the appropriate metric here and our qualitative reasoning failed us.
 
 
 \item A classifier favoured by the majority of available metrics can still turn out \emph{not} to be the best one in practice.
 
-\item\label{item:ad_hoc} Most popular metrics were introduced by intuitive reasoning, ad hoc mathematical operations, special assumptions (such as gaussianity\autocites[e.g.][\sect~31 p.~183 for the Matthews correlation coefficient]{fisher1925_r1963}), and analysis of special cases. Unfortunately such derivations do not guarantee generalization to all cases, nor that the proposed metric is uniquely determined by the assumptions, nor that it satisfies other basic but neglected requirements. By contrast, compare for instance the derivation of the Shannon entropy \autocites{shannon1948}[\sect~3.2]{woodward1953_r1964}[also][]{goodetal1968} as the \emph{unique} metric universally satisfying a set of general, basic requirements for the amount of information; or the derivation of the probability calculus\footnote{\cites{cox1946,fine1973}[\chaps~1--2]{jaynes1994_r2003}. Some literature cites \cite{halpern1999} as a critique of Cox's proof, but curiously does not cite Halpern's \cite*{halpern1999b} partial rebuttal of his own critique, as well as the rebuttals by \cite{snow1998,snow2001}.} as the \emph{unique} set of rules satisfying general requirements for inductive reasoning, learning, and prediction \autocites{selfetal1987,cheeseman1988}[\chap~12]{russelletal1995_r2022}.
+\item\label{item:ad_hoc} Most popular metrics are introduced by intuitive reasoning, ad hoc mathematical operations, special assumptions (such as gaussianity\autocites[e.g.][\sect~31 p.~183 for the Matthews correlation coefficient]{fisher1925_r1963}), and analysis of special cases. Unfortunately such derivations do not guarantee generalization to all cases, nor that the proposed metric is uniquely determined by the chosen assumptions, nor that it satisfies other basic but neglected requirements. By contrast, compare for instance the derivation of the Shannon entropy \autocites{shannon1948}[\sect~3.2]{woodward1953_r1964}[also][]{goodetal1968} as the \emph{unique} metric universally satisfying a set of general, basic requirements for the amount of information; or the derivation of the probability calculus\footnote{\cites{cox1946,fine1973}[\chaps~1--2]{jaynes1994_r2003}. Some literature cites \cite{halpern1999} as a critique of Cox's proof, but curiously does not cite Halpern's \cite*{halpern1999b} partial rebuttal of his own critique, as well as the rebuttals by \cite{snow1998,snow2001}.} as the \emph{unique} set of rules satisfying general rational requirements for inductive reasoning, learning, and prediction \autocites{selfetal1987,cheeseman1988}[\chap~12]{russelletal1995_r2022}.
   
 \item\label{item:hope_medical} Let us assume that some of the popular metrics identify the best algorithm \enquote{in the majority of cases} -- although it is difficult to statistically define such a majority, and no real surveys have ever been conducted to back up such an assumption. Yet, do we expect the end-user to simply \emph{hope} not to belong to the unlucky minority? Is such uncertainty inevitable?
 
@@ -950,12 +950,12 @@ One could argue that also this case there is a great economic difference between
       \clap{\textit{\parbox{8em}{\scriptsize\centering true class\\$0\hspace{7em}1$}}
     }} \ .
 \end{equation}
-These values might arise in several scenarios. For example, tumours of class~0 and~1 may require very different treatments, say surgical and drug-based. If a class~0 tumour is misdiagnosed and not properly treated, it leads to immediate death (0\,months); if correctly diagnosed, its treatment is usually successful, leading to high life expectancy (500\,months). Class~0 tumours can be treated, but they lead to a shorter life expectancy (350\,months). If they are misdiagnosed as class~1, however, the damage caused by class~1 treatment somewhat shortens this life expectancy (300\,months).
+These values might arise in several scenarios. For example, tumours of class~0 and~1 may require very different kinds of treatment. If a class~0 tumour is misdiagnosed and not properly treated, it leads to immediate death (0\,months); if correctly diagnosed, its treatment is usually successful, leading to high life expectancy (500\,months). Class~0 tumours can be treated, but they lead to a shorter life expectancy (350\,months). If they are misdiagnosed as class~1, however, the damage caused by class~1 treatment shortens this life expectancy even further (300\,months).
 
-This matrix above is numerically equivalent to~\eqref{eq:utility_example} up to a common additive constant of $335$, so the final net gains are also simply shifted by this amount. The value 0 means immediate death. It is easy to see that the metrics are exactly as in Table~\ref{tab:example_metrics}, the majority favouring classifier~$\Beta$. And yet the use of classifier~$\Alpha$ leads to a more than six-month longer expected remaining life than classifier~$\Beta$.
+This matrix above is numerically equivalent to~\eqref{eq:utility_example} up to a common additive constant of $335$, so the final net gains are also simply shifted by this amount. It is easy to see that the metrics are exactly as in Table~\ref{tab:example_metrics}, the majority favouring classifier~$\Beta$. And yet the use of classifier~$\Alpha$ leads to a more than six-month longer expected remaining life than classifier~$\Beta$.
 
 
-\item Often it is not possible to temporarily deploy all candidate classifiers, as our fictitious manager did, in order to observe which factually leads to the best results. Or it may even be unethical: consider a situation like the medical one above, where a classifier may lead to more immediate deaths than another.
+\item Often it is not possible to temporarily deploy all candidate classifiers, as our fictitious manager did, in order to observe which factually leads to the best results. Or it may even be unethical: consider a situation like the medical one above, where a classifier may lead to a larger number of immediate deaths than another.
 
 \item Finally, all issues listed above are not caused by class imbalance (the occurrence of one class with a higher frequency than another). In our story, for example, the two classes were perfectly balanced. Yet all these issues can worsen for imbalanced datasets \autocites{jenietal2013,zhu2020}.
 
@@ -963,7 +963,7 @@ This matrix above is numerically equivalent to~\eqref{eq:utility_example} up to 
 
 \bigskip
 
-But our story also points to a possible solution to all these issues. The \enquote{metric} that ultimately proved to be relevant to the manager was the average net monetary gain obtained by using a classifier. In the medical variation discussed in issue~\ref{item:hope_medical} above, it was the average life expectancy.  In either case, such metric could have been easily calculated beforehand, upon gathering information about the average gains and losses of correct and incorrect classification, collected in the matrix~\eqref{eq:utility_example} or~\eqref{eq:utility_example_medicine}, and combining these with statistics collected in the confusion matrix associated with the classifier. Denoting the former kind of matrix by $(U_{ij})$ and the confusion matrix by $(C_{ij})$, where $i$ indexes the rows (classifier outputs) and $j$ the columns (true classes), such a metric would have the formula
+But our story also points to a possible solution for all these issues. The \enquote{metric} that ultimately proved to be relevant to the manager was the average net monetary gain obtained by using a candidate classifier. In the medical variation discussed in issue~\ref{item:hope_medical} above, it was the average life expectancy. In either case, such metric could have been easily calculated beforehand, upon gathering information about the average gains and losses of correct and incorrect classification, collected in the matrix~\eqref{eq:utility_example} or~\eqref{eq:utility_example_medicine}, and combining these with statistics collected in the confusion matrix associated with the classifier. Denoting the former kind of matrix by $(U_{ij})$ and the confusion matrix by $(C_{ij})$, where $i$ indexes the classifier outputs (rows) and $j$ the true classes (columns), such a metric would have the formula
 \begin{equation}
   \label{eq:expected_utility}
   \sum_{i,j} U_{ij}\ C_{ij} 
@@ -1105,7 +1105,7 @@ Let us consider a problem of binary classification. It is characterized by a mat
   \label{eq:normalize_utilities}
   U_{ij} \mapsto \frac{U_{ij} - \min(U_{ij})}{\max(U_{ij}) - \min(U_{ij})} \ .
 \end{equation}
-With this convention, it is clear that we only have two degrees of freedom in choosing the utility matrix of a binary classification. As a consequence, \emph{the space of possible evaluation metrics for binary classification is two-dimensional}. In order to evaluate candidate classifiers for a binary classification we must choose a point from this space.
+With this convention, it is clear that we only have two degrees of freedom in choosing the utility matrix of a binary-classification problem. As a consequence, \emph{the space of possible evaluation metrics for binary classifications is two-dimensional}. In order to evaluate candidate classifiers for a binary-classification problem, we must choose a point from this space.
 
 \begin{figure}[t]
   \centering
@@ -1221,7 +1221,7 @@ The second phenomenon is illustrated in the plots of \figs~\ref{fig:metrics_vs_u
 % {B}\hfill\mbox{}\\[0pt]
 % \vspace{-1em}{\color{mygrey}\rule{0.66\linewidth}{0.25pt}}
 % \includegraphics[width=0.95\linewidth]{utility_vs_metrics2_0.9.jpg}\\[0pt]
-\caption{Relationship between various evaluation metrics and actual utility yields for a  two different binary classifications with underlying utility matrices $\begin{bsmallmatrix} 1&0\\0&1 \end{bsmallmatrix}$ (left column) and $\begin{bsmallmatrix} 1&0\\0&0 \end{bsmallmatrix}$ (right column). All confusion matrices ({\color{mypurpleblue}blue dots}) are obtained from a dataset with 50\%/50\% class balance.
+\caption{Relationship between various evaluation metrics and actual utility yields for two different binary-classification problems with underlying utility matrices $\begin{bsmallmatrix} 1&0\\0&1 \end{bsmallmatrix}$ (left column) and $\begin{bsmallmatrix} 1&0\\0&0 \end{bsmallmatrix}$ (right column). All confusion matrices ({\color{mypurpleblue}blue dots}) are obtained from a dataset with 50\%/50\% class balance.
 %
   Pairs of {\color{myred}red triangles} in a plot show two confusion matrices that are wrongly ranked by the metric (y-axis) with respect to the actual utility yield (x-axis). Clearly, there can even be three or more confusion matrices ranked in completely reverse order by the metric.
 %
