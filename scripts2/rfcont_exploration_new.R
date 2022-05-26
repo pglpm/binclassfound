@@ -1,6 +1,6 @@
 ## Author: PGL  Porta Mana
 ## Created: 2022-03-17T14:21:57+0100
-## Last-Updated: 2022-05-26T08:54:32+0200
+## Last-Updated: 2022-05-26T09:34:57+0200
 ################
 ## Exploration of several issues for binary classifiers
 ################
@@ -328,8 +328,10 @@ allscores <- apply(lut, 3, function(um){
 rownames(allscores) <- c('standard', 'mixed', 'transducer')
 
 rowMeans(allscores)
+##   standard      mixed transducer 
+##  0.7565891  0.7595535  0.7623547 
 
-pdff('transducer_gains_relative')
+pdff('RF_transducer_gains_relative')
 ## tplot(x=allscores[1,1:nn2], y=allscores[2,1:nn2]-allscores[1,1:nn2], type='p', pch=16, cex=1, alpha=0.5)
 tplot(x=allscores[1,1:nn2], y=100*(allscores[3,1:nn2]-allscores[1,1:nn2])/allscores[1,1:nn2], type='p', pch=16, cex=1, alpha=0.5,
       xlab='utility yield from standard classification',
@@ -339,16 +341,24 @@ tplot(x=allscores[2,1:nn2], y=100*(allscores[3,1:nn2]-allscores[2,1:nn2])/allsco
       ylab='increase in utility yield/%')
 dev.off()
 
-pdff('transducer_gains')
+pdff('RF_transducer_gains')
 ## tplot(x=allscores[1,1:nn2], y=allscores[2,1:nn2]-allscores[1,1:nn2], type='p', pch=16, cex=1, alpha=0.5)
-tplot(x=allscores[1,1:nn2], y=allscores[3,1:nn2], type='p', pch=16, cex=1, alpha=0.5,
+tplot(x=log10(allscores[1,1:nn2]), y=log10(allscores[3,1:nn2]), type='p', pch=16, cex=0.5, alpha=0.25,
+      xticks=log10(sort(c(1:9)*rep(10^c(-1,0),each=9))),
+      xlabels=sort(c(1:9)*rep(10^c(-1,0),each=9)),
+      yticks=log10(sort(c(1:9)*rep(10^c(-1,0),each=9))),
+      ylabels=sort(c(1:9)*rep(10^c(-1,0),each=9)),
       xlab='utility yield from standard classification',
       ylab='utility yield from transducer & utility maximization')
-abline(0,1, col=palette()[6], lwd=1, lty=1)
-tplot(x=allscores[1,1:nn2], y=allscores[3,1:nn2], type='p', pch=16, cex=1, alpha=0.5, col=2,
+abline(0,1, col=paste0(palette()[4],'88'), lwd=2, lty=1)
+tplot(x=log10(allscores[2,1:nn2]), y=log10(allscores[3,1:nn2]), type='p', pch=16, cex=0.5, alpha=0.25, col=2,
+      xticks=log10(sort(c(1:9)*rep(10^c(-1,0),each=9))),
+      xlabels=sort(c(1:9)*rep(10^c(-1,0),each=9)),
+      yticks=log10(sort(c(1:9)*rep(10^c(-1,0),each=9))),
+      ylabels=sort(c(1:9)*rep(10^c(-1,0),each=9)),
       xlab='utility yield from mixed method',
       ylab='utility yield from transducer & utility maximization')
-abline(0,1, col=palette()[6], lwd=1, lty=1)
+abline(0,1, col=paste0(palette()[4],'88'), lwd=2, lty=1)
 dev.off()
 
 
