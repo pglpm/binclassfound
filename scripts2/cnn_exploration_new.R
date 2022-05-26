@@ -1,6 +1,6 @@
 ## Author: PGL  Porta Mana
 ## Created: 2022-03-17T14:21:57+0100
-## Last-Updated: 2022-05-26T12:04:36+0200
+## Last-Updated: 2022-05-26T12:18:28+0200
 ################
 ## Exploration of several issues for binary classifiers
 ################
@@ -298,8 +298,8 @@ ulist <- list(c(1,0,0,1),
                     c(100,0,-100,1))
 ##
 umlist <- lapply(ulist, function(x){
-        ## x <- x-min(x)
-        ## x <- x/max(x)
+        x <- x-min(x)
+        x <- x/max(x)
         matrix(x,2,2, byrow=T)
     }
 )
@@ -355,7 +355,6 @@ xy2um <- function(ab,ab2=NULL,norm=TRUE){
     um
 }
 
-set.seed(148)
 nn <- 10^4
 nn2 <- nn#3*10^3
 ##
@@ -385,10 +384,14 @@ allscores <- apply(lut, 3, function(um){
 rownames(allscores) <- c('standard', 'mixed', 'transducer')
 
 rowMeans(allscores)
- ##  standard      mixed transducer 
- ## 0.7561422  0.7590596  0.7605033 
+#### skip=4
+##  standard      mixed transducer 
+## 0.7561422  0.7590596  0.7605033 
+#### skip=8
+##   standard      mixed transducer 
+##  0.7545872  0.7573737  0.7587412 
 
-pdff('../CNN_transducer_gains', asp=1)
+pdff('../CNN_transducer_gainsx', asp=1)
 ## tplot(x=allscores[1,1:nn2], y=allscores[2,1:nn2]-allscores[1,1:nn2], type='p', pch=16, cex=1, alpha=0.5)
 tplot(x=log10(allscores[1,1:nn2]), y=log10(allscores[3,1:nn2]), type='p', pch=16, cex=0.5, alpha=0.25, asp=1,
       xticks=log10(sort(c(1:9)*rep(10^c(-1,0),each=9))),
@@ -514,6 +517,14 @@ cbind(ulist2, rresults,
       'rel_diff_std'=round(100*apply(rresults,1,function(x){diff(x[c(1,3)])/abs(x[1])}),1),
       'rel_diff_discr'=round(100*apply(rresults,1,function(x){diff(x[c(2,3)])/abs(x[2])}),1))
 
+#### skip=8
+## > +                        standard discr gener rel_diff_std rel_diff_discr
+## [1,]   1    0    0   1    0.888 0.838 0.937          5.5           11.8
+## [2,]   1  -10    0  10    0.749 0.824 0.838         11.9            1.7
+## [3,]   1 -100    0 100    0.735 0.832 0.833         13.3            0.1
+## [4,]  10    0  -10   1    0.683 0.667 0.680         -0.4            1.9
+## [5,] 100    0 -100   1    0.657 0.667 0.667          1.5            0.0
+#### skip=4
 ##                        standard discr gener rel_diff_std rel_diff_discr
 ## [1,]   1    0    0   1    0.896 0.849 0.941          5.0           10.8
 ## [2,]   1  -10    0  10    0.750 0.824 0.839         11.9            1.8
@@ -570,10 +581,15 @@ allscoresb <- apply(lut, 3, function(um){
 rownames(allscoresb) <- c('standard', 'discr', 'gener')
 
 rowMeans(allscoresb)
+#### skip=8
+##  standard     discr     gener 
+## 0.7141566 0.7079744 0.7451940 
+
+#### skip=4
 ##  standard     discr     gener 
 ## 0.7190232 0.7112459 0.7479897 
 
-pdff('../CNN_transducer_gains_gener', asp=1)
+pdff('../CNN_transducer_gains_generx', asp=1)
 ## tplot(x=allscores[1,1:nn2], y=allscores[2,1:nn2]-allscores[1,1:nn2], type='p', pch=16, cex=1, alpha=0.5)
 tplot(x=log10(allscoresb[1,1:nn2]), y=log10(allscoresb[3,1:nn2]), type='p', pch=16, cex=0.5, alpha=0.25, asp=1,
       xticks=log10(sort(c(1:9)*rep(10^c(-1,0),each=9))),
@@ -593,7 +609,7 @@ abline(0,1, col=paste0(palette()[2],'88'), lwd=2, lty=1)
 ## abline(0,1, col=paste0(palette()[4],'88'), lwd=2, lty=1)
 dev.off()
 ##
-pdff('../CNN_transducer_gains_gener_vs_discr', asp=1)
+pdff('../CNN_transducer_gains_gener_vs_discrx', asp=1)
 ## tplot(x=allscores[1,1:nn2], y=allscores[2,1:nn2]-allscores[1,1:nn2], type='p', pch=16, cex=1, alpha=0.5)
 tplot(x=log10(allscoresb[2,1:nn2]), y=log10(allscoresb[3,1:nn2]), type='p', pch=16, cex=0.5, alpha=0.25, asp=1, col=3,
       xticks=log10(sort(c(1:9)*rep(10^c(-1,0),each=9))),
