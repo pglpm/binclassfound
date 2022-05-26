@@ -1,7 +1,7 @@
 \pdfoutput=1
 %% Author: PGL  Porta Mana
 %% Created: 2022-03-04T07:39:34+0200
-%% Last-Updated: 2022-05-26T16:14:25+0200
+%% Last-Updated: 2022-05-26T20:07:46+0200
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Decision theory for machine-learning classifiers
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -743,9 +743,12 @@ Open Science Framework \doi{10.31219/osf.io/#1}%
 % \setlength{\absrightindent}{0pt}
 \setlength{\abstitleskip}{-\absparindent}
 \begin{abstract}\labelsep 0pt%
-  \noindent \mynotep{Abstract to be written}
+  \noindent 
   % purpose, method, scope, results, conclusion
-Machine Learning algorithms nowadays rely on a set of popular, well-known evaluation metrics, then trying to get the highest 'score' possible. Is it only the highest 'score' that matters? How can we evaluate the evaluation metrics?
+  How can we measure something, if our meter does not follow any standard and expands or shrinks depending on the measured object? The present work argues that current evaluation and comparison practices for \ml\ classifiers are affected by exactly this kind of problems; the correctness of an evaluation often relies more on luck than on principles. Negative consequences then appear when classifiers are put to real use. It proposes to ground evaluation on Decision Theory. The main result is that any evaluation metric must be a linear combination of the confusion-matrix elements, with coefficients that depend on the specific classification problem. For binary classification, the space of such possible metrics is effectively two-dimensional. It is shown that popular metrics such as precision, balanced accuracy, Matthews Correlation Coefficient, Fowlkes-Mallows index, and $F_{1}$-measure do not satisfy basic decision-theoretic principles and always lead to incorrect rankings, in every classification problem. They 
+
+
+  Machine Learning algorithms nowadays rely on a set of popular, well-known evaluation metrics, then trying to get the highest 'score' possible. Is it only the highest 'score' that matters? How can we evaluate the evaluation metrics?
 
 We show that a machine learning classifier that is favored by the majority of evaluation metrics might not be the most optimal, thus leading to the classifier 'guessing' the most optimal class.
 % \\\noindent\emph{\footnotesize Note: Dear Reader
@@ -823,7 +826,7 @@ and normalized over the total number of evaluation data:
 \end{align}
 These matrices show that the factory produces, on average, 50\% short- and 50\% long-durability components.
 
-The confusion matrices above lead to the following values of common evaluation metrics\autocites[Balanced accuracy:][]{brodersenetal2010}[$F_{1}$ measure:][]{vanrijsbergen1974}[Matthews correlation coefficient:][]{matthews1975}[Fowlkes-Mallows index:][]{fowlkesetal1983} for the two classifiers. Class~$0$ is \enquote{positive}, $1$ \enquote{negative}. \textbf{\color{mypurpleblue}Blue bold} indicates the classifier favoured by the metric, {\color{myred}red} the disfavoured:
+The confusion matrices above lead to the following values of common evaluation metrics\autocites[Balanced accuracy:][]{brodersenetal2010}[$F_{1}$ measure:][]{vanrijsbergen1974}[Matthews correlation coefficient:][]{matthews1975}[Fowlkes-Mallows index:][]{fowlkesetal1983} for the two classifiers. Class~$0$ is \enquote{positive}, $1$ \enquote{negative}. \textbf{\color{mypurpleblue}Blue bold} indicates the classifier favoured by the metric, {\color{myredpurple}red} the disfavoured:
   %    F1    MCC   Prec    Acc BalAcc    Kri    AUC    Rec   Spec 
   % 0.59   0.24   0.64   0.62   0.62   0.62   0.62   0.54   0.70
   % 0.77   0.51   0.70   0.75   0.75   0.75   0.75   0.86   0.64
@@ -1351,7 +1354,7 @@ A precise answer to these questions is extremely difficult if not impossible bec
   \hspace{\stretch{1}}
   \parbox[t]{0.45\linewidth}{%
     \centering\includegraphics[width=\linewidth]{error_around_um2.pdf}
-    \caption{Extents of errors having standard deviations $0.1$ ({\color{mypurpleblue}blue triangles}) and $0.2$ ({\color{myred}red squares}), around the utility matrices $\begin{bsmallmatrix} 0.5&0.5\\0&1 \end{bsmallmatrix}$ and $\begin{bsmallmatrix} 1&0\\0.5&0.1 \end{bsmallmatrix}$ (black diamonds).}
+    \caption{Extents of errors having standard deviations $0.1$ ({\color{mypurpleblue}blue triangles}) and $0.2$ ({\color{myred}red squares}), around the utility matrices $\begin{bsmallmatrix} 0.5&0.5\\0&1 \end{bsmallmatrix}$ and $\begin{bsmallmatrix} 1&0\\0.5&0.5 \end{bsmallmatrix}$ (black diamonds).}
     \label{fig:error_distr_um}}
   \hspace{\stretch{1}}
 \end{figure}
@@ -1363,7 +1366,7 @@ Under these assumptions, we calculate how often a pair of classifiers, having tw
 \item\label{item:draw_cm} Select a class proportion and then two confusion matrices having that class proportion (the class proportion must be the same since the matrices are obtained from the same data), according to the distributions~\ref{item:distr_cm}.
 \item\label{item:diff_true} Calculate the signed difference between the true utility yield of the second confusion matrix and that of the first confusion matrix, using the true utility from step~\ref{item:draw_um}. If this difference is positive, then the second confusion matrix has higher utility than the first; if negative, then the first confusion matrix has higher utility than the second.
 \item\label{item:diff_other}
-    \begin{enumerate}[label=\theenumi\alph*.]
+    \begin{enumerate}[label=\alph*.]
 \item Consider several metrics (precision, Matthews correlation coefficient, and so on). For each, calculate the signed difference between the score it gives to the second confusion matrix, and the score it gives to the first.
 \item Consider the erroneous utility matrix from step~\ref{item:draw_wrongum}. Calculate the signed difference between the utility yield of the second confusion matrix and that of the first confusion matrix, using this erroneous utility matrix.
 \end{enumerate}
@@ -1520,6 +1523,11 @@ Second, it leads to a mathematically simple, computationally convenient metric: 
 
 Third, the principles of the underlying theory guide us if we have to face new peculiar problems. Imagine, for instance, a classification problem where we cannot say, in general, whether true positives are more important than true negatives and so on, because such valuation can \emph{vary from one tested item to another}. Decision theory, in this case, requires an item-wise assessment of utilities, and still provides an item-wise score, which can be accumulated across items to obtain a total evaluation score for the performance of candidate classifiers.
 
+\medskip
+
+The theory, remarks, and results of the present work generalize beyond classification, to regression and more complex classification-like problems such as image segmentation. It would be interesting to examine whether popular metrics in the latter field, such as Dice score \autocites{dice1945,fleiss1975,zijdenbosetal1994} and Hausdorff distance \autocites{altetal2000}, comply with decision-theoretic principles, and which alternatives could be used otherwise.
+
+In a companion work \autocites{dyrlandetal2022b} we apply the general ideas presented here to improve the performance of \ml\ classifiers.
 
 % \mynotep{We recommend to avoid metrics not complying with decision theory -- not of the form~\eqref{eq:general_valuation_metric} -- and to try to get an estimate of the utilities involved instead.}
 
