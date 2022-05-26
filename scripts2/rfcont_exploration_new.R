@@ -1,6 +1,6 @@
 ## Author: PGL  Porta Mana
 ## Created: 2022-03-17T14:21:57+0100
-## Last-Updated: 2022-05-25T23:47:07+0200
+## Last-Updated: 2022-05-26T08:54:32+0200
 ################
 ## Exploration of several issues for binary classifiers
 ################
@@ -224,8 +224,186 @@ buildcm <- function(trueclasses, probs, um=diag(2)){
 ##
 comparescores <- function(trueclasses, um, outputs, probs){
     c('standard'=sum(buildcm(trueclasses, outputs) * um),
-      'transducer'=sum(buildcm(trueclasses, probs, um) * um),
-      'mixed'=sum(buildcm(trueclasses, outputs, um) * um)
+      'mixed'=sum(buildcm(trueclasses, outputs, um) * um),
+      'transducer'=sum(buildcm(trueclasses, probs, um) * um)
+      )
+}
+
+ulist <- list(c(1,0,0,1),
+                    c(1,-10,0,10),
+                    c(1,-100,0,100),
+                    c(10,0,-10,1),
+                    c(100,0,-100,1))
+##
+umlist <- lapply(ulist, function(x){
+        x <- x-min(x)
+        x <- x/max(x)
+        matrix(x,2,2, byrow=T)
+    }
+)
+##
+ulist2 <- unlist(umlist)
+dim(ulist2) <- c(4,length(ulist))
+ulist2 <- t(ulist2)
+
+## using Luca's probabilities
+results1 <- t(sapply(umlist, function(um){
+    comparescores(trueclasses=classes, um=um, outputs=outputs1, probs=probs1)/length(classes)}))
+##
+rresults <- round(results1,3)
+cbind(ulist2, rresults,
+      'rel_diff_std'=round(100*apply(rresults,1,function(x){diff(x[c(1,3)])/abs(x[1])}),1),
+      'rel_diff_mix'=round(100*apply(rresults,1,function(x){diff(x[c(2,3)])/abs(x[2])}),1))
+
+##                        standard mixed transducer rel_diff_std rel_diff_mix
+## [1,]   1    0    0   1    0.968 0.968      0.974          0.6          0.6
+## [2,]   1  -10    0  10    0.568 0.578      0.586          3.2          1.4
+## [3,]   1 -100    0 100    0.528 0.546      0.548          3.8          0.4
+## [4,]  10    0  -10   1    0.948 0.954      0.955          0.7          0.1
+## [5,] 100    0 -100   1    0.945 0.955      0.955          1.1          0.0
+
+##                          standard mixed transducer rel_diff_std rel_diff_mix
+## [1,] 1.000 0.0 0.0 1.000    0.968 0.968      0.974          0.6          0.6
+## [2,] 0.550 0.5 0.0 1.000    0.568 0.578      0.586          3.2          1.4
+## [3,] 0.505 0.5 0.0 1.000    0.528 0.546      0.548          3.8          0.4
+## [4,] 1.000 0.0 0.5 0.550    0.948 0.954      0.955          0.7          0.1
+## [5,] 1.000 0.0 0.5 0.505    0.945 0.955      0.955          1.1          0.0
+
+
+#### With original utility values
+##                        standard  mixed transducer rel_diff_std rel_diff_mix
+## [1,]   1    0    0   1    0.968  0.968      0.974          0.6          0.6
+## [2,]   1  -10    0  10    1.364  1.555      1.719         26.0         10.5
+## [3,]   1 -100    0 100    5.553  9.132      9.617         73.2          5.3
+## [4,]  10    0  -10   1    8.954  9.083      9.091          1.5          0.1
+## [5,] 100    0 -100   1   88.920 90.915     90.914          2.2          0.0
+
+
+
+## Calculation of utility yields on demonstration set
+## for uniform distribution of utility matrices
+
+id <- diag(2)
+utp <- matrix(c(1,0,0,0),2,2)
+utn <- matrix(c(0,0,0,1),2,2)
+ufp <- matrix(c(0,0,1,0),2,2)
+ufn <- matrix(c(0,1,0,0),2,2)
+xy2um <- function(ab,ab2=NULL,norm=TRUE){
+    if(length(ab)==1){ab <- c(ab,ab2)}
+        um <- id + (ab[1]<0)*ab[1]*utn - (ab[1]>0)*ab[1]*utp +
+            (ab[2]>0)*ab[2]*ufp - (ab[2]<0)*ab[2]*ufn
+    if(norm){
+        um <- um-min(um)
+        um <- um/max(um)
+    }
+    um
+}
+
+nn <- 10^4
+nn2 <- nn#3*10^3
+##
+lxy <- runif(2*round(nn*6/3),-1,1)
+##
+dim(lxy) <- c(round(nn*6/3),2)
+lxy <- lxy[lxy[,2]<lxy[,1]+1 & lxy[,2]>lxy[,1]-1 & abs(lxy[,1])<=1 & abs(lxy[,2])<=1,][1:nn,]
+##
+lut <- apply(lxy,1,xy2um)
+dim(lut) <- c(2,2,nn)
+
+cmstandard <- buildcm(classes, outputs1)
+##
+allscores <- apply(lut, 3, function(um){
+    c(sum(cmstandard * um),
+      sum(buildcm(classes, outputs1, um) * um),
+      sum(buildcm(classes, probs1, um) * um)
+      )
+})/length(classes)
+## allscores <- (foreach(i=1:nn, .combine=cbind, .inorder=F)%dopar%{
+##     um <- lut[,,i]
+##     c(sum(cmstandard * um),
+##       sum(buildcm(classes, probs1, um) * um),
+##       sum(buildcm(classes, outputs1, um) * um)
+##       )
+## })/length(classes)
+rownames(allscores) <- c('standard', 'mixed', 'transducer')
+
+rowMeans(allscores)
+
+pdff('transducer_gains_relative')
+## tplot(x=allscores[1,1:nn2], y=allscores[2,1:nn2]-allscores[1,1:nn2], type='p', pch=16, cex=1, alpha=0.5)
+tplot(x=allscores[1,1:nn2], y=100*(allscores[3,1:nn2]-allscores[1,1:nn2])/allscores[1,1:nn2], type='p', pch=16, cex=1, alpha=0.5,
+      xlab='utility yield from standard classification',
+      ylab='increase in utility yield/%')
+tplot(x=allscores[2,1:nn2], y=100*(allscores[3,1:nn2]-allscores[2,1:nn2])/allscores[2,1:nn2], type='p', pch=16, cex=1, alpha=0.5, col=2,
+      xlab='utility yield from mixed method',
+      ylab='increase in utility yield/%')
+dev.off()
+
+pdff('transducer_gains')
+## tplot(x=allscores[1,1:nn2], y=allscores[2,1:nn2]-allscores[1,1:nn2], type='p', pch=16, cex=1, alpha=0.5)
+tplot(x=allscores[1,1:nn2], y=allscores[3,1:nn2], type='p', pch=16, cex=1, alpha=0.5,
+      xlab='utility yield from standard classification',
+      ylab='utility yield from transducer & utility maximization')
+abline(0,1, col=palette()[6], lwd=1, lty=1)
+tplot(x=allscores[1,1:nn2], y=allscores[3,1:nn2], type='p', pch=16, cex=1, alpha=0.5, col=2,
+      xlab='utility yield from mixed method',
+      ylab='utility yield from transducer & utility maximization')
+abline(0,1, col=palette()[6], lwd=1, lty=1)
+dev.off()
+
+
+
+
+
+
+#########################################################
+## Calculation of utility yields on altered demonstration set
+## discriminative and generative mode
+#########################################################
+ddata <- fread(demofile, sep=',')
+discardp <- sample(which(ddata$class==0), size=sum(ddata$class==0)-round(sum(ddata$class==1)/2))
+ddata <- ddata[-discardp,]
+classes <- ddata$class
+outputs1 <- ddata$output1
+transfoutputs1 <- cbind(X2Y[[1]](outputs1))
+colnames(transfoutputs1) <- outputcov
+##
+probs1 <- rowMeans(samplesF(Y=cbind(class=1), X=transfoutputs1, parmList=parmlist, inorder=F))
+
+probsinv1 <- rowMeans(samplesF(Y=transfoutputs1, X=cbind(class=1), parmList=parmlist, inorder=F))*Xjacobian[[1]](outputs1)
+##
+probsinv0 <- rowMeans(samplesF(Y=transfoutputs1, X=cbind(class=0), parmList=parmlist, inorder=F))*Xjacobian[[1]](outputs1)
+
+baserates <- c('0'=sum(classes==0), '1'=sum(classes==1))/length(classes)
+##
+bayesprobs1 <- probsinv1*baserates['1']/(probsinv0*baserates['0'] + probsinv1*baserates['1'])
+
+## These functions make sure to chose equally in case of tie
+maxdraw <- function(x){ (if(x[1]==x[2]){-1}else{which.max(x)-1}) }
+##
+buildcm <- function(trueclasses, probs, um=diag(2)){
+    if(is.null(dim(probs))){probs <- rbind(1-probs, probs)}
+    choices <- apply(um %*% probs, 2, maxdraw)
+    ##
+    cm <- matrix(c(
+        sum(trueclasses==0 & choices==0),
+        sum(trueclasses==0 & choices==1),
+        sum(trueclasses==1 & choices==0),
+        sum(trueclasses==1 & choices==1)
+    ), 2, 2) +
+        matrix(c(
+            sum(trueclasses==0 & choices==-1),
+            sum(trueclasses==0 & choices==-1),
+            sum(trueclasses==1 & choices==-1),
+            sum(trueclasses==1 & choices==-1)
+        ), 2, 2)/2
+    cm
+}
+##
+comparescores <- function(trueclasses, um, outputs, probs, bayesprobs){
+    c('standard'=sum(buildcm(trueclasses, outputs) * um),
+      'transducer_gener'=sum(buildcm(trueclasses, bayesprobs, um) * um),
+      'transducer_discr'=sum(buildcm(trueclasses, probs, um) * um)
       )
 }
 
@@ -245,22 +423,23 @@ umlist <- lapply(
          c(1,0,-5,1),
          c(1,-100,0,1),
          c(1,0,-100,1),
-         c(1,0,-10,10)),
+         c(1,0,-10,10),
+         c(10,-10,0,1)),
     function(x){
-        ## x <- x-min(x)
-        ## x <- x/max(x)
+        x <- x-min(x)
+        x <- x/max(x)
         matrix(x,2,2)
     }
 )
 
 ## using Luca's probabilities
 results1 <- t(sapply(umlist, function(um){
-    comparescores(trueclasses=classes, um=um, outputs=outputs1, probs=probs1)/length(classes)}))
+    comparescores(trueclasses=classes, um=um, outputs=outputs1, probs=probs1, bayesprobs=bayesprobs1)/length(classes)}))
 
 rresults <- round(results1,3)
 cbind(rresults,
-      'rel.diff.1'=round(100*apply(rresults,1,function(x){diff(x[1:2])/x[1]}),1),
-      'rel.diff.2'=round(100*apply(rresults,1,function(x){diff(x[c(3,2)])/x[3]}),1))
+      'rel.diff.1'=round(100*apply(rresults,1,function(x){diff(x[1:2])/abs(x[1])}),1),
+      'rel.diff.2'=round(100*apply(rresults,1,function(x){diff(x[c(3,2)])/abs(x[3])}),1))
 
 ##       standard transducer mixed rel.diff.1 rel.diff.2
 ##  [1,]    0.968      0.974 0.968        0.6        0.6
