@@ -1,6 +1,6 @@
 ## Author: PGL  Porta Mana
 ## Created: 2022-03-17T14:21:57+0100
-## Last-Updated: 2022-05-27T14:29:00+0200
+## Last-Updated: 2022-05-27T14:38:05+0200
 ################
 ## Exploration of several issues for binary classifiers
 ################
@@ -699,14 +699,119 @@ dev.off()
 ## combining evidence from both algorithms
 #########################################################
 
-outsRF <- fread('CNNplus_modCHEMBL205_predictions_CNN_test2_demonstration.csv', sep=',')
-outsCNN <- fread('RFplus_tmodCHEMBL205_predictions_RF_test2_demonstration.csv', sep=',')
+outsCNN <- fread('CNNplus_modCHEMBL205_predictions_CNN_test2_demonstration.csv', sep=',')
+outsRF <- fread('RFplus_tmodCHEMBL205_predictions_RF_test2_demonstration.csv', sep=',')
 
-fwrite(cbind(outsRF, outsCNN[, -'class']),
+RFprob1 <- outsRF$RF_prob1
+RFinvprob0 <- outsRF$RF_invprob0
+RFinvprob1 <- outsRF$RF_invprob1
+##
+CNNprob1 <- outsCNN$CNN_prob1
+CNNinvprob0 <- outsCNN$CNN_invprob0
+CNNinvprob1 <- outsCNN$CNN_invprob1
+
+
+baserates <- c('0'=sum(classes==0), '1'=sum(classes==1))/length(classes)
+##
+ensprob1 <- RFinvprob1 * CNNinvprob1 * baserates['1']/(
+    RFinvprob0 * CNNinvprob0 * baserates['0'] +
+    RFinvprob1 * CNNinvprob1 * baserates['1']
+)
+
+fwrite(cbind(outsRF, outsCNN[, -'class'], 'ens_prob1'=ensprob1),
        paste0('RF_CNN_probs'), sep=',')
 
 
+## Calculation of utility yields on demonstration set
+## with ensembling
 
+## These functions make sure to chose equally in case of tie
+maxdraw <- function(x){ (if(x[1]==x[2]){-1}else{which.max(x)-1}) }
+##
+buildcm <- function(trueclasses, probs, um=diag(2)){
+    if(is.null(dim(probs))){probs <- rbind(1-probs, probs)}
+    choices <- apply(um %*% probs, 2, maxdraw)
+    ##
+    cm <- matrix(c(
+        sum(trueclasses==0 & choices==0),
+        sum(trueclasses==0 & choices==1),
+        sum(trueclasses==1 & choices==0),
+        sum(trueclasses==1 & choices==1)
+    ), 2, 2) +
+        matrix(c(
+            sum(trueclasses==0 & choices==-1),
+            sum(trueclasses==0 & choices==-1),
+            sum(trueclasses==1 & choices==-1),
+            sum(trueclasses==1 & choices==-1)
+        ), 2, 2)/2
+    cm
+}
+##
+comparescores <- function(trueclasses, um, outputs, probs){
+    c('RF_trans'=sum(buildcm(trueclasses, RFprob1, um) * um),
+      'CNN_trans'=sum(buildcm(trueclasses, CNNprob1, um) * um),
+      'combined'=sum(buildcm(trueclasses, ensprob1, um) * um)
+      )
+}
+
+ulist <- list(c(1,0,0,1),
+              c(1,-10,0,10),
+              c(1,-100,0,100),
+              c(10,0,-10,1),
+              c(100,0,-100,1),
+              ##
+              c(1,-10,-1,10),
+              c(1,-100,-1,100),
+              c(10,-1,-10,1),
+              c(100,-1,-100,1)
+              )
+##
+umlist <- c(lapply(ulist, function(x){ matrix(x,2,2, byrow=T) } ),
+    lapply(ulist, function(x){
+        x <- x-min(x)
+        x <- x/max(x)
+        matrix(x,2,2, byrow=T)
+    }
+) )
+##
+ulist2 <- unlist(umlist)
+dim(ulist2) <- c(4,2*length(ulist))
+ulist2 <- t(ulist2)
+
+results1 <- t(sapply(umlist, function(um){
+    comparescores(trueclasses=classes, um=um, outputs=outputs1, probs=probs1)/length(classes)}))
+##
+rresults <- round(results1,3)
+##
+options(width=160)
+cbind(ulist2, rresults,
+      'd_RF'=round(apply(rresults,1,function(x){diff(x[c(1,3)])}),4),
+      'd_CNN'=round(apply(rresults,1,function(x){diff(x[c(2,3)])}),4),
+      'rd%_RF'=round(100*apply(rresults,1,function(x){diff(x[c(1,3)])/abs(x[1])}),2),
+      'rd%_CNN'=round(100*apply(rresults,1,function(x){diff(x[c(2,3)])/abs(x[2])}),2))
+
+##                                         RF_trans CNN_trans combined   d_RF  d_CNN rd%_RF rd%_CNN
+##  [1,]   1.000    0.000    0.000   1.000    0.974     0.961    0.970 -0.004  0.009  -0.41    0.94
+##  [2,]   1.000    0.000  -10.000  10.000    1.719     1.646    1.715 -0.004  0.069  -0.23    4.19
+##  [3,]   1.000    0.000 -100.000 100.000    9.617     9.573    9.678  0.061  0.105   0.63    1.10
+##  [4,]  10.000  -10.000    0.000   1.000    9.091     9.091    8.868 -0.223 -0.223  -2.45   -2.45
+##  [5,] 100.000 -100.000    0.000   1.000   90.914    90.914   89.239 -1.675 -1.675  -1.84   -1.84
+##
+##  [6,]   1.000   -1.000  -10.000  10.000    1.681     1.547    1.672 -0.009  0.125  -0.54    8.08
+##  [7,]   1.000   -1.000 -100.000 100.000    9.509     9.280    9.570  0.061  0.290   0.64    3.13
+##  [8,]  10.000  -10.000   -1.000   1.000    9.001     9.001    8.829 -0.172 -0.172  -1.91   -1.91
+##  [9,] 100.000 -100.000   -1.000   1.000   90.823    90.823   88.777 -2.046 -2.046  -2.25   -2.25
+####
+## [10,]   1.000    0.000    0.000   1.000    0.974     0.961    0.970 -0.004  0.009  -0.41    0.94
+## [11,]   0.550    0.500    0.000   1.000    0.586     0.582    0.586  0.000  0.004   0.00    0.69
+## [12,]   0.505    0.500    0.000   1.000    0.548     0.548    0.548  0.000  0.000   0.00    0.00
+## [13,]   1.000    0.000    0.500   0.550    0.955     0.955    0.943 -0.012 -0.012  -1.26   -1.26
+## [14,]   1.000    0.000    0.500   0.505    0.955     0.955    0.946 -0.009 -0.009  -0.94   -0.94
+##
+## [15,]   0.550    0.450    0.000   1.000    0.584     0.577    0.584  0.000  0.007   0.00    1.21
+## [16,]   0.505    0.495    0.000   1.000    0.548     0.546    0.548  0.000  0.002   0.00    0.37
+## [17,]   1.000    0.000    0.450   0.550    0.950     0.950    0.941 -0.009 -0.009  -0.95   -0.95
+## [18,]   1.000    0.000    0.495   0.505    0.954     0.954    0.944 -0.010 -0.010  -1.05   -1.05
 
 
 
