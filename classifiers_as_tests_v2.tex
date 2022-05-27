@@ -1,7 +1,7 @@
 \pdfoutput=1
 %% Author: PGL  Porta Mana
 %% Created: 2022-04-14T17:18:22+0200
-%% Last-Updated: 2022-05-27T23:49:54+0200
+%% Last-Updated: 2022-05-28T00:33:42+0200
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Probabilities for classifier outputs
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -1105,28 +1105,49 @@ The Monte Carlo calculation of the parameters for the transducer took approximat
 \begin{figure}[t]
   \centering
   \includegraphics[width=\linewidth]{transducer_curve_RFx.pdf}\\
-  \caption{Probabilities of class~1 (\enquote{active}, \textcolor{mypurpleblue}{blue solid curve}) and class~0 (\enquote{inactive}, \textcolor{myred}{red dashed curve}) conditional on the \rf\ output. The shaded region around each curve represents its possible range (12.5\%--87.5\%) of variability if more data were used to calculate the probabilities.}
+  \caption{Probabilities of class~1 (\enquote{active}, \textcolor{mypurpleblue}{blue solid curve}) and class~0 (\enquote{inactive}, \textcolor{myred}{red dashed curve}) conditional on the \rf\ output. The shaded region around each curve represents its 12.5\%--87.5\% range of variability if more data were used to calculate the probabilities.}
   \label{fig:prob_curve_RF}
 \end{figure}
 %
-Figure~\ref{fig:prob_curve_RF} shows the probabilities of classes~1 and~0, $\p(\texts{class 1} \| \texts{output})$ and $\p(\texts{class 0} \| \texts{output})$, conditional on the  output. We also show the range of variability that these probabilities could have if more data were used for the calibration: with a 75\% probability they would remain within the shaded regions. This information is provided for free by the calculation; we plan to discuss it and use it more in future work.
+Figure~\ref{fig:prob_curve_RF} shows the probabilities of classes~1 and~0 conditional on the \rf\ output: $\p(\texts{class 1} \| \texts{output})$ and $\p(\texts{class 0} \| \texts{output})$. It also shows the range of variability that these probabilities could have if more data were used for the calibration: with a 75\% probability they would remain within the shaded regions. This information is provided for free by the calculation; we plan to discuss it and use it more in future work.
 
 We see that the \rf\ output and the probabilities have a monotonically increasing (class~1) or decreasing (class~0) relationship only up to output values of around 0.95. The output, if interpreted as a probability for class~1 (\enquote{active}), tends to be too pessimistic for this class (and too optimistic for the other) in a range from roughly 0.2 to 0.9; and too optimistic outside this range, especially close to the value~1. For instance, for output 0.5, the probability for class~1 is 0.79; for output 1 the probability for class 1 is 0.67.
 
 \begin{figure}[t]
   \centering
   \includegraphics[width=\linewidth]{transducer_curve_RFx_inverse.pdf}\\
-  \caption{Probability densities of the \rf\ output conditional on class~1 (\enquote{active}, \textcolor{mypurpleblue}{blue solid curve}) and on class~0 (\enquote{inactive}, \textcolor{myred}{red dashed curve}). The shaded region around each curve represents its possible range (12.5\%--87.5\%) of variability upon increase of the calibration dataset.}
+  \caption{Probability densities of the \rf\ output conditional on class~1 (\enquote{active}, \textcolor{mypurpleblue}{blue solid curve}) and on class~0 (\enquote{inactive}, \textcolor{myred}{red dashed curve}). The shaded region around each curve represents its 12.5\%--87.5\% range of variability upon increase of the calibration dataset.}
   \label{fig:prob_curve_RF_inverse}
 \end{figure}
 %
 Figure~\ref{fig:prob_curve_RF_inverse} shows the \enquote{generative} probability densities of the \rf\ output conditional on each class, $\p(\texts{output} \| \texts{class 1})$ and $\p(\texts{output} \| \texts{class 0})$. These are also provided for free by the parameter calculation. The shaded regions are again 75\% possible variability intervals upon increase of the calibration dataset.
 
 We see that there is a high probability of output values close to~0 when the true class is~0 (\enquote{inactive}), and a probability peak of output values around 0.85 when the true class is~1 (\enquote{active}), as expected. % But there is also a high density of output value~0 when the true class is~1. This peak comes from the fact that the \RF\ had some very low output values
+\mynotep{more}
 
-We also show the range of variability that these probabilities could have if more data were used for the calibration: with a 75\% probability they would remain within the shaded regions. This information is provided for free by the calculation; we plan to discuss it and use it more in future work.
 
+\begin{figure}[!t]
+  \centering
+  \includegraphics[width=\linewidth]{transducer_surface_CNN.png}\\
+  \caption{Probability of class~1 conditional on the \cnn\ outputs}
+  \label{fig:prob_curve_CNN}
+\end{figure}
+%
+Figure~\ref{fig:prob_curve_CNN} shows the probability of class~1 conditional on the  bivariate output of the \CNN, $\p(\texts{class 1} \| \texts{outputs})$. It is interesting to compare this probability with the softmax function of the outputs, \fig~\ref{fig:softmax_CNN}, typically used as a proxy for the probability.
+\begin{figure}[!t]
+  \centering
+\includegraphics[width=0.9\linewidth]{softmaxr_surface_CNN.png}\\
+  \caption{Softmax function of the \cnn\ outputs}
+  \label{fig:softmax_CNN}
+\end{figure}
+The probability assumes values close to 0 and 1 only in 
 
+\begin{figure}[!t]
+  \centering
+  \includegraphics[width=\linewidth]{transducer_curve_diagonal_CNN_prob_softmax.pdf}\\
+  \caption{Profile of the probability surface of \fig~\ref{fig:prob_curve_CNN} across the bisector of the II and IV quadrants of output space. The shaded region represents the 12.5\%--87.5\% range of variability upon increase of the calibration dataset. The profile of the softmax function (\textcolor{mygray}{grey dashed curve}) is also shown for comparison.}
+  \label{fig:prob_curve_CNN_section}
+\end{figure}
 
 
 

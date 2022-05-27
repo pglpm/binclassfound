@@ -1,6 +1,6 @@
 ## Author: PGL  Porta Mana
 ## Created: 2022-03-17T14:21:57+0100
-## Last-Updated: 2022-05-27T23:02:46+0200
+## Last-Updated: 2022-05-27T23:54:22+0200
 ################
 ## Exploration of several issues for binary classifiers
 ################
@@ -142,7 +142,7 @@ tplot(x=xgrid, y=cbind(rowMeans(opgrid), 1- rowMeans(opgrid)), xlab='output',
       ylab=bquote('P'~group('(','class', '.')~group('|', ' output',')')),
       mar=c(4.5,5.5,1,1),
       ylim=c(0,1), lwd=3, family='Palatino', asp=1)
-legend(x=0.25,y=1.05, c('class 1', 'class 0'), lty=c(1,2), col=c(1,2), lwd=3, bty='n', cex=1.25)
+legend(x=0.25,y=1.05, c('class 1', 'class 0'), lty=c(1,2), col=c(1,2), lwd=3, bty='n', cex=1.5)
 ##
 polygon(x=c(xgrid,rev(xgrid)), y=c(qgrid[1,],rev(qgrid[2,])), col=paste0(palette()[1],'40'), border=NA)
 polygon(x=c(xgrid,rev(xgrid)), y=1-c(qgrid[1,],rev(qgrid[2,])), col=paste0(palette()[2],'40'), border=NA)
@@ -173,7 +173,7 @@ tplot(x=xgrid, y=cbind(rowMeans(py1grid), rowMeans(py0grid))*Xjacobian[[outputco
       ylab=bquote('p'~group('(','output', '.')~group('|', ' class',')')),
       mar=c(4.5,5.5,1,1),
       ylim=c(0,3), lwd=3, family='Palatino')
-legend('top', c('class 1', 'class 0'), lty=c(1,2), col=c(1,2), lwd=3, bty='n', cex=1.25)
+legend('top', c('class 1', 'class 0'), lty=c(1,2), col=c(1,2), lwd=3, bty='n', cex=1.5)
 ##
 polygon(x=c(xgrid,rev(xgrid)), y=c(q1grid[1,]*Xjacobian[[outputcov]](xgrid),rev(q1grid[2,]*Xjacobian[[outputcov]](xgrid))), col=paste0(palette()[1],'40'), border=NA)
 polygon(x=c(xgrid,rev(xgrid)), y=c(q0grid[1,]*Xjacobian[[outputcov]](xgrid),rev(q0grid[2,]*Xjacobian[[outputcov]](xgrid))), col=paste0(palette()[2],'40'), border=NA)
