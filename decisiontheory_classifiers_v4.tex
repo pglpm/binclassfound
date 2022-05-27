@@ -1,7 +1,7 @@
 \pdfoutput=1
 %% Author: PGL  Porta Mana
 %% Created: 2022-03-04T07:39:34+0200
-%% Last-Updated: 2022-05-27T07:15:39+0200
+%% Last-Updated: 2022-05-27T07:37:19+0200
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Decision theory for machine-learning classifiers
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -1468,6 +1468,14 @@ The function in braces is monotonically increasing because $t(f)$ is (we assume,
   \text{\small choose } f^{*} \text{\small\ such that}\quad
 t'(f^{*}) = \frac{(U_{11} - U_{01})\ (1-B)}{(U_{00} - U_{10})\  B} \ .
 \end{equation}
+%
+\begin{figure}[!b]
+  \centering
+    \includegraphics[width=0.66\linewidth]{auc_example.pdf}\\
+    \caption{Receiver-operating-characteristic curves of two classifiers. The {\color{red}red dashed curve} clearly subtends a larger area than the {\color{blue}blue solid curve}. Yet the classifier with the latter curve yields a higher utility, because it touches the family of parallel lines, \eqn~\eqref{eq:tangent_line}, at a higher point. This example arises for a utility matrix equal to $\begin{bsmallmatrix} 4&0\\0&1 \end{bsmallmatrix}$ and a test set with $B=0.5$ (balanced), or for a utility matrix equal to $\begin{bsmallmatrix} 1&0\\0&1 \end{bsmallmatrix}$ and a test set with $B=0.8$.}
+  \label{fig:auc_example}
+\end{figure}%\FloatBlock
+%
 If we have several classifiers, each with its own curve $t(f)$, then \emph{the best is the one tangent to the line
 \begin{equation}
   \label{eq:tangent_line}
@@ -1476,12 +1484,6 @@ If we have several classifiers, each with its own curve $t(f)$, then \emph{the b
 that has the highest intercept.}
 
 From this criterion it can be seen geometrically that if a classifier has its curve $t(f)$ \emph{completely above} the curve of another classifier, then it must have a higher utility yield. But nothing, in general, can be said if the curves of the two classifiers cross. It is the tangent of a receiver-operating-characteristic curve that matters, not its subtended area. Figure~\ref{fig:auc_example} shows an example of this.
-\begin{figure}[t]
-  \centering
-    \includegraphics[width=0.66\linewidth]{auc_example.pdf}\\
-    \caption{Receiver-operating-characteristic curves of two classifiers. The {\color{red}red dashed curve} clearly subtends a larger area than the {\color{blue}blue solid curve}. Yet the classifier with the latter curve yields a higher utility, because it touches the family of parallel lines, \eqn~\eqref{eq:tangent_line}, at a higher point. This example arises for a utility matrix equal to $\begin{bsmallmatrix} 4&0\\0&1 \end{bsmallmatrix}$ and a test set with $B=0.5$ (balanced), or for a utility matrix equal to $\begin{bsmallmatrix} 1&0\\0&1 \end{bsmallmatrix}$ and a test set with $B=0.8$.}
-  \label{fig:auc_example}
-\end{figure}
 
 
 
