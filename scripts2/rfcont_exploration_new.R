@@ -1,6 +1,6 @@
 ## Author: PGL  Porta Mana
 ## Created: 2022-03-17T14:21:57+0100
-## Last-Updated: 2022-05-27T12:01:24+0200
+## Last-Updated: 2022-05-27T14:11:21+0200
 ################
 ## Exploration of several issues for binary classifiers
 ################
@@ -67,7 +67,8 @@ X2Y <- list(
 Xjacobian <- list(
     function(x){
         epsi <- 1 - 2^-10
-        4*epsi/(1 - (epsi*(1-2*x))^2)
+        x <- 0.5 + (x-0.5)*epsi
+        epsi/(x*(1-x))
     }
 )
 Xrange <- list(c(0,1))
@@ -208,6 +209,16 @@ plan(sequential)
 plan(multisession, workers=6)
 probs1 <- rowMeans(samplesF(Y=cbind(class=1), X=transfoutputs1, parmList=parmlist, inorder=F))
 
+
+probsinv1 <- rowMeans(samplesF(Y=transfoutputs1, X=cbind(class=1), parmList=parmlist, inorder=F))*Xjacobian[[1]](outputs1)
+##
+probsinv0 <- rowMeans(samplesF(Y=transfoutputs1, X=cbind(class=0), parmList=parmlist, inorder=F))*Xjacobian[[1]](outputs1)
+
+fwrite(cbind(ddata, 'RF_prob1'=probs1,
+             'RF_invprob0'=probsinv0, 'RF_invprob1'=probsinv1),
+       paste0('RFplus_',demofile), sep=',')
+
+
 ## These functions make sure to chose equally in case of tie
 maxdraw <- function(x){ (if(x[1]==x[2]){-1}else{which.max(x)-1}) }
 ##
@@ -320,6 +331,7 @@ xy2um <- function(ab,ab2=NULL,norm=TRUE){
     um
 }
 
+set.seed(111)
 nn <- 10^4
 nn2 <- nn#3*10^3
 ##
@@ -350,7 +362,7 @@ rownames(allscores) <- c('standard', 'mixed', 'transducer')
 
 rowMeans(allscores)
 ##   standard      mixed transducer 
-##  0.7591012  0.7620642  0.7648880 
+##  0.7571809  0.7602045  0.7629903 
 
 pdff('../RF_transducer_gainsx', asp=1)
 ## tplot(x=allscores[1,1:nn2], y=allscores[2,1:nn2]-allscores[1,1:nn2], type='p', pch=16, cex=1, alpha=0.5)
@@ -381,7 +393,7 @@ dev.off()
 ## Calculation of utility yields on altered demonstration set
 ## discriminative and generative mode
 #########################################################
-set.seed(111)
+set.seed(222)
 discardp <- sample(which(ddata$class==0), size=sum(ddata$class==0)-round(sum(ddata$class==1)/2))
 classesb <- classes[-discardp]
 outputs1b <- outputs1[-discardp]
@@ -389,14 +401,12 @@ transfoutputs1 <- cbind(X2Y[[1]](outputs1b))
 colnames(transfoutputs1) <- outputcov
 ##
 probs1b <- probs1[-discardp]
-
-probsinv1 <- rowMeans(samplesF(Y=transfoutputs1, X=cbind(class=1), parmList=parmlist, inorder=F))*Xjacobian[[1]](outputs1b)
-##
-probsinv0 <- rowMeans(samplesF(Y=transfoutputs1, X=cbind(class=0), parmList=parmlist, inorder=F))*Xjacobian[[1]](outputs1b)
+probsinv1b <- probsinv1[-discardp]
+probsinv0b <- probsinv0[-discardp]
 
 baserates <- c('0'=sum(classesb==0), '1'=sum(classesb==1))/length(classesb)
 ##
-bayesprobs1 <- probsinv1*baserates['1']/(probsinv0*baserates['0'] + probsinv1*baserates['1'])
+bayesprobs1 <- probsinv1b*baserates['1']/(probsinv0b*baserates['0'] + probsinv1b*baserates['1'])
 
 ## These functions make sure to chose equally in case of tie
 maxdraw <- function(x){ (if(x[1]==x[2]){-1}else{which.max(x)-1}) }
@@ -428,43 +438,70 @@ comparescores <- function(trueclasses, um, outputs, probs, bayesprobs){
 }
 
 ulist <- list(c(1,0,0,1),
-                    c(1,-10,0,10),
-                    c(1,-100,0,100),
-                    c(10,0,-10,1),
-                    c(100,0,-100,1))
+              c(1,-10,0,10),
+              c(1,-100,0,100),
+              c(10,0,-10,1),
+              c(100,0,-100,1),
+              ##
+              c(1,-10,-1,10),
+              c(1,-100,-1,100),
+              c(10,-1,-10,1),
+              c(100,-1,-100,1)
+              )
 ##
-umlist <- lapply(ulist, function(x){
+umlist <- c(lapply(ulist, function(x){ matrix(x,2,2, byrow=T) } ),
+    lapply(ulist, function(x){
         x <- x-min(x)
         x <- x/max(x)
         matrix(x,2,2, byrow=T)
     }
-)
+) )
 ##
-ulist2 <- unlist(ulist)
-dim(ulist2) <- c(4,length(ulist))
+ulist2 <- unlist(umlist)
+dim(ulist2) <- c(4,2*length(ulist))
 ulist2 <- t(ulist2)
 
 results1 <- t(sapply(umlist, function(um){
     comparescores(trueclasses=classesb, um=um, outputs=outputs1b, probs=probs1b, bayesprobs=bayesprobs1)/length(classesb)}))
 ##
 rresults <- round(results1,3)
+##
+options(width=160)
 cbind(ulist2, rresults,
-      'rel_diff_std'=round(100*apply(rresults,1,function(x){diff(x[c(1,3)])/abs(x[1])}),1),
-      'rel_diff_discr'=round(100*apply(rresults,1,function(x){diff(x[c(2,3)])/abs(x[2])}),1))
+      'd_std'=round(apply(rresults,1,function(x){diff(x[c(1,3)])}),4),
+      'd_mix'=round(apply(rresults,1,function(x){diff(x[c(2,3)])}),4),
+      'rd%_std'=round(100*apply(rresults,1,function(x){diff(x[c(1,3)])/abs(x[1])}),2),
+      'rd%_mix'=round(100*apply(rresults,1,function(x){diff(x[c(2,3)])/abs(x[2])}),2))
 
-##                        standard transducer_discr transducer_gener rel_diff_std  
-## [1,]   1    0    0   1    0.829            0.914            0.959         15.7  
-## [2,]   1  -10    0  10    0.687            0.830            0.841         22.4  
-## [3,]   1 -100    0 100    0.672            0.830            0.833         24.0  
-## [4,]  10    0  -10   1    0.684            0.667            0.688          0.6  
-## [5,] 100    0 -100   1    0.661            0.667            0.665          0.6  
-                                                                                   
-##      rel_diff_discr
-## [1,]            4.9
-## [2,]            1.3
-## [3,]            0.4
-## [4,]            3.1
-## [5,]           -0.3
+##                                         standard transducer_discr transducer_gener  d_std d_mix rd%_std rd%_mix
+##  [1,]   1.000    0.000    0.000   1.000    0.835            0.918            0.959  0.124 0.041   14.85    4.47
+##  [2,]   1.000    0.000  -10.000  10.000    3.746            6.609            6.849  3.103 0.240   82.84    3.63
+##  [3,]   1.000    0.000 -100.000 100.000   34.483           66.080           66.667 32.184 0.587   93.33    0.89
+##  [4,]  10.000  -10.000    0.000   1.000    3.797            3.333            3.840  0.043 0.507    1.13   15.21
+##  [5,] 100.000 -100.000    0.000   1.000   33.428           33.333           33.458  0.030 0.125    0.09    0.38
+##
+##  [6,]   1.000   -1.000  -10.000  10.000    3.744            6.481            6.714  2.970 0.233   79.33    3.60
+##  [7,]   1.000   -1.000 -100.000 100.000   34.481           65.266           66.333 31.852 1.067   92.38    1.63
+##  [8,]  10.000  -10.000   -1.000   1.000    3.634            2.916            3.820  0.186 0.904    5.12   31.00
+##  [9,] 100.000 -100.000   -1.000   1.000   33.266           32.667           33.141 -0.125 0.474   -0.38    1.45
+####
+## [10,]   1.000    0.000    0.000   1.000    0.835            0.918            0.959  0.124 0.041   14.85    4.47
+## [11,]   0.550    0.500    0.000   1.000    0.687            0.830            0.842  0.155 0.012   22.56    1.45
+## [12,]   0.505    0.500    0.000   1.000    0.672            0.830            0.833  0.161 0.003   23.96    0.36
+## [13,]   1.000    0.000    0.500   0.550    0.690            0.667            0.692  0.002 0.025    0.29    3.75
+## [14,]   1.000    0.000    0.500   0.505    0.667            0.667            0.667  0.000 0.000    0.00    0.00
+##
+## [15,]   0.550    0.450    0.000   1.000    0.687            0.824            0.836  0.149 0.012   21.69    1.46
+## [16,]   0.505    0.495    0.000   1.000    0.672            0.826            0.832  0.160 0.006   23.81    0.73
+## [17,]   1.000    0.000    0.450   0.550    0.682            0.646            0.691  0.009 0.045    1.32    6.97
+## [18,]   1.000    0.000    0.495   0.505    0.666            0.663            0.666  0.000 0.003    0.00    0.45
+
+t(cbind(ulist2, signif(rresults[,c(1,2,3)],3),
+        round(100*apply(rresults,1,function(x){diff(x[c(1,3)])/abs(x[1])}),1),
+        round(100*apply(rresults,1,function(x){diff(x[c(2,3)])/abs(x[2])}),1)
+        ) )[,1:5]
+
+
 
 cmstandard <- buildcm(classesb, outputs1b)
 ##
@@ -485,7 +522,7 @@ rownames(allscoresb) <- c('standard', 'discr', 'gener')
 
 rowMeans(allscoresb)
 ##  standard     discr     gener 
-## 0.6815227 0.7362043 0.7571289 
+## 0.6864915 0.7401895 0.7606006 
 
 pdff('../RF_transducer_gains_generx', asp=1)
 ## tplot(x=allscores[1,1:nn2], y=allscores[2,1:nn2]-allscores[1,1:nn2], type='p', pch=16, cex=1, alpha=0.5)

@@ -1,6 +1,6 @@
 ## Author: PGL  Porta Mana
 ## Created: 2022-04-15T11:48:45+0200
-## Last-Updated: 2022-05-25T20:12:46+0200
+## Last-Updated: 2022-05-27T13:33:16+0200
 ################
 ## Calculation of joint probability for class & classifier-output
 ## Parallel version
@@ -72,20 +72,20 @@ saveinfofile <- 'rfcont_variateinfo.csv'
 datafile <- 'tmodCHEMBL205_predictions_RF_test1_calibration.csv'
 #64K, 3588D, 1024I: 7 min + 3 min
 X2Y <- list(
-    'prediction_lnodds'=function(x){
+    'transf_output1'=function(x){
         epsi <- 1 - 2^-10
         x <- 0.5 + (x-0.5)*epsi
         log(x/(1-x))
     }
 )
 Xjacobian <- list(
-    'prediction_lnodds'=function(x){
+    'transf_output1'=function(x){
         epsi <- 1 - 2^-10
         x <- 0.5 + (x-0.5)*epsi
-        4*epsi/(1 - (2*epsi*(x-0.5))^2)
+        epsi/(x*(1-x))
     }
 )
-Xrange <- list('prediction_lnodds'=c(0,1))
+Xrange <- list('transf_output1'=c(0,1))
 
 
 ## baseversion <- paste0(baseversion,'_',mcmcseed,'_')

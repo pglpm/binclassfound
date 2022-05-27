@@ -1,6 +1,6 @@
 ## Author: PGL  Porta Mana
 ## Created: 2022-03-17T14:21:57+0100
-## Last-Updated: 2022-05-27T11:09:54+0200
+## Last-Updated: 2022-05-27T14:29:00+0200
 ################
 ## Exploration of several issues for binary classifiers
 ################
@@ -266,6 +266,14 @@ plan(sequential)
 plan(multisession, workers=6)
 probs1 <- rowMeans(samplesF(Y=cbind(class=1), X=outputs2, parmList=parmlist, inorder=F))
 
+probsinv1 <- rowMeans(samplesF(Y=outputs2, X=cbind(class=1), parmList=parmlist, inorder=F))
+##
+probsinv0 <- rowMeans(samplesF(Y=outputs2, X=cbind(class=0), parmList=parmlist, inorder=F))
+
+fwrite(cbind(ddata, 'CNN_prob1'=probs1,
+             'CNN_invprob0'=probsinv0, 'CNN_invprob1'=probsinv1),
+       paste0('CNNplus_',demofile), sep=',')
+
 
 ## These functions make sure to chose equally in case of tie
 maxdraw <- function(x){ (if(x[1]==x[2]){-1}else{which.max(x)-1}) }
@@ -297,15 +305,15 @@ comparescores <- function(trueclasses, um, outputs, probs, softmaxs){
 }
 
 ulist <- list(c(1,0,0,1),
-              c(1,-10,-1,10),
-              c(1,-100,-1,100),
-              c(10,-1,-10,1),
-              c(100,-1,-100,1),
-              ##
               c(1,-10,0,10),
               c(1,-100,0,100),
               c(10,0,-10,1),
-              c(100,0,-100,1)
+              c(100,0,-100,1),
+              ##
+              c(1,-10,-1,10),
+              c(1,-100,-1,100),
+              c(10,-1,-10,1),
+              c(100,-1,-100,1)
               )
 ##
 umlist <- c(lapply(ulist, function(x){ matrix(x,2,2, byrow=T) } ),
@@ -357,6 +365,7 @@ cbind(ulist2, rresults,
 ## [18,]   1.000    0.000    0.500   0.505    0.928  0.950      0.955 0.027  0.005    2.91    0.53
 
 
+t(cbind(ulist2, signif(rresults[,c(1,3)],3), round(100*apply(rresults,1,function(x){diff(x[c(1,3)])/abs(x[1])}),1)))[,1:5]
 
 #### nskip = 8:
 ##                                     standard  mixed transducer rd%_std rd%_mix
@@ -487,21 +496,19 @@ dev.off()
 ## Calculation of utility yields on demonstration set
 ## altered base rates, generative mode
 #########################################################
+set.seed(222)
 discardp <- sample(which(ddata$class==0), size=sum(ddata$class==0)-round(sum(ddata$class==1)/2))
 classesb <- classes[-discardp]
 outputs2b <- outputs2[-discardp,]
 ## softmax2 <- apply(outputs2, 1, function(x){exp(x[2])/sum(exp(x))})
-
 ##
 probs1b <- probs1[-discardp]
-
-probsinv1 <- rowMeans(samplesF(Y=outputs2b, X=cbind(class=1), parmList=parmlist, inorder=F))
-##
-probsinv0 <- rowMeans(samplesF(Y=outputs2b, X=cbind(class=0), parmList=parmlist, inorder=F))
+probsinv1b <- probsinv1[-discardp]
+probsinv0b <- probsinv0[-discardp]
 
 baserates <- c('0'=sum(classesb==0), '1'=sum(classesb==1))/length(classesb)
 ##
-bayesprobs1 <- probsinv1*baserates['1']/(probsinv0*baserates['0'] + probsinv1*baserates['1'])
+bayesprobs1 <- probsinv1b*baserates['1']/(probsinv0b*baserates['0'] + probsinv1b*baserates['1'])
 
 ## These functions make sure to chose equally in case of tie
 maxdraw <- function(x){ (if(x[1]==x[2]){-1}else{which.max(x)-1}) }
@@ -533,29 +540,61 @@ comparescores <- function(trueclasses, um, outputs, probs, bayesprobs){
 }
 
 ulist <- list(c(1,0,0,1),
-                    c(1,-10,0,10),
-                    c(1,-100,0,100),
-                    c(10,0,-10,1),
-                    c(100,0,-100,1))
+              c(1,-10,0,10),
+              c(1,-100,0,100),
+              c(10,0,-10,1),
+              c(100,0,-100,1),
+              ##
+              c(1,-10,-1,10),
+              c(1,-100,-1,100),
+              c(10,-1,-10,1),
+              c(100,-1,-100,1)
+              )
 ##
-umlist <- lapply(ulist, function(x){
+umlist <- c(lapply(ulist, function(x){ matrix(x,2,2, byrow=T) } ),
+    lapply(ulist, function(x){
         x <- x-min(x)
         x <- x/max(x)
         matrix(x,2,2, byrow=T)
     }
-)
+) )
 ##
-ulist2 <- unlist(ulist)
-dim(ulist2) <- c(4,length(ulist))
+ulist2 <- unlist(umlist)
+dim(ulist2) <- c(4,2*length(ulist))
 ulist2 <- t(ulist2)
 
 results1 <- t(sapply(umlist, function(um){
     comparescores(trueclasses=classesb, um=um, outputs=t(outputs2b), probs=probs1b, bayesprobs=bayesprobs1)/length(classesb)}))
 ##
 rresults <- round(results1,3)
+##
+options(width=160)
 cbind(ulist2, rresults,
-      'rel_diff_std'=round(100*apply(rresults,1,function(x){diff(x[c(1,3)])/abs(x[1])}),1),
-      'rel_diff_discr'=round(100*apply(rresults,1,function(x){diff(x[c(2,3)])/abs(x[2])}),1))
+      'd_std'=round(apply(rresults,1,function(x){diff(x[c(1,3)])}),4),
+      'd_mix'=round(apply(rresults,1,function(x){diff(x[c(2,3)])}),4),
+      'rd%_std'=round(100*apply(rresults,1,function(x){diff(x[c(1,3)])/abs(x[1])}),2),
+      'rd%_mix'=round(100*apply(rresults,1,function(x){diff(x[c(2,3)])/abs(x[2])}),2))
+
+#### nskip = 4
+##                                         standard  discr  gener  d_std d_mix rd%_std rd%_mix
+##  [1,]   1.000    0.000    0.000   1.000    0.894  0.847  0.930  0.036 0.083    4.03    9.80
+##  [2,]   1.000    0.000  -10.000  10.000    4.990  6.466  6.791  1.801 0.325   36.09    5.03
+##  [3,]   1.000    0.000 -100.000 100.000   46.953 66.456 66.667 19.714 0.211   41.99    0.32
+##  [4,]  10.000  -10.000    0.000   1.000    3.777  3.333  3.765 -0.012 0.432   -0.32   12.96
+##  [5,] 100.000 -100.000    0.000   1.000   32.673 33.333 33.333  0.660 0.000    2.02    0.00
+##  [6,]   1.000   -1.000  -10.000  10.000    4.984  6.125  6.689  1.705 0.564   34.21    9.21
+##  [7,]   1.000   -1.000 -100.000 100.000   46.947 65.180 66.333 19.386 1.153   41.29    1.77
+##  [8,]  10.000  -10.000   -1.000   1.000    3.677  2.667  3.714  0.037 1.047    1.01   39.26
+##  [9,] 100.000 -100.000   -1.000   1.000   32.573 32.667 32.757  0.184 0.090    0.56    0.28
+## [10,]   1.000    0.000    0.000   1.000    0.894  0.847  0.930  0.036 0.083    4.03    9.80
+## [11,]   0.550    0.500    0.000   1.000    0.749  0.823  0.840  0.091 0.017   12.15    2.07
+## [12,]   0.505    0.500    0.000   1.000    0.735  0.832  0.833  0.098 0.001   13.33    0.12
+## [13,]   1.000    0.000    0.500   0.550    0.689  0.667  0.688 -0.001 0.021   -0.15    3.15
+## [14,]   1.000    0.000    0.500   0.505    0.663  0.667  0.667  0.004 0.000    0.60    0.00
+## [15,]   0.550    0.450    0.000   1.000    0.749  0.806  0.834  0.085 0.028   11.35    3.47
+## [16,]   0.505    0.495    0.000   1.000    0.735  0.826  0.832  0.097 0.006   13.20    0.73
+## [17,]   1.000    0.000    0.450   0.550    0.684  0.633  0.686  0.002 0.053    0.29    8.37
+## [18,]   1.000    0.000    0.495   0.505    0.663  0.663  0.664  0.001 0.001    0.15    0.15
 
 #### skip=8
 ## > +                        standard discr gener rel_diff_std rel_diff_discr
@@ -572,36 +611,20 @@ cbind(ulist2, rresults,
 ## [4,]  10    0  -10   1    0.691 0.667 0.690         -0.1            3.4
 ## [5,] 100    0 -100   1    0.665 0.667 0.667          0.3            0.0
 
+t(cbind(ulist2, signif(rresults[,c(1,2,3)],3),
+        round(100*apply(rresults,1,function(x){diff(x[c(1,3)])/abs(x[1])}),1),
+        round(100*apply(rresults,1,function(x){diff(x[c(2,3)])/abs(x[2])}),1)
+        ) )[,1:5]
 
-## Calculation of utility yields on demonstration set
-## for uniform distribution of utility matrices
+#### nskip = 4
+## standard 0.894   4.99   47.0   3.78   32.7
+## discr    0.847   6.47   66.5   3.33   33.3
+## gener    0.930   6.79   66.7   3.76   33.3
+##          4.000  36.10   42.0  -0.30    2.0
+##          9.800   5.00    0.3  13.00    0.0
 
-## id <- diag(2)
-## utp <- matrix(c(1,0,0,0),2,2)
-## utn <- matrix(c(0,0,0,1),2,2)
-## ufp <- matrix(c(0,0,1,0),2,2)
-## ufn <- matrix(c(0,1,0,0),2,2)
-## xy2um <- function(ab,ab2=NULL,norm=TRUE){
-##     if(length(ab)==1){ab <- c(ab,ab2)}
-##         um <- id + (ab[1]<0)*ab[1]*utn - (ab[1]>0)*ab[1]*utp +
-##             (ab[2]>0)*ab[2]*ufp - (ab[2]<0)*ab[2]*ufn
-##     if(norm){
-##         um <- um-min(um)
-##         um <- um/max(um)
-##     }
-##     um
-## }
 
-## nn <- 10^4
-## nn2 <- nn#3*10^3
-## ##
-## lxy <- runif(2*round(nn*6/3),-1,1)
-## ##
-## dim(lxy) <- c(round(nn*6/3),2)
-## lxy <- lxy[lxy[,2]<lxy[,1]+1 & lxy[,2]>lxy[,1]-1 & abs(lxy[,1])<=1 & abs(lxy[,2])<=1,][1:nn,]
-## ##
-## lut <- apply(lxy,1,xy2um)
-## dim(lut) <- c(2,2,nn)
+
 
 cmstandard <- buildcm(classesb, t(outputs2b))
 ##
@@ -621,13 +644,13 @@ allscoresb <- apply(lut, 3, function(um){
 rownames(allscoresb) <- c('standard', 'discr', 'gener')
 
 rowMeans(allscoresb)
+#### nskip = 4
+##  standard     discr     gener 
+## 0.7189775 0.7127219 0.7481832 
+
 #### skip=8
 ##  standard     discr     gener 
 ## 0.7141566 0.7079744 0.7451940 
-
-#### skip=4
-##  standard     discr     gener 
-## 0.7190232 0.7112459 0.7479897 
 
 pdff('../CNN_transducer_gains_generx', asp=1)
 ## tplot(x=allscores[1,1:nn2], y=allscores[2,1:nn2]-allscores[1,1:nn2], type='p', pch=16, cex=1, alpha=0.5)
@@ -670,47 +693,28 @@ abline(0,1, col=paste0(palette()[2],'88'), lwd=2, lty=1)
 dev.off()
 
 
-## pdff('CNN_transducergen_gains_relative')
-## ## tplot(x=allscores[1,1:nn2], y=allscores[2,1:nn2]-allscores[1,1:nn2], type='p', pch=16, cex=1, alpha=0.5)
-## tplot(x=allscores[1,1:nn2], y=100*(allscores[3,1:nn2]-allscores[1,1:nn2])/allscores[1,1:nn2], type='p', pch=16, cex=1, alpha=0.5,
-##       xlab='utility yield from standard classification',
-##       ylab='increase in utility yield/%')
-## tplot(x=allscores[2,1:nn2], y=100*(allscores[3,1:nn2]-allscores[2,1:nn2])/allscores[2,1:nn2], type='p', pch=16, cex=1, alpha=0.5, col=2,
-##       xlab='utility yield from mixed method',
-##       ylab='increase in utility yield/%')
-## dev.off()
 
-## pdff('CNN_transducergen_gains', asp=1)
-## ## tplot(x=allscores[1,1:nn2], y=allscores[2,1:nn2]-allscores[1,1:nn2], type='p', pch=16, cex=1, alpha=0.5)
-## tplot(x=log10(allscores[1,1:nn2]), y=log10(allscores[3,1:nn2]), type='p', pch=16, cex=0.5, alpha=0.25,
-##       xticks=log10(sort(c(1:9)*rep(10^c(-1,0),each=9))),
-##       xlabels=sort(c(1:9)*rep(10^c(-1,0),each=9)),
-##       yticks=log10(sort(c(1:9)*rep(10^c(-1,0),each=9))),
-##       ylabels=sort(c(1:9)*rep(10^c(-1,0),each=9)),
-##       xlab='utility yield with standard method',
-##       ylab='utility yield with transducer & utility maximization')
-## abline(0,1, col=paste0(palette()[2],'88'), lwd=2, lty=1)
-## ## tplot(x=log10(allscores[2,1:nn2]), y=log10(allscores[3,1:nn2]), type='p', pch=16, cex=0.5, alpha=0.25, col=2,
-## ##       xticks=log10(sort(c(1:9)*rep(10^c(-1,0),each=9))),
-## ##       xlabels=sort(c(1:9)*rep(10^c(-1,0),each=9)),
-## ##       yticks=log10(sort(c(1:9)*rep(10^c(-1,0),each=9))),
-## ##       ylabels=sort(c(1:9)*rep(10^c(-1,0),each=9)),
-## ##       xlab='utility yield from mixed method',
-## ##       ylab='utility yield from transducer & utility maximization')
-## ## abline(0,1, col=paste0(palette()[4],'88'), lwd=2, lty=1)
-## dev.off()
+
+#########################################################
+## combining evidence from both algorithms
+#########################################################
+
+outsRF <- fread('CNNplus_modCHEMBL205_predictions_CNN_test2_demonstration.csv', sep=',')
+outsCNN <- fread('RFplus_tmodCHEMBL205_predictions_RF_test2_demonstration.csv', sep=',')
+
+fwrite(cbind(outsRF, outsCNN[, -'class']),
+       paste0('RF_CNN_probs'), sep=',')
+
+
+
+
+
+
 
 
 #########################################################
 ## 
 #########################################################
-
-
-
-
-
-
-
 
 
 
