@@ -1,7 +1,7 @@
 \pdfoutput=1
 %% Author: PGL  Porta Mana
 %% Created: 2022-03-04T07:39:34+0200
-%% Last-Updated: 2022-05-27T07:14:46+0200
+%% Last-Updated: 2022-05-27T07:15:39+0200
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Decision theory for machine-learning classifiers
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -745,7 +745,7 @@ Open Science Framework \doi{10.31219/osf.io/#1}%
 \begin{abstract}\labelsep 0pt%
   \noindent 
   % purpose, method, scope, results, conclusion
-  How can one meaningfully measure something, if the meter does not conform to any standard and its scale expands or shrinks depending on the measured object? In the present work it is argued that current evaluation practices for \ml\ classifiers are affected by this kind of problem, leading to negative consequences that appear when classifiers are put to real use and that could have been avoided. It is proposed that evaluation be grounded on Decision Theory, and the consequences of such foundation are explored. The main result is that every evaluation metrics must be a linear combination of confusion-matrix elements, with coefficients -- \enquote{utilities} -- that depend on the specific classification problem. For binary classification, the space of such possible metrics is effectively two-dimensional. It is shown that popular metrics such as precision, balanced accuracy, Matthews Correlation Coefficient, Fowlkes-Mallows index, $F_{1}$-measure, and Area Under the Curve are never optimal: they always give rise to an avoidable fraction of incorrect evaluations. This fraction is larger than would be caused by the use of a decision-theoretic metric with moderately wrong coefficients.
+  How can one meaningfully measure something, if the meter does not conform to any standard and its scale expands or shrinks depending on the measured object? In the present work it is argued that current evaluation practices for \ml\ classifiers are affected by this kind of problem, leading to negative consequences that appear when classifiers are put to real use and that could have been avoided. It is proposed that evaluation be grounded on Decision Theory, and the consequences of such foundation are explored. The main result is that every evaluation metric must be a linear combination of confusion-matrix elements, with coefficients -- \enquote{utilities} -- that depend on the specific classification problem. For binary classification, the space of such possible metrics is effectively two-dimensional. It is shown that popular metrics such as precision, balanced accuracy, Matthews Correlation Coefficient, Fowlkes-Mallows index, $F_{1}$-measure, and Area Under the Curve are never optimal: they always give rise to an avoidable fraction of incorrect evaluations. This fraction is larger than would be caused by the use of a decision-theoretic metric with moderately wrong coefficients.
 
 
 %   Machine Learning algorithms nowadays rely on a set of popular, well-known evaluation metrics, then trying to get the highest 'score' possible. Is it only the highest 'score' that matters? How can we evaluate the evaluation metrics?
