@@ -1,7 +1,7 @@
 \pdfoutput=1
 %% Author: PGL  Porta Mana
 %% Created: 2022-03-04T07:39:34+0200
-%% Last-Updated: 2022-05-27T07:37:19+0200
+%% Last-Updated: 2022-05-27T08:42:42+0200
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Decision theory for machine-learning classifiers
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -1402,7 +1402,7 @@ The plots are displayed in order (left-right, top-bottom) of decreasing percenta
 
 The dependence of the fraction of incorrect rankings on the standard deviation of the error affecting the utilities is shown in the plots of \fig~\ref{fig:percentage_vs_error}, for the case of uniform distribution (top plot) and gaussian distribution (bottom plot) of true utility matrices. It is approximately linear. The plots also report the fractions of incorrect rankings for the other metrics. We see that evaluations based on a utility matrix affected by errors with standard deviation up to $0.15$ or even $0.25$ are still more reliable than evaluations based on the other reported metrics. This is a remarkable fact, considering that errors with such standard deviations are quite large, as was shown in \fig~\ref{fig:error_distr_um}.
 
-A utility error with standard deviations around $0.25$ covers the whole space of utility matrices almost uniformly (cf \fig~\ref{fig:error_distr_um}). Such a large error means that we are almost completely uncertain about the utilities to start with. It therefore makes sense that the accuracy, equivalent to using the identity utility matrix, becomes a more reliable metric when this error level is reached: as we saw in \sect~\ref{sec:unknown_utilities}, the identity utility matrix is the natural one to use in a state of complete uncertainty about the utilities.
+A utility error with standard deviations around $0.25$ covers the whole space of utility matrices almost uniformly (cf \fig~\ref{fig:error_distr_um}). Such a large error means that we are almost completely uncertain about the utilities to start with. It therefore makes sense that the accuracy, equivalent to using the identity utility matrix, becomes a more reliable metric when this error level is reached: as we saw in \sect~\ref{sec:unknown_utilities}, the identity utility matrix is the natural one to use in a state of complete uncertainty about the utilities. This result is just another example of the internal consistency of Decision Theory.
 
 
 \section{What about the area under the curve of the receiver operating characteristic?}
