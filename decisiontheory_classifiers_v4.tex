@@ -1,7 +1,7 @@
 \pdfoutput=1
 %% Author: PGL  Porta Mana
 %% Created: 2022-03-04T07:39:34+0200
-%% Last-Updated: 2022-05-27T08:42:42+0200
+%% Last-Updated: 2022-05-27T10:02:20+0200
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Decision theory for machine-learning classifiers
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -27,7 +27,7 @@ british%
 \newcommand*{\headtitle}{Does the evaluation stand up to evaluation?}
 \newcommand*{\pdfauthor}{K. Dyrland, A. S. Lundervold, P.G.L.  Porta Mana}
 \newcommand*{\headauthor}{Dyrland, Lundervold, Porta Mana}
-\newcommand*{\reporthead}{\ifarxiv\else Open Science Framework \href{https://doi.org/10.31219/osf.io/***}{\textsc{doi}:10.31219/osf.io/***}\fi}% Report number
+\newcommand*{\reporthead}{\ifarxiv\else Open Science Framework \href{https://doi.org/10.31219/osf.io/7rz8t}{\textsc{doi}:10.31219/osf.io/7rz8t}\fi}% Report number
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%% Calls to packages (uncomment as needed)
@@ -745,7 +745,7 @@ Open Science Framework \doi{10.31219/osf.io/#1}%
 \begin{abstract}\labelsep 0pt%
   \noindent 
   % purpose, method, scope, results, conclusion
-  How can one meaningfully measure something, if the meter does not conform to any standard and its scale expands or shrinks depending on the measured object? In the present work it is argued that current evaluation practices for \ml\ classifiers are affected by this kind of problem, leading to negative consequences that appear when classifiers are put to real use and that could have been avoided. It is proposed that evaluation be grounded on Decision Theory, and the consequences of such foundation are explored. The main result is that every evaluation metric must be a linear combination of confusion-matrix elements, with coefficients -- \enquote{utilities} -- that depend on the specific classification problem. For binary classification, the space of such possible metrics is effectively two-dimensional. It is shown that popular metrics such as precision, balanced accuracy, Matthews Correlation Coefficient, Fowlkes-Mallows index, $F_{1}$-measure, and Area Under the Curve are never optimal: they always give rise to an avoidable fraction of incorrect evaluations. This fraction is larger than would be caused by the use of a decision-theoretic metric with moderately wrong coefficients.
+  How can one meaningfully make a measurement, if the meter does not conform to any standard and its scale expands or shrinks depending on what is measured? In the present work it is argued that current evaluation practices for \ml\ classifiers are affected by this kind of problem, leading to negative consequences that appear when classifiers are put to real use and that could have been avoided. It is proposed that evaluation be grounded on Decision Theory, and the consequences of such foundation are explored. The main result is that every evaluation metric must be a linear combination of confusion-matrix elements, with coefficients -- \enquote{utilities} -- that depend on the specific classification problem. For binary classification, the space of such possible metrics is effectively two-dimensional. It is shown that popular metrics such as precision, balanced accuracy, Matthews Correlation Coefficient, Fowlkes-Mallows index, $F_{1}$-measure, and Area Under the Curve are never optimal: they always give rise to an avoidable fraction of incorrect evaluations. This fraction is larger than would be caused by the use of a decision-theoretic metric with moderately wrong coefficients.
 
 
 %   Machine Learning algorithms nowadays rely on a set of popular, well-known evaluation metrics, then trying to get the highest 'score' possible. Is it only the highest 'score' that matters? How can we evaluate the evaluation metrics?
@@ -1304,7 +1304,7 @@ Dealing with unknown utilities is straightforward. Suppose we are uncertain whet
   \end{equation}
   or $\aveu \defd \int q(a)\, \uncu{a}\, \di a$ in the continuous case}.
 
-We only give a sketch of the proof of this intuitive result. If we are uncertain about the utility matrix, then we have a double decision problem: choosing the optimal utility and choosing the optimal class. If the true utility matrix is, for instance, $\uncu{2} \equiv \bigl(U^{(2)}_{ij}\bigr)$, and the true class is class~$0$, then choosing class~$1$ would yield a utility $U^{(2)}_{10}$, choosing class~$0$ would yield a utility $U^{(2)}_{00}$, and so on. Our double decision problem is thus characterized by a rectangular utility matrix that is the row-concatenation of the utility matrices $\uncu{a}$. We make the realistic judgement that the probabilities $q_{a}$ of the utility matrices and the probabilities $p_{j}$ of the classes are independent, so that $q_{a}\cdot p_{j}$ is the probability that the true utility matrix is $\uncu{a}$ and the true class is $j$. The principle of maximum expected utility, \sect~\ref{sec:dt_utilities} \eqn~\eqref{eq:max_expe_utility}, then leads to the maximization of the expected utilities
+We only give a sketch of the proof of this intuitive result  \autocites[see \eg][esp. \chap~3]{raiffa1968_r1970}. If we are uncertain about the utility matrix, then we have a double decision problem: choosing the optimal utility and choosing the optimal class. If the true utility matrix is, for instance, $\uncu{2} \equiv \bigl(U^{(2)}_{ij}\bigr)$, and the true class is class~$0$, then choosing class~$1$ would yield a utility $U^{(2)}_{10}$, choosing class~$0$ would yield a utility $U^{(2)}_{00}$, and so on. Our double decision problem is thus characterized by a rectangular utility matrix that is the row-concatenation of the utility matrices $\uncu{a}$. We make the realistic judgement that the probabilities $q_{a}$ of the utility matrices and the probabilities $p_{j}$ of the classes are independent, so that $q_{a}\cdot p_{j}$ is the probability that the true utility matrix is $\uncu{a}$ and the true class is $j$. The principle of maximum expected utility, \sect~\ref{sec:dt_utilities} \eqn~\eqref{eq:max_expe_utility}, then leads to the maximization of the expected utilities
 \begin{equation}
   \label{eq:average_expe_utility}
   \eu_{i} \defd \sum_{j,a} U^{(a)}_{ij}\ q_{a}\cdot p_{j}

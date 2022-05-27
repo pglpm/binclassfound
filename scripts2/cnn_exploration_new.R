@@ -1,6 +1,6 @@
 ## Author: PGL  Porta Mana
 ## Created: 2022-03-17T14:21:57+0100
-## Last-Updated: 2022-05-26T23:57:03+0200
+## Last-Updated: 2022-05-27T11:09:54+0200
 ################
 ## Exploration of several issues for binary classifiers
 ################
@@ -42,6 +42,8 @@ if(file.exists("/cluster/home/pglpm/R")){
 ## pngf <- function(filename,res=300){png(file=paste0(filename,'.png'),height=11.7*1.2,width=16.5,units='in',res=res,pointsize=36)} # to output in pdf format
 ## library('nimble')
 library('plotly')
+signif2 <- function(x, s){signif(x*2L, s)/2L}
+round2 <- function(x, s){round(x*2L, s)/2L}
 #### End custom setup ####
 
 set.seed(707)
@@ -90,7 +92,7 @@ dirname <- '_cnn_new-V3-D3589-K64-I2048'
 
 npar <- 16
 ntotal <- 1024*4
-nskip <- 8
+nskip <- 4
 parmlist <- mcsamples2parmlist(
     foreach(i=1:npar, .combine=rbind)%dopar%{
         temp <- readRDS(paste0(dirname, '/_mcsamples-R_cnn_new_',i,'_1-V3-D3589-K64-I2048.rds'))
@@ -161,6 +163,11 @@ legend('topleft', c('class 1', 'class 0'), lty=c(1,2), col=c(1,2), lwd=3, bty='n
 ## polygon(x=c(xgrid,rev(xgrid)), y=c(1-q2grid[diagon],rev(1-q1grid[diagon])), col=paste0(palette()[2],'40'), border=NA)
 dev.off()
 
+q1grid <- apply(opgrid,1,function(x){quantile(x, 1/8)})
+##dim(q1grid) <- rep(length(cseq), 2)
+q2grid <- apply(opgrid,1,function(x){quantile(x, 7/8)})
+##dim(q2grid) <- rep(length(cseq), 2)
+
 diagon <- which(vpoints[,1]==-vpoints[,2])
 ## softm <- apply(vpoints[diagon,], 1, function(x){exp(x[2])/sum(exp(x))})
 xgrid <- vpoints[diagon,2]
@@ -176,14 +183,8 @@ polygon(x=c(xgrid,rev(xgrid)), y=c(q1grid[diagon],rev(q2grid[diagon])), col=past
 ## polygon(x=c(xgrid,rev(xgrid)), y=c(1-q2grid[diagon],rev(1-q1grid[diagon])), col=paste0(palette()[2],'40'), border=NA)
 dev.off()
 
-tplot(x=xgrid, y=q1grid[diagon])
-tplot(x=xgrid, y=q2grid[diagon],add=T)
 
 
-q1grid <- apply(opgrid,1,function(x){quantile(x, 1/8)})
-##dim(q1grid) <- rep(length(cseq), 2)
-q2grid <- apply(opgrid,1,function(x){quantile(x, 7/8)})
-##dim(q2grid) <- rep(length(cseq), 2)
 
 
 
@@ -248,7 +249,7 @@ fwrite(data.table(w=c(shortparmlist$q),
                sigma0=1/sqrt(c(shortparmlist$tauR[,'output0',])),
                mu1=c(shortparmlist$meanR[,'output1',]),
                sigma1=1/sqrt(c(shortparmlist$tauR[,'output1',]))
-               ), '_CNN_transducer_parameters.csv', sep=',')
+               ), pasteo0('_CNN_transducer_parameters_skip',nskip,'.csv'), sep=',')
 
 
 
@@ -296,47 +297,79 @@ comparescores <- function(trueclasses, um, outputs, probs, softmaxs){
 }
 
 ulist <- list(c(1,0,0,1),
-                    c(1,-10,0,10),
-                    c(1,-100,0,100),
-                    c(10,0,-10,1),
-                    c(100,0,-100,1))
+              c(1,-10,-1,10),
+              c(1,-100,-1,100),
+              c(10,-1,-10,1),
+              c(100,-1,-100,1),
+              ##
+              c(1,-10,0,10),
+              c(1,-100,0,100),
+              c(10,0,-10,1),
+              c(100,0,-100,1)
+              )
 ##
-umlist <- lapply(ulist, function(x){
+umlist <- c(lapply(ulist, function(x){ matrix(x,2,2, byrow=T) } ),
+    lapply(ulist, function(x){
         x <- x-min(x)
         x <- x/max(x)
         matrix(x,2,2, byrow=T)
     }
-)
+) )
 ##
-ulist2 <- unlist(ulist)
-dim(ulist2) <- c(4,length(ulist))
+ulist2 <- unlist(umlist)
+dim(ulist2) <- c(4,2*length(ulist))
 ulist2 <- t(ulist2)
 
 results1 <- t(sapply(umlist, function(um){
     comparescores(trueclasses=classes, um=um, outputs=t(outputs2), probs=probs1, softmaxs=softmax2)/length(classes)}))
 ##
 rresults <- round(results1,3)
+##
+options(width=160)
 cbind(ulist2, rresults,
-      'rel_diff_std'=round(100*apply(rresults,1,function(x){diff(x[c(1,3)])/abs(x[1])}),1),
-      'rel_diff_mix'=round(100*apply(rresults,1,function(x){diff(x[c(2,3)])/abs(x[2])}),1))
+      'd_std'=round(apply(rresults,1,function(x){diff(x[c(1,3)])}),4),
+      'd_mix'=round(apply(rresults,1,function(x){diff(x[c(2,3)])}),4),
+      'rd%_std'=round(100*apply(rresults,1,function(x){diff(x[c(1,3)])/abs(x[1])}),2),
+      'rd%_mix'=round(100*apply(rresults,1,function(x){diff(x[c(2,3)])/abs(x[2])}),2))
+
+#### nskip = 4:
+##                                         standard  mixed transducer d_std  d_mix rd%_std rd%_mix
+##  [1,]   1.000    0.000    0.000   1.000    0.959  0.959      0.961 0.002  0.002    0.21    0.21
+##  [2,]   1.000   -1.000  -10.000  10.000    1.491  1.560      1.547 0.056 -0.013    3.76   -0.83
+##  [3,]   1.000   -1.000 -100.000 100.000    7.210  9.255      9.280 2.070  0.025   28.71    0.27
+##  [4,]  10.000  -10.000   -1.000   1.000    8.614  8.827      9.001 0.387  0.174    4.49    1.97
+##  [5,] 100.000 -100.000   -1.000   1.000   85.571 89.509     90.823 5.252  1.314    6.14    1.47
+##
+##  [6,]   1.000    0.000  -10.000  10.000    1.518  1.628      1.646 0.128  0.018    8.43    1.11
+##  [7,]   1.000    0.000 -100.000 100.000    7.237  9.526      9.573 2.336  0.047   32.28    0.49
+##  [8,]  10.000  -10.000    0.000   1.000    8.628  8.914      9.091 0.463  0.177    5.37    1.99
+##  [9,] 100.000 -100.000    0.000   1.000   85.584 89.941     90.914 5.330  0.973    6.23    1.08
+####
+## [10,]   1.000    0.000    0.000   1.000    0.959  0.959      0.961 0.002  0.002    0.21    0.21
+## [11,]   0.550    0.450    0.000   1.000    0.575  0.578      0.577 0.002 -0.001    0.35   -0.17
+## [12,]   0.505    0.495    0.000   1.000    0.536  0.546      0.546 0.010  0.000    1.87    0.00
+## [13,]   1.000    0.000    0.450   0.550    0.931  0.941      0.950 0.019  0.009    2.04    0.96
+## [14,]   1.000    0.000    0.495   0.505    0.928  0.948      0.954 0.026  0.006    2.80    0.63
+##
+## [15,]   0.550    0.500    0.000   1.000    0.576  0.581      0.582 0.006  0.001    1.04    0.17
+## [16,]   0.505    0.500    0.000   1.000    0.536  0.548      0.548 0.012  0.000    2.24    0.00
+## [17,]   1.000    0.000    0.500   0.550    0.931  0.946      0.955 0.024  0.009    2.58    0.95
+## [18,]   1.000    0.000    0.500   0.505    0.928  0.950      0.955 0.027  0.005    2.91    0.53
 
 
-##                        standard mixed transducer rel_diff_std rel_diff_mix
-## [1,]   1    0    0   1    0.959 0.959      0.961          0.2          0.2
-## [2,]   1  -10    0  10    0.576 0.581      0.582          1.0          0.2
-## [3,]   1 -100    0 100    0.536 0.548      0.548          2.2          0.0
-## [4,]  10    0  -10   1    0.931 0.946      0.955          2.6          1.0
-## [5,] 100    0 -100   1    0.928 0.950      0.955          2.9          0.5
 
-#### with original utility values
-##                        standard  mixed transducer rel_diff_std rel_diff_mix
-## [1,]   1    0    0   1    0.959  0.959      0.961          0.2          0.2
-## [2,]   1  -10    0  10    1.518  1.628      1.646          8.4          1.1
-## [3,]   1 -100    0 100    7.237  9.526      9.573         32.3          0.5
-## [4,]  10    0  -10   1    8.628  8.914      9.091          5.4          2.0
-## [5,] 100    0 -100   1   85.584 89.941     90.914          6.2          1.1
-
-
+#### nskip = 8:
+##                                     standard  mixed transducer rd%_std rd%_mix
+##  [1,]   1.000    0.0    0.0   1.000    0.959  0.959      0.961    0.21    0.21
+##  [2,]   1.000    0.0  -10.0  10.000    1.518  1.628      1.645    8.37    1.04
+##  [3,]   1.000    0.0 -100.0 100.000    7.237  9.526      9.572   32.26    0.48
+##  [4,]  10.000  -10.0    0.0   1.000    8.628  8.914      9.091    5.37    1.99
+##  [5,] 100.000 -100.0    0.0   1.000   85.584 89.941     90.914    6.23    1.08
+##  [6,]   1.000    0.0    0.0   1.000    0.959  0.959      0.961    0.21    0.21
+##  [7,]   0.550    0.5    0.0   1.000    0.576  0.581      0.582    1.04    0.17
+##  [8,]   0.505    0.5    0.0   1.000    0.536  0.548      0.548    2.24    0.00
+##  [9,]   1.000    0.0    0.5   0.550    0.931  0.946      0.955    2.58    0.95
+## [10,]   1.000    0.0    0.5   0.505    0.928  0.950      0.955    2.91    0.53
 
 
 
@@ -359,6 +392,7 @@ xy2um <- function(ab,ab2=NULL,norm=TRUE){
     um
 }
 
+set.seed(111)
 nn <- 10^4
 nn2 <- nn#3*10^3
 ##
@@ -388,12 +422,14 @@ allscores <- apply(lut, 3, function(um){
 rownames(allscores) <- c('standard', 'mixed', 'transducer')
 
 rowMeans(allscores)
-#### skip=4
-##  standard      mixed transducer 
-## 0.7561422  0.7590596  0.7605033 
-#### skip=8
+#### nskip = 4
 ##   standard      mixed transducer 
-##  0.7545872  0.7573737  0.7587412 
+##  0.7527198  0.7555375  0.7569022 
+#### nskip = 8
+##   standard      mixed transducer 
+##  0.7527198  0.7555375  0.7569008 
+
+
 
 pdff('../CNN_transducer_gainsx', asp=1)
 ## tplot(x=allscores[1,1:nn2], y=allscores[2,1:nn2]-allscores[1,1:nn2], type='p', pch=16, cex=1, alpha=0.5)

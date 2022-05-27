@@ -1,6 +1,6 @@
 ## Author: PGL  Porta Mana
 ## Created: 2022-03-17T14:21:57+0100
-## Last-Updated: 2022-05-26T12:45:38+0200
+## Last-Updated: 2022-05-27T12:01:24+0200
 ################
 ## Exploration of several issues for binary classifiers
 ################
@@ -41,6 +41,8 @@ if(file.exists("/cluster/home/pglpm/R")){
 ## pdff <- function(filename){pdf(file=paste0(filename,'.pdf'),paper='a4r',height=11.7,width=16.5)} # to output in pdf format
 ## pngf <- function(filename,res=300){png(file=paste0(filename,'.png'),height=11.7*1.2,width=16.5,units='in',res=res,pointsize=36)} # to output in pdf format
 ## library('nimble')
+signif2 <- function(x, s){signif(x*2L, s)/2L}
+round2 <- function(x, s){round(x*2L, s)/2L}
 #### End custom setup ####
 
 #########################################################
@@ -236,53 +238,66 @@ comparescores <- function(trueclasses, um, outputs, probs){
 }
 
 ulist <- list(c(1,0,0,1),
-                    c(1,-10,0,10),
-                    c(1,-100,0,100),
-                    c(10,0,-10,1),
-                    c(100,0,-100,1))
+              c(1,-10,0,10),
+              c(1,-100,0,100),
+              c(10,0,-10,1),
+              c(100,0,-100,1),
+              ##
+              c(1,-10,-1,10),
+              c(1,-100,-1,100),
+              c(10,-1,-10,1),
+              c(100,-1,-100,1)
+              )
 ##
-umlist <- lapply(ulist, function(x){
+umlist <- c(lapply(ulist, function(x){ matrix(x,2,2, byrow=T) } ),
+    lapply(ulist, function(x){
         x <- x-min(x)
         x <- x/max(x)
         matrix(x,2,2, byrow=T)
     }
-)
+) )
 ##
-ulist2 <- unlist(ulist)
-dim(ulist2) <- c(4,length(ulist))
+ulist2 <- unlist(umlist)
+dim(ulist2) <- c(4,2*length(ulist))
 ulist2 <- t(ulist2)
 
-## using Luca's probabilities
 results1 <- t(sapply(umlist, function(um){
     comparescores(trueclasses=classes, um=um, outputs=outputs1, probs=probs1)/length(classes)}))
 ##
 rresults <- round(results1,3)
+##
+options(width=160)
 cbind(ulist2, rresults,
-      'rel_diff_std'=round(100*apply(rresults,1,function(x){diff(x[c(1,3)])/abs(x[1])}),1),
-      'rel_diff_mix'=round(100*apply(rresults,1,function(x){diff(x[c(2,3)])/abs(x[2])}),1))
+      'd_std'=round(apply(rresults,1,function(x){diff(x[c(1,3)])}),4),
+      'd_mix'=round(apply(rresults,1,function(x){diff(x[c(2,3)])}),4),
+      'rd%_std'=round(100*apply(rresults,1,function(x){diff(x[c(1,3)])/abs(x[1])}),2),
+      'rd%_mix'=round(100*apply(rresults,1,function(x){diff(x[c(2,3)])/abs(x[2])}),2))
 
-##                        standard mixed transducer rel_diff_std rel_diff_mix
-## [1,]   1    0    0   1    0.968 0.968      0.974          0.6          0.6
-## [2,]   1  -10    0  10    0.568 0.578      0.586          3.2          1.4
-## [3,]   1 -100    0 100    0.528 0.546      0.548          3.8          0.4
-## [4,]  10    0  -10   1    0.948 0.954      0.955          0.7          0.1
-## [5,] 100    0 -100   1    0.945 0.955      0.955          1.1          0.0
+##                                         standard  mixed transducer d_std  d_mix rd%_std rd%_mix
+##  [1,]   1.000    0.000    0.000   1.000    0.968  0.968      0.974 0.006  0.006    0.62    0.62
+##  [2,]   1.000    0.000  -10.000  10.000    1.364  1.555      1.719 0.355  0.164   26.03   10.55
+##  [3,]   1.000    0.000 -100.000 100.000    5.553  9.132      9.617 4.064  0.485   73.19    5.31
+##  [4,]  10.000  -10.000    0.000   1.000    8.954  9.083      9.091 0.137  0.008    1.53    0.09
+##  [5,] 100.000 -100.000    0.000   1.000   88.920 90.915     90.914 1.994 -0.001    2.24    0.00
+##
+##  [6,]   1.000   -1.000  -10.000  10.000    1.354  1.603      1.681 0.327  0.078   24.15    4.87
+##  [7,]   1.000   -1.000 -100.000 100.000    5.543  8.433      9.509 3.966  1.076   71.55   12.76
+##  [8,]  10.000  -10.000   -1.000   1.000    8.932  8.996      9.001 0.069  0.005    0.77    0.06
+##  [9,] 100.000 -100.000   -1.000   1.000   88.898 90.824     90.823 1.925 -0.001    2.17    0.00
+####
+## [10,]   1.000    0.000    0.000   1.000    0.968  0.968      0.974 0.006  0.006    0.62    0.62
+## [11,]   0.550    0.500    0.000   1.000    0.568  0.578      0.586 0.018  0.008    3.17    1.38
+## [12,]   0.505    0.500    0.000   1.000    0.528  0.546      0.548 0.020  0.002    3.79    0.37
+## [13,]   1.000    0.000    0.500   0.550    0.948  0.954      0.955 0.007  0.001    0.74    0.10
+## [14,]   1.000    0.000    0.500   0.505    0.945  0.955      0.955 0.010  0.000    1.06    0.00
+##
+## [15,]   0.550    0.450    0.000   1.000    0.568  0.580      0.584 0.016  0.004    2.82    0.69
+## [16,]   0.505    0.495    0.000   1.000    0.528  0.542      0.548 0.020  0.006    3.79    1.11
+## [17,]   1.000    0.000    0.450   0.550    0.947  0.950      0.950 0.003  0.000    0.32    0.00
+## [18,]   1.000    0.000    0.495   0.505    0.944  0.954      0.954 0.010  0.000    1.06    0.00
 
-##                          standard mixed transducer rel_diff_std rel_diff_mix
-## [1,] 1.000 0.0 0.0 1.000    0.968 0.968      0.974          0.6          0.6
-## [2,] 0.550 0.5 0.0 1.000    0.568 0.578      0.586          3.2          1.4
-## [3,] 0.505 0.5 0.0 1.000    0.528 0.546      0.548          3.8          0.4
-## [4,] 1.000 0.0 0.5 0.550    0.948 0.954      0.955          0.7          0.1
-## [5,] 1.000 0.0 0.5 0.505    0.945 0.955      0.955          1.1          0.0
 
-
-#### With original utility values
-##                        standard  mixed transducer rel_diff_std rel_diff_mix
-## [1,]   1    0    0   1    0.968  0.968      0.974          0.6          0.6
-## [2,]   1  -10    0  10    1.364  1.555      1.719         26.0         10.5
-## [3,]   1 -100    0 100    5.553  9.132      9.617         73.2          5.3
-## [4,]  10    0  -10   1    8.954  9.083      9.091          1.5          0.1
-## [5,] 100    0 -100   1   88.920 90.915     90.914          2.2          0.0
+t(cbind(ulist2, signif(rresults[,c(1,3)],3), round(100*apply(rresults,1,function(x){diff(x[c(1,3)])/abs(x[1])}),1)))[,1:5]
 
 
 

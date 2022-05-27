@@ -1,7 +1,7 @@
 \pdfoutput=1
 %% Author: PGL  Porta Mana
 %% Created: 2022-04-14T17:18:22+0200
-%% Last-Updated: 2022-05-25T19:38:51+0200
+%% Last-Updated: 2022-05-27T12:24:24+0200
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Probabilities for classifier outputs
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -1141,7 +1141,51 @@ again containing $2^{18} \approx 260\,000$ terms.
 The calculation of the parameters $\set{q_{k}, \alpha_{k}, \mu_{0k}, \sigma_{0k}, \mu_{1k}, \sigma_{1k}}$ from the calibration data took roughly 75\:min. Figure\mynotep{\ldots} shows the probability $p(c\| y_{0}, y_{1})$, for each class $c\in \set{0,1}$, conditional on the neural-network outputs $y_{0}, y_{1}$, as a function of the latter. We note that \mynotep{\ldots}.
 
 
+\begin{table}[t]
+  \centering
+  \small
+  \caption{Results for the random forest}
+  \label{tab:results_5_RF}
+  \begin{tabular}{p{0.3\linewidth}ccccc}
+    &$\begin{bsmallmatrix*}[r]1&0\\0&1\end{bsmallmatrix*}$
+                          &$\begin{bsmallmatrix*}[r]1&-10\\0&10\end{bsmallmatrix*}$
+                          &$\begin{bsmallmatrix*}[r]1&-100\\0&100\end{bsmallmatrix*}$
+                          &$\begin{bsmallmatrix*}[r]10&0\\-10&1\end{bsmallmatrix*}$
+                          &$\begin{bsmallmatrix*}[r]100&0\\-100&1\end{bsmallmatrix*}$
+    \\[2\jot]
+    \textcolor{myred}{standard method}&
+\textcolor{myred}{0.968} & \textcolor{myred}{1.36} & \textcolor{myred}{5.55} & \textcolor{myred}{8.95} & \textcolor{myred}{88.9}
+    \\[\jot]
+    \parbox{\linewidth}{\color{mypurpleblue}transducer \amp\\ utility maximization} &
+\textcolor{mypurpleblue}{0.974} & \textcolor{mypurpleblue}{1.72} & \textcolor{mypurpleblue}{9.62} & \textcolor{mypurpleblue}{9.09} & \textcolor{mypurpleblue}{90.9}
+    \\[4\jot]
+    \footnotesize relative increase&
+                       \footnotesize+0.6\% & \footnotesize+26\% & \footnotesize+73\% & \footnotesize+1.5\% & \footnotesize+2.2\%
+  \end{tabular}
 
+\bigskip
+  
+  \centering
+  \small
+  \caption{Results for the convolutional neural network}
+  \label{tab:results_5_CNN}
+  \begin{tabular}{p{0.3\linewidth}ccccc}
+    &$\begin{bsmallmatrix*}[r]1&0\\0&1\end{bsmallmatrix*}$
+                          &$\begin{bsmallmatrix*}[r]1&-10\\0&10\end{bsmallmatrix*}$
+                          &$\begin{bsmallmatrix*}[r]1&-100\\0&100\end{bsmallmatrix*}$
+                          &$\begin{bsmallmatrix*}[r]10&0\\-10&1\end{bsmallmatrix*}$
+                          &$\begin{bsmallmatrix*}[r]100&0\\-100&1\end{bsmallmatrix*}$
+    \\[2\jot]
+    \textcolor{myred}{standard method}&
+                                        \textcolor{myred}{0.959} & \textcolor{myred}{1.52} & \textcolor{myred}{7.24} & \textcolor{myred}{8.63} & \textcolor{myred}{85.6}
+    \\[\jot]
+    \parbox{\linewidth}{\color{mypurpleblue}transducer \amp\\ utility maximization} &
+                                                                                      \textcolor{mypurpleblue}{0.961} & \textcolor{mypurpleblue}{1.65} & \textcolor{mypurpleblue}{9.57} & \textcolor{mypurpleblue}{9.09} & \textcolor{mypurpleblue}{90.9}
+    \\[4\jot]
+    \footnotesize relative increase&
+                       \footnotesize+0.2\% & \footnotesize+8.4\% & \footnotesize+32\% & \footnotesize+5.4\% & \footnotesize+6.2\%
+  \end{tabular}
+\end{table}
 
 
 
