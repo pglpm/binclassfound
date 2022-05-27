@@ -1,7 +1,7 @@
 \pdfoutput=1
 %% Author: PGL  Porta Mana
 %% Created: 2022-04-14T17:18:22+0200
-%% Last-Updated: 2022-05-27T14:59:24+0200
+%% Last-Updated: 2022-05-27T16:06:44+0200
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Probabilities for classifier outputs
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -1085,13 +1085,17 @@ The matrix multiplication and subsequent selection are computationally inexpensi
 \section{Demonstration and results}
 \label{sec:demonstration}
 
-We show a concrete example of implementation of the probability transducer and its use for utility-based classification, for a binary-classification task, two \ml\ classifiers, and one data set.
+We now demonstrate the implementation of the probability transducer and its combination with utility-based decisions in a concrete example. The evaluation of the results is also made from the standpoint of decision theory, using utility-based metrics, as explained in our companion paper \autocites{dyrlandetal2022}.
 
-The classification task is a simplified version of an early-stage drug-discovery problem: to determine whether a molecule is chemically \enquote{inactive} (class~$0$) or \enquote{active} (class~$1$) towards one specific target protein.
+Before proceeding, it may not be amiss to clarify the purpose of the present demonstration. It is a consequence of the internal consistency of decision theory that the use of utility-based decisions is optimal, and therefore \emph{must} always improve on -- or at least give as good results as -- any other procedure, including the standard classification procedure used in machine learning. We intuitively expect this, since we are basing our single classification choices upon the very gains \amp\ losses that underlie our classification problem and that are used in its evaluation. The present demonstration is therefore not a proof or evidence for such improvement, but only a reassuring illustration. If the results were negative it would mean that errors were made in applying the method or in computation; so a demonstration also serves as a safety check.
+
+The example concerns a binary classification, two \ml\ classifiers, and one data set to train the classifiers and calibrate their probability transducers. The classification task is a simplified version of an early-stage drug-discovery problem: to determine whether a molecule is chemically \enquote{inactive} (class~$0$) or \enquote{active} (class~$1$) towards one specific target protein.
 
 The classifiers chosen for this task are a Random Forest and a residual Convolutional Neural Network, details of which are given in appendix\mynotep{\ldots}. The random forest takes as input a set of particular fingerprints of the molecule, and outputs a real number in the range $\clcl{0,1}$, corresponding to the fraction of decision threes which vote for class~$0$ (inactive molecule). The residual neural network takes as input an image representing the chemical and spatial structure of the molecule, and outputs two real numbers roughly corresponding to scores for the two classes.
 
 We use data from the ChEMBL database \autocites{bentoetal2014}, previously used in the literature for other studies of \ml\ applications to drug discovery \autocites{koutsoukasetal2017}. One set of data is used to train and validate the two classifiers. One set is used for the calibration of the probability transducer and evaluation of the classifiers. One further data set is here used as fictive \enquote{real data} to demonstrate the results of our procedure; we call this the \enquote{demonstration set}.
+
+
 
 It must be strongly emphasized that \emph{the additional demonstration dataset has an illustrative purpose only} for the sake of the present work. It does not test or evaluate anything. At most it can be used to check for bugs in the design or coding of the classifiers and their probability transducers. In a real design \amp\ evaluation phase, the calibration set will at the same time be the evaluation test set, as explained in \sect~\ref{sec:role_calibration_set}.
 
@@ -1188,18 +1192,24 @@ The calculation of the parameters $\set{q_{k}, \alpha_{k}, \mu_{0k}, \sigma_{0k}
 \end{table}
 
 
+
 % classes
 %    0    1 
 % 3262  326 
+%
+% baserates
+%          0          1 
+% 0.90914158 0.09085842 
+%
 %
 % classesb
 %   0   1 
 % 163 326 
 %
-%
 %  baserates
 %         0         1 
 % 0.3333333 0.6666667 
+%
 %
 % RF generative:
 % standard 0.835   3.75   34.5   3.80   33.4
