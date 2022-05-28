@@ -1,7 +1,7 @@
 \pdfoutput=1
 %% Author: PGL  Porta Mana
 %% Created: 2022-04-14T17:18:22+0200
-%% Last-Updated: 2022-05-28T16:06:23+0200
+%% Last-Updated: 2022-05-28T17:12:06+0200
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Probabilities for classifier outputs
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -951,12 +951,14 @@ where $w$ are positive and normalized functions. This means that the proxy proba
 
 Let us denote by $c$ the class value of a new unit, by $y$ the output of the classifier for the new unit, and by $D \defd \set{c_{i}, y_{i}}$ the classes and classifier outputs for the transducer-calibration data.
 
-Instead of the conditional probability~\eqref{eq:prob_output}, of the class given the output and calibration data, we focus instead on the joint probability of class and output given the data, which we write
+It is more convenient to focus on the \emph{joint} probability of class and output given the data,
 \begin{equation}
   \label{eq:prob_output}
-  \p(c, y \| D) \ .
+  \p(c, y \| D) \ ,
 \end{equation}
-This probability is calculated using standard non-parametric Bayesian methods \autocites[for introductions and reviews see \eg][]{walker2013,muelleretal2004b,hjort1996}. \enquote{Non-parametric} in this case means that we do not make any assumptions about the shape of the probability curve as a function of $c,y$ (contrast this with logistic regression, for instance), or about special independence between the variables (contrast this with naive-Bayes). The only assumption made -- and we believe it is quite realistic -- is that the curve must have some minimal degree of smoothness. This assumption allows for much leeway, however: \fig\mynotep{\ldots} for instance shows that the probability curve can still have very sharp bends, as long as they are not cusps.
+rather than on the conditional probability of the class given the output and calibration data,~\eqref{eq:prob_output}.
+
+The joint probability is calculated using standard non-parametric Bayesian methods \autocites[for introductions and reviews see \eg][]{walker2013,muelleretal2004b,hjort1996}. \enquote{Non-parametric} in this case means that we do not make any assumptions about the shape of the probability curve as a function of $c,y$ (contrast this with logistic regression, for instance), or about special independence between the variables (contrast this with naive-Bayes). The only assumption made -- and we believe it is quite realistic -- is that the curve must have some minimal degree of smoothness. This assumption allows for much leeway, however: \fig\mynotep{\ldots} for instance shows that the probability curve can still have very sharp bends, as long as they are not cusps.
 
 Non-parametric methods differ from one another in the kind of \enquote{coordinate system} they select on the infinite-dimensional space of all possible probability curves, that is, in the way they represent a general positive normalized function.
 
@@ -1041,13 +1043,14 @@ The population prevalences \autocites[\chap~3]{soxetal1988_r2013}[\sect~5.1]{hun
 
 The generative mode, generally not available for classifiers with a discriminative design, is the required way to calculate the class probabilities if the calibration set does not have the same class frequencies as the population on which the classifier will be employed -- let us call the latter the \enquote{real population}. For example, two classes may appear in a 50\%/50\% proportion in the calibration set but in a  90\%/10\% proportion in the real population. This frequency discrepancy can occur for several reasons.  Examples: samples of the real population are unavailable or too expensive to be used for calibration purposes; the class statistics of the real population has suddenly changed right after the deployment of the classifier; it is necessary to use the classifier on a slightly different population; the sampling of calibration data was poorly designed.
 
-The generative mode is also required if we want to combine the outputs $y_{1}, y_{2}, \dotsc$ of several independent classifiers. According to the probability calculus, the probability of class $c$ is in this case proportional to the probabilities of the outputs \emph{given the class}\autocites[\sect~8.9]{jaynes1994_r2003}{hailperin2006}:
-\begin{equation}
-  \label{eq:combine_probs}
-  \p(c \| y_{1}, y_{2}, \dotsc) \propto \p(c) \times
-  \p(y_{1} \| c) \times \p(y_{2} \| c)\times \dotsm
-\end{equation}
-where $\p(c)$ is a population prevalence or an initial probability assessment.
+% \mynotez{The discussion below is not true, because the probabilities of the outputs of different classifiers are not independent (they are conditional on the same data)}
+% The generative mode is also required if we want to combine the outputs $y_{1}, y_{2}, \dotsc$ of several independent classifiers. According to the probability calculus, the probability of class $c$ is in this case proportional to the probabilities of the outputs \emph{given the class}\autocites[\sect~8.9]{jaynes1994_r2003}{hailperin2006}:
+% \begin{equation}
+%   \label{eq:combine_probs}
+%   \p(c \| y_{1}, y_{2}, \dotsc) \propto \p(c) \times
+%   \p(y_{1} \| c) \times \p(y_{2} \| c)\times \dotsm
+% \end{equation}
+% where $\p(c)$ is a population prevalence or an initial probability assessment.
 
 \subsection{The double role of the calibration data set}
 \label{sec:role_calibration_set}

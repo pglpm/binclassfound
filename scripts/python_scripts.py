@@ -14,22 +14,18 @@ def RF_direct_prob(x, cl, w, p, m, s):
     pjoint/px
 
 
-def inverse_prob(x, cl, w, p, m, s):
+def RF_inverse_prob(x, cl, q, alpha, mu, sigma):
     """
     Gives probability of RF-output conditional on class
     x = RF output (between 0 and 1)
     cl = class (0 or 1)
-    w = array of weights
-    p = array of probs
-    m = array of means for gaussian
-    s = array of standard devs for gaussian
+    q = array of weights
+    alpha = array of probs
+    mu = array of means for gaussian
+    sigma = array of standard devs for gaussian
     """
-    c = 1 - 2**(-10)
-    x2 = 0.5 + c*(x-0.5)
-    y = np.log(x2/(1-x2))
-    jac = 4*c/(1 - (c*(1-2*x))**2)
-    pc = p*cl + (1-p)*(1-cl)
-    pjoint = np.sum(w * pc * norm.pdf(y, loc=m, scale=s) * jac)
+    pc = alpha*cl + (1-alpha)*(1-cl)
+    pjoint = np.sum(q * pc * norm.pdf(x, loc=m, scale=s))
     pcl = np.sum(w * pc)
     pjoint/pcl
 
