@@ -1,7 +1,7 @@
 \pdfoutput=1
 %% Author: PGL  Porta Mana
 %% Created: 2022-04-14T17:18:22+0200
-%% Last-Updated: 2022-05-28T17:36:28+0200
+%% Last-Updated: 2022-05-28T17:54:27+0200
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Probabilities for classifier outputs
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -1096,9 +1096,11 @@ The matrix multiplication and subsequent selection are computationally inexpensi
 \subsection{Overview}
 \label{sec:demo_overview}
 
-
-
 We demonstrate the implementation of the probability transducer and its combination with utility-based decisions in a concrete example. The evaluation of the results is also made from the standpoint of decision theory, using utility-based metrics, as explained in our companion paper \autocites{dyrlandetal2022}.
+
+
+
+
 
 The example concerns a binary classification, two \ml\ classifiers, and one data set to train the classifiers and calibrate their probability transducers. The classification task is a simplified version of an early-stage drug-discovery problem: to determine whether a molecule is chemically \enquote{inactive} (class~$0$) or \enquote{active} (class~$1$) towards one specific target protein.
 
@@ -1153,7 +1155,7 @@ There is a high probability of output values close to~0 when the true class is~0
 \subsubsection{Convolutional neural network}
 \label{sec:curve_CNN}
 
-The joint probability of class $c$ and the bivariate output $y\equiv (y_{0}, y_{0})$ of the \CNN\ is expressed by the sum
+The joint probability of class $c$ and the bivariate output $y\equiv (y_{0}, y_{1})$ of the \CNN\ is expressed by the sum
 \begin{multline}
   \label{eq:P_c_out_CNN}
   p(c, y_{0}, y_{1}) ={}\\ \sum_{k} q_{k}\
@@ -1161,7 +1163,7 @@ The joint probability of class $c$ and the bivariate output $y\equiv (y_{0}, y_{
   \No(y_{0} \| \mu_{0k}, \sigma_{0k})\ 
   \No(y_{1} \| \mu_{1k}, \sigma_{1k})
 \end{multline}
-containing again $2^{18} \approx 260\,000$ terms.
+containing again $2^{18} \approx 260\,000$ terms, and with parameters analogous to those of \eqn~\eqref{eq:P_c_out_RF}.
 
 \begin{figure}[!t]
   \centering
