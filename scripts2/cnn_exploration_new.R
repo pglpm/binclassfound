@@ -1,6 +1,6 @@
 ## Author: PGL  Porta Mana
 ## Created: 2022-03-17T14:21:57+0100
-## Last-Updated: 2022-05-28T22:00:07+0200
+## Last-Updated: 2022-05-28T22:55:28+0200
 ################
 ## Exploration of several issues for binary classifiers
 ################
@@ -234,7 +234,7 @@ fig
 
 
 #########################################################
-## transducer curve p(c | y)
+## transducer curve p(y | c)
 #########################################################
 
 diagon <- which(vpoints[,1]==-vpoints[,2])

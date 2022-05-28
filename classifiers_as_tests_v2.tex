@@ -1,7 +1,7 @@
 \pdfoutput=1
 %% Author: PGL  Porta Mana
 %% Created: 2022-04-14T17:18:22+0200
-%% Last-Updated: 2022-05-28T22:35:36+0200
+%% Last-Updated: 2022-05-28T23:48:23+0200
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Probabilities for classifier outputs
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -1212,34 +1212,46 @@ A cross-section of this probability surface along the bisector of the II and IV 
 \subsection{Results on demonstration data}
 \label{sec:demo_evaluation}
 
-The essential point of the decision-theoretic approach is that we first need to specify the utilities involved in the classification problem, collected in the utility matrix, because they determine
-\begin{enumerate}[label=(\roman*)]
-\item (together with the probabilities) which class we choose in each single instance;
-\item the metric to evaluate the performance.
-\end{enumerate}
+The essential point of the decision-theoretic approach is that we first need to specify the utilities involved in the classification problem, because they determine
+\begin{enumerate*}[label=(\roman*)]
+\item together with the probabilities, which class we choose in each single instance;
+\item the metric to evaluate a classifier's performance.
+\end{enumerate*}
+The utilities are assembled into a utility matrix which we write in the format
+\begin{equation*}
+  \rotatebox[origin=c]{90}{
+    \clap{\textit{\parbox{4em}{\centering\scriptsize decision\\$1\hspace{1.5em}0$}}
+    }}\ 
+    \overbracket[0pt]{\umatrix{
+    \text{\footnotesize True 0} }{ \text{\footnotesize False 0}}{
+    \text{\footnotesize False 1} }{ \text{\footnotesize True 1}}
+      }^{
+      \clap{\textit{\parbox{6em}{\centering\scriptsize true class\\$0\hspace{3em}1$}}
+    }} \ .
+\end{equation*}
+We call \emph{equivalent} two utility matrices that differ by a constant additive term and a positive multiplicative term, since changes in the zero or unit of measurement of utilities do not affect comparative evaluations.
+
+\smallskip
+
 
 For illustration we choose four utility matrices:
 \begin{equation}
   \label{eq:utility_matrices_demo}
   \umatrix{1}{0}{0}{1} \ ,\quad
-  \umatrix{1}{0}{-10}{10} \ ,\quad
-  \umatrix{1}{0}{-100}{100} \ ,\quad
-  \umatrix{10}{-10}{0}{1} \ .
+  \umatrix{1}{-10}{0}{10} \ ,\quad
+  \umatrix{1}{-100}{0}{100} \ ,\quad
+  \umatrix{10}{0}{-10}{1} \ .
 \end{equation}
+The first represents any case where the correct classification of either class is equally valuable; and the incorrect classification, equally invaluable. Note that this utility matrix is equivalent to any other of the form $\sumatrix{a}{-b}{-b}{a}$ with $a,b \ge 0$ and $a \ne b$. Accuracy is the correct metric to evaluate this case. The second represents any case where the correct classification of class~1, \enquote{active}, is ten times more valuable than that of class~0 \enquote{inactive}, and its incorrect classification is as damaging as correct classification is valuable. The remaining two matrices are interpreted in an analogous way. The \enquote{value} could simply be the final average monetary revenue at the end of the drug-discovery project that typically follows any of these four situations. Of particular relevance to drug discovery is the second and maybe the third utility matrix, as it is known that false positives are especially costly \autocites{sinketal2010,hingoranietal2019}.
 
-
-\mynotew{consider standard identity utility matrix, and then matrix where importance of low-frequency class is much higher.
-
-We assume the cost of a false positive is high (utility is very low)
-\begin{equation*}
-  \begin{bmatrix}
-    1 & 0 \\ -10 & 10
-  \end{bmatrix}
-\end{equation*}
-}
-
-
-
+We consider, in turn, each of these utility matrices to be the one underlying our classification problem, and perform the classification of each item -- a molecule -- in the demonstration data by
+\begin{enumerate}[label=\arabic*.]
+\item feeding the features of the item to the classifier and registering its output
+\item feeding this output to the probability transducer and registering the resulting probability
+\item multiplying the resulting probability vector by the utility matrix to determine the expected utility of each class choice
+\item choosing the class with higher expected utility (ties have to be decided unsystematically, to avoid biased results).
+\end{enumerate}
+This is done for each classifier.
 
 %%%% RF confusion matrices
 % standard
@@ -1311,48 +1323,52 @@ We assume the cost of a false positive is high (utility is very low)
   \small
   \caption{Results for the \rf\ classifier}
   \label{tab:results_5_RF}
-  \begin{tabular}{p{0.3\linewidth}ccccc}
-    &$\begin{bsmallmatrix*}[r]1&0\\0&1\end{bsmallmatrix*}$
+  \begin{tabular}{cp{0.3\linewidth}cccc}
+&    &$\begin{bsmallmatrix*}[r]1&0\\0&1\end{bsmallmatrix*}$
                           &$\begin{bsmallmatrix*}[r]1&-10\\0&10\end{bsmallmatrix*}$
                           &$\begin{bsmallmatrix*}[r]1&-100\\0&100\end{bsmallmatrix*}$
                           &$\begin{bsmallmatrix*}[r]10&0\\-10&1\end{bsmallmatrix*}$
-                          &$\begin{bsmallmatrix*}[r]100&0\\-100&1\end{bsmallmatrix*}$
+                          %&$\begin{bsmallmatrix*}[r]100&0\\-100&1\end{bsmallmatrix*}$
     \\[2\jot]
-    \textcolor{myred}{standard method}&
-\textcolor{myred}{0.968} & \textcolor{myred}{1.36} & \textcolor{myred}{5.55} & \textcolor{myred}{8.95} & \textcolor{myred}{88.9}
+ &   \textcolor{myred}{standard method}
+    &\textcolor{myred}{0.968}
+                               & \textcolor{myred}{1.36}
+                                    & \textcolor{myred}{5.55}
+                          & \textcolor{myred}{8.95}
+                                                     %& \textcolor{myred}{88.9}
     \\[0\jot]
+    \rotatebox[origin=c]{90}{\clap{\parbox{5em}{\centering Random\\Forest}}}& 
     \parbox{\linewidth}{\color{mypurpleblue}transducer \amp\\ utility maximization} &
-\textcolor{mypurpleblue}{0.974} & \textcolor{mypurpleblue}{1.72} & \textcolor{mypurpleblue}{9.63} & \textcolor{mypurpleblue}{9.09} & \textcolor{mypurpleblue}{90.9}
+                                                                                      \textcolor{mypurpleblue}{0.974} & \textcolor{mypurpleblue}{1.72} & \textcolor{mypurpleblue}{9.63} & \textcolor{mypurpleblue}{9.09}
+                                                     %&\textcolor{mypurpleblue}{90.9}
     \\[1\jot]
-    \footnotesize relative increase&
-                       \footnotesize+0.6\% & \footnotesize+26\% & \footnotesize+73\% & \footnotesize+1.5\% & \footnotesize+2.2\%
-  \end{tabular}
-
-\bigskip
-  
-  \centering
-  \small
-  \caption{Results for the \cnn\ classifier}
-  \label{tab:results_5_CNN}
+&    \footnotesize relative increase&
+                                     \footnotesize+0.6\% & \footnotesize+26\% & \footnotesize+73\% & \footnotesize+1.5\%
+                                     % &\footnotesize+2.2\%
+    \\[2em]
 % standard   0.959   1.52    7.24   8.63   85.6
 % transducer 0.962   1.64    9.59   9.09   90.9
 %            0.300   8.40   32.50(33)   5.40    6.2
-  \begin{tabular}{p{0.3\linewidth}ccccc}
-    &$\begin{bsmallmatrix*}[r]1&0\\0&1\end{bsmallmatrix*}$
-                          &$\begin{bsmallmatrix*}[r]1&-10\\0&10\end{bsmallmatrix*}$
-                          &$\begin{bsmallmatrix*}[r]1&-100\\0&100\end{bsmallmatrix*}$
-                          &$\begin{bsmallmatrix*}[r]10&0\\-10&1\end{bsmallmatrix*}$
-                          &$\begin{bsmallmatrix*}[r]100&0\\-100&1\end{bsmallmatrix*}$
-    \\[2\jot]
-    \textcolor{myred}{standard method}&
-                                        \textcolor{myred}{0.959} & \textcolor{myred}{1.52} & \textcolor{myred}{7.24} & \textcolor{myred}{8.63} & \textcolor{myred}{85.6}
+ % \begin{tabular}{p{0.3\linewidth}cccc}
+  %   &$\begin{bsmallmatrix*}[r]1&0\\0&1\end{bsmallmatrix*}$
+  %                         &$\begin{bsmallmatrix*}[r]1&-10\\0&10\end{bsmallmatrix*}$
+  %                         &$\begin{bsmallmatrix*}[r]1&-100\\0&100\end{bsmallmatrix*}$
+  %                         &$\begin{bsmallmatrix*}[r]10&0\\-10&1\end{bsmallmatrix*}$
+  %                         &$\begin{bsmallmatrix*}[r]100&0\\-100&1\end{bsmallmatrix*}$
+  %   \\[2\jot]
+&    \textcolor{myred}{standard method}&
+                                        \textcolor{myred}{0.959} & \textcolor{myred}{1.52} & \textcolor{myred}{7.24} & \textcolor{myred}{8.63}
+                                                     %&\textcolor{myred}{85.6}
     \\[0\jot]
-    \parbox{\linewidth}{\color{mypurpleblue}transducer \amp\\ utility maximization} &
-                                                                                      \textcolor{mypurpleblue}{0.962} & \textcolor{mypurpleblue}{1.64} & \textcolor{mypurpleblue}{9.59} & \textcolor{mypurpleblue}{9.09} & \textcolor{mypurpleblue}{90.9}
+     \rotatebox[origin=c]{90}{\clap{\parbox{6em}{\centering Convolutional\\Neural\\Network}}}& 
+   \parbox{\linewidth}{\color{mypurpleblue}transducer \amp\\ utility maximization} &
+                                                                                      \textcolor{mypurpleblue}{0.962} & \textcolor{mypurpleblue}{1.64} & \textcolor{mypurpleblue}{9.59} & \textcolor{mypurpleblue}{9.09}
+                                                     %&\textcolor{mypurpleblue}{90.9}
     \\[1\jot]
-    \footnotesize relative increase&
-                       \footnotesize+0.3\% & \footnotesize+8.4\% & \footnotesize+33\% & \footnotesize+5.4\% & \footnotesize+6.2\%
-  \end{tabular}
+&    \footnotesize relative increase&
+                                     \footnotesize+0.3\% & \footnotesize+8.4\% & \footnotesize+33\% & \footnotesize+5.4\%
+                                                     %&\footnotesize+6.2\%
+ \end{tabular}
 \end{table}
 
 
