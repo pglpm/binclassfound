@@ -1,7 +1,7 @@
 \pdfoutput=1
 %% Author: PGL  Porta Mana
 %% Created: 2022-04-14T17:18:22+0200
-%% Last-Updated: 2022-05-28T17:12:06+0200
+%% Last-Updated: 2022-05-28T17:31:36+0200
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Probabilities for classifier outputs
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -1164,18 +1164,19 @@ containing again $2^{18} \approx 260\,000$ terms.
 
 \begin{figure}[!t]
   \centering
-\includegraphics[width=0.85\linewidth]{transducer_surface_CNN.png}\\
-\includegraphics[width=0.4\linewidth]{softmaxr_surface_CNN.png}\\
+\includegraphics[width=\linewidth]{transducer_surface_CNN_crop.png}\\[4em]%
+%\hfill\makebox[0pt][r]{\smash{\includegraphics[width=0.4\linewidth]{softmaxr_surface_CNN_transp.png}}}\\
 % \vspace{-0.75\linewidth}
 % \hspace{\stretch{1}}
 % \makebox[0pt]{\smash{\includegraphics[width=0.33\linewidth]{softmaxr_surface_CNN.png}}}\hspace{\stretch{3}}\mbox{}
 % \\
 % \vspace{0.65\linewidth}
-  \caption{Probability of class~1 conditional on the \cnn\ outputs}
+\parbox[b]{0.63\linewidth}{\caption{Probability of class~1 conditional on the \cnn\ outputs. Plot on the side: softmax function of the same outputs, for comparison.}}\hfill%
+\parbox[b]{0.34\linewidth}{\smash{\includegraphics[width=\linewidth]{softmaxr_surface_CNN_transp.png}}}
   \label{fig:prob_curve_CNN}
 \end{figure}
 %
-Figure~\ref{fig:prob_curve_CNN} shows the probability of class~1 conditional on the  bivariate output of the \CNN, $\p(\texts{class 1} \| \texts{outputs})$. It is interesting to compare this probability with the softmax function of the outputs, \fig~\ref{fig:softmax_CNN}, typically used as a proxy for the probability.
+Figure~\ref{fig:prob_curve_CNN} shows the probability of class~1 conditional on the bivariate output of the \CNN, $\p(\texts{class 1} \| \texts{outputs})$. It is interesting to compare this probability with the softmax function of the outputs, shown in the smaller side plot, typically used as a proxy for the probability.
 % \begin{figure}[!t]
 %   \centering
 % \includegraphics[width=0.66\linewidth]{softmaxr_surface_CNN.png}\\
