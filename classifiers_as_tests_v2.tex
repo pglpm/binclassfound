@@ -1,7 +1,7 @@
 \pdfoutput=1
 %% Author: PGL  Porta Mana
 %% Created: 2022-04-14T17:18:22+0200
-%% Last-Updated: 2022-05-28T17:31:36+0200
+%% Last-Updated: 2022-05-28T17:36:28+0200
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Probabilities for classifier outputs
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -1108,7 +1108,8 @@ We use data from the ChEMBL database \autocites{bentoetal2014}, previously used 
 
 In all data sets, class~$0$ (\enquote{inactive}) occurs with a 91\% relative frequency, and class~$1$ (\enquote{active}) with 9\%, making this a classification problem with high class imbalance.
 
-The Monte Carlo calculation of the parameters for the transducer took approximately 45\,min for the \RF\ and 75\,min for the \CNN, wall-clock time (16 parallel cores each). The resulting parameters are available in our supplementary data\footcites[files \texttt{transducer\_params-Random\_Forest.zip} and \texttt{transducer\_params-Neural\_Net.zip}]{dyrlandetal2022c}.
+\mynotew{move this to technical appendix}
+The Monte Carlo calculation of the parameters for the transducer took approximately 45\,min for the \RF\ and 75\,min for the \CNN, wall-clock time (16 parallel cores each). The resulting parameters are available in our supplementary data\footcites[\addcomma\ files \texttt{transducer\_params-Random\_Forest.zip} and \texttt{transducer\_params-Neural\_Net.zip}]{dyrlandetal2022c}.
 
 
 \subsection{Probability-transducer curves}
@@ -1189,7 +1190,7 @@ A cross-section of this probability surface along the bisector of the II and IV 
 \begin{figure}[!t]
   \centering
   \includegraphics[width=\linewidth]{transducer_curve_diagonal_CNN_prob_softmax.pdf}\\
-  \caption{Profile of the probability surface of \fig~\ref{fig:prob_curve_CNN} across the bisector of the II and IV quadrants of output space. The shaded region represents the 12.5\%--87.5\% range of variability upon increase of the calibration dataset. The profile of the softmax function (\textcolor{mygray}{grey dashed curve}) is also shown for comparison.}
+  \caption{Cross-section of the probability surface of \fig~\ref{fig:prob_curve_CNN} across the bisector of the II and IV quadrants of output space. The shaded region represents the 12.5\%--87.5\% range of variability upon increase of the calibration dataset. The cross-section of the softmax function (\textcolor{mygray}{grey dashed curve}) is also shown for comparison.}
   \label{fig:prob_curve_CNN_section}
 \end{figure}
 
