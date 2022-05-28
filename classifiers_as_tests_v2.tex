@@ -1,7 +1,7 @@
 \pdfoutput=1
 %% Author: PGL  Porta Mana
 %% Created: 2022-04-14T17:18:22+0200
-%% Last-Updated: 2022-05-28T12:07:40+0200
+%% Last-Updated: 2022-05-28T16:06:23+0200
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Probabilities for classifier outputs
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -1105,7 +1105,7 @@ We use data from the ChEMBL database \autocites{bentoetal2014}, previously used 
 
 In all data sets, class~$0$ (\enquote{inactive}) occurs with a 91\% relative frequency, and class~$1$ (\enquote{active}) with 9\%, making this a classification problem with high class imbalance.
 
-The Monte Carlo calculation of the parameters for the transducer took approximately 45\,min for the \RF\ and 75\,min for the \CNN, wall-clock time (16 parallel cores each). The resulting parameters are available in our supplementary data\footnote{files \texttt{RF\_transducer\_parameters.zip} and \texttt{CNN\_transducer\_parameters.zip}, \doi{***}.}.
+The Monte Carlo calculation of the parameters for the transducer took approximately 45\,min for the \RF\ and 75\,min for the \CNN, wall-clock time (16 parallel cores each). The resulting parameters are available in our supplementary data\footcites[files \texttt{transducer\_params-Random\_Forest.zip} and \texttt{transducer\_params-Neural\_Net.zip}]{dyrlandetal2022c}.
 
 
 \subsection{Probability-transducer curves}
@@ -1133,48 +1133,54 @@ where $\No(\cdot)$ is a Gaussian as in \eqn~\eqref{eq:distr_output}. The sum con
 %
 Figure~\ref{fig:prob_curve_RF} shows the probabilities of classes~1 and~0 conditional on the \rf\ output: $\p(\texts{class 1} \| \texts{output})$ and $\p(\texts{class 0} \| \texts{output})$. It also shows the range of variability that these probabilities could have if more data were used for the calibration: with a 75\% probability they would remain within the shaded regions. This variability information is provided for free by the calculation; we plan to discuss and use it more in future work.
 
-The probabilities increase (class~1) or decrease (class~0) monotonically up to output values of around 0.9. The output, if interpreted as a probability for class~1 (\enquote{active}), tends to be too pessimistic for this class (and too optimistic for the other) in a range from roughly 0.25 to 0.95; and too optimistic outside this range. For instance, for output 0.3 the probability for class~1 is 40\%; for output 1 the probability for class 1 is 92\%.
+The probabilities increase (class~1) or decrease (class~0) monotonically up to output values of around 0.9. The output, if interpreted as a probability for class~1 (\enquote{active}), tends to be too pessimistic for this class (and too optimistic for the other) in a range from roughly 0.25 to 0.95; and too optimistic outside this range. For instance, for an output of 0.3 the probability for class~1 is 40\%; for an output of 1 the probability for class 1 is 92\%.
 
 \begin{figure}[t]
   \centering
-  \includegraphics[width=\linewidth]{transducer_curve_RFraw2_inverse.pdf}\\
-  \caption{Probability densities of the \rf\ output conditional on class~1 (\enquote{active}, \textcolor{mypurpleblue}{blue solid curve}) and on class~0 (\enquote{inactive}, \textcolor{myred}{red dashed curve}). The shaded region around each curve represents its 12.5\%--87.5\% range of variability upon increase of the calibration dataset.}
+  \includegraphics[width=\linewidth]{transducer_curve_RFraw2_inverse_trunc.pdf}\\
+  \caption{Probability densities of the \rf\ output conditional on class~1 (\enquote{active}, \textcolor{mypurpleblue}{blue solid curve}) and on class~0 (\enquote{inactive}, \textcolor{myred}{red dashed curve}, truncated). The shaded region around each curve represents its 12.5\%--87.5\% range of variability upon increase of the calibration dataset.}
   \label{fig:prob_curve_RF_inverse}
 \end{figure}
 %
-Figure~\ref{fig:prob_curve_RF_inverse} shows the \enquote{generative} probability densities of the \rf\ output conditional on each class, $\p(\texts{output} \| \texts{class 1})$ and $\p(\texts{output} \| \texts{class 0})$. These probabilities are also provided for free by the parameter calculation, as explained in \sect~\ref{sec:calculation_transducer}. The shaded regions are again 75\% possible variability intervals upon increase of the calibration dataset.
+Figure~\ref{fig:prob_curve_RF_inverse} shows the \enquote{generative} probability densities of the \rf\ output conditional on each class, $\p(\texts{output} \| \texts{class 1})$ and $\p(\texts{output} \| \texts{class 0})$. These probabilities densities are also provided for free by the parameter calculation, as explained in \sect~\ref{sec:calculation_transducer}. The shaded regions are again 75\% possible variability intervals upon increase of the calibration dataset.
 
-There is a high probability of output values close to~0 when the true class is~0 (\enquote{inactive}), and a density peak of output values around 0.8 when the true class is~1 (\enquote{active}), as expected. The density conditional on class~0 is narrower than the one conditional on class~1 owing to the much larger proportion data in the former class. Intuitively speaking, we have seen that most data in class~1 correspond to high output values, but we have seen too few data in this class to reliably conclude, yet, that future data will show the same correspondence. % But there is also a high density of output value~0 when the true class is~1. This peak comes from the fact that the \RF\ had some very low output values
+There is a high probability of output values close to~0 when the true class is~0 (\enquote{inactive}), and a peak density around 0.8 when the true class is~1 (\enquote{active}), as expected. The density conditional on class~0 is narrower than the one conditional on class~1 owing to the much larger proportion data in the former class. Intuitively speaking, we have seen that most data in class~1 correspond to high output values, but we have seen too few data in this class to reliably conclude, yet, that future data will show the same correspondence. % But there is also a high density of output value~0 when the true class is~1. This peak comes from the fact that the \RF\ had some very low output values
 
 \subsubsection{Convolutional neural network}
 \label{sec:curve_CNN}
 
-The joint probability of class $c$ and output $y$ for the \CNN\ is expressed by the sum
-\begin{equation}
+The joint probability of class $c$ and the bivariate output $y\equiv (y_{0}, y_{0})$ of the \CNN\ is expressed by the sum
+\begin{multline}
   \label{eq:P_c_out_CNN}
-  p(c, y_{0}, y_{1}) = \sum_{k} q_{k}\
+  p(c, y_{0}, y_{1}) ={}\\ \sum_{k} q_{k}\
   [c\ \alpha_{k} + (1-c)\ (1-\alpha_{k})]\
   \No(y_{0} \| \mu_{0k}, \sigma_{0k})\ 
   \No(y_{1} \| \mu_{1k}, \sigma_{1k})
-\end{equation}
-again containing $2^{18} \approx 260\,000$ terms.
+\end{multline}
+containing again $2^{18} \approx 260\,000$ terms.
 
 \begin{figure}[!t]
   \centering
-  \includegraphics[width=\linewidth]{transducer_surface_CNN.png}\\
+\includegraphics[width=0.85\linewidth]{transducer_surface_CNN.png}\\
+\includegraphics[width=0.4\linewidth]{softmaxr_surface_CNN.png}\\
+% \vspace{-0.75\linewidth}
+% \hspace{\stretch{1}}
+% \makebox[0pt]{\smash{\includegraphics[width=0.33\linewidth]{softmaxr_surface_CNN.png}}}\hspace{\stretch{3}}\mbox{}
+% \\
+% \vspace{0.65\linewidth}
   \caption{Probability of class~1 conditional on the \cnn\ outputs}
   \label{fig:prob_curve_CNN}
 \end{figure}
 %
 Figure~\ref{fig:prob_curve_CNN} shows the probability of class~1 conditional on the  bivariate output of the \CNN, $\p(\texts{class 1} \| \texts{outputs})$. It is interesting to compare this probability with the softmax function of the outputs, \fig~\ref{fig:softmax_CNN}, typically used as a proxy for the probability.
-\begin{figure}[!t]
-  \centering
-\includegraphics[width=0.8\linewidth]{softmaxr_surface_CNN.png}\\
-  \caption{Softmax function of the \cnn\ outputs}
-  \label{fig:softmax_CNN}
-\end{figure}
+% \begin{figure}[!t]
+%   \centering
+% \includegraphics[width=0.66\linewidth]{softmaxr_surface_CNN.png}\\
+%   \caption{Softmax function of the \cnn\ outputs}
+%   \label{fig:softmax_CNN}
+% \end{figure}
 
-A cross-section of this probability surface along the bisector of the II and IV quadrants of the output space is shown in \fig~\ref{fig:prob_curve_CNN_section}, together with the cross-section of the softmax. The probability takes extremal values of around 10\% and 90\% only in very narrow ranges, and quickly returns and extrapolates to 50\% everywhere else. The softmax, on the other hand, extrapolates to extreme probability values -- a known problem of neural networks \autocites{galetal2016}.
+A cross-section of this probability surface along the bisector of the II and IV quadrants of the output space is shown in \fig~\ref{fig:prob_curve_CNN_section}, together with the cross-section of the softmax. The probability takes extremal values, around 10\% and 90\% only in very narrow ranges, and quickly returns and extrapolates to 50\% everywhere else. The softmax, on the other hand, extrapolates to extreme probability values -- a known problem of neural networks \autocites{galetal2016}.
 %
 \begin{figure}[!t]
   \centering
@@ -1213,10 +1219,10 @@ We assume the cost of a false positive is high (utility is very low)
 % baserates
 %          0          1 
 % 0.90914158 0.09085842 
-\begin{table}[p]
+\begin{table}[t]
   \centering
   \small
-  \caption{Results for the random forest}
+  \caption{Results for the \rf\ classifier}
   \label{tab:results_5_RF}
   \begin{tabular}{p{0.3\linewidth}ccccc}
     &$\begin{bsmallmatrix*}[r]1&0\\0&1\end{bsmallmatrix*}$
@@ -1239,8 +1245,11 @@ We assume the cost of a false positive is high (utility is very low)
   
   \centering
   \small
-  \caption{Results for the convolutional neural network}
+  \caption{Results for the \cnn\ classifier}
   \label{tab:results_5_CNN}
+% standard   0.959   1.52    7.24   8.63   85.6
+% transducer 0.962   1.64    9.59   9.09   90.9
+%            0.300   8.40   32.50   5.40    6.2
   \begin{tabular}{p{0.3\linewidth}ccccc}
     &$\begin{bsmallmatrix*}[r]1&0\\0&1\end{bsmallmatrix*}$
                           &$\begin{bsmallmatrix*}[r]1&-10\\0&10\end{bsmallmatrix*}$
@@ -1271,6 +1280,26 @@ We assume the cost of a false positive is high (utility is very low)
 %          9.800   5.00    0.3  13.00    0.0
 
 
+
+\begin{figure}[t]
+  \centering
+  \includegraphics[width=\linewidth]{RF_transducer_gainsraw2.pdf}\\
+  \caption{Utility yields obtained using the \rf\ classifier in the standard way, vs those obtained using the probability transducer and utility maximization in each single classification, for a uniform distribution of possible utility matrices}
+  \label{fig:RF_gain_UMspace}
+\end{figure}
+
+\begin{figure}[t]
+  \centering
+  \includegraphics[width=\linewidth]{CNN_transducer_gainsx2.pdf}\\
+  \caption{Utility yields obtained using the \cnn\ classifier in the standard way, vs those obtained using the probability transducer and utility maximization in each single classification, for a uniform distribution of possible utility matrices}
+  \label{fig:CNN_gain_UMspace}
+\end{figure}
+
+
+
+
+
+
 % classesb
 %   0   1 
 % 163 326 
@@ -1278,10 +1307,10 @@ We assume the cost of a false positive is high (utility is very low)
 %  baserates
 %         0         1 
 % 0.3333333 0.6666667 
-\begin{table}[p]
+\begin{table}[t]
   \centering
   \small
-  \caption{Results for the random forest}
+  \caption{Results for the \rf\ classifier}
 % standard  0.835   3.75   34.5   3.80   33.4
 % discr     0.918   6.68   66.1   3.33   33.3
 % gener     0.957   6.87   66.7   3.84   33.6
@@ -1312,8 +1341,13 @@ We assume the cost of a false positive is high (utility is very low)
   
   \centering
   \small
-  \caption{Results for the convolutional neural network}
+  \caption{Results for the \cnn\ classifier}
   \label{tab:results_5_CNN_gen}
+% standard 0.894   4.99   47.0   3.78   32.7
+% discr    0.861   6.47   66.5   3.33   33.3
+% gener    0.930   6.80   66.7   3.74   33.4
+%          4.000  36.30   42.0  -0.90    2.1
+%          8.000   5.20    0.3  12.30    0.1
   \begin{tabular}{p{0.3\linewidth}ccccc}
     &$\begin{bsmallmatrix*}[r]1&0\\0&1\end{bsmallmatrix*}$
                           &$\begin{bsmallmatrix*}[r]1&-10\\0&10\end{bsmallmatrix*}$
@@ -1322,26 +1356,35 @@ We assume the cost of a false positive is high (utility is very low)
                           &$\begin{bsmallmatrix*}[r]100&0\\-100&1\end{bsmallmatrix*}$
     \\[2\jot]
     \textcolor{myred}{standard method}&
-                                        \textcolor{myred}{0.959} & \textcolor{myred}{1.52} & \textcolor{myred}{7.24} & \textcolor{myred}{8.63} & \textcolor{myred}{85.6}
+                                        \textcolor{myred}{0.894} & \textcolor{myred}{4.99} & \textcolor{myred}{47.0} & \textcolor{myred}{3.78} & \textcolor{myred}{32.7}
     \\[0\jot]
     \parbox{\linewidth}{\color{mypurpleblue}transducer,\\ generative mode} &
-\textcolor{mypurpleblue}{0.957} & \textcolor{mypurpleblue}{6.87} & \textcolor{mypurpleblue}{66.7} & \textcolor{mypurpleblue}{3.84} & \textcolor{mypurpleblue}{33.6}
+\textcolor{mypurpleblue}{0.930} & \textcolor{mypurpleblue}{6.80} & \textcolor{mypurpleblue}{66.7} & \textcolor{mypurpleblue}{3.74} & \textcolor{mypurpleblue}{33.4}
     \\[1\jot]
     \footnotesize relative increase&
-                       \footnotesize+15\% & \footnotesize+83\% & \footnotesize+93\% & \footnotesize+1.1\% & \footnotesize+0.4\%
+                       \footnotesize+4.0\% & \footnotesize+36\% & \footnotesize+42\% & \footnotesize-0.9\% & \footnotesize+0.1\%
     \\[1\jot]
     \parbox{\linewidth}{\color{myyellow}\scriptsize transducer,\\ discriminative mode} &
-\textcolor{myyellow}{\scriptsize 0.918} & \textcolor{myyellow}{\scriptsize 6.68} & \textcolor{myyellow}{\scriptsize 66.1} & \textcolor{myyellow}{\scriptsize 3.33} & \textcolor{myyellow}{\scriptsize 33.3}
+\textcolor{myyellow}{\scriptsize 0.861} & \textcolor{myyellow}{\scriptsize 6.47} & \textcolor{myyellow}{\scriptsize 66.5} & \textcolor{myyellow}{\scriptsize 3.33} & \textcolor{myyellow}{\scriptsize 33.3}
   \end{tabular}
 \end{table}
 
 
+
 \begin{figure}[t]
   \centering
-  \includegraphics[width=\linewidth]{RF_transducer_gainsraw2.pdf}\\
-  \caption{Utility yields obtained using the \rf\ classifier in the standard way, vs those obtained using the probability transducer and utility maximization in each single classification, for a uniform distribution of possible utility matrices}
-  \label{fig:RF_gain_UMspace}
+  \includegraphics[width=\linewidth]{RF_transducer_gains_generraw2.pdf}\\
+  \caption{Utility yields obtained using the \rf\ classifier in the standard way, vs those obtained using the probability transducer in generative mode, with utility maximization in each single classification, for a uniform distribution of possible utility matrices}
+  \label{fig:RF_gain_gener_UMspace}
 \end{figure}
+
+\begin{figure}[t]
+  \centering
+  \includegraphics[width=\linewidth]{CNN_transducer_gains_generx.pdf}\\
+  \caption{Utility yields obtained using the \cnn\ classifier in the standard way, vs those obtained using the probability transducer in generative mode, with utility maximization in each single classification, for a uniform distribution of possible utility matrices}
+  \label{fig:CNN_gain_gener_UMspace}
+\end{figure}
+
 
 
 
@@ -1622,35 +1665,7 @@ The algorithms and methods used to create the models have previously been shown 
 
 \subsubsection{\textit{Random Forest}}
 
-%@article{pedregosa2011,
-  %title={Scikit-learn: Machine learning in Python},
-  %author={Pedregosa, Fabian and Varoquaux, Ga{\"e}l and Gramfort, Alexandre and Michel, Vincent and Thirion, Bertrand and Grisel, Olivier and %Blondel, Mathieu and Prettenhofer, Peter and Weiss, Ron and Dubourg, Vincent and others},
-%  journal={Journal of machine learning research},
-%  volume={12},
-%  number={Oct},
-%  pages={2825--2830},
-%  year={2011}
-%} 
-
-%@article{svetnik2003,
-%	title = {Random {Forest}:  {A} {Classification} and {Regression} {Tool} %for {Compound} {Classification} and {QSAR} {Modeling}},
-	%volume = {43},
-	%issn = {0095-2338},
-	%shorttitle = {Random {Forest}},
-	%url = {https://doi.org/10.1021/ci034160g},
-	%doi = {10.1021/ci034160g}},
-	%number = {6},
-	%urldate = {2022-05-26},
-	%journal = {Journal of Chemical Information and Computer Sciences},
-	%author = {Svetnik, Vladimir and Liaw, Andy and Tong, Christopher and %Culberson, J. Christopher and Sheridan, Robert P. and Feuston, Bradley P.},
-	%month = nov,
-	%year = {2003},
-	%note = {Publisher: American Chemical Society},
-	%pages = {1947--1958},
-%}
-
-
-The first machine learning model used in the experiments is an RF model implemented in sci-kit learn \autocites{pedrogosa2011}. RF is an ensemble of classifying or regression trees where the majority of votes is chosen as the predicted class \autocites{breiman2001}. It is known for being robust when dealing with a large number of features (as in our case), being resilient to over-fitting, and achieving good performance. And has already been shown to deliver powerful and accurate results in compound classification and QSAR analysis \autocites{svetnik2003}. The following parameters were used when training the model: 
+The first machine learning model used in the experiments is an RF model implemented in sci-kit learn \autocites{pedregosaetal2011}. RF is an ensemble of classifying or regression trees where the majority of votes is chosen as the predicted class \autocites{breiman2001b}. It is known for being robust when dealing with a large number of features (as in our case), being resilient to over-fitting, and achieving good performance. And has already been shown to deliver powerful and accurate results in compound classification and QSAR analysis \autocites{svetniketal2003}. The following parameters were used when training the model: 
 
 \medskip
 

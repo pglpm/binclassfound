@@ -1,6 +1,6 @@
 ## Author: PGL  Porta Mana
 ## Created: 2022-03-17T14:21:57+0100
-## Last-Updated: 2022-05-28T10:50:07+0200
+## Last-Updated: 2022-05-28T15:16:54+0200
 ################
 ## Exploration of several issues for binary classifiers
 ################
@@ -47,7 +47,7 @@ round2 <- function(x, s){round(x*2L, s)/2L}
 #### End custom setup ####
 
 set.seed(707)
-baseversion <- '_cnn_new'
+baseversion <- '_cnn_bis'
 maincov <- 'class'
 outputcov <- c('output0', 'output1')
 family <- 'Palatino'
@@ -88,14 +88,14 @@ for(avar in realCovs){
 }
 ##
 source('functions_mcmc.R')
-dirname <- '_cnn_new-V3-D3589-K64-I2048'
+dirname <- '_cnn_bis-V3-D3589-K64-I2048'
 
 npar <- 16
 ntotal <- 1024*4
 nskip <- 4
 parmlist <- mcsamples2parmlist(
     foreach(i=1:npar, .combine=rbind)%dopar%{
-        temp <- readRDS(paste0(dirname, '/_mcsamples-R_cnn_new_',i,'_1-V3-D3589-K64-I2048.rds'))
+        temp <- readRDS(paste0(dirname, '/_mcsamples-R_cnn_bis_',i,'_1-V3-D3589-K64-I2048.rds'))
         if(any(is.na(nrow(temp)+1-rev(seq(1,nrow(temp),by=nskip)[1:(ntotal/npar)])))){print('WARNING! not enough points')}
         temp[nrow(temp)+1-rev(seq(1,nrow(temp),by=nskip)[1:(ntotal/npar)]),]
 }
@@ -111,9 +111,9 @@ cseq <- seq(xr[1], xr[2], length.out=129)
 vpoints <- cbind(rep(cseq, length(cseq)), rep(cseq, each=length(cseq)))
 colnames(vpoints) <- realCovs
 
-##system.time(opgrid <- samplesF(Y=cbind(class=1), X=vpoints, parmList=parmlist, inorder=F))
-##
-##saveRDS(opgrid, '_opgrid_cnn_exploration_new.rds')
+## system.time(opgrid <- samplesF(Y=cbind(class=1), X=vpoints, parmList=parmlist, inorder=F))
+## ##
+## saveRDS(opgrid, '_opgrid_cnn_exploration_new.rds')
 opgrid <- readRDS('_opgrid_cnn_exploration_new.rds')
 
 ## system.time(opgrid2 <- samplesFp(Y=cbind(class=1), X=vpoints, batchsize=1024, parmList=parmlist, inorder=F))
@@ -123,7 +123,7 @@ mpgrid <- rowMeans(opgrid)
 dim(mpgrid) <- rep(length(cseq), 2)
 
 fig <- plot_ly(z=t(mpgrid), x=cseq, y=cseq, cmin=0, cmax=1)
-fig <- fig %>% add_surface(colors='Blues')
+fig <- fig %>% add_surface(colors='RdBu')
 fig <- fig %>% layout(scene = list(
                           xaxis = list(title = "output 0"),
                           yaxis = list(title = "output 1"),
@@ -136,7 +136,7 @@ fig
 softm <- apply(vpoints, 1, function(x){exp(x[2])/sum(exp(x))})
 dim(softm) <- rep(length(cseq), 2)
 fig <- plot_ly(z=t(softm), x=cseq, y=cseq, cmin=0, cmax=1)
-fig <- fig %>% add_surface(colors='Blues')
+fig <- fig %>% add_surface(colors='RdBu')
 fig <- fig %>% layout(scene = list(
                           xaxis = list(title = "output 0"),
                           yaxis = list(title = "output 1"),
@@ -247,28 +247,26 @@ dim(mp0grid) <- rep(length(cseq), 2)
 mp1grid <- rowMeans(py1grid)
 dim(mp1grid) <- rep(length(cseq), 2)
 
-fig <- plot_ly(z=t(mp0grid), x=cseq, y=cseq, cmin=0, cmax=max(mp0grid,mp1grid))
-fig <- fig %>% add_surface(colors='Blues')
+## fig <- plot_ly(z=t(mp0grid), x=cseq, y=cseq, cmin=0, cmax=max(mp0grid,mp1grid))
+## fig <- fig %>% add_surface(colors='Blues')
+## fig <- fig %>% layout(scene = list(
+##                           xaxis = list(title = "output 0"),
+##                           yaxis = list(title = "output 1"),
+##                           zaxis = list(title = 'p(outputs | class 0)', range=c(0,1)),
+##                           camera = list(projection = list(type = 'orthographic'))
+##                       ), title=NA)
+## fig
+## #orca(fig, '../transducer_surface_CNN.pdf', scale=1, width=16.5, height=16.5)
+fig <- plot_ly(x=cseq, y=cseq, cmin=0, cmax=max(mp0grid,mp1grid))
+fig <- fig %>% add_surface(z = t(mp0grid), opacity = 0.5, colorscale='Reds')
+fig <- fig %>% add_surface(z = t(mp1grid), opacity = 0.5, colorscale='Blues')
 fig <- fig %>% layout(scene = list(
                           xaxis = list(title = "output 0"),
                           yaxis = list(title = "output 1"),
-                          zaxis = list(title = 'p(outputs | class 0)', range=c(0,1)),
+                          zaxis = list(title = 'p(outputs | class)'),
                           camera = list(projection = list(type = 'orthographic'))
                       ), title=NA)
 fig
-#orca(fig, '../transducer_surface_CNN.pdf', scale=1, width=16.5, height=16.5)
-
-
-fig <- plot_ly(z=t(mp1grid), x=cseq, y=cseq, cmin=0, cmax=max(mp0grid,mp1grid))
-fig <- fig %>% add_surface(colors='Blues')
-fig <- fig %>% layout(scene = list(
-                          xaxis = list(title = "output 0"),
-                          yaxis = list(title = "output 1"),
-                          zaxis = list(title = 'p(outputs | class 1)', range=c(0,1)),
-                          camera = list(projection = list(type = 'orthographic'))
-                      ), title=NA)
-fig
-#orca(fig, '../transducer_surface_CNN.pdf', scale=1, width=16.5, height=16.5)
 
 
 
@@ -279,8 +277,8 @@ q1grid <- apply(py1grid,1,function(x){quantile(x, c(1,7)/8)})
 ##
 
 xgrid <- vpoints[diagon,2]
-pdff('../transducer_curve_CNN_inverse')
-tplot(x=xgrid, y=cbind(rowMeans(py1grid), rowMeans(py0grid)), xlab=bquote('output 1' == -'output 0'),
+pdff('../nottransducer_curve_CNN2_inverse')
+tplot(x=xgrid, y=cbind(rowMeans(py1grid[vpointsdiag,]), rowMeans(py0grid[vpointsdiag,])), xlab=bquote('output 1' == -'output 0'),
 ##      ylab=expression(p~group('(',class~output,')')),
       ylab=bquote('p'~group('(','output 1', '.')~group('|', ' class',')')),
       mar=c(4.5,5.5,1,1),
@@ -293,23 +291,20 @@ dev.off()
 
 
 
-##
-invprob0 <- samplesF(Y=vpointsdiag, X=cbind(class=0), parmList=parmlist, inorder=F)
-invprob1 <- samplesF(Y=vpointsdiag, X=cbind(class=1), parmList=parmlist, inorder=F)
 
-diagon <- which(vpoints[,1]==-vpoints[,2])
-xgrid <- vpoints[diagon,2]
-pdff('../transducer_curve_diagonal_CNN_inverseprob')
-tplot(x=xgrid, y=cbind(rowMeans(invprob1), xlab=bquote('output 1' == -'output 0'),
-##      ylab=expression(p~group('(',class~output,')')),
-      ylab=bquote('P'~group('(','class 1', '.')~group('|', ' output 1',')')),
-      ylim=c(0,1), mar=c(4.5,5.75,1,1), cex.axis=2, cex.lab=2,
-       lwd=3, family='Palatino')
-#legend('topleft', c('class 1', 'class 0'), lty=c(1,2), col=c(1,2), lwd=3, bty='n', cex=2)
-##
-polygon(x=c(xgrid,rev(xgrid)), y=c(q1grid[diagon],rev(q2grid[diagon])), col=paste0(palette()[1],'40'), border=NA)
-## polygon(x=c(xgrid,rev(xgrid)), y=c(1-q2grid[diagon],rev(1-q1grid[diagon])), col=paste0(palette()[2],'40'), border=NA)
-dev.off()
+## diagon <- which(vpoints[,1]==-vpoints[,2])
+## xgrid <- vpoints[diagon,2]
+## pdff('../transducer_curve_diagonal_CNN_inverseprob')
+## tplot(x=xgrid, y=cbind(rowMeans(invprob1), xlab=bquote('output 1' == -'output 0'),
+## ##      ylab=expression(p~group('(',class~output,')')),
+##       ylab=bquote('P'~group('(','class 1', '.')~group('|', ' output 1',')')),
+##       ylim=c(0,1), mar=c(4.5,5.75,1,1), cex.axis=2, cex.lab=2,
+##        lwd=3, family='Palatino')
+## #legend('topleft', c('class 1', 'class 0'), lty=c(1,2), col=c(1,2), lwd=3, bty='n', cex=2)
+## ##
+## polygon(x=c(xgrid,rev(xgrid)), y=c(q1grid[diagon],rev(q2grid[diagon])), col=paste0(palette()[1],'40'), border=NA)
+## ## polygon(x=c(xgrid,rev(xgrid)), y=c(1-q2grid[diagon],rev(1-q1grid[diagon])), col=paste0(palette()[2],'40'), border=NA)
+## dev.off()
 
 
 
@@ -350,7 +345,7 @@ fwrite(data.table(w=c(shortparmlist$q),
                sigma0=1/sqrt(c(shortparmlist$tauR[,'output0',])),
                mu1=c(shortparmlist$meanR[,'output1',]),
                sigma1=1/sqrt(c(shortparmlist$tauR[,'output1',]))
-               ), pasteo0('_CNN_transducer_parameters_skip',nskip,'.csv'), sep=',')
+               ), paste0('_CNN2_transducer_parameters_skip',nskip,'.csv'), sep=',')
 
 
 
@@ -373,7 +368,7 @@ probsinv0 <- rowMeans(samplesF(Y=outputs2, X=cbind(class=0), parmList=parmlist, 
 
 fwrite(cbind(ddata, 'CNN_prob1'=probs1,
              'CNN_invprob0'=probsinv0, 'CNN_invprob1'=probsinv1),
-       paste0('CNNplus_',demofile), sep=',')
+       paste0('CNNprobs_',demofile), sep=',')
 
 
 ## These functions make sure to chose equally in case of tie
@@ -440,6 +435,31 @@ cbind(ulist2, rresults,
       'd_mix'=round(apply(rresults,1,function(x){diff(x[c(2,3)])}),4),
       'rd%_std'=round(100*apply(rresults,1,function(x){diff(x[c(1,3)])/abs(x[1])}),2),
       'rd%_mix'=round(100*apply(rresults,1,function(x){diff(x[c(2,3)])/abs(x[2])}),2))
+
+
+##                                         standard  mixed transducer d_std  d_mix rd%_std rd%_mix
+##  [1,]   1.000    0.000    0.000   1.000    0.959  0.959      0.962 0.003  0.003    0.31    0.31
+##  [2,]   1.000    0.000  -10.000  10.000    1.518  1.628      1.645 0.127  0.017    8.37    1.04
+##  [3,]   1.000    0.000 -100.000 100.000    7.237  9.526      9.591 2.354  0.065   32.53    0.68
+##  [4,]  10.000  -10.000    0.000   1.000    8.628  8.914      9.091 0.463  0.177    5.37    1.99
+##  [5,] 100.000 -100.000    0.000   1.000   85.584 89.941     90.914 5.330  0.973    6.23    1.08
+##
+##  [6,]   1.000   -1.000  -10.000  10.000    1.491  1.560      1.544 0.053 -0.016    3.55   -1.03
+##  [7,]   1.000   -1.000 -100.000 100.000    7.210  9.255      9.230 2.020 -0.025   28.02   -0.27
+##  [8,]  10.000  -10.000   -1.000   1.000    8.614  8.827      8.983 0.369  0.156    4.28    1.77
+##  [9,] 100.000 -100.000   -1.000   1.000   85.571 89.509     90.823 5.252  1.314    6.14    1.47
+####
+## [10,]   1.000    0.000    0.000   1.000    0.959  0.959      0.962 0.003  0.003    0.31    0.31
+## [11,]   0.550    0.500    0.000   1.000    0.576  0.581      0.582 0.006  0.001    1.04    0.17
+## [12,]   0.505    0.500    0.000   1.000    0.536  0.548      0.548 0.012  0.000    2.24    0.00
+## [13,]   1.000    0.000    0.500   0.550    0.931  0.946      0.955 0.024  0.009    2.58    0.95
+## [14,]   1.000    0.000    0.500   0.505    0.928  0.950      0.955 0.027  0.005    2.91    0.53
+##
+## [15,]   0.550    0.450    0.000   1.000    0.575  0.578      0.577 0.002 -0.001    0.35   -0.17
+## [16,]   0.505    0.495    0.000   1.000    0.536  0.546      0.546 0.010  0.000    1.87    0.00
+## [17,]   1.000    0.000    0.450   0.550    0.931  0.941      0.949 0.018  0.008    1.93    0.85
+## [18,]   1.000    0.000    0.495   0.505    0.928  0.948      0.954 0.026  0.006    2.80    0.63
+
 
 #### nskip = 4:
 ##                                         standard  mixed transducer d_std  d_mix rd%_std rd%_mix
@@ -532,6 +552,9 @@ allscores <- apply(lut, 3, function(um){
 rownames(allscores) <- c('standard', 'mixed', 'transducer')
 
 rowMeans(allscores)
+#### correct params
+##   standard      mixed transducer 
+##  0.7527198  0.7555375  0.7569162 
 #### nskip = 4
 ##   standard      mixed transducer 
 ##  0.7527198  0.7555375  0.7569022 
@@ -541,7 +564,7 @@ rowMeans(allscores)
 
 
 
-pdff('../CNN_transducer_gainsx', asp=1)
+pdff('../CNN_transducer_gainsx2', asp=1)
 ## tplot(x=allscores[1,1:nn2], y=allscores[2,1:nn2]-allscores[1,1:nn2], type='p', pch=16, cex=1, alpha=0.5)
 tplot(x=log10(allscores[1,1:nn2]), y=log10(allscores[3,1:nn2]), type='p', pch=16, cex=0.5, alpha=0.25, asp=1,
       xticks=log10(sort(c(1:9)*rep(10^c(-1,0),each=9))),
@@ -676,41 +699,31 @@ cbind(ulist2, rresults,
       'rd%_std'=round(100*apply(rresults,1,function(x){diff(x[c(1,3)])/abs(x[1])}),2),
       'rd%_mix'=round(100*apply(rresults,1,function(x){diff(x[c(2,3)])/abs(x[2])}),2))
 
-#### nskip = 4
+
 ##                                         standard  discr  gener  d_std d_mix rd%_std rd%_mix
-##  [1,]   1.000    0.000    0.000   1.000    0.894  0.847  0.930  0.036 0.083    4.03    9.80
-##  [2,]   1.000    0.000  -10.000  10.000    4.990  6.466  6.791  1.801 0.325   36.09    5.03
-##  [3,]   1.000    0.000 -100.000 100.000   46.953 66.456 66.667 19.714 0.211   41.99    0.32
-##  [4,]  10.000  -10.000    0.000   1.000    3.777  3.333  3.765 -0.012 0.432   -0.32   12.96
-##  [5,] 100.000 -100.000    0.000   1.000   32.673 33.333 33.333  0.660 0.000    2.02    0.00
-##  [6,]   1.000   -1.000  -10.000  10.000    4.984  6.125  6.689  1.705 0.564   34.21    9.21
-##  [7,]   1.000   -1.000 -100.000 100.000   46.947 65.180 66.333 19.386 1.153   41.29    1.77
-##  [8,]  10.000  -10.000   -1.000   1.000    3.677  2.667  3.714  0.037 1.047    1.01   39.26
-##  [9,] 100.000 -100.000   -1.000   1.000   32.573 32.667 32.757  0.184 0.090    0.56    0.28
-## [10,]   1.000    0.000    0.000   1.000    0.894  0.847  0.930  0.036 0.083    4.03    9.80
+##  [1,]   1.000    0.000    0.000   1.000    0.894  0.861  0.930  0.036 0.069    4.03    8.01
+##  [2,]   1.000    0.000  -10.000  10.000    4.990  6.466  6.802  1.812 0.336   36.31    5.20
+##  [3,]   1.000    0.000 -100.000 100.000   46.953 66.462 66.667 19.714 0.205   41.99    0.31
+##  [4,]  10.000  -10.000    0.000   1.000    3.777  3.333  3.742 -0.035 0.409   -0.93   12.27
+##  [5,] 100.000 -100.000    0.000   1.000   32.673 33.333 33.364  0.691 0.031    2.11    0.09
+##
+##  [6,]   1.000   -1.000  -10.000  10.000    4.984  6.125  6.706  1.722 0.581   34.55    9.49
+##  [7,]   1.000   -1.000 -100.000 100.000   46.947 64.767 66.333 19.386 1.566   41.29    2.42
+##  [8,]  10.000  -10.000   -1.000   1.000    3.677  2.740  3.714  0.037 0.974    1.01   35.55
+##  [9,] 100.000 -100.000   -1.000   1.000   32.573 32.667 32.859  0.286 0.192    0.88    0.59
+####
+## [10,]   1.000    0.000    0.000   1.000    0.894  0.861  0.930  0.036 0.069    4.03    8.01
 ## [11,]   0.550    0.500    0.000   1.000    0.749  0.823  0.840  0.091 0.017   12.15    2.07
 ## [12,]   0.505    0.500    0.000   1.000    0.735  0.832  0.833  0.098 0.001   13.33    0.12
-## [13,]   1.000    0.000    0.500   0.550    0.689  0.667  0.688 -0.001 0.021   -0.15    3.15
+## [13,]   1.000    0.000    0.500   0.550    0.689  0.667  0.687 -0.002 0.020   -0.29    3.00
 ## [14,]   1.000    0.000    0.500   0.505    0.663  0.667  0.667  0.004 0.000    0.60    0.00
-## [15,]   0.550    0.450    0.000   1.000    0.749  0.806  0.834  0.085 0.028   11.35    3.47
-## [16,]   0.505    0.495    0.000   1.000    0.735  0.826  0.832  0.097 0.006   13.20    0.73
-## [17,]   1.000    0.000    0.450   0.550    0.684  0.633  0.686  0.002 0.053    0.29    8.37
+##
+## [15,]   0.550    0.450    0.000   1.000    0.749  0.806  0.835  0.086 0.029   11.48    3.60
+## [16,]   0.505    0.495    0.000   1.000    0.735  0.824  0.832  0.097 0.008   13.20    0.97
+## [17,]   1.000    0.000    0.450   0.550    0.684  0.637  0.686  0.002 0.049    0.29    7.69
 ## [18,]   1.000    0.000    0.495   0.505    0.663  0.663  0.664  0.001 0.001    0.15    0.15
 
-#### skip=8
-## > +                        standard discr gener rel_diff_std rel_diff_discr
-## [1,]   1    0    0   1    0.888 0.838 0.937          5.5           11.8
-## [2,]   1  -10    0  10    0.749 0.824 0.838         11.9            1.7
-## [3,]   1 -100    0 100    0.735 0.832 0.833         13.3            0.1
-## [4,]  10    0  -10   1    0.683 0.667 0.680         -0.4            1.9
-## [5,] 100    0 -100   1    0.657 0.667 0.667          1.5            0.0
-#### skip=4
-##                        standard discr gener rel_diff_std rel_diff_discr
-## [1,]   1    0    0   1    0.896 0.849 0.941          5.0           10.8
-## [2,]   1  -10    0  10    0.750 0.824 0.839         11.9            1.8
-## [3,]   1 -100    0 100    0.735 0.832 0.833         13.3            0.1
-## [4,]  10    0  -10   1    0.691 0.667 0.690         -0.1            3.4
-## [5,] 100    0 -100   1    0.665 0.667 0.667          0.3            0.0
+
 
 t(cbind(ulist2, signif(rresults[,c(1,2,3)],3),
         round(100*apply(rresults,1,function(x){diff(x[c(1,3)])/abs(x[1])}),1),
@@ -745,7 +758,10 @@ allscoresb <- apply(lut, 3, function(um){
 rownames(allscoresb) <- c('standard', 'discr', 'gener')
 
 rowMeans(allscoresb)
-#### nskip = 4
+##  standard     discr     gener 
+## 0.7189775 0.7122074 0.7478031 
+
+#### old nskip = 4
 ##  standard     discr     gener 
 ## 0.7189775 0.7127219 0.7481832 
 
@@ -800,8 +816,8 @@ dev.off()
 ## combining evidence from both algorithms
 #########################################################
 
-outsCNN <- fread('CNNplus_modCHEMBL205_predictions_CNN_test2_demonstration.csv', sep=',')
-outsRF <- fread('RFplus_tmodCHEMBL205_predictions_RF_test2_demonstration.csv', sep=',')
+outsCNN <- fread('CNNprobs_modCHEMBL205_predictions_CNN_test2_demonstration.csv', sep=',')
+outsRF <- fread('RFprobs_tmodCHEMBL205_predictions_RF_test2_demonstration.csv', sep=',')
 
 RFprob1 <- outsRF$RF_prob1
 RFinvprob0 <- outsRF$RF_invprob0
@@ -890,6 +906,150 @@ cbind(ulist2, rresults,
       'd_CNN'=round(apply(rresults,1,function(x){diff(x[c(2,3)])}),4),
       'rd%_RF'=round(100*apply(rresults,1,function(x){diff(x[c(1,3)])/abs(x[1])}),2),
       'rd%_CNN'=round(100*apply(rresults,1,function(x){diff(x[c(2,3)])/abs(x[2])}),2))
+
+
+##                                         RF_trans CNN_trans combined   d_RF  d_CNN rd%_RF rd%_CNN
+##  [1,]   1.000    0.000    0.000   1.000    0.974     0.962    0.970 -0.004  0.008  -0.41    0.83
+##  [2,]   1.000    0.000  -10.000  10.000    1.720     1.645    1.707 -0.013  0.062  -0.76    3.77
+##  [3,]   1.000    0.000 -100.000 100.000    9.632     9.591    9.669  0.037  0.078   0.38    0.81
+##  [4,]  10.000  -10.000    0.000   1.000    9.091     9.091    8.883 -0.208 -0.208  -2.29   -2.29
+##  [5,] 100.000 -100.000    0.000   1.000   90.914    90.914   89.461 -1.453 -1.453  -1.60   -1.60
+##
+##  [6,]   1.000   -1.000  -10.000  10.000    1.683     1.544    1.672 -0.011  0.128  -0.65    8.29
+##  [7,]   1.000   -1.000 -100.000 100.000    9.516     9.230    9.551  0.035  0.321   0.37    3.48
+##  [8,]  10.000  -10.000   -1.000   1.000    8.984     8.983    8.840 -0.144 -0.143  -1.60   -1.59
+##  [9,] 100.000 -100.000   -1.000   1.000   90.823    90.823   88.830 -1.993 -1.993  -2.19   -2.19
+##
+## [10,]   1.000    0.000    0.000   1.000    0.974     0.962    0.970 -0.004  0.008  -0.41    0.83
+## [11,]   0.550    0.500    0.000   1.000    0.586     0.582    0.585 -0.001  0.003  -0.17    0.52
+## [12,]   0.505    0.500    0.000   1.000    0.548     0.548    0.548  0.000  0.000   0.00    0.00
+## [13,]   1.000    0.000    0.500   0.550    0.955     0.955    0.944 -0.011 -0.011  -1.15   -1.15
+## [14,]   1.000    0.000    0.500   0.505    0.955     0.955    0.947 -0.008 -0.008  -0.84   -0.84
+##
+## [15,]   0.550    0.450    0.000   1.000    0.584     0.577    0.584  0.000  0.007   0.00    1.21
+## [16,]   0.505    0.495    0.000   1.000    0.548     0.546    0.548  0.000  0.002   0.00    0.37
+## [17,]   1.000    0.000    0.450   0.550    0.949     0.949    0.942 -0.007 -0.007  -0.74   -0.74
+## [18,]   1.000    0.000    0.495   0.505    0.954     0.954    0.944 -0.010 -0.010  -1.05   -1.05
+
+
+
+## Calculation of utility yields on demonstration set
+## for uniform distribution of utility matrices
+
+id <- diag(2)
+utp <- matrix(c(1,0,0,0),2,2)
+utn <- matrix(c(0,0,0,1),2,2)
+ufp <- matrix(c(0,0,1,0),2,2)
+ufn <- matrix(c(0,1,0,0),2,2)
+xy2um <- function(ab,ab2=NULL,norm=TRUE){
+    if(length(ab)==1){ab <- c(ab,ab2)}
+        um <- id + (ab[1]<0)*ab[1]*utn - (ab[1]>0)*ab[1]*utp +
+            (ab[2]>0)*ab[2]*ufp - (ab[2]<0)*ab[2]*ufn
+    if(norm){
+        um <- um-min(um)
+        um <- um/max(um)
+    }
+    um
+}
+
+set.seed(111)
+nn <- 10^4
+nn2 <- nn#3*10^3
+##
+lxy <- runif(2*round(nn*6/3),-1,1)
+##
+dim(lxy) <- c(round(nn*6/3),2)
+lxy <- lxy[lxy[,2]<lxy[,1]+1 & lxy[,2]>lxy[,1]-1 & abs(lxy[,1])<=1 & abs(lxy[,2])<=1,][1:nn,]
+##
+lut <- apply(lxy,1,xy2um)
+dim(lut) <- c(2,2,nn)
+
+##cmstandard <- buildcm(classes, t(outputs2))
+##
+allscores <- apply(lut, 3, function(um){
+    c(sum(buildcm(classes, RFprob1, um) * um),
+      sum(buildcm(classes, CNNprob1, um) * um),
+      sum(buildcm(classes, ensprob1, um) * um)
+      )
+})/length(classes)
+## allscores <- (foreach(i=1:nn, .combine=cbind, .inorder=F)%dopar%{
+##     um <- lut[,,i]
+##     c(sum(cmstandard * um),
+##       sum(buildcm(classes, probs1, um) * um),
+##       sum(buildcm(classes, outputs1, um) * um)
+##       )
+## })/length(classes)
+rownames(allscores) <- c('RF', 'CNN', 'together')
+
+rowMeans(allscores)
+##        RF       CNN  together 
+## 0.7629040 0.7569162 0.7601553 
+
+
+
+#### correct params
+##   standard      mixed transducer 
+##  0.7527198  0.7555375  0.7569162 
+#### nskip = 4
+##   standard      mixed transducer 
+##  0.7527198  0.7555375  0.7569022 
+#### nskip = 8
+##   standard      mixed transducer 
+##  0.7527198  0.7555375  0.7569008 
+
+
+
+pdff('../ensemble_transducer_vs_RF', asp=1)
+## tplot(x=allscores[1,1:nn2], y=allscores[2,1:nn2]-allscores[1,1:nn2], type='p', pch=16, cex=1, alpha=0.5)
+tplot(x=log10(allscores[1,1:nn2]), y=log10(allscores[3,1:nn2]), type='p', pch=16, cex=0.5, alpha=0.25, asp=1,
+      xticks=log10(sort(c(1:9)*rep(10^c(-1,0),each=9))),
+      xlabels=sort(c(1:9)*rep(10^c(-1,0),each=9)),
+      yticks=log10(sort(c(1:9)*rep(10^c(-1,0),each=9))),
+      ylabels=sort(c(1:9)*rep(10^c(-1,0),each=9)),
+      xlab='utility yield with RF transducer',
+      ylab='utility yield with combination')
+abline(0,1, col=paste0(palette()[2],'88'), lwd=2, lty=1)
+## tplot(x=log10(allscores[2,1:nn2]), y=log10(allscores[3,1:nn2]), type='p', pch=16, cex=0.5, alpha=0.25, col=2,
+##       xticks=log10(sort(c(1:9)*rep(10^c(-1,0),each=9))),
+##       xlabels=sort(c(1:9)*rep(10^c(-1,0),each=9)),
+##       yticks=log10(sort(c(1:9)*rep(10^c(-1,0),each=9))),
+##       ylabels=sort(c(1:9)*rep(10^c(-1,0),each=9)),
+##       xlab='utility yield from mixed method',
+##       ylab='utility yield from transducer & utility maximization')
+## abline(0,1, col=paste0(palette()[4],'88'), lwd=2, lty=1)
+dev.off()
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 ##                                         RF_trans CNN_trans combined   d_RF  d_CNN rd%_RF rd%_CNN
 ##  [1,]   1.000    0.000    0.000   1.000    0.974     0.961    0.970 -0.004  0.009  -0.41    0.94

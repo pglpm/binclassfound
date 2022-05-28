@@ -1,0 +1,5 @@
+variate,type,min,max,transfM,transfW,origvariate
+class,binary,0,1,,,class
+RFoutput1,double,-Inf,Inf,,,RFoutput1
+CNNoutput0,double,-Inf,Inf,,,CNNoutput0
+CNNoutput1,double,-Inf,Inf,,,CNNoutput1

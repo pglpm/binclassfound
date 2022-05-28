@@ -1,6 +1,6 @@
 ## Author: PGL  Porta Mana
 ## Created: 2022-03-17T14:21:57+0100
-## Last-Updated: 2022-05-28T11:57:53+0200
+## Last-Updated: 2022-05-28T15:05:48+0200
 ################
 ## Exploration of several issues for binary classifiers
 ################
@@ -178,6 +178,18 @@ legend('top', c('class 1', 'class 0'), lty=c(1,2), col=c(1,2), lwd=3, bty='n', c
 polygon(x=c(xgrid,rev(xgrid)), y=c(q1grid[1,]*Xjacobian[[outputcov]](xgrid),rev(q1grid[2,]*Xjacobian[[outputcov]](xgrid))), col=paste0(palette()[1],'40'), border=NA)
 polygon(x=c(xgrid,rev(xgrid)), y=c(q0grid[1,]*Xjacobian[[outputcov]](xgrid),rev(q0grid[2,]*Xjacobian[[outputcov]](xgrid))), col=paste0(palette()[2],'40'), border=NA)
 dev.off()
+##
+pdff('../transducer_curve_RFraw2_inverse_trunc')
+tplot(x=xgrid, y=cbind(rowMeans(py1grid), rowMeans(py0grid))*Xjacobian[[outputcov]](xgrid), xlab='output',
+##      ylab=expression(p~group('(',class~output,')')),
+      ylab=bquote('p'~group('(','output', '.')~group('|', ' class',')')),
+      mar=c(4.5,5.5,1,1),
+      ylim=c(0,exp(mean(log(c(max(q0grid),max(q1grid)))))), lwd=3, family='Palatino')
+legend('top', c('class 1', 'class 0'), lty=c(1,2), col=c(1,2), lwd=3, bty='n', cex=1.5)
+##
+polygon(x=c(xgrid,rev(xgrid)), y=c(q1grid[1,]*Xjacobian[[outputcov]](xgrid),rev(q1grid[2,]*Xjacobian[[outputcov]](xgrid))), col=paste0(palette()[1],'40'), border=NA)
+polygon(x=c(xgrid,rev(xgrid)), y=c(q0grid[1,]*Xjacobian[[outputcov]](xgrid),rev(q0grid[2,]*Xjacobian[[outputcov]](xgrid))), col=paste0(palette()[2],'40'), border=NA)
+dev.off()
 
 
 
@@ -247,7 +259,7 @@ probsinv0 <- rowMeans(samplesF(Y=transfoutputs1, X=cbind(class=0), parmList=parm
 
 fwrite(cbind(ddata, 'RF_prob1'=probs1,
              'RF_invprob0'=probsinv0, 'RF_invprob1'=probsinv1),
-       paste0('raw2RFplus_',demofile), sep=',')
+       paste0('RFprobs_',demofile), sep=',')
 
 
 ## These functions make sure to chose equally in case of tie
