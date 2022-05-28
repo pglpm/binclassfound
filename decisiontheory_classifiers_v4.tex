@@ -1,7 +1,7 @@
 \pdfoutput=1
 %% Author: PGL  Porta Mana
 %% Created: 2022-03-04T07:39:34+0200
-%% Last-Updated: 2022-05-28T06:43:30+0200
+%% Last-Updated: 2022-05-28T22:36:27+0200
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Decision theory for machine-learning classifiers
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -720,6 +720,8 @@ Open Science Framework \doi{10.31219/osf.io/#1}%
 \newcommand*{\eu}{\bar{U}}
 \newcommand*{\aveu}{\myhat{\mathte{U}}}
 \newcommand*{\uncu}[1]{\mathte{U}^{(#1)}}
+\newcommand*{\umatrix}[4]{\begin{bmatrix*}[r]#1&#2\\#3&#4\end{bmatrix*}}
+\newcommand*{\sumatrix}[4]{\begin{bsmallmatrix*}[r]#1&#2\\#3&#4\end{bsmallmatrix*}}
 \newcounter{dummy}
 %%% Custom macros end @@@
 
@@ -798,10 +800,10 @@ Two candidate classifiers, let us call them $\Alpha$ and $\Beta$, are trained on
     \clap{\textit{\parbox{5em}{\centering\scriptsize classifier\\output\\$1\quad 0$}}
     }}\ 
     \overbracket[0pt]{
-      \begin{bmatrix}
-    \text{\footnotesize True 0} & \text{\footnotesize False 0}\\
-    \text{\footnotesize False 1} & \text{\footnotesize True 1}\\
-      \end{bmatrix}}^{
+      \umatrix{
+    \text{\footnotesize True 0} }{ \text{\footnotesize False 0}}{
+    \text{\footnotesize False 1} }{ \text{\footnotesize True 1}}
+      }^{
       \clap{\textit{\parbox{6em}{\centering\scriptsize true class\\$0\hspace{3em}1$}}
     }}
 \end{equation*}
@@ -813,15 +815,15 @@ and normalized over the total number of evaluation data:
 %% [2,] 0.07 0.32
 \begin{align}
   \label{eq:CM_A}
-\text{classifier $\Alpha$:}\quad  \begin{bmatrix}
-    0.27 & 0.15 \\ 0.23 & 0.35
-  \end{bmatrix}
+\text{classifier $\Alpha$:}\quad  \umatrix{
+    0.27 }{ 0.15 }{ 0.23 }{ 0.35
+  }
 \ ,
   \\
   \label{eq:CM_B}
-\text{classifier $\Beta$:}\quad  \begin{bmatrix}
-    0.43 & 0.18 \\ 0.07 & 0.32
-  \end{bmatrix}
+\text{classifier $\Beta$:}\quad  \umatrix{
+    0.43 }{ 0.18 }{ 0.07 }{ 0.32
+  }
 \ .
 \end{align}
 These matrices show that the factory produces, on average, 50\% short- and 50\% long-durability components.
@@ -868,10 +870,10 @@ The average gains above are easy to calculate from some additional information. 
     \clap{\textit{\parbox{5em}{\centering\scriptsize classifier\\output\\$1\quad 0$}}
     }}\ 
     \overbracket[0pt]{
-      \begin{bmatrix*}[r]
-        15\,\text{\texteuro} & -335\,\text{\texteuro}  \\
-        -35\,\text{\texteuro} & 165\,\text{\texteuro}
-      \end{bmatrix*}}^{
+      \umatrix{
+        15\,\text{\texteuro} }{ -335\,\text{\texteuro} }{
+        -35\,\text{\texteuro} }{ 165\,\text{\texteuro}}
+      }^{
       \clap{\textit{\parbox{6em}{\centering\scriptsize true class\\$0\hspace{3em}1$}}
     }}
 \end{equation}
@@ -919,11 +921,11 @@ The story above illustrates several well-known issues of currently popular evalu
   \rotatebox[origin=c]{90}{
     \clap{\textit{\parbox{5em}{\centering\scriptsize classifier\\output\\$1\hspace{1.5em}0$}}
     }}\ 
-    \overbracket[0pt]{
-      \begin{bmatrix*}[r]
-        45\,\text{\texteuro} & -335\,\text{\texteuro}  \\
-        -65\,\text{\texteuro} & 165\,\text{\texteuro}
-      \end{bmatrix*}}^{
+  \overbracket[0pt]{
+    \umatrix{
+        45\,\text{\texteuro} }{ -335\,\text{\texteuro} }{
+        -65\,\text{\texteuro} }{ 165\,\text{\texteuro}
+      }}^{
       \clap{\textit{\parbox{6em}{\centering\scriptsize true class\\$0\hspace{4em}1$}}
     }} \ .
 \end{equation}
@@ -943,10 +945,10 @@ One could argue that also this case there is a great economic difference between
     \clap{\textit{\parbox{5em}{\centering\scriptsize classifier\\output\\$1\hspace{1.5em}0$}}
     }}\ 
     \overbracket[0pt]{
-      \begin{bmatrix*}[r]
-        350\,\text{months} & 0\,\text{months}  \\
-        300\,\text{months} & 500\,\text{months}
-      \end{bmatrix*}}^{
+      \umatrix{
+        350\,\text{months} }{ 0\,\text{months}  }{
+        300\,\text{months} }{ 500\,\text{months}
+      }}^{
       \clap{\textit{\parbox{8em}{\scriptsize\centering true class\\$0\hspace{7em}1$}}
     }} \ .
 \end{equation}
@@ -1138,8 +1140,8 @@ A classifier yields a normalized confusion matrix $(C_{ij})$ which we write in t
     \clap{\textit{\parbox{5em}{\centering\scriptsize classifier\\output\\$1\hspace{1.5em}0$}}
     }}\ 
     \overbracket[0pt]{
-      \begin{bmatrix} C_{00} & C_{01} \\ C_{10} & C_{11}
-      \end{bmatrix}}^{
+      \umatrix{ C_{00} }{ C_{01} }{ C_{10} }{ C_{11}
+      }}^{
       \clap{\textit{\parbox{6em}{\centering\scriptsize true class\\$0\hspace{3em}1$}}
     }} \ .
 \end{equation*}
@@ -1180,11 +1182,11 @@ Let us examine some common evaluation metrics for binary classification from thi
 
 The following metrics are particular instances of formula~\eqref{eq:general_valuation_metric}:
 \begin{itemize}
-\item[\itemyes] \emph{Accuracy:} $C_{00}+C_{11}$. We have $a=1$, $\cx=\cy=1$, $b=0$. Indeed it corresponds to the utility yield based on the identity utility matrix $(U_{ij}) = \begin{bsmallmatrix} 1&0\\0&1 \end{bsmallmatrix}$ (or equivalently a utility matrix that assigns the same utility to the correct classification of any class, and the same, lower utility to the misclassification of any class).
+\item[\itemyes] \emph{Accuracy:} $C_{00}+C_{11}$. We have $a=1$, $\cx=\cy=1$, $b=0$. Indeed it corresponds to the utility yield based on the identity utility matrix $(U_{ij}) = \sumatrix{ 1}{0}{0}{1 }$ (or equivalently a utility matrix that assigns the same utility to the correct classification of any class, and the same, lower utility to the misclassification of any class).
   
-\item[\itemyes] \emph{True-positive rate (recall):} $C_{00}/f_{0}$. Here $a=1/f_{0}$, $\cx=1$, $\cy=0$, $b=0$. It corresponds to using the utility matrix $\begin{bsmallmatrix} 1&0\\0&0 \end{bsmallmatrix}$. 
+\item[\itemyes] \emph{True-positive rate (recall):} $C_{00}/f_{0}$. Here $a=1/f_{0}$, $\cx=1$, $\cy=0$, $b=0$. It corresponds to using the utility matrix $\sumatrix{ 1}{0}{0}{0 }$. 
 
-\item[\itemyes] \emph{True-negative rate (specificity):} $C_{11}/f_{1}$. Here $a=1/f_{1}$, $\cx=0$, $\cy=1$, $b=0$. It corresponds to using the utility matrix $\begin{bsmallmatrix} 0&0\\0&1 \end{bsmallmatrix}$. 
+\item[\itemyes] \emph{True-negative rate (specificity):} $C_{11}/f_{1}$. Here $a=1/f_{1}$, $\cx=0$, $\cy=1$, $b=0$. It corresponds to using the utility matrix $\sumatrix{ 0}{0}{0}{1 }$. 
 \end{itemize}
 
 The following metrics instead \emph{cannot} be written in the form~\eqref{eq:general_valuation_metric}, nor as monotonic functions of that form:
@@ -1221,7 +1223,7 @@ The second phenomenon is illustrated in the plots of \figs~\ref{fig:metrics_vs_u
 % {B}\hfill\mbox{}\\[0pt]
 % \vspace{-1em}{\color{mygrey}\rule{0.66\linewidth}{0.25pt}}
 % \includegraphics[width=0.95\linewidth]{utility_vs_metrics2_0.9.jpg}\\[0pt]
-\caption{Relationship between various evaluation metrics and actual utility yields for two different binary-classification problems with underlying utility matrices $\begin{bsmallmatrix} 1&0\\0&1 \end{bsmallmatrix}$ (left column) and $\begin{bsmallmatrix} 1&0\\0&0 \end{bsmallmatrix}$ (right column). All confusion matrices ({\color{mypurpleblue}blue dots}) are obtained from a dataset with 50\%/50\% class balance.
+\caption{Relationship between various evaluation metrics and actual utility yields for two different binary-classification problems with underlying utility matrices $\sumatrix{ 1}{0}{0}{1 }$ (left column) and $\sumatrix{ 1}{0}{0}{0 }$ (right column). All confusion matrices ({\color{mypurpleblue}blue dots}) are obtained from a dataset with 50\%/50\% class balance.
 %
   Pairs of {\color{myred}red triangles} in a plot show two confusion matrices that are wrongly ranked by the metric (y-axis) with respect to the actual utility yield (x-axis). Clearly, there can even be three or more confusion matrices ranked in completely reverse order by the metric.
 %
@@ -1241,7 +1243,7 @@ The second phenomenon is illustrated in the plots of \figs~\ref{fig:metrics_vs_u
 \caption{As for \fig~\ref{fig:metrics_vs_utility} but for confusion matrices obtained from an imbalanced dataset with 90\% occurrence of class~0 (\enquote{positive}) and 10\% of class~1 (\enquote{negative}).}
   \label{fig:metrics_vs_utility2}
 \end{figure}
-Each blue dot in a plot represents a hypothetical confusion matrix obtained from a test dataset in a binary classification. The dot's coordinates are the utility yield of that confusion matrix according to a particular utility matrix underlying the classification problem, and the score of the confusion matrix according to another metric. The underlying utility matrix is $\begin{bsmallmatrix} 1&0\\0&1 \end{bsmallmatrix}$ for all plots in the left column, and $\begin{bsmallmatrix} 1&0\\0&0 \end{bsmallmatrix}$ for all plots in the right column. The other metrics considered, one for each row of plots, are accuracy, true-positive rate (recall, class~0 being \enquote{positive}), $F_{1}$-measure, Matthews correlation coefficient.
+Each blue dot in a plot represents a hypothetical confusion matrix obtained from a test dataset in a binary classification. The dot's coordinates are the utility yield of that confusion matrix according to a particular utility matrix underlying the classification problem, and the score of the confusion matrix according to another metric. The underlying utility matrix is $\sumatrix{ 1}{0}{0}{1 }$ for all plots in the left column, and $\sumatrix{ 1}{0}{0}{0 }$ for all plots in the right column. The other metrics considered, one for each row of plots, are accuracy, true-positive rate (recall, class~0 being \enquote{positive}), $F_{1}$-measure, Matthews correlation coefficient.
 
 The confusion matrices are selected by first fixing a proportion of classes in the dataset, which is 50\%/50\% (balanced dataset) for all plots in \fig~\ref{fig:metrics_vs_utility} and 90\%/10\% (imbalanced dataset) for all plots in \fig~\ref{fig:metrics_vs_utility2}. Then a %
 true-positive rate and a true-negative rate are independently selected %
@@ -1255,16 +1257,16 @@ from the range $\clcl{1/2,1}$, with a probability linearly increasing in the rat
 \label{fig:linear_distr}  
 \end{minipage}
 
-% Consider the uppermost left plot of \fig~\ref{fig:metrics_vs_utility} as an example. It corresponds to a binary-classification problem with an underlying utility matrix equivalent to the identity $ \begin{bsmallmatrix} 1&0\\0&1 \end{bsmallmatrix} $, and a test set with a balanced number of classes, that is, each class appear with $50\%$ frequency. We select a large number of confusion matrices having this class balance and true-positive and true-negative rates distributed between $1/2$ and $1$ with linearly increasing probabilities. These confusion matrices would thus arise mostly from good classifying algorithms. For each confusion matrix we calculate
+% Consider the uppermost left plot of \fig~\ref{fig:metrics_vs_utility} as an example. It corresponds to a binary-classification problem with an underlying utility matrix equivalent to the identity $ \sumatrix{ 1}{0}{0}{1 } $, and a test set with a balanced number of classes, that is, each class appear with $50\%$ frequency. We select a large number of confusion matrices having this class balance and true-positive and true-negative rates distributed between $1/2$ and $1$ with linearly increasing probabilities. These confusion matrices would thus arise mostly from good classifying algorithms. For each confusion matrix we calculate
 % \begin{enumerate}[label=\arabic*.]
-% \item its average utility yield, according to the utility matrix $\begin{bsmallmatrix} 1&0\\0&1 \end{bsmallmatrix}$; this number is the actual performance, appropriate to this specific problem, of the corresponding algorithm;
+% \item its average utility yield, according to the utility matrix $\sumatrix{ 1}{0}{0}{1 }$; this number is the actual performance, appropriate to this specific problem, of the corresponding algorithm;
 % \item its score according to another metric, in this case the $F_{1}$-measure;
 % \end{enumerate}
 % and we plot (blue disks) a corresponding point with these two numbers as $x$- and $y$-coordinates. This plot thus shows the general statistical relation between the appropriate utility score and the $F_{1}$-measure of this distribution of confusion matrices.
 % 
-% The other three plots in the upper panel of \fig~\ref{fig:metrics_vs_utility} are analogous but for Matthews Correlation Coefficient, accuracy, and true-positive rate as $y$-coordinates. The lower panel is analogous to the upper panel, but for an imbalanced dataset with one class appearing with $80\%$ frequency. Finally, \fig~\ref{fig:metrics_vs_utility2} is analogous to \fig~\ref{fig:metrics_vs_utility} but with an underlying utility matrix equal to $ \begin{bsmallmatrix} 1&0\\0&0 \end{bsmallmatrix} $.
+% The other three plots in the upper panel of \fig~\ref{fig:metrics_vs_utility} are analogous but for Matthews Correlation Coefficient, accuracy, and true-positive rate as $y$-coordinates. The lower panel is analogous to the upper panel, but for an imbalanced dataset with one class appearing with $80\%$ frequency. Finally, \fig~\ref{fig:metrics_vs_utility2} is analogous to \fig~\ref{fig:metrics_vs_utility} but with an underlying utility matrix equal to $ \sumatrix{ 1}{0}{0}{0 } $.
 
-We see that the accuracy (first-row plots) always gives correct relative evaluations of all confusion matrices when the underlying utility matrix is equivalent to $\begin{bsmallmatrix} 1&0\\0&1 \end{bsmallmatrix}$ (left column): the y-coordinate is a monotonically increasing function -- in fact a linear function -- of the x-coordinate. Accuracy is indeed the utility yield corresponding to the identity utility matrix. The true-positive rate (second-row plots) always gives correct relative evaluations (provided the test set is the same) when the underlying utility matrix is equivalent to $\begin{bsmallmatrix} 1&0\\0&0 \end{bsmallmatrix}$ (right column).
+We see that the accuracy (first-row plots) always gives correct relative evaluations of all confusion matrices when the underlying utility matrix is equivalent to $\sumatrix{ 1}{0}{0}{1 }$ (left column): the y-coordinate is a monotonically increasing function -- in fact a linear function -- of the x-coordinate. Accuracy is indeed the utility yield corresponding to the identity utility matrix. The true-positive rate (second-row plots) always gives correct relative evaluations (provided the test set is the same) when the underlying utility matrix is equivalent to $\sumatrix{ 1}{0}{0}{0 }$ (right column).
 
 On the other hand, if any of these two metrics is used for a problem having a different underlying utility matrix, then there is no deterministic relationship between the metric's score and the actual utility yield. In this case it is always possible to find two or more confusion matrices for which the metric gives completely reversed evaluations with respect to the actual utility yield. In other words, the confusion matrix -- and associated algorithm -- which is worst according to the true utility, is ranked best by the metric; and vice versa. Pairs of red triangular shapes in a plot are examples of such confusion matrices wrongly ranked by the y-axis metric.
 
@@ -1276,7 +1278,7 @@ Metrics such as  $F_{1}$-measure and Matthews correlation coefficient, not compl
 
 \medskip
 
-A metric non-compliant with decision theory can lead to a large number of correct results for some classification problems and test sets. The bottom-left plot of \fig~\ref{fig:metrics_vs_utility}, for instance, shows that the Matthews correlation coefficient is almost a monotonically increasing deterministic function of the utility yield when the underlying utility matrix is the identity and the dataset is balanced (but it is not when the underlying utility matrix is $\begin{bsmallmatrix} 1&0\\0&0 \end{bsmallmatrix}$ or the dataset is imbalanced; see corresponding plots). Such an occasional partial agreement is useless, however. Knowledge of the utility matrix is a prerequisite for relying on such partial agreement-- but given such knowledge we can directly use the actual utility yield instead, which has an exact agreement and is easier to compute.
+A metric non-compliant with decision theory can lead to a large number of correct results for some classification problems and test sets. The bottom-left plot of \fig~\ref{fig:metrics_vs_utility}, for instance, shows that the Matthews correlation coefficient is almost a monotonically increasing deterministic function of the utility yield when the underlying utility matrix is the identity and the dataset is balanced (but it is not when the underlying utility matrix is $\sumatrix{ 1}{0}{0}{0 }$ or the dataset is imbalanced; see corresponding plots). Such an occasional partial agreement is useless, however. Knowledge of the utility matrix is a prerequisite for relying on such partial agreement-- but given such knowledge we can directly use the actual utility yield instead, which has an exact agreement and is easier to compute.
 
 
 \section{Unknown or incorrect utilities}
@@ -1337,7 +1339,7 @@ A precise answer to these questions is extremely difficult if not impossible bec
 % \end{wrapfigure}% exp_family_maxent.nb
 \begin{enumerate}[label=(\roman*)]
 \item\label{item:distr_um} Two possible distributions of true utility matrices on the set of \fig~\ref{fig:space_UM} (in that coordinate system):   \begin{enumerate*}[label=\arabic*.]
-\item a uniform distribution; \item a bivariate (truncated) gaussian distribution centred on the identity matrix $\begin{bsmallmatrix} 1&0\\0&1 \end{bsmallmatrix}$ and with standard deviation $1/3$ in the $x$ and $y$ coordinates of \eqn~\eqref{eq:coords_um}, illustrated in \fig~\ref{fig:gauss_distr_um}.
+\item a uniform distribution; \item a bivariate (truncated) gaussian distribution centred on the identity matrix $\sumatrix{ 1}{0}{0}{1 }$ and with standard deviation $1/3$ in the $x$ and $y$ coordinates of \eqn~\eqref{eq:coords_um}, illustrated in \fig~\ref{fig:gauss_distr_um}.
 \end{enumerate*}
 
 \item\label{item:distr_cm} A distribution of confusion matrices for which the fraction of one class is uniformly distributed in $\clcl{0,1}$, and the true-positive and true-negative rates are independently distributed in $\clcl{0.5, 1}$ with linearly increasing probabilities (median of 0.85, lower and upper quartiles at 0.75 and 0.93; see side plot on p.~\pageref{fig:linear_distr}). This means that we consider problems with highly imbalanced data to be as common as problems with balanced data (a realistic assumption, according to our experience), and candidate classifiers to be generally good.
@@ -1354,7 +1356,7 @@ A precise answer to these questions is extremely difficult if not impossible bec
   \hspace{\stretch{1}}
   \parbox[t]{0.45\linewidth}{%
     \centering\includegraphics[width=\linewidth]{error_around_um2.pdf}
-    \caption{Extents of errors having standard deviations $0.1$ ({\color{mypurpleblue}blue triangles}) and $0.2$ ({\color{myred}red squares}), around the utility matrices $\begin{bsmallmatrix} 0.5&0.5\\0&1 \end{bsmallmatrix}$ and $\begin{bsmallmatrix} 1&0\\0.5&0.5 \end{bsmallmatrix}$ (black diamonds).}
+    \caption{Extents of errors having standard deviations $0.1$ ({\color{mypurpleblue}blue triangles}) and $0.2$ ({\color{myred}red squares}), around the utility matrices $\sumatrix{ 0.5}{0.5}{0}{1 }$ and $\sumatrix{ 1}{0}{0.5}{0.5 }$ (black diamonds).}
     \label{fig:error_distr_um}}
   \hspace{\stretch{1}}
 \end{figure}
@@ -1431,9 +1433,9 @@ A correct use of the receiver-operating-characteristic curve $t(f)$ can be made,
 Denote the proportion of class~$0$ (positive) in the test set by $B$. The confusion matrix as a function of $f$ is then
 \begin{equation}
   \label{eq:CM_fromrates}
-  \begin{bmatrix}
-    C_{00}(f) & C_{01}(f)\\ C_{10}(f) & C_{11}(f)
-  \end{bmatrix}
+  \umatrix{
+    C_{00}(f) }{ C_{01}(f)}{ C_{10}(f) }{ C_{11}(f)
+  }
   =
   \begin{bmatrix}
     B\ t(f) & (1-B)\ f \\ B\ [1-t(f)] &(1-B)\ (1-f)
@@ -1472,7 +1474,7 @@ t'(f^{*}) = \frac{(U_{11} - U_{01})\ (1-B)}{(U_{00} - U_{10})\  B} \ .
 \begin{figure}[!b]
   \centering
     \includegraphics[width=0.66\linewidth]{auc_example.pdf}\\
-    \caption{Receiver-operating-characteristic curves of two classifiers. The {\color{red}red dashed curve} clearly subtends a larger area than the {\color{blue}blue solid curve}. Yet the classifier with the latter curve yields a higher utility, because it touches the family of parallel lines, \eqn~\eqref{eq:tangent_line}, at a higher point. This example arises for a utility matrix equal to $\begin{bsmallmatrix} 4&0\\0&1 \end{bsmallmatrix}$ and a test set with $B=0.5$ (balanced), or for a utility matrix equal to $\begin{bsmallmatrix} 1&0\\0&1 \end{bsmallmatrix}$ and a test set with $B=0.8$.}
+    \caption{Receiver-operating-characteristic curves of two classifiers. The {\color{red}red dashed curve} clearly subtends a larger area than the {\color{blue}blue solid curve}. Yet the classifier with the latter curve yields a higher utility, because it touches the family of parallel lines, \eqn~\eqref{eq:tangent_line}, at a higher point. This example arises for a utility matrix equal to $\sumatrix{ 4}{0}{0}{1 }$ and a test set with $B=0.5$ (balanced), or for a utility matrix equal to $\sumatrix{ 1}{0}{0}{1 }$ and a test set with $B=0.8$.}
   \label{fig:auc_example}
 \end{figure}%\FloatBlock
 %
@@ -1577,7 +1579,9 @@ In a companion work \autocites{dyrlandetal2022b} we apply the general ideas pres
 \end{contributions}
 \begin{acknowledgements}
   KD and ASL acknowledge support from the Trond Mohn Research Foundation, grant number BFS2018TMT07, and PGLPM from The Research Council of Norway, grant number 294594.
+
   KD would like to thank family for endless support; partner Synne for constant love, support, and encouragement; and the developers and maintainers of Python, FastAi, PyTorch, scikit-learn, NumPy and RDKit for free open source software and for making the experiments possible. 
+
   PGLPM thanks Maja, Mari, Miri, Emma for continuous encouragement and affection;  Buster Keaton and Saitama for filling life with awe and inspiration; and the developers and maintainers of \LaTeX, Emacs, AUC\TeX, Open Science Framework, R, Python, Inkscape, LibreOffice, Sci-Hub for making a free and impartial scientific exchange possible.
   % Our work was supported by the Trond Mohn Research Foundation, grant number BFS2018TMT07
 %\rotatebox{15}{P}\rotatebox{5}{I}\rotatebox{-10}{P}\rotatebox{10}{\reflectbox{P}}\rotatebox{-5}{O}.

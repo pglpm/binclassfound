@@ -1,6 +1,6 @@
 ## Author: PGL  Porta Mana
 ## Created: 2022-03-17T14:21:57+0100
-## Last-Updated: 2022-05-28T20:49:38+0200
+## Last-Updated: 2022-05-28T22:00:07+0200
 ################
 ## Exploration of several issues for binary classifiers
 ################
@@ -121,6 +121,10 @@ opgrid <- readRDS('_opgrid_cnn_exploration_new.rds')
 
 mpgrid <- rowMeans(opgrid)
 dim(mpgrid) <- rep(length(cseq), 2)
+
+range(mpgrid)*100
+## [1]  0.1363446 92.3322319
+
 
 fig <- plot_ly(z=t(mpgrid), x=cseq, y=cseq, cmin=0, cmax=1)
 fig <- fig %>% add_surface(colors='RdBu')

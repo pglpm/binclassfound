@@ -1,6 +1,6 @@
 ## Author: PGL  Porta Mana
 ## Created: 2022-03-17T14:21:57+0100
-## Last-Updated: 2022-05-28T20:45:18+0200
+## Last-Updated: 2022-05-28T22:00:38+0200
 ################
 ## Exploration of several issues for binary classifiers
 ################
@@ -135,6 +135,10 @@ opgrid <- samplesF(Y=cbind(class=1), X=vpoints, parmList=parmlist, inorder=F)
 ##
 qgrid <- apply(opgrid,1,function(x){quantile(x, c(1,7)/8)})
 ##
+
+range(rowMeans(opgrid))*100
+## [1]  0.1411262 92.9317592
+
 
 pdff('../transducer_curve_RFraw2', asp=1)
 tplot(x=xgrid, y=cbind(rowMeans(opgrid), 1- rowMeans(opgrid)), xlab='output',

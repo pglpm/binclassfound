@@ -1,7 +1,7 @@
 \pdfoutput=1
 %% Author: PGL  Porta Mana
 %% Created: 2022-04-14T17:18:22+0200
-%% Last-Updated: 2022-05-28T21:14:09+0200
+%% Last-Updated: 2022-05-28T22:35:36+0200
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Probabilities for classifier outputs
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -739,7 +739,8 @@ Open Science Framework \doi{10.31219/osf.io/#1}%
 \newcommand*{\cnn}{convolutional-neural-network}
 \newcommand*{\br}{r}
 \newcommand*{\No}{\mathrm{N}}
-
+\newcommand*{\umatrix}[4]{\begin{bmatrix*}[r]#1&#2\\#3&#4\end{bmatrix*}}
+\newcommand*{\sumatrix}[4]{\begin{bsmallmatrix*}[r]#1&#2\\#3&#4\end{bsmallmatrix*}}
 %%% Custom macros end @@@
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -1139,24 +1140,25 @@ where $\No(\cdot)$ is a Gaussian as in \eqn~\eqref{eq:distr_output}. The sum con
 % ; $L(y)$ is a logit transformation composed with a small contraction around $0.5$, to take care of $0$ and $1$ values, which maps the output $y\in \clcl{0,1}$ onto the real numbers \autocites[\cf][\sect~3.3 \eqn~(19)]{johnson1949}; $L'(y)$ is its Jacobian determinant;
 
 \begin{figure}[t]
+% P range:  0.1411262 92.9317592
   \centering
   \includegraphics[width=\linewidth]{transducer_curve_RFraw2.pdf}\\
-  \caption{Probabilities of class~1 (\enquote{active}, \textcolor{mypurpleblue}{blue solid curve}) and class~0 (\enquote{inactive}, \textcolor{myred}{red dashed curve}) conditional on the \rf\ output. The shaded region around each curve represents its 12.5\%--87.5\% range of variability if more data were used to calculate the probabilities.}
+  \caption{Probabilities of class~1 (\enquote{active}, \textcolor{mypurpleblue}{blue solid curve}) and class~0 (\enquote{inactive}, \textcolor{myred}{red dashed curve}) conditional on the \rf\ output. Their extremal values are 0.0014 and 0.929. The shaded region around each curve represents its 12.5\%--87.5\% range of possible variability if more data were used to calculate the probabilities.}
   \label{fig:prob_curve_RF}
 \end{figure}
 %
 Figure~\ref{fig:prob_curve_RF} shows the probabilities of classes~1 and~0 conditional on the \rf\ output: $\p(\texts{class 1} \| \texts{output})$ and $\p(\texts{class 0} \| \texts{output})$. It also shows the range of variability that these probabilities could have if more data were used for the calibration: with a 75\% probability they would remain within the shaded regions. This variability information is provided for free by the calculation; we plan to discuss and use it more in future work.
 
-The probabilities increase (class~1) or decrease (class~0) monotonically up to output values of around 0.9. The output, if interpreted as a probability for class~1 (\enquote{active}), tends to be too pessimistic for this class (and too optimistic for the other) in a range from roughly 0.25 to 0.95; and too optimistic outside this range. For instance, for an output of 0.3 the probability for class~1 is 40\%; for an output of 1 the probability for class 1 is 92\%.
+The probabilities increase (class~1) or decrease (class~0) monotonically up to output values of around 0.9. The minimum and maximum probabilities are 0.14\% and 92.9\%; these values will be important for a later discussion. The output, if interpreted as a probability for class~1 (\enquote{active}), tends to be too pessimistic for this class (and too optimistic for the other) in a range from roughly 0.25 to 0.95; and too optimistic outside this range. For instance, for an output of 0.3 the probability for class~1 is 40\%; for an output of 1 the probability for class 1 is 92\%.
 
 \begin{figure}[t]
   \centering
   \includegraphics[width=\linewidth]{transducer_curve_RFraw2_inverse_trunc.pdf}\\
-  \caption{Probability densities of the \rf\ output conditional on class~1 (\enquote{active}, \textcolor{mypurpleblue}{blue solid curve}) and on class~0 (\enquote{inactive}, \textcolor{myred}{red dashed curve}, truncated). The shaded region around each curve represents its 12.5\%--87.5\% range of variability upon increase of the calibration dataset.}
+  \caption{Probability densities of the \rf\ output conditional on class~1 (\enquote{active}, \textcolor{mypurpleblue}{blue solid curve}) and on class~0 (\enquote{inactive}, \textcolor{myred}{red dashed curve}, truncated). The shaded region around each curve represents its 12.5\%--87.5\% range of possible variability upon increase of the calibration dataset.}
   \label{fig:prob_curve_RF_inverse}
 \end{figure}
 %
-Figure~\ref{fig:prob_curve_RF_inverse} shows the \enquote{generative} probability densities of the \rf\ output conditional on each class, $\p(\texts{output} \| \texts{class 1})$ and $\p(\texts{output} \| \texts{class 0})$. These probabilities densities are also provided for free by the parameter calculation, as explained in \sect~\ref{sec:calculation_transducer}. The shaded regions are again 75\% possible variability intervals upon increase of the calibration dataset.
+Figure~\ref{fig:prob_curve_RF_inverse} shows the \enquote{generative} probability densities of the \rf\ output conditional on each class, $\p(\texts{output} \| \texts{class 1})$ and $\p(\texts{output} \| \texts{class 0})$. These probabilities densities are also provided for free by the parameter calculation, as explained in \sect~\ref{sec:calculation_transducer}. The shaded regions are again 75\% intervals of possible variability upon increase of the calibration dataset.
 
 There is a high probability of output values close to~0 when the true class is~0 (\enquote{inactive}), and a peak density around 0.8 when the true class is~1 (\enquote{active}), as expected. The density conditional on class~0 is narrower than the one conditional on class~1 owing to the much larger proportion data in the former class. Intuitively speaking, we have seen that most data in class~1 correspond to high output values, but we have seen too few data in this class to reliably conclude, yet, that future data will show the same correspondence. % But there is also a high density of output value~0 when the true class is~1. This peak comes from the fact that the \RF\ had some very low output values
 
@@ -1175,6 +1177,7 @@ containing again $2^{18} \approx 260\,000$ terms, and with parameters analogous 
 
 \begin{figure}[!t]
   \centering
+% P range: 0.1363446 92.3322319
 \includegraphics[width=\linewidth]{transducer_surface_CNN_crop.png}\\[4em]%
 %\hfill\makebox[0pt][r]{\smash{\includegraphics[width=0.4\linewidth]{softmaxr_surface_CNN_transp.png}}}\\
 % \vspace{-0.75\linewidth}
@@ -1182,12 +1185,11 @@ containing again $2^{18} \approx 260\,000$ terms, and with parameters analogous 
 % \makebox[0pt]{\smash{\includegraphics[width=0.33\linewidth]{softmaxr_surface_CNN.png}}}\hspace{\stretch{3}}\mbox{}
 % \\
 % \vspace{0.65\linewidth}
-\label{fig:prob_curve_CNN}
-\parbox[b]{0.63\linewidth}{\caption{Probability of class~1 conditional on the \cnn\ outputs. Plot on the side: softmax function of the same outputs, for comparison.}}\hfill%
+\parbox[b]{0.63\linewidth}{\caption{Probability of class~1 conditional on the \cnn\ outputs. Its extremal values are 0.0014 and 0.923. Plot on the side: softmax function of the same outputs, for comparison.\label{fig:prob_curve_CNN}}}\hfill%
 \parbox[b]{0.34\linewidth}{\smash{\includegraphics[width=\linewidth]{softmaxr_surface_CNN_transp.png}}}
 \end{figure}
 %
-Figure~\ref{fig:prob_curve_CNN} shows the probability of class~1 conditional on the bivariate output of the \CNN, $\p(\texts{class 1} \| \texts{outputs})$. It is interesting to compare this probability with the softmax function of the outputs, shown in the smaller side plot, typically used as a proxy for the probability.
+Figure~\ref{fig:prob_curve_CNN} shows the probability of class~1 conditional on the bivariate output of the \CNN, $\p(\texts{class 1} \| \texts{outputs})$. Its extremal values are 0.14\% and 92.3\%. It is interesting to compare this probability with the softmax function of the outputs, shown in the smaller side plot, typically used as a proxy for the probability.
 % \begin{figure}[!t]
 %   \centering
 % \includegraphics[width=0.66\linewidth]{softmaxr_surface_CNN.png}\\
@@ -1195,20 +1197,35 @@ Figure~\ref{fig:prob_curve_CNN} shows the probability of class~1 conditional on 
 %   \label{fig:softmax_CNN}
 % \end{figure}
 
-A cross-section of this probability surface along the bisector of the II and IV quadrants of the output space is shown in \fig~\ref{fig:prob_curve_CNN_section}, together with the cross-section of the softmax. The probability takes on extremal values, around 1\% and 90\%, only in very narrow ranges, and quickly returns and extrapolates to 50\% everywhere else. The softmax, on the other hand, extrapolates to extreme probability values -- a known problem of neural networks \autocites{galetal2016}.
+A cross-section of this probability surface along the bisector of the II and IV quadrants of the output space is shown in \fig~\ref{fig:prob_curve_CNN_section}, together with the cross-section of the softmax. The probability takes on extremal values, around 1\% and 90\%, only in very narrow ranges, and quickly returns and extrapolates to 50\% everywhere else. The softmax, on the other hand, extrapolates to extreme probability values -- a known problem of neural networks \autocites{galetal2016}. The conservative extrapolation of the transducer is also reflected in the 75\% interval of possible variability of the probability (shaded region), which becomes extremely wide at the extremities.
+
 %
 \begin{figure}[!t]
   \centering
   \includegraphics[width=\linewidth]{transducer_curve_diagonal_CNN_prob_softmax.pdf}\\
-  \caption{Cross-section of the probability surface of \fig~\ref{fig:prob_curve_CNN} across the bisector of the II and IV quadrants of output space. The shaded region represents the 12.5\%--87.5\% range of variability upon increase of the calibration dataset. The cross-section of the softmax function (\textcolor{mygray}{grey dashed curve}) is also shown for comparison.}
+  \caption{Cross-section of the probability surface of \fig~\ref{fig:prob_curve_CNN} across the bisector of the II and IV quadrants of output space. The shaded region represents the 12.5\%--87.5\% range of possible variability upon increase of the calibration dataset. The cross-section of the softmax function (\textcolor{mygray}{grey dashed curve}) is also shown for comparison.}
   \label{fig:prob_curve_CNN_section}
 \end{figure}
 
 
 
-\subsection{Evaluation}
+\subsection{Results on demonstration data}
 \label{sec:demo_evaluation}
 
+The essential point of the decision-theoretic approach is that we first need to specify the utilities involved in the classification problem, collected in the utility matrix, because they determine
+\begin{enumerate}[label=(\roman*)]
+\item (together with the probabilities) which class we choose in each single instance;
+\item the metric to evaluate the performance.
+\end{enumerate}
+
+For illustration we choose four utility matrices:
+\begin{equation}
+  \label{eq:utility_matrices_demo}
+  \umatrix{1}{0}{0}{1} \ ,\quad
+  \umatrix{1}{0}{-10}{10} \ ,\quad
+  \umatrix{1}{0}{-100}{100} \ ,\quad
+  \umatrix{10}{-10}{0}{1} \ .
+\end{equation}
 
 
 \mynotew{consider standard identity utility matrix, and then matrix where importance of low-frequency class is much higher.
