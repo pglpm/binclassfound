@@ -1,7 +1,7 @@
 \pdfoutput=1
 %% Author: PGL  Porta Mana
 %% Created: 2022-04-14T17:18:22+0200
-%% Last-Updated: 2022-05-28T17:54:27+0200
+%% Last-Updated: 2022-05-28T21:14:09+0200
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Probabilities for classifier outputs
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -398,6 +398,7 @@ Open Science Framework \doi{10.31219/osf.io/#1}%
 %%% Sectioning
 \newcommand*{\asudedication}[1]{%
 {\par\centering\textit{#1}\par}}
+\newenvironment{contributions}{\section*{Author contributions}\addcontentsline{toc}{section}{Author contributions}}{\par}
 \newenvironment{acknowledgements}{\section*{Thanks}\addcontentsline{toc}{section}{Thanks}}{\par}
 \makeatletter\renewcommand{\appendix}{\par
   \bigskip{\centering
@@ -1096,19 +1097,26 @@ The matrix multiplication and subsequent selection are computationally inexpensi
 \subsection{Overview}
 \label{sec:demo_overview}
 
-We demonstrate the implementation of the probability transducer and its combination with utility-based decisions in a concrete example. The evaluation of the results is also made from the standpoint of decision theory, using utility-based metrics, as explained in our companion paper \autocites{dyrlandetal2022}.
+We illustrate the implementation of the probability transducer and its combination with utility-based decisions in a concrete example. The evaluation of the results is also made from the standpoint of decision theory, using utility-based metrics, as explained in our companion paper \autocites{dyrlandetal2022}.
 
+A couple of remarks may clarify the purpose of this illustration and our choice of classification problem.
 
+The internal consistency of decision theory guarantees that utility-based decisions always improve on, or at least give as good results as, any other procedure, including the standard classification procedures used in machine learning. This is intuitively obvious: we are, after all, grounding our single class choices upon the same gains \amp\ losses that underlie our classification problem and that are used in its evaluation. The present illustration is therefore not a proof for such improvement -- none is needed. It is a reassuring safety check, though: if the results were negative it would mean that errors were made in applying the method or in the computations.
 
+Rather than looking for some classification problem and dataset on which the decision-theoretic approach could lead to astounding improvements, we choose one where \ml\ classifiers already give excellent results, therefore difficult to improve upon; and which is characterized by a naturally high class imbalance. The classification problem is moreover of interest to us for other ongoing research projects.
 
+The binary-classification task is a simplified version of an early-stage drug-discovery problem: to determine whether a molecule is chemically \enquote{inactive} (class~$0$) or \enquote{active} (class~$1$) towards one specific target protein.
 
-The example concerns a binary classification, two \ml\ classifiers, and one data set to train the classifiers and calibrate their probability transducers. The classification task is a simplified version of an early-stage drug-discovery problem: to determine whether a molecule is chemically \enquote{inactive} (class~$0$) or \enquote{active} (class~$1$) towards one specific target protein.
+Two \ml\ classifiers are considered: a Random Forest and a residual Convolutional Neural Network (ResNet), details of which are given in appendix\mynotep{\ldots}. The \RF\ takes as input a set of particular physico-chemical characteristics of a molecule, and outputs a real number in the range $\clcl{0,1}$, corresponding to the fraction of decision trees which vote for class~$1$, \enquote{active}. The \cnn\ takes as input an image representing the chemical and spatial structure of the molecule, and outputs two real numbers roughly corresponding to scores for the two classes.
 
-The classifiers chosen for this task are a Random Forest and a residual Convolutional Neural Network (ResNet), details of which are given in appendix\mynotep{\ldots}. The \RF\ takes as input a set of particular fingerprints of the molecule, and outputs a real number in the range $\clcl{0,1}$, corresponding to the fraction of decision threes which vote for class~$0$ (inactive molecule). The \cnn\ takes as input an image representing the chemical and spatial structure of the molecule, and outputs two real numbers roughly corresponding to scores for the two classes.
+We use data from the ChEMBL database \autocites{bentoetal2014}, previously used in the literature for other studies of \ml\ applications to drug discovery \autocites{koutsoukasetal2017}. One set with 60\% of the data is used to train and validate the two classifiers. One set with 20\% is used for the calibration of the probability transducer and evaluation of the classifiers. One further data set with 20\% is here used as fictive \enquote{real data} to illustrate the results of our procedure; we call this the \enquote{demonstration set}.
 
-We use data from the ChEMBL database \autocites{bentoetal2014}, previously used in the literature for other studies of \ml\ applications to drug discovery \autocites{koutsoukasetal2017}. One set with 60\% of the data is used to train and validate the two classifiers. One set with 20\% is used for the calibration of the probability transducer and evaluation of the classifiers. One further data set with 20\% is here used as fictive \enquote{real data} to illustrate the results of our procedure; we call this the \enquote{demonstration set} and discuss it further below.
+Note that \emph{the additional demonstration dataset has an illustrative purpose only} for the sake of the present example. In a real design \amp\ evaluation of a set of candidate classifiers, the calibration set will at the same time be the evaluation test set, and no further data subset will be necessary, as explained in \sect~\ref{sec:role_calibration_set}.
 
-In all data sets, class~$0$ (\enquote{inactive}) occurs with a 91\% relative frequency, and class~$1$ (\enquote{active}) with 9\%, making this a classification problem with high class imbalance.
+In all data sets, class~$0$ (\enquote{inactive}) occurs with a 91\% relative frequency, and class~$1$ (\enquote{active}) with 9\%; a high class imbalance.
+
+Technical details about the setup and training of the two classifiers and of the calculation of the probability-transducer parameters are given in appendix\mynotew{\ldots}.
+
 
 \mynotew{move this to technical appendix}
 The Monte Carlo calculation of the parameters for the transducer took approximately 45\,min for the \RF\ and 75\,min for the \CNN, wall-clock time (16 parallel cores each). The resulting parameters are available in our supplementary data\footcites[\addcomma\ files \texttt{transducer\_params-Random\_Forest.zip} and \texttt{transducer\_params-Neural\_Net.zip}]{dyrlandetal2022c}.
@@ -1174,9 +1182,9 @@ containing again $2^{18} \approx 260\,000$ terms, and with parameters analogous 
 % \makebox[0pt]{\smash{\includegraphics[width=0.33\linewidth]{softmaxr_surface_CNN.png}}}\hspace{\stretch{3}}\mbox{}
 % \\
 % \vspace{0.65\linewidth}
+\label{fig:prob_curve_CNN}
 \parbox[b]{0.63\linewidth}{\caption{Probability of class~1 conditional on the \cnn\ outputs. Plot on the side: softmax function of the same outputs, for comparison.}}\hfill%
 \parbox[b]{0.34\linewidth}{\smash{\includegraphics[width=\linewidth]{softmaxr_surface_CNN_transp.png}}}
-  \label{fig:prob_curve_CNN}
 \end{figure}
 %
 Figure~\ref{fig:prob_curve_CNN} shows the probability of class~1 conditional on the bivariate output of the \CNN, $\p(\texts{class 1} \| \texts{outputs})$. It is interesting to compare this probability with the softmax function of the outputs, shown in the smaller side plot, typically used as a proxy for the probability.
@@ -1187,7 +1195,7 @@ Figure~\ref{fig:prob_curve_CNN} shows the probability of class~1 conditional on 
 %   \label{fig:softmax_CNN}
 % \end{figure}
 
-A cross-section of this probability surface along the bisector of the II and IV quadrants of the output space is shown in \fig~\ref{fig:prob_curve_CNN_section}, together with the cross-section of the softmax. The probability takes extremal values, around 10\% and 90\% only in very narrow ranges, and quickly returns and extrapolates to 50\% everywhere else. The softmax, on the other hand, extrapolates to extreme probability values -- a known problem of neural networks \autocites{galetal2016}.
+A cross-section of this probability surface along the bisector of the II and IV quadrants of the output space is shown in \fig~\ref{fig:prob_curve_CNN_section}, together with the cross-section of the softmax. The probability takes on extremal values, around 1\% and 90\%, only in very narrow ranges, and quickly returns and extrapolates to 50\% everywhere else. The softmax, on the other hand, extrapolates to extreme probability values -- a known problem of neural networks \autocites{galetal2016}.
 %
 \begin{figure}[!t]
   \centering
@@ -1198,14 +1206,10 @@ A cross-section of this probability surface along the bisector of the II and IV 
 
 
 
+\subsection{Evaluation}
+\label{sec:demo_evaluation}
 
-Before proceeding, it may not be amiss to clarify the purpose of the present demonstration. It is a consequence of the internal consistency of decision theory that the use of utility-based decisions is optimal, and therefore \emph{must} always improve on -- or at least give as good results as -- any other procedure, including the standard classification procedure used in machine learning. We intuitively expect this, since we are basing our single classification choices upon the very gains \amp\ losses that underlie our classification problem and that are used in its evaluation. The present demonstration is therefore not a proof or evidence for such improvement, but only a reassuring illustration. If the results were negative it would mean that errors were made in applying the method or in computation; so a demonstration also serves as a safety check.
 
-
-
-It must be strongly emphasized that \emph{the additional demonstration dataset has an illustrative purpose only} for the sake of the present work. It does not test or evaluate anything. At most it can be used to check for bugs in the design or coding of the classifiers and their probability transducers. In a real design \amp\ evaluation phase, the calibration set will at the same time be the evaluation test set, as explained in \sect~\ref{sec:role_calibration_set}.
-
-The classes $0$ (inactive) and $1$ (active) occur in the dataset with a proportion of roughly 10 to 1: the dataset is imbalanced.
 
 \mynotew{consider standard identity utility matrix, and then matrix where importance of low-frequency class is much higher.
 
@@ -1216,6 +1220,65 @@ We assume the cost of a false positive is high (utility is very low)
   \end{bmatrix}
 \end{equation*}
 }
+
+
+
+
+%%%% RF confusion matrices
+% standard
+% ##      [,1]  [,2]
+% ## [1,] 3225  79.5
+% ## [2,]   37 246.5
+%
+% utility-based
+% ## [[1]]
+% ##      [,1] [,2]
+% ## [1,] 3207   38
+% ## [2,]   55  288
+% ## [[2]]
+% ##      [,1] [,2]
+% ## [1,] 3050    7
+% ## [2,]  212  319
+% ## [[3]]
+% ##      [,1] [,2]
+% ## [1,] 2358    2
+% ## [2,]  904  324
+% ## [[4]]
+% ##      [,1] [,2]
+% ## [1,] 3262  326
+% ## [2,]    0    0
+% ## [[5]]
+% ##      [,1] [,2]
+% ## [1,] 3262  326
+% ## [2,]    0    0
+
+%%%% CNN confusion matrices
+% standard
+% ##      [,1] [,2]
+% ## [1,] 3165   49
+% ## [2,]   97  277
+%
+% utility-based
+% ## [[1]]
+% ##      [,1] [,2]
+% ## [1,] 3189   65
+% ## [2,]   73  261
+% ## [[2]]
+% ##      [,1] [,2]
+% ## [1,] 2882   12
+% ## [2,]  380  314
+% ## [[3]]
+% ##      [,1] [,2]
+% ## [1,] 2011    1
+% ## [2,] 1251  325
+% ## [[4]]
+% ##      [,1] [,2]
+% ## [1,] 3262  326
+% ## [2,]    0    0
+% ## [[5]]
+% ##      [,1] [,2]
+% ## [1,] 3262  326
+% ## [2,]    0    0
 
 
 
@@ -1256,7 +1319,7 @@ We assume the cost of a false positive is high (utility is very low)
   \label{tab:results_5_CNN}
 % standard   0.959   1.52    7.24   8.63   85.6
 % transducer 0.962   1.64    9.59   9.09   90.9
-%            0.300   8.40   32.50   5.40    6.2
+%            0.300   8.40   32.50(33)   5.40    6.2
   \begin{tabular}{p{0.3\linewidth}ccccc}
     &$\begin{bsmallmatrix*}[r]1&0\\0&1\end{bsmallmatrix*}$
                           &$\begin{bsmallmatrix*}[r]1&-10\\0&10\end{bsmallmatrix*}$
@@ -1268,10 +1331,10 @@ We assume the cost of a false positive is high (utility is very low)
                                         \textcolor{myred}{0.959} & \textcolor{myred}{1.52} & \textcolor{myred}{7.24} & \textcolor{myred}{8.63} & \textcolor{myred}{85.6}
     \\[0\jot]
     \parbox{\linewidth}{\color{mypurpleblue}transducer \amp\\ utility maximization} &
-                                                                                      \textcolor{mypurpleblue}{0.961} & \textcolor{mypurpleblue}{1.65} & \textcolor{mypurpleblue}{9.57} & \textcolor{mypurpleblue}{9.09} & \textcolor{mypurpleblue}{90.9}
+                                                                                      \textcolor{mypurpleblue}{0.962} & \textcolor{mypurpleblue}{1.64} & \textcolor{mypurpleblue}{9.59} & \textcolor{mypurpleblue}{9.09} & \textcolor{mypurpleblue}{90.9}
     \\[1\jot]
     \footnotesize relative increase&
-                       \footnotesize+0.2\% & \footnotesize+8.4\% & \footnotesize+32\% & \footnotesize+5.4\% & \footnotesize+6.2\%
+                       \footnotesize+0.3\% & \footnotesize+8.4\% & \footnotesize+33\% & \footnotesize+5.4\% & \footnotesize+6.2\%
   \end{tabular}
 \end{table}
 
@@ -2205,9 +2268,17 @@ In supervised learning the classifier is trained to learn the most probable $f(X
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%% Acknowledgements
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 
+\begin{contributions}
+The authors were so immersed in the development of the present work, that unfortunately they forgot to keep a detailed record of who did what.
+\end{contributions}
+
 \begin{acknowledgements}
+  KD and ASL acknowledge support from the Trond Mohn Research Foundation, grant number BFS2018TMT07, and PGLPM from The Research Council of Norway, grant number 294594.
+
   The computations of the parameters for the probability transducer were performed on resources provided by Sigma2 -- the National Infrastructure for High Performance Computing and Data Storage in Norway.
+
   KD would like to thank family for endless support; partner Synne for constant love, support, and encouragement; and the developers and maintainers of Python, FastAi, PyTorch, scikit-learn, NumPy and RDKit for free open source software and for making the experiments possible. 
+
   PGLPM thanks Maja, Mari, Miri, Emma for continuous encouragement and affection;  Buster Keaton and Saitama for filling life with awe and inspiration; and the developers and maintainers of \LaTeX, Emacs, AUC\TeX, Open Science Framework, R, Python, Inkscape, LibreOffice, Sci-Hub for making a free and impartial scientific exchange possible.
   % Our work was supported by the Trond Mohn Research Foundation, grant number BFS2018TMT07
 %\rotatebox{15}{P}\rotatebox{5}{I}\rotatebox{-10}{P}\rotatebox{10}{\reflectbox{P}}\rotatebox{-5}{O}.

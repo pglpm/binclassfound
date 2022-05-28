@@ -1,6 +1,6 @@
 ## Author: PGL  Porta Mana
 ## Created: 2022-04-15T11:48:45+0200
-## Last-Updated: 2022-05-28T15:28:19+0200
+## Last-Updated: 2022-05-28T16:23:41+0200
 ################
 ## Calculation of joint probability for class & classifier-output
 ## Parallel version
@@ -53,10 +53,10 @@ library('nimble')
 #### End custom setup ####
 
 set.seed(707)
-baseversion <- '_rf_cnn'
+baseversion <- '_rfcnn'
 nclusters <- 64L
 niter <- 1024L*2L # iterations AFTER thinning
-niter0 <- 1024L*2L
+niter0 <- 1024L*3L
 thin <- 1L
 nstages <- 1L
 ## ncheckprobs1 <- 16L
@@ -68,8 +68,8 @@ posterior <- TRUE
 ##
 ## stagestart <- 0L # last saved + 1
 ##
-saveinfofile <- 'rf_cnn_variateinfo.csv'
-datafile <- 'RF_CNN_calibrationdata.csv'
+saveinfofile <- 'rfcnn_variateinfo.csv'
+datafile <- 'RFCNN_calibrationdata.csv'
 #64K, 3589D, 1024I: 10 min + 3 min
 ## X2Y <- list(
 ##     'prediction_lnodds'=function(x){

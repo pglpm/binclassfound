@@ -1,6 +1,6 @@
 ## Author: PGL  Porta Mana
 ## Created: 2022-03-17T14:21:57+0100
-## Last-Updated: 2022-05-28T15:05:48+0200
+## Last-Updated: 2022-05-28T20:45:18+0200
 ################
 ## Exploration of several issues for binary classifiers
 ################
@@ -314,6 +314,39 @@ umlist <- c(lapply(ulist, function(x){ matrix(x,2,2, byrow=T) } ),
 ulist2 <- unlist(umlist)
 dim(ulist2) <- c(4,2*length(ulist))
 ulist2 <- t(ulist2)
+
+buildcm(classes, outputs1)
+##      [,1]  [,2]
+## [1,] 3225  79.5
+## [2,]   37 246.5
+
+lapply(umlist[1:5],function(um){buildcm(classes, probs1, um)})
+## [[1]]
+##      [,1] [,2]
+## [1,] 3207   38
+## [2,]   55  288
+
+## [[2]]
+##      [,1] [,2]
+## [1,] 3050    7
+## [2,]  212  319
+
+## [[3]]
+##      [,1] [,2]
+## [1,] 2358    2
+## [2,]  904  324
+
+## [[4]]
+##      [,1] [,2]
+## [1,] 3262  326
+## [2,]    0    0
+
+## [[5]]
+##      [,1] [,2]
+## [1,] 3262  326
+## [2,]    0    0
+
+
 
 results1 <- t(sapply(umlist, function(um){
     comparescores(trueclasses=classes, um=um, outputs=outputs1, probs=probs1)/length(classes)}))
