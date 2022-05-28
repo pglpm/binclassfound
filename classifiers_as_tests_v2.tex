@@ -1,7 +1,7 @@
 \pdfoutput=1
 %% Author: PGL  Porta Mana
 %% Created: 2022-04-14T17:18:22+0200
-%% Last-Updated: 2022-05-28T11:56:21+0200
+%% Last-Updated: 2022-05-28T12:07:40+0200
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Probabilities for classifier outputs
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -1105,14 +1105,24 @@ We use data from the ChEMBL database \autocites{bentoetal2014}, previously used 
 
 In all data sets, class~$0$ (\enquote{inactive}) occurs with a 91\% relative frequency, and class~$1$ (\enquote{active}) with 9\%, making this a classification problem with high class imbalance.
 
-The Monte Carlo calculation of the parameters for the transducer took approximately 75\,min for each classifier, wall-clock time (16 parallel cores each). The resulting parameters are available in our supplementary data\footnote{files \texttt{RF\_transducer\_parameters.zip} and \texttt{CNN\_transducer\_parameters.zip}, \doi{***}.}.
+The Monte Carlo calculation of the parameters for the transducer took approximately 45\,min for the \RF\ and 75\,min for the \CNN, wall-clock time (16 parallel cores each). The resulting parameters are available in our supplementary data\footnote{files \texttt{RF\_transducer\_parameters.zip} and \texttt{CNN\_transducer\_parameters.zip}, \doi{***}.}.
 
 
-\subsection{Transducer curves}
+\subsection{Probability-transducer curves}
 \label{sec:demo_curves}
 
 \subsubsection{Random forest}
 \label{sec:curve_RF}
+
+The joint probability of class $c$ and output $y$, \eqn~\eqref{eq:representation_P}, for the \RF\ is expressed by the sum
+\begin{equation}
+  \label{eq:P_c_out_RF}
+  p(c, y) = \sum_{k} q_{k}\
+  [c\ \alpha_{k} + (1-c)\ (1-\alpha_{k})]\ 
+  \No(y \| \mu_{k}, \sigma_{k})
+\end{equation}
+where $\No(\cdot)$ is a Gaussian as in \eqn~\eqref{eq:distr_output}. The sum contains $2^{18} \approx 260\,000$ terms.
+% ; $L(y)$ is a logit transformation composed with a small contraction around $0.5$, to take care of $0$ and $1$ values, which maps the output $y\in \clcl{0,1}$ onto the real numbers \autocites[\cf][\sect~3.3 \eqn~(19)]{johnson1949}; $L'(y)$ is its Jacobian determinant;
 
 \begin{figure}[t]
   \centering
@@ -1138,6 +1148,16 @@ There is a high probability of output values close to~0 when the true class is~0
 
 \subsubsection{Convolutional neural network}
 \label{sec:curve_CNN}
+
+The joint probability of class $c$ and output $y$ for the \CNN\ is expressed by the sum
+\begin{equation}
+  \label{eq:P_c_out_CNN}
+  p(c, y_{0}, y_{1}) = \sum_{k} q_{k}\
+  [c\ \alpha_{k} + (1-c)\ (1-\alpha_{k})]\
+  \No(y_{0} \| \mu_{0k}, \sigma_{0k})\ 
+  \No(y_{1} \| \mu_{1k}, \sigma_{1k})
+\end{equation}
+again containing $2^{18} \approx 260\,000$ terms.
 
 \begin{figure}[!t]
   \centering
@@ -1184,38 +1204,6 @@ We assume the cost of a false positive is high (utility is very low)
 \end{equation*}
 }
 
-\subsection{Probability-transducer curves}
-\label{sec:example_calc_transduc}
-%% RF: 30 min; CNN: 75 min
-
-\subsubsection{Random forest}
-\label{sec:curve_RF_old}
-
-The joint probability of class $c$ and output $y$, \eqn~\eqref{eq:representation_P}, for the random forest is expressed by the sum
-\begin{equation}
-  \label{eq:P_c_out_RF}
-  p(c, y) = \sum_{k} q_{k}\
-  [c\ \alpha_{k} + (1-c)\ (1-\alpha_{k})]\ 
-  \No[L(y) \| \mu_{k}, \sigma_{k}]\ L'(y)
-\end{equation}
-where $\No(\cdot)$ is a Gaussian as in \eqn~\eqref{eq:distr_output}; $L(y)$ is a logit transformation composed with a small contraction around $0.5$, to take care of $0$ and $1$ values, which maps the output $y\in \clcl{0,1}$ onto the real numbers \autocites[\cf][\sect~3.3 \eqn~(19)]{johnson1949}; $L'(y)$ is its Jacobian determinant; and the sum contains $2^{18} \approx 260\,000$ terms.
-
-The calculation of the parameters $\set{q_{k}, \alpha_{k}, \mu_{k}, \sigma_{k}}$ from the calibration data took roughly 60\:min. Figure\mynotep{\ldots} shows the probability $p(c\| y)$, for each class $c\in \set{0,1}$, conditional on the random-forest output $y$, as a function of the latter. We note that \mynotep{\ldots}.
-
-\subsubsection{Neural network}
-\label{sec:curve_NN}
-
-The joint probability of class $c$ and output $y$ for the neural network is expressed by the sum
-\begin{equation}
-  \label{eq:P_c_out_CNN}
-  p(c, y_{0}, y_{1}) = \sum_{k} q_{k}\
-  [c\ \alpha_{k} + (1-c)\ (1-\alpha_{k})]\
-  \No(y_{0} \| \mu_{0k}, \sigma_{0k})\ 
-  \No(y_{1} \| \mu_{1k}, \sigma_{1k})
-\end{equation}
-again containing $2^{18} \approx 260\,000$ terms.
-
-The calculation of the parameters $\set{q_{k}, \alpha_{k}, \mu_{0k}, \sigma_{0k}, \mu_{1k}, \sigma_{1k}}$ from the calibration data took roughly 75\:min. Figure\mynotep{\ldots} shows the probability $p(c\| y_{0}, y_{1})$, for each class $c\in \set{0,1}$, conditional on the neural-network outputs $y_{0}, y_{1}$, as a function of the latter. We note that \mynotep{\ldots}.
 
 
 % classes
@@ -1348,13 +1336,21 @@ The calculation of the parameters $\set{q_{k}, \alpha_{k}, \mu_{0k}, \sigma_{0k}
 \end{table}
 
 
-
 \begin{figure}[t]
   \centering
-  \includegraphics[width=\linewidth]{comparison_schema2.pdf}\\
-  \caption{Comparison scheme}
-  \label{fig:comparison scheme}
+  \includegraphics[width=\linewidth]{RF_transducer_gainsraw2.pdf}\\
+  \caption{Utility yields obtained using the \rf\ classifier in the standard way, vs those obtained using the probability transducer and utility maximization in each single classification, for a uniform distribution of possible utility matrices}
+  \label{fig:RF_gain_UMspace}
 \end{figure}
+
+
+
+% \begin{figure}[t]
+%   \centering
+%   \includegraphics[width=\linewidth]{comparison_schema2.pdf}\\
+%   \caption{Comparison scheme}
+%   \label{fig:comparison scheme}
+% \end{figure}
 
 
 \section{Sensible probabilities for classifiers}
