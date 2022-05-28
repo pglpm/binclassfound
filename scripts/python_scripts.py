@@ -1,4 +1,4 @@
-def direct_prob(x, cl, w, p, m, s):
+def RF_direct_prob(x, cl, w, p, m, s):
     """
     Gives probability of class conditional on RF-output
     x = RF output (between 0 and 1)
@@ -8,12 +8,9 @@ def direct_prob(x, cl, w, p, m, s):
     m = array of means for gaussian
     s = array of standard devs for gaussian
     """
-    c = 1 - 2**(-10)
-    x2 = 0.5 + c*(x-0.5)
-    y = np.log(x2/(1-x2))
     pc = p*cl + (1-p)*(1-cl)
-    pjoint = np.sum(w * pc * norm.pdf(y, loc=m, scale=s))
-    px = np.sum(w * norm.pdf(y, loc=m, scale=s))
+    pjoint = np.sum(w * pc * norm.pdf(x, loc=m, scale=s))
+    px = np.sum(w * norm.pdf(x, loc=m, scale=s))
     pjoint/px
 
 

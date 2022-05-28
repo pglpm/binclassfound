@@ -1,6 +1,6 @@
 ## Author: PGL  Porta Mana
 ## Created: 2022-03-17T14:21:57+0100
-## Last-Updated: 2022-05-28T00:36:39+0200
+## Last-Updated: 2022-05-28T10:50:07+0200
 ################
 ## Exploration of several issues for binary classifiers
 ################
@@ -227,6 +227,90 @@ fig <- fig %>% add_surface(z = t(q1grid), opacity = 0.5, colorscale='Reds')
 fig <- fig %>% add_surface(z = t(q2grid), opacity = 0.5, colorscale='Reds')
 fig <- fig %>% layout(scene = list(xaxis = list(title = "output 0"), yaxis = list(title = "output 1"), zaxis = list(title = "probability of class 1", range=c(0,1))))
 fig
+
+
+#########################################################
+## transducer curve p(c | y)
+#########################################################
+
+diagon <- which(vpoints[,1]==-vpoints[,2])
+vpointsdiag <- vpoints[diagon,]
+
+plan(sequential)
+plan(multisession, workers=6)
+py0grid <- samplesF(Y=vpoints, X=cbind(class=0), parmList=parmlist, inorder=F)
+py1grid <- samplesF(Y=vpoints, X=cbind(class=1), parmList=parmlist, inorder=F)
+
+
+mp0grid <- rowMeans(py0grid)
+dim(mp0grid) <- rep(length(cseq), 2)
+mp1grid <- rowMeans(py1grid)
+dim(mp1grid) <- rep(length(cseq), 2)
+
+fig <- plot_ly(z=t(mp0grid), x=cseq, y=cseq, cmin=0, cmax=max(mp0grid,mp1grid))
+fig <- fig %>% add_surface(colors='Blues')
+fig <- fig %>% layout(scene = list(
+                          xaxis = list(title = "output 0"),
+                          yaxis = list(title = "output 1"),
+                          zaxis = list(title = 'p(outputs | class 0)', range=c(0,1)),
+                          camera = list(projection = list(type = 'orthographic'))
+                      ), title=NA)
+fig
+#orca(fig, '../transducer_surface_CNN.pdf', scale=1, width=16.5, height=16.5)
+
+
+fig <- plot_ly(z=t(mp1grid), x=cseq, y=cseq, cmin=0, cmax=max(mp0grid,mp1grid))
+fig <- fig %>% add_surface(colors='Blues')
+fig <- fig %>% layout(scene = list(
+                          xaxis = list(title = "output 0"),
+                          yaxis = list(title = "output 1"),
+                          zaxis = list(title = 'p(outputs | class 1)', range=c(0,1)),
+                          camera = list(projection = list(type = 'orthographic'))
+                      ), title=NA)
+fig
+#orca(fig, '../transducer_surface_CNN.pdf', scale=1, width=16.5, height=16.5)
+
+
+
+
+##
+q0grid <- apply(py0grid,1,function(x){quantile(x, c(1,7)/8)})
+q1grid <- apply(py1grid,1,function(x){quantile(x, c(1,7)/8)})
+##
+
+xgrid <- vpoints[diagon,2]
+pdff('../transducer_curve_CNN_inverse')
+tplot(x=xgrid, y=cbind(rowMeans(py1grid), rowMeans(py0grid)), xlab=bquote('output 1' == -'output 0'),
+##      ylab=expression(p~group('(',class~output,')')),
+      ylab=bquote('p'~group('(','output 1', '.')~group('|', ' class',')')),
+      mar=c(4.5,5.5,1,1),
+      ylim=c(0,max(q0grid,q1grid)), lwd=3, family='Palatino')
+legend('top', c('class 1', 'class 0'), lty=c(1,2), col=c(1,2), lwd=3, bty='n', cex=1.5)
+##
+polygon(x=c(xgrid,rev(xgrid)), y=c(q1grid[1,],rev(q1grid[2,])), col=paste0(palette()[1],'40'), border=NA)
+polygon(x=c(xgrid,rev(xgrid)), y=c(q0grid[1,],rev(q0grid[2,])), col=paste0(palette()[2],'40'), border=NA)
+dev.off()
+
+
+
+##
+invprob0 <- samplesF(Y=vpointsdiag, X=cbind(class=0), parmList=parmlist, inorder=F)
+invprob1 <- samplesF(Y=vpointsdiag, X=cbind(class=1), parmList=parmlist, inorder=F)
+
+diagon <- which(vpoints[,1]==-vpoints[,2])
+xgrid <- vpoints[diagon,2]
+pdff('../transducer_curve_diagonal_CNN_inverseprob')
+tplot(x=xgrid, y=cbind(rowMeans(invprob1), xlab=bquote('output 1' == -'output 0'),
+##      ylab=expression(p~group('(',class~output,')')),
+      ylab=bquote('P'~group('(','class 1', '.')~group('|', ' output 1',')')),
+      ylim=c(0,1), mar=c(4.5,5.75,1,1), cex.axis=2, cex.lab=2,
+       lwd=3, family='Palatino')
+#legend('topleft', c('class 1', 'class 0'), lty=c(1,2), col=c(1,2), lwd=3, bty='n', cex=2)
+##
+polygon(x=c(xgrid,rev(xgrid)), y=c(q1grid[diagon],rev(q2grid[diagon])), col=paste0(palette()[1],'40'), border=NA)
+## polygon(x=c(xgrid,rev(xgrid)), y=c(1-q2grid[diagon],rev(1-q1grid[diagon])), col=paste0(palette()[2],'40'), border=NA)
+dev.off()
+
 
 
 #########################################################

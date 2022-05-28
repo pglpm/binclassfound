@@ -1,6 +1,6 @@
 ## Author: PGL  Porta Mana
 ## Created: 2022-04-15T11:48:45+0200
-## Last-Updated: 2022-05-28T10:13:24+0200
+## Last-Updated: 2022-05-28T07:45:42+0200
 ################
 ## Calculation of joint probability for class & classifier-output
 ## Parallel version
@@ -53,9 +53,9 @@ library('nimble')
 #### End custom setup ####
 
 set.seed(707)
-baseversion <- '_rfraw_bis'
+baseversion <- '_rtrun_new'
 nclusters <- 64L
-niter <- 1024L*1L # iterations AFTER thinning
+niter <- 1024L # iterations AFTER thinning
 niter0 <- 1024L*2L
 thin <- 1L
 nstages <- 1L
@@ -233,8 +233,8 @@ initsFunction <- function(){
     ),
     if(nrcovs>0){# real variates
         list(# hyperparameters
-            meanRmean0=medianrcovs*0+0.5,
-            meanRtau0=1/(1)^2, # dims = inv. variance
+            meanRmean0=medianrcovs,
+            meanRtau0=1/(widthrcovs)^2, # dims = inv. variance
             tauRrate0=(widthrcovs*0+0.01/0.3)^2, # dims = variance
             tauRshape0=rep(1/4,nrcovs) # min SD value is ~ 0.3 times the one in rate
             ## integrated parameters
@@ -294,7 +294,7 @@ bayesnet <- nimbleCode({
         for(adatum in 1:nData){
             if(nrcovs>0){
                 for(avar in 1:nRcovs){
-                    X[adatum,avar] ~ dnorm(mean=meanR[avar,C[adatum]], tau=tauR[avar,C[adatum]])
+                    X[adatum,avar] ~ T(dnorm(mean=meanR[avar,C[adatum]], tau=tauR[avar,C[adatum]]), 0, 1)
                 }
             }
             if(nicovs>0){
@@ -341,8 +341,8 @@ if(posterior){
     for(acluster in 1:nclusters){
         if(nrcovs>0){
             for(avar in 1:nrcovs){
-                confmodel$addSampler(target=paste0('meanR[', avar, ', ', acluster, ']'), type='conjugate')
-                confmodel$addSampler(target=paste0('tauR[', avar, ', ', acluster, ']'), type='conjugate')
+                confmodel$addSampler(target=paste0('meanR[', avar, ', ', acluster, ']'))
+                confmodel$addSampler(target=paste0('tauR[', avar, ', ', acluster, ']'))
             }
         }
         if(nicovs>0){

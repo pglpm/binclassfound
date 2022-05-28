@@ -1,7 +1,7 @@
 \pdfoutput=1
 %% Author: PGL  Porta Mana
 %% Created: 2022-04-14T17:18:22+0200
-%% Last-Updated: 2022-05-28T00:33:42+0200
+%% Last-Updated: 2022-05-28T11:35:29+0200
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Probabilities for classifier outputs
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -990,7 +990,7 @@ from which also the conditional distributions are easily obtained:
 \end{subequations}
 These will be important in the following discussion.
 
-The parametric distributions $A(c \| \alpha)$ and $B(y \| \beta)$ are chosen by us according to convenience. For the first we use a simple categorical distribution with parameters $\alpha$. In a binary-classification case, where the class variable $c$ assumes conventional values $\set{0,1}$, it is
+The parametric distributions $A(c \| \alpha)$ and $B(y \| \beta)$ are chosen by us according to convenience. For the first we use a simple categorical distribution with parameters $\alpha$. In a binary-classification case, where the class variable $c$ takes on conventional values $\set{0,1}$, it is
 \begin{equation}
   \label{eq:distr_class}
   A(c \| \alpha) = c\ \alpha + (1-c)\ (1-\alpha) \equiv
@@ -1090,6 +1090,11 @@ The matrix multiplication and subsequent selection are computationally inexpensi
 \section{Demonstration and results}
 \label{sec:demonstration}
 
+\subsection{Overview}
+\label{sec:demo_overview}
+
+
+
 We demonstrate the implementation of the probability transducer and its combination with utility-based decisions in a concrete example. The evaluation of the results is also made from the standpoint of decision theory, using utility-based metrics, as explained in our companion paper \autocites{dyrlandetal2022}.
 
 The example concerns a binary classification, two \ml\ classifiers, and one data set to train the classifiers and calibrate their probability transducers. The classification task is a simplified version of an early-stage drug-discovery problem: to determine whether a molecule is chemically \enquote{inactive} (class~$0$) or \enquote{active} (class~$1$) towards one specific target protein.
@@ -1100,31 +1105,39 @@ We use data from the ChEMBL database \autocites{bentoetal2014}, previously used 
 
 In all data sets, class~$0$ (\enquote{inactive}) occurs with a 91\% relative frequency, and class~$1$ (\enquote{active}) with 9\%, making this a classification problem with high class imbalance.
 
-The Monte Carlo calculation of the parameters for the transducer took approximately 45\,min for the \RF\ and 75\,min for the \CNN, wall-clock time (16 parallel cores each). The resulting parameters are available in our supplementary data\footnote{files \texttt{RF\_transducer\_parameters.zip} and \texttt{CNN\_transducer\_parameters.zip}, \doi{***}.}.
+The Monte Carlo calculation of the parameters for the transducer took approximately 75\,min for each classifier, wall-clock time (16 parallel cores each). The resulting parameters are available in our supplementary data\footnote{files \texttt{RF\_transducer\_parameters.zip} and \texttt{CNN\_transducer\_parameters.zip}, \doi{***}.}.
+
+
+\subsection{Transducer curves}
+\label{sec:demo_curves}
+
+\subsubsection{Random forest}
+\label{sec:curve_RF}
 
 \begin{figure}[t]
   \centering
-  \includegraphics[width=\linewidth]{transducer_curve_RFx.pdf}\\
+  \includegraphics[width=\linewidth]{transducer_curve_RFraw2.pdf}\\
   \caption{Probabilities of class~1 (\enquote{active}, \textcolor{mypurpleblue}{blue solid curve}) and class~0 (\enquote{inactive}, \textcolor{myred}{red dashed curve}) conditional on the \rf\ output. The shaded region around each curve represents its 12.5\%--87.5\% range of variability if more data were used to calculate the probabilities.}
   \label{fig:prob_curve_RF}
 \end{figure}
 %
-Figure~\ref{fig:prob_curve_RF} shows the probabilities of classes~1 and~0 conditional on the \rf\ output: $\p(\texts{class 1} \| \texts{output})$ and $\p(\texts{class 0} \| \texts{output})$. It also shows the range of variability that these probabilities could have if more data were used for the calibration: with a 75\% probability they would remain within the shaded regions. This information is provided for free by the calculation; we plan to discuss it and use it more in future work.
+Figure~\ref{fig:prob_curve_RF} shows the probabilities of classes~1 and~0 conditional on the \rf\ output: $\p(\texts{class 1} \| \texts{output})$ and $\p(\texts{class 0} \| \texts{output})$. It also shows the range of variability that these probabilities could have if more data were used for the calibration: with a 75\% probability they would remain within the shaded regions. This variability information is provided for free by the calculation; we plan to discuss and use it more in future work.
 
-We see that the \rf\ output and the probabilities have a monotonically increasing (class~1) or decreasing (class~0) relationship only up to output values of around 0.95. The output, if interpreted as a probability for class~1 (\enquote{active}), tends to be too pessimistic for this class (and too optimistic for the other) in a range from roughly 0.2 to 0.9; and too optimistic outside this range, especially close to the value~1. For instance, for output 0.5, the probability for class~1 is 0.79; for output 1 the probability for class 1 is 0.67.
+The probabilities increase (class~1) or decrease (class~0) monotonically up to output values of around 0.9. The output, if interpreted as a probability for class~1 (\enquote{active}), tends to be too pessimistic for this class (and too optimistic for the other) in a range from roughly 0.25 to 0.95; and too optimistic outside this range. For instance, for output 0.3 the probability for class~1 is 40\%; for output 1 the probability for class 1 is 92\%.
 
 \begin{figure}[t]
   \centering
-  \includegraphics[width=\linewidth]{transducer_curve_RFx_inverse.pdf}\\
+  \includegraphics[width=\linewidth]{transducer_curve_RFraw2_inverse.pdf}\\
   \caption{Probability densities of the \rf\ output conditional on class~1 (\enquote{active}, \textcolor{mypurpleblue}{blue solid curve}) and on class~0 (\enquote{inactive}, \textcolor{myred}{red dashed curve}). The shaded region around each curve represents its 12.5\%--87.5\% range of variability upon increase of the calibration dataset.}
   \label{fig:prob_curve_RF_inverse}
 \end{figure}
 %
-Figure~\ref{fig:prob_curve_RF_inverse} shows the \enquote{generative} probability densities of the \rf\ output conditional on each class, $\p(\texts{output} \| \texts{class 1})$ and $\p(\texts{output} \| \texts{class 0})$. These are also provided for free by the parameter calculation. The shaded regions are again 75\% possible variability intervals upon increase of the calibration dataset.
+Figure~\ref{fig:prob_curve_RF_inverse} shows the \enquote{generative} probability densities of the \rf\ output conditional on each class, $\p(\texts{output} \| \texts{class 1})$ and $\p(\texts{output} \| \texts{class 0})$. These probabilities are also provided for free by the parameter calculation, as explained in \sect~\ref{sec:calculation_transducer}. The shaded regions are again 75\% possible variability intervals upon increase of the calibration dataset.
 
-We see that there is a high probability of output values close to~0 when the true class is~0 (\enquote{inactive}), and a probability peak of output values around 0.85 when the true class is~1 (\enquote{active}), as expected. % But there is also a high density of output value~0 when the true class is~1. This peak comes from the fact that the \RF\ had some very low output values
-\mynotep{more}
+There is a high probability of output values close to~0 when the true class is~0 (\enquote{inactive}), and a density peak of output values around 0.8 when the true class is~1 (\enquote{active}), as expected. The density conditional on class~0 is narrower than the one conditional on class~1 owing to the much larger proportion data in the former class. Intuitively speaking, we have seen that most data in class~1 correspond to high output values, but we have seen too few data in this class to reliably conclude, yet, that future data will show the same correspondence. % But there is also a high density of output value~0 when the true class is~1. This peak comes from the fact that the \RF\ had some very low output values
 
+\subsubsection{Convolutional neural network}
+\label{sec:curve_CNN}
 
 \begin{figure}[!t]
   \centering
@@ -1136,12 +1149,13 @@ We see that there is a high probability of output values close to~0 when the tru
 Figure~\ref{fig:prob_curve_CNN} shows the probability of class~1 conditional on the  bivariate output of the \CNN, $\p(\texts{class 1} \| \texts{outputs})$. It is interesting to compare this probability with the softmax function of the outputs, \fig~\ref{fig:softmax_CNN}, typically used as a proxy for the probability.
 \begin{figure}[!t]
   \centering
-\includegraphics[width=0.9\linewidth]{softmaxr_surface_CNN.png}\\
+\includegraphics[width=0.8\linewidth]{softmaxr_surface_CNN.png}\\
   \caption{Softmax function of the \cnn\ outputs}
   \label{fig:softmax_CNN}
 \end{figure}
-The probability assumes values close to 0 and 1 only in 
 
+A cross-section of this probability surface along the bisector of the II and IV quadrants of the output space is shown in \fig~\ref{fig:prob_curve_CNN_section}, together with the cross-section of the softmax. The probability takes extremal values of around 10\% and 90\% only in very narrow ranges, and quickly returns and extrapolates to 50\% everywhere else. The softmax, on the other hand, extrapolates to extreme probability values -- a known problem of neural networks \autocites{galetal2016}.
+%
 \begin{figure}[!t]
   \centering
   \includegraphics[width=\linewidth]{transducer_curve_diagonal_CNN_prob_softmax.pdf}\\
@@ -1175,7 +1189,7 @@ We assume the cost of a false positive is high (utility is very low)
 %% RF: 30 min; CNN: 75 min
 
 \subsubsection{Random forest}
-\label{sec:curve_RF}
+\label{sec:curve_RF_old}
 
 The joint probability of class $c$ and output $y$, \eqn~\eqref{eq:representation_P}, for the random forest is expressed by the sum
 \begin{equation}
@@ -1208,6 +1222,11 @@ The calculation of the parameters $\set{q_{k}, \alpha_{k}, \mu_{0k}, \sigma_{0k}
   \centering
   \small
   \caption{Results for the random forest}
+%RF without transformation
+% standard   0.968   1.36    5.55   8.95   88.9
+% transducer 0.974   1.72    9.63   9.09   90.9
+%            0.600  26.10   73.50   1.50    2.2
+
   \label{tab:results_5_RF}
   \begin{tabular}{p{0.3\linewidth}ccccc}
     &$\begin{bsmallmatrix*}[r]1&0\\0&1\end{bsmallmatrix*}$
@@ -1220,7 +1239,7 @@ The calculation of the parameters $\set{q_{k}, \alpha_{k}, \mu_{0k}, \sigma_{0k}
 \textcolor{myred}{0.968} & \textcolor{myred}{1.36} & \textcolor{myred}{5.55} & \textcolor{myred}{8.95} & \textcolor{myred}{88.9}
     \\[\jot]
     \parbox{\linewidth}{\color{mypurpleblue}transducer \amp\\ utility maximization} &
-\textcolor{mypurpleblue}{0.974} & \textcolor{mypurpleblue}{1.72} & \textcolor{mypurpleblue}{9.62} & \textcolor{mypurpleblue}{9.09} & \textcolor{mypurpleblue}{90.9}
+\textcolor{mypurpleblue}{0.974} & \textcolor{mypurpleblue}{1.72} & \textcolor{mypurpleblue}{9.63} & \textcolor{mypurpleblue}{9.09} & \textcolor{mypurpleblue}{90.9}
     \\[4\jot]
     \footnotesize relative increase&
                        \footnotesize+0.6\% & \footnotesize+26\% & \footnotesize+73\% & \footnotesize+1.5\% & \footnotesize+2.2\%
@@ -1251,7 +1270,6 @@ The calculation of the parameters $\set{q_{k}, \alpha_{k}, \mu_{0k}, \sigma_{0k}
 \end{table}
 
 
-
 % classes
 %    0    1 
 % 3262  326 
@@ -1276,6 +1294,12 @@ The calculation of the parameters $\set{q_{k}, \alpha_{k}, \mu_{0k}, \sigma_{0k}
 % gener    0.959   6.85   66.7   3.84   33.5
 %         14.900  82.80   93.3   1.10    0.1
 %          4.500   3.60    0.9  15.20    0.4
+%RAW
+% standard  0.835   3.75   34.5   3.80   33.4
+% discr     0.918   6.68   66.1   3.33   33.3
+% gener     0.957   6.87   66.7   3.84   33.6
+%          14.600  83.30   93.3   1.10    0.4
+%           4.200   2.70    0.9  15.20    0.7
 %
 % CNN generative:
 % standard 0.894   4.99   47.0   3.78   32.7
@@ -1428,12 +1452,12 @@ In \sect~\ref{sec:prob_calc} we present some notation and the general procedure 
 \section{Calculation of the probabilities: general procedure}
 \label{sec:prob_calc}
 
-Let us denote the class variable by $C$ and the classifier-output variable by $X$. We assume that $C$ is discrete and finite, its values can be simply renamed $1,2,3,\dotsc$. We assume that $X$ is either discrete and finite (it is isomorphic to $C$ for many classifying algorithms) or a low-dimensional tuple of real variables; a combination of both cases can also be easily accommodated. We assume to have a sample of $M$ such data pairs denoted collectively by $D$:
+Let us denote the class variable by $C$ and the classifier-output variable by $X$. We assume that $C$ is discrete and finite, its values can be simply renamed $1,2,3,\dotsc$. We also assume that $X$ is either discrete and finite (it is isomorphic to $C$ for many classifying algorithms) or a low-dimensional tuple of real variables; a combination of both cases can also be easily accommodated. We imagine to have a sample of $M$ such data pairs denoted collectively by $D$:
 \begin{equation}
   \label{eq:sample_data_notation}
   D \defd \set[\big]{(c_{1}, x_{1}), (c_{2}, x_{2}), \dotsc, (c_{M}, x_{M}) } \ .
 \end{equation}
-We call them \emph{calibration data}. Let us emphasize that these are not pairs of class\,\amp\,feature values, but pairs of class\,\amp\,classifier-output values, obtained as described in \sect~\ref{sec:implem_idea}.
+Let us call them \emph{calibration data}. It must be emphasized that these are not pairs of class\,\amp\,feature values, but pairs of class\,\amp\,classifier-output values, obtained as described in \sect~\ref{sec:implem_idea}.
 
 Instead of the conditional probability $\p(\texts{class} \| \texts{output})$, that is, $\p(C \| X)$,  we can actually calculate the joint probability
 \begin{equation}
@@ -1958,7 +1982,7 @@ According to the principles of decision theory and probability theory, for each 
 
 \medskip
 
-How is the probability $\p(X \| Z\mo z, D)$ determined by the probability calculus? Here is a simplified, intuitive picture. First consider the case where the feature $Z$ can only assume a small number of possible values, so that many units can in principle have the same value of $Z$.
+How is the probability $\p(X \| Z\mo z, D)$ determined by the probability calculus? Here is a simplified, intuitive picture. First consider the case where the feature $Z$ can only take on a small number of possible values, so that many units can in principle have the same value of $Z$.
 
 Consider the collection of all units having $Z\mo z$ that we received in the past and will receive in the future. Among them, a proportion $F(X\mo 0 \| Z\mo z)$ belong to class $0$, and a proportion $1 - F(X\mo 0 \| Z\mo z) \equiv F(X\mo 1 \| Z\mo z)$ to class $1$. For example these two proportions could be 74\% and 26\%. Our present unit with $Z\mo z$ is a member of this collection. The probability $\p(X\mo 0 \| Z\mo z)$ that our unit belongs to class $0$, given that its feature has value $z$, is then intuitively equal to the proportion $F(X\mo 0 \| Z\mo z)$. Analogously for $X\mo 1$.
 
@@ -1969,7 +1993,7 @@ The problem is that we do not know the proportion $F(X\mo 0 \| Z\mo z)$. However
 \end{equation}
 this is indeed what we mean by saying that our sample data are \enquote{representative} of the future units. Later we shall discuss the case in which such representativeness is of different kinds. We expect the discrepancy between $F(X\mo 0 \| Z\mo z)$ and $\Fs(X\mo 0 \| Z\mo z)$ to be smaller, the larger the number of sample data. Vice versa we expect it to be larger, the smaller the number of sample data.
 
-If $Z$ can assume a continuum of values, as is the case for a brain scan for example, then the collection of units having $Z\mo z$ is more difficult to imagine. In this case each unit will be unique in its feature value -- no two brains are exactly alike.
+If $Z$ can take on a continuum of values, as is the case for a brain scan for example, then the collection of units having $Z\mo z$ is more difficult to imagine. In this case each unit will be unique in its feature value -- no two brains are exactly alike.
 
 
 
