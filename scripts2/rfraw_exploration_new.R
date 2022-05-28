@@ -1,6 +1,6 @@
 ## Author: PGL  Porta Mana
 ## Created: 2022-03-17T14:21:57+0100
-## Last-Updated: 2022-05-28T11:42:49+0200
+## Last-Updated: 2022-05-28T11:57:53+0200
 ################
 ## Exploration of several issues for binary classifiers
 ################
@@ -637,6 +637,10 @@ allscoresb <- apply(lut, 3, function(um){
 rownames(allscoresb) <- c('standard', 'discr', 'gener')
 
 rowMeans(allscoresb)
+#### correct params
+##  standard     discr     gener 
+## 0.6864915 0.7372485 0.7601126 
+### old
 ##  standard     discr     gener 
 ## 0.6864915 0.7401895 0.7606006 
 
