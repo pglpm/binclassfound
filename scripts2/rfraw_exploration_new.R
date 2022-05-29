@@ -1,6 +1,6 @@
 ## Author: PGL  Porta Mana
 ## Created: 2022-03-17T14:21:57+0100
-## Last-Updated: 2022-05-29T12:55:38+0200
+## Last-Updated: 2022-05-29T13:45:02+0200
 ################
 ## Exploration of several issues for binary classifiers
 ################
@@ -388,12 +388,39 @@ ulist2 <- unlist(umlist)
 dim(ulist2) <- c(4,2*length(ulist))
 ulist2 <- t(ulist2)
 
-buildcm(classes, outputs1)
+round(buildcm(classes, outputs1)/length(classes),4)
+##        [,1]   [,2]
+## [1,] 0.8988 0.0222
+## [2,] 0.0103 0.0687
 ##      [,1]  [,2]
 ## [1,] 3225  79.5
 ## [2,]   37 246.5
 
-lapply(umlist[1:5],function(um){buildcm(classes, probs1, um)})
+lapply(umlist[1:5],function(um){round(buildcm(classes, probs1, um)/length(classes),4)})
+## [[1]]
+##        [,1]   [,2]
+## [1,] 0.8938 0.0106
+## [2,] 0.0153 0.0803
+
+## [[2]]
+##        [,1]   [,2]
+## [1,] 0.8501 0.0020
+## [2,] 0.0591 0.0889
+
+## [[3]]
+##        [,1]   [,2]
+## [1,] 0.6572 0.0006
+## [2,] 0.2520 0.0903
+
+## [[4]]
+##        [,1]   [,2]
+## [1,] 0.9091 0.0909
+## [2,] 0.0000 0.0000
+
+## [[5]]
+##        [,1]   [,2]
+## [1,] 0.9091 0.0909
+## [2,] 0.0000 0.0000
 ## [[1]]
 ##      [,1] [,2]
 ## [1,] 3207   38

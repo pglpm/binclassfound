@@ -1,7 +1,7 @@
 \pdfoutput=1
 %% Author: PGL  Porta Mana
 %% Created: 2022-04-14T17:18:22+0200
-%% Last-Updated: 2022-05-29T13:25:43+0200
+%% Last-Updated: 2022-05-29T14:48:46+0200
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Probabilities for classifier outputs
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -1253,16 +1253,41 @@ We consider each of these utility matrices, in turn, to be the one underlying ou
 \end{enumerate}
 This is done for each classifier.
 
-Once all items in the demonstration dataset have been classified, we compare their chosen classes with their true ones.
+\medskip
+
+Once all items in the demonstration dataset have been classified, we compare their chosen classes with their true ones and compute the resulting confusion matrix.
 
 
 %%%% RF confusion matrices
 % standard
+%        [,1]   [,2]
+% [1,] 0.8988 0.0222
+% [2,] 0.0103 0.0687
 % ##      [,1]  [,2]
 % ## [1,] 3225  79.5
 % ## [2,]   37 246.5
 %
 % utility-based
+% [[1]]
+%        [,1]   [,2]
+% [1,] 0.8938 0.0106
+% [2,] 0.0153 0.0803
+% [[2]]
+%        [,1]   [,2]
+% [1,] 0.8501 0.0020
+% [2,] 0.0591 0.0889
+% [[3]]
+%        [,1]   [,2]
+% [1,] 0.6572 0.0006
+% [2,] 0.2520 0.0903
+% [[4]]
+%        [,1]   [,2]
+% [1,] 0.9091 0.0909
+% [2,] 0.0000 0.0000
+% [[5]]
+%        [,1]   [,2]
+% [1,] 0.9091 0.0909
+% [2,] 0.0000 0.0000
 % ## [[1]]
 % ##      [,1] [,2]
 % ## [1,] 3207   38
@@ -1315,77 +1340,126 @@ Once all items in the demonstration dataset have been classified, we compare the
 
 
 % classes
-%    0    1 
 % 3262  326 
 %
 % baserates
-%          0          1 
 % 0.90914158 0.09085842 
-\begin{table}[!t]
+\begin{table}[!p]
   \centering
   \small
-  \caption{Utility yields of the two algorithms with the two approaches}
-  \label{tab:results_5}
-  \begin{tabular}{cp{0.3\linewidth}cccc}
+  \begin{tabular*}{\linewidth}{ccw{c}{0.12\linewidth}w{c}{0.12\linewidth}w{c}{0.12\linewidth}w{c}{0.12\linewidth}}
 &    &$\sumatrix{1}{0}{0}{1}$
  &$\sumatrix{1}{-10}{0}{10}$
  &$\sumatrix{1}{-100}{0}{100}$
  &$\sumatrix{10}{0}{-10}{1}$
  % &$\sumatrix{100}{0}{-100}{1}$
-    \\[2\jot]
+    \\[3\jot]
 % ## standard   0.968   1.364    5.553   8.954   88.92
 % ## transducer 0.974   1.720    9.632   9.091   90.91
 % ##            0.620  26.100   73.460   1.530    2.24
- &\textcolor{myred}{standard method}
+ &\parbox{0.21\linewidth}{\color{myred}\clap{standard method}}
+ &\multicolumn{4}{c}{\textcolor{myred}{$\sumatrix{3225}{79.5}{37}{246.5}$}}
+ \\[2\jot]
+ \rotatebox[origin=l]{90}{\quad\clap{\parbox{5em}{\centering Random\\Forest}}}
+ &\parbox{0.21\linewidth}{\color{mypurpleblue}transducer \amp\\max utility}
+ &\textcolor{mypurpleblue}{$\sumatrix{3207}{38}{55}{288}$}
+ &\textcolor{mypurpleblue}{$\sumatrix{3050}{7}{212}{319}$}
+ &\textcolor{mypurpleblue}{$\sumatrix{2358}{2}{904}{324}$}
+ &\textcolor{mypurpleblue}{$\sumatrix{3262}{326}{0}{0}$}
+ %&\textcolor{mypurpleblue}{$\sumatrix{3262}{326}{0}{0}$}
+ \\[6\jot]
+%%%%%%%%
+% ## standard   0.959   1.518    7.237   8.628   85.58
+% ## transducer 0.962   1.645    9.591   9.091   90.91
+% ##            0.310   8.370   32.530   5.370    6.23
+ &\parbox{0.21\linewidth}{\color{myred}\clap{standard method}}
+ &\multicolumn{4}{c}{\textcolor{myred}{$\sumatrix{3165}{49}{97}{277}$}}
+ \\[2\jot]
+ \rotatebox[origin=l]{90}{\quad\clap{\parbox{8em}{\centering Neural\\Network}}}
+ &\parbox{0.21\linewidth}{\color{mypurpleblue}transducer \amp\\max utility}
+ &\textcolor{mypurpleblue}{$\sumatrix{3189}{65}{73}{261}$}
+ &\textcolor{mypurpleblue}{$\sumatrix{2882}{12}{380}{314}$}
+ &\textcolor{mypurpleblue}{$\sumatrix{2011}{1}{1251}{325}$}
+ &\textcolor{mypurpleblue}{$\sumatrix{3262}{326}{5}{288}$}
+ %&\textcolor{mypurpleblue}{$\sumatrix{3262}{326}{5}{288}$}
+ \end{tabular*}
+  \\[1em]
+  \caption{Confusion matrices}
+  \label{tab:results_CM}
+
+\vspace{3em}
+  
+% classes
+% 3262  326 
+%
+% baserates
+% 0.90914158 0.09085842 
+% \begin{table}[!t]
+%   \centering
+%   \small
+  \begin{tabular*}{\linewidth}{ccw{c}{0.12\linewidth}w{c}{0.12\linewidth}w{c}{0.12\linewidth}w{c}{0.12\linewidth}}
+&    &$\sumatrix{1}{0}{0}{1}$
+ &$\sumatrix{1}{-10}{0}{10}$
+ &$\sumatrix{1}{-100}{0}{100}$
+ &$\sumatrix{10}{0}{-10}{1}$
+ % &$\sumatrix{100}{0}{-100}{1}$
+    \\[3\jot]
+% ## standard   0.968   1.364    5.553   8.954   88.92
+% ## transducer 0.974   1.720    9.632   9.091   90.91
+% ##            0.620  26.100   73.460   1.530    2.24
+ &\parbox{0.21\linewidth}{\color{myred}\clap{standard method}}
  &\textcolor{myred}{0.968}
  &\textcolor{myred}{1.36}
  &\textcolor{myred}{5.55}
  &\textcolor{myred}{8.95}
  %& \textcolor{myred}{88.9}
- \\[0\jot]
- \rotatebox[origin=c]{90}{\clap{\parbox{5em}{\centering Random\\Forest}}}
- &\parbox{\linewidth}{\color{mypurpleblue}transducer \amp\\ utility maximization}
+ \\[2\jot]
+ \rotatebox[origin=l]{90}{\quad\clap{\parbox{5em}{\centering Random\\Forest}}}
+ &\parbox{0.21\linewidth}{\color{mypurpleblue}transducer \amp\\max utility}
  &\textcolor{mypurpleblue}{0.974}
  &\textcolor{mypurpleblue}{1.72}
  &\textcolor{mypurpleblue}{9.63}
  &\textcolor{mypurpleblue}{9.09}
  %&\textcolor{mypurpleblue}{90.9}
- \\[1\jot]
- &\footnotesize relative increase
+ \\[2\jot]
+ &\parbox{0.21\linewidth}{\footnotesize relative increase}
  &\footnotesize+0.6\%
  &\footnotesize+26\%
  &\footnotesize+73\%
  &\footnotesize+1.5\%
  % &\footnotesize+2.2\%
- \\[2.5em]
+ \\[6\jot]
 %%%%%%%%
 % ## standard   0.959   1.518    7.237   8.628   85.58
 % ## transducer 0.962   1.645    9.591   9.091   90.91
 % ##            0.310   8.370   32.530   5.370    6.23
- &\textcolor{myred}{standard method}
+ &\parbox{0.21\linewidth}{\color{myred}\clap{standard method}}
  &\textcolor{myred}{0.959}
  &\textcolor{myred}{1.52}
  &\textcolor{myred}{7.24}
  &\textcolor{myred}{8.63}
  %&\textcolor{myred}{85.6}
- \\[0\jot]
- \rotatebox[origin=c]{90}{\clap{\parbox{8em}{\centering Convolutional\\Neural\\Network}}}
- &\parbox{\linewidth}{\color{mypurpleblue}transducer \amp\\ utility maximization}
+ \\[2\jot]
+ \rotatebox[origin=l]{90}{\quad\clap{\parbox{8em}{\centering Neural\\Network}}}
+ &\parbox{0.21\linewidth}{\color{mypurpleblue}transducer \amp\\max utility}
  &\textcolor{mypurpleblue}{0.962}
  &\textcolor{mypurpleblue}{1.64}
  &\textcolor{mypurpleblue}{9.59}
  &\textcolor{mypurpleblue}{9.09}
  %&\textcolor{mypurpleblue}{90.9}
- \\[1\jot]
- &\footnotesize relative increase
+ \\[2\jot]
+ &\parbox{0.21\linewidth}{\footnotesize relative increase}
  &\footnotesize+0.3\%
  &\footnotesize+8.4\%
  &\footnotesize+33\%
  &\footnotesize+5.4\%
  %&\footnotesize+6.2\%
- \end{tabular}
+  \end{tabular*}
+  \\[1em]
+  \caption{Utility yields}
+  \label{tab:results_utilities}
 \end{table}
-
+\FloatBlock
 
 \begin{figure}[t]
   \centering
