@@ -1,7 +1,7 @@
 \pdfoutput=1
 %% Author: PGL  Porta Mana
 %% Created: 2022-04-14T17:18:22+0200
-%% Last-Updated: 2022-05-29T20:26:31+0200
+%% Last-Updated: 2022-05-29T20:42:02+0200
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Probabilities for classifier outputs
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -1466,14 +1466,14 @@ Then let us look at the performances obtained with the augmentation (blue bold).
 % \begin{table}[!t]
 %   \centering
 %   \small
-  \begin{tabular*}{\linewidth}{ccw{c}{0.12\linewidth}w{c}{0.12\linewidth}w{c}{0.12\linewidth}w{c}{0.12\linewidth}}
+  \begin{tabular*}{\linewidth}{clw{c}{0.12\linewidth}w{c}{0.12\linewidth}w{c}{0.12\linewidth}w{c}{0.12\linewidth}}
 &    &$\sumatrix{1}{0}{0}{1}$
  &$\sumatrix{1}{-10}{0}{10}$
  &$\sumatrix{1}{-100}{0}{100}$
  &$\sumatrix{10}{0}{-10}{1}$
  % &$\sumatrix{100}{0}{-100}{1}$
      \\[2\jot]
- &\parbox{0.21\linewidth}{\clap{\color{mygray}\footnotesize min achievable utility}}
+ &\parbox{0.21\linewidth}{\rlap{\color{mygray}\footnotesize min achievable utility}}
 % ##             [,1]
 % ## [1,]   0.0000000
 % ## [2,]  -0.9085842
@@ -1486,7 +1486,7 @@ Then let us look at the performances obtained with the augmentation (blue bold).
  &\textcolor{mygray}{\footnotesize $-9.09$}
  %&\textcolor{mygray}{\footnotesize $-90.9$}
      \\[0\jot]
- &\parbox{0.21\linewidth}{\clap{\color{mygray}\footnotesize max achievable utility}}
+ &\parbox{0.21\linewidth}{\rlap{\color{mygray}\footnotesize max achievable utility}}
 % ## [1,]  1.000000
 % ## [2,]  1.817726
 % ## [3,]  9.994983
@@ -1501,7 +1501,7 @@ Then let us look at the performances obtained with the augmentation (blue bold).
 % ## standard   0.968   1.364    5.553   8.954   88.92
 % ## transducer 0.974   1.720    9.632   9.091   90.91
 % ##            0.620  26.100   73.460   1.530    2.24
- &\parbox{0.21\linewidth}{\color{myred}\clap{standard method}}
+ &\parbox{0.21\linewidth}{\color{myred}\rlap{standard method}}
  &\textcolor{myred}{0.968}
  &\textcolor{myred}{1.36}
  &\textcolor{myred}{5.55}
@@ -1540,7 +1540,7 @@ Then let us look at the performances obtained with the augmentation (blue bold).
 % ## standard   0.959   1.518    7.237   8.628   85.58
 % ## transducer 0.962   1.645    9.591   9.091   90.91
 % ##            0.310   8.370   32.530   5.370    6.23
- &\parbox{0.21\linewidth}{\color{myred}\clap{standard method}}
+ &\parbox{0.21\linewidth}{\color{myred}\rlap{standard method}}
  &\textcolor{myred}{0.959}
  &\textcolor{myred}{1.52}
  &\textcolor{myred}{7.24}
@@ -1590,7 +1590,7 @@ Then let us look at the performances obtained with the augmentation (blue bold).
 % \begin{table}[!t]
 %   \centering
 %   \small
-  \begin{tabular*}{\linewidth}{ccw{c}{0.12\linewidth}w{c}{0.12\linewidth}w{c}{0.12\linewidth}w{c}{0.12\linewidth}}
+  \begin{tabular*}{\linewidth}{clw{c}{0.12\linewidth}w{c}{0.12\linewidth}w{c}{0.12\linewidth}w{c}{0.12\linewidth}}
 % &    &$\sumatrix{1}{0}{0}{1}$
 %  &$\sumatrix{1}{-10}{0}{10}$
 %  &$\sumatrix{1}{-100}{0}{100}$
@@ -1598,14 +1598,14 @@ Then let us look at the performances obtained with the augmentation (blue bold).
 %  % &$\sumatrix{100}{0}{-100}{1}$
 % &&\multicolumn{4}{c}{\footnotesize(rescaled utilities)}
 %     \\[2\jot]
- &\parbox{0.21\linewidth}{\clap{\color{mygray}\footnotesize min achievable utility}}
+ &\parbox{0.21\linewidth}{\rlap{\color{mygray}\footnotesize min achievable normalized utility}}
  &\multicolumn{4}{c}{\textcolor{mygray}{\footnotesize 0}}
  % &\textcolor{mygray}{\footnotesize 0}
  % &\textcolor{mygray}{\footnotesize 0}
  % &\textcolor{mygray}{\footnotesize 0}
  %&\textcolor{mygray}{\footnotesize 0}
      \\[0\jot]
- &\parbox{0.21\linewidth}{\clap{\color{mygray}\footnotesize max achievable utility}}
+ &\parbox{0.21\linewidth}{\rlap{\color{mygray}\footnotesize max achievable normalized utility}}
  &\multicolumn{4}{c}{\textcolor{mygray}{\footnotesize 1}}
  % &\textcolor{mygray}{\footnotesize 1}
  % &\textcolor{mygray}{\footnotesize 1}
@@ -1617,7 +1617,7 @@ Then let us look at the performances obtained with the augmentation (blue bold).
 % ## standard   0.9675307 0.8336741 0.7672139 0.9875011 0.9885411
 % ## mixed      0.9675307 0.9034962 0.9547778 0.9945856 0.9995036
 % ## transducer 0.9740803 0.9640155 0.9809529 0.9950279 0.9995006
- &\parbox{0.21\linewidth}{\color{myred}\clap{standard method}}
+ &\parbox{0.21\linewidth}{\color{myred}\rlap{standard method}}
  &\textcolor{myred}{0.968}
  &\textcolor{myred}{0.834}
  &\textcolor{myred}{0.767}
@@ -1645,7 +1645,7 @@ Then let us look at the performances obtained with the augmentation (blue bold).
 % ## standard   0.9593088 0.8898998 0.8554381 0.9696642 0.9702034
 % ## mixed      0.9593088 0.9302801 0.9754316 0.9853278 0.9941522
 % ## transducer 0.9615385 0.9366183 0.9788058 0.9950279 0.9995006
- &\parbox{0.21\linewidth}{\color{myred}\clap{standard method}}
+ &\parbox{0.21\linewidth}{\color{myred}\rlap{standard method}}
  &\textcolor{myred}{0.959}
  &\textcolor{myred}{0.890}
  &\textcolor{myred}{0.855}
@@ -1664,24 +1664,22 @@ Then let us look at the performances obtained with the augmentation (blue bold).
   \caption{\emph{Rescaled} utility yields from demonstration dataset}
   \label{tab:results_utilities}
 
-
-
 \end{table}
 \FloatBlock
 
 \begin{figure}[t]
   \centering
-  \includegraphics[width=\linewidth]{RF_transducer_gainsraw2.pdf}\\
-  \caption{Utility yields obtained using the \rf\ classifier in the standard way, vs those obtained using the probability transducer and utility maximization in each single classification, for a uniform distribution of possible utility matrices}
+  \includegraphics[width=\linewidth]{RFCNN_transducer_gains_max.pdf}\\
+  \caption{Normalized utility yields obtained using the two classifier in the standard way, vs those obtained with augmentation, for a uniform distribution of possible utility matrices over the utility-matrix space}
   \label{fig:RF_gain_UMspace}
 \end{figure}
 
-\begin{figure}[t]
-  \centering
-  \includegraphics[width=\linewidth]{CNN_transducer_gainsx2.pdf}\\
-  \caption{Utility yields obtained using the \cnn\ classifier in the standard way, vs those obtained using the probability transducer and utility maximization in each single classification, for a uniform distribution of possible utility matrices}
-  \label{fig:CNN_gain_UMspace}
-\end{figure}
+% \begin{figure}[t]
+%   \centering
+%   \includegraphics[width=\linewidth]{CNN_transducer_gainsx2.pdf}\\
+%   \caption{Utility yields obtained using the \cnn\ classifier in the standard way, vs those obtained using the probability transducer and utility maximization in each single classification, for a uniform distribution of possible utility matrices}
+%   \label{fig:CNN_gain_UMspace}
+% \end{figure}
 
 
 
@@ -1695,6 +1693,7 @@ Then let us look at the performances obtained with the augmentation (blue bold).
 %  baserates
 %         0         1 
 % 0.3333333 0.6666667 
+\iffalse
 \begin{table}[!t]
   \centering
   \small
@@ -1777,13 +1776,14 @@ Then let us look at the performances obtained with the augmentation (blue bold).
  %&\textcolor{myyellow}{\scriptsize 33.3}
  \end{tabular}
 \end{table}
+\fi
 
 
 
-
+\iffalse
 \begin{figure}[t]
   \centering
-  \includegraphics[width=\linewidth]{RF_transducer_gains_generraw2.pdf}\\
+  \includegraphics[width=\linewidth]{RFCNN_transducer_gains_max.pdf}\\
   \caption{Utility yields obtained using the \rf\ classifier in the standard way, vs those obtained using the probability transducer in generative mode, with utility maximization in each single classification, for a uniform distribution of possible utility matrices}
   \label{fig:RF_gain_gener_UMspace}
 \end{figure}
@@ -1794,7 +1794,7 @@ Then let us look at the performances obtained with the augmentation (blue bold).
   \caption{Utility yields obtained using the \cnn\ classifier in the standard way, vs those obtained using the probability transducer in generative mode, with utility maximization in each single classification, for a uniform distribution of possible utility matrices}
   \label{fig:CNN_gain_gener_UMspace}
 \end{figure}
-
+\fi
 
 
 
