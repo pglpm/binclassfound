@@ -1,3 +1,4 @@
+
 def RF_joint_prob(x, cl, q, alpha, mu, sigma):
     """
     Gives probability of class conditional on RF output
@@ -23,8 +24,6 @@ def RF_x_prob(x, q, mu, sigma):
     px = np.sum(q * norm.pdf(x, loc=mu, scale=sigma))
     return px
 
-um = np.array([[1,-10], [0,10]])
-
 def utility_at_point(x, um, q, alpha, mu, sigma):
     """
     Gives max utility at particular value of RF output
@@ -40,6 +39,9 @@ def utility_at_point(x, um, q, alpha, mu, sigma):
     um = np.array(um)
     maxutility = np.max( np.matmul(um, np.array([[1-classprob1], [classprob1]])) )
     return maxutility
+
+
+um = np.array([[1,-10], [0,10]])
 
 grid = np.linspace(start=0, stop=1, num=257)
 

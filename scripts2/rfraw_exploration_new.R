@@ -1,6 +1,6 @@
 ## Author: PGL  Porta Mana
 ## Created: 2022-03-17T14:21:57+0100
-## Last-Updated: 2022-05-29T12:24:48+0200
+## Last-Updated: 2022-05-29T12:55:38+0200
 ################
 ## Exploration of several issues for binary classifiers
 ################
@@ -733,10 +733,15 @@ cbind(ulist2, rresults,
 ## [17,]   1.000    0.000    0.450   0.550    0.682            0.633            0.691  0.009 0.058    1.32    9.16
 ## [18,]   1.000    0.000    0.495   0.505    0.666            0.663            0.667  0.001 0.004    0.15    0.60
 
-t(cbind(ulist2, signif(rresults[,c(1,2,3)],3),
-        round(100*apply(rresults,1,function(x){diff(x[c(1,3)])/abs(x[1])}),1),
-        round(100*apply(rresults,1,function(x){diff(x[c(2,3)])/abs(x[2])}),1)
+t(cbind(ulist2, signif(rresults[,c(1,2,3)],4),
+        round(100*apply(rresults,1,function(x){diff(x[c(1,3)])/abs(x[1])}),2),
+        round(100*apply(rresults,1,function(x){diff(x[c(2,3)])/abs(x[2])}),2)
         ) )[,1:5]
+## standard  0.835   3.746   34.48   3.797   33.43
+## discr     0.918   6.685   66.09   3.333   33.33
+## gener     0.957   6.867   66.67   3.840   33.58
+##          14.610  83.320   93.33   1.130    0.44
+##           4.250   2.720    0.87  15.210    0.73
 
 
 
