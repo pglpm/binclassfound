@@ -1,7 +1,7 @@
 \pdfoutput=1
 %% Author: PGL  Porta Mana
 %% Created: 2022-04-14T17:18:22+0200
-%% Last-Updated: 2022-05-29T20:42:02+0200
+%% Last-Updated: 2022-05-29T23:44:27+0200
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Probabilities for classifier outputs
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -799,9 +799,9 @@ Open Science Framework \doi{10.31219/osf.io/#1}%
 \section{The inadequacy of common classification approaches}
 \label{sec:goal_class}
 
-As the potential of using \ml\ algorithms in important fields such as medicine or drug discovery increases, the \ml\ community ought to keep in mind what the actual needs and inference contexts in such fields are. We must avoid trying (consciously or unconsciously) to convince such fields to change their needs or ignore their contexts just to fit \ml\ solutions that are available and fashionable at the moment. Rather, we must make sure the that solutions fit needs \amp\ context, and amend them if they do not.
+As the potential of using \ml\ algorithms in important fields such as medicine or drug discovery increases \autocites{lundervoldetal2019,chenetal2018,green2019}, the \ml\ community ought to keep in mind what the actual needs and inference contexts in such fields are. We must avoid trying (intentionally or unintentionally) to convince such fields to change their needs, or to ignore their own contexts just to fit \ml\ solutions that are available and fashionable at the moment. Rather, we must make sure the that solutions fit needs \amp\ context, and amend them if they do not.
 
-The \ml\ mindset and approach to problems such as classification in such new important fields is often still inadequate in many respects. It reflects simpler needs and contexts of many early inference problems successfully tackled by machine learning.
+The \ml\ mindset and approach to problems such as classification in such new important fields is often still inadequate in many respects. It reflects simpler needs and contexts of many  inference problems successfully tackled by machine learning earlier on.
 
 A stereotypical \enquote{cat vs dog} image classification, for instance, has four very important differences from a \enquote{disease \tI\ vs disease \tII} medical classification, or from an \enquote{active vs inactive} drug classification:
 \begin{enumerate}[label=(\roman*),wide]
@@ -813,7 +813,7 @@ A stereotypical \enquote{cat vs dog} image classification, for instance, has fou
 \item\label{item:optimal_truth} If there is a 70\% probability that an image's subject is a cat, then it is natural to put it in the folder \enquote{cats} rather than \enquote{dogs} (if the decision is only between these two folders). If there is a 70\% probability that a patient has a particular health condition, it may nonetheless be better to dismiss the patient -- that is, to behave as if there was no condition. This is the optimal decision, for example, when the only available treatment for the condition would severely harm the patient if the condition were not present. Such treatment would be recommended only if the probability for the condition were much higher than 70\%. Similarly, even if there is a 70\% probability that a candidate drug is active it may nonetheless be best to discard it. This is the economically most advantageous choice if pursuing a false-positive leads to large economic losses. \emph{The target of a classification is not what’s most probable, but what’s optimal.} \mynotep{add something on proper probabilities, connecting to~\ref{item:determ_statist}}
 
   
-\item\label{item:determ_statist} The relation from image pixels to house-pet subject may be almost deterministic; so we are effectively extrapolating or looking for a function $\texts{pet} \mo f(\texts{pixels})$ contaminated by little noise. But the relation between medical-test scores or biochemical features on one side, and disease or drug activity on the other, is typically \emph{probabilistic}; so a function $\texts{disease} \mo f(\texts{scores})$
+\item\label{item:determ_statist} The relation from image pixels to house-pet subject may be almost deterministic; so we are effectively looking for or extrapolating a function $\texts{pet} \mo f(\texts{pixels})$ contaminated by little noise. But the relation between medical-test scores or biochemical features on one side, and disease or drug activity on the other, is typically \emph{probabilistic}; so a function $\texts{disease} \mo f(\texts{scores})$
   % scores${}\!\mapsto\!{}$disease
   or $\texts{activity} \mo f(\texts{features})$
   % features${}\!\mapsto\!{}$activity
@@ -837,13 +837,14 @@ In summary, there is place to improve classifiers so as to
 
 \medskip
 
-In artificial intelligence and machine learning it is known how to address all these issues in principle -- the theoretical framework is for example beautifully presented in the first 18 chapters or so of Russell \amp\ Norvig's \parencites*{russelletal1995_r2022} text\mynotew{add also refs to Cheeseman}.
+In artificial intelligence and machine learning it is known how to address all these issues in principle -- the theoretical framework is for example beautifully presented in the first 18 chapters or so of Russell \amp\ Norvig's \parencites*{russelletal1995_r2022} text \autocites[see also]{selfetal1987,cheeseman1988,cheeseman1995_r2018,pearl1988,mackay1995_r2005}.
 
-Issues~\ref{item:gain_loss}--\ref{item:optimal_truth} are simply solved by adopting the standpoint of \emph{Decision Theory}, which we briefly review in \sect~\ref{sec:decision_theory} and we discuss at length in our companion work \autocites{dyrlandetal2022}. In short: The set of decisions and the set of classes pertinent to a problem are separated if necessary. A utility is associated to each decision, relative to the occurrence of each particular class; these utilities are assembled into a utility matrix: one row per decision, one column per class. This matrix is multiplied by a column vector consisting in the probability for the classes. The resulting vector of numbers contains the expected utility of each decision. Finally we select the decision having \emph{maximal expected utility}, according to the principle bearing this name. Such procedure also takes care of the class imbalance problem; \cf\ the analysis by \cite{drummondetal2005} (they use the term \enquote{cost} instead of \enquote{utility}).
+Issues~\ref{item:gain_loss}--\ref{item:optimal_truth} are simply solved by adopting the standpoint of \emph{Decision Theory}, which we briefly review in \sect~\ref{sec:decision_theory} below and discuss at length in a companion work \autocites{dyrlandetal2022}. In short: The set of decisions and the set of classes pertinent to a problem are separated if necessary. A utility is associated to each decision, relative to the occurrence of each particular class; these utilities are assembled into a utility matrix: one row per decision, one column per class. This matrix is multiplied by a column vector consisting in the probability for the classes. The resulting vector of numbers contains the expected utility of each decision. Finally we select the decision having \emph{maximal expected utility}, according to the principle bearing this name. Such procedure also takes care of the class imbalance problem \autocites[\cf\ the analysis by][(they use the term \enquote{cost} instead of \enquote{utility})]{drummondetal2005}.
 
 Clearly this procedure is computationally inexpensive and ridiculously easy to implement in any \ml\ classifier. The difficulty is that this procedure requires \emph{sensible probabilities} for the classes, which brings us to issue~\ref{item:determ_statist}, the most difficult.
 
-Some machine-learning algorithms for classification, such as support-vector machines, output only a class label. Others, such as deep networks, output a set of real numbers that can bear some qualitative relation to the plausibilities of the classes. But these numbers cannot be reliably interpreted as proper probabilities, that is, as the degrees of belief assigned to the classes by a rational agent \autocites{mackay1992d,galetal2016}[\chaps~2, 12, 13]{russelletal1995_r2022}; or, in terms of \enquote{populations} \autocites{lindleyetal1981}[\sect~II.4]{fisher1956_r1967}, as the expected frequencies of the classes in the hypothetical population of units (degrees of belief and frequencies being related by de~Finetti's theorem \autocites[\chap~4]{bernardoetal1994_r2000}{dawid2013}). Algorithms that internally do perform probabilistic calculations, for instance naive-Bayes or logistic-regression classifiers \autocites[\sect~3.5, \chap~8]{murphy2012}[\sects~8.2, 4.3]{bishop2006}[\chap~10, \sect~17.4]{barber2007_r2020}, unfortunately rest on probabilistic assumptions, such as independence and particular shapes of distributions, that are often unrealistic (and their consistency with the specific application is rarely checked). Only particular classifiers such as Bayesian neural networks \autocites{nealetal2006}[\sect~5.7]{bishop2006} output sensible probabilities, but they are computationally very expensive. The stumbling block is the extremely high dimensionality of the feature space, which makes the calculation of the probabilities
+Some machine-learning algorithms for classification, such as support-vector machines, output only a class label. Others, such as deep networks, output a set of real numbers that can bear some qualitative relation to the plausibilities of the classes. But these numbers cannot be reliably interpreted as proper probabilities, that is, as the degrees of belief assigned to the classes by a rational agent \autocites{mackay1992d,galetal2016}[\chaps~2, 12, 13]{russelletal1995_r2022}; or, in terms of \enquote{populations} \autocites{lindleyetal1981}%[\sect~II.4]{fisher1956_r1967}
+, as the expected frequencies of the classes in the hypothetical population of units (degrees of belief and frequencies being related by de~Finetti's theorem \autocites[\chap~4]{bernardoetal1994_r2000}{dawid2013}). Algorithms that internally do perform probabilistic calculations, for instance naive-Bayes or logistic-regression classifiers \autocites[\sect~3.5, \chap~8]{murphy2012}[\sects~8.2, 4.3]{bishop2006}[\chap~10, \sect~17.4]{barber2007_r2020}, unfortunately rest on strong probabilistic assumptions, such as independence and particular shapes of distributions, that are often unrealistic (and their consistency with the specific application is rarely checked). Only particular classifiers such as Bayesian neural networks \autocites{nealetal2006}[\sect~5.7]{bishop2006} output sensible probabilities, but they are computationally very expensive. The stumbling block is the extremely high dimensionality of the feature space, which makes the calculation of the probabilities
 \[
   \P(\texts{class}, \texts{feature} \| \texts{training data})
 \]
@@ -855,17 +856,16 @@ If we solved the issue of outputting proper probabilities then the remaining thr
 
 In the present work we propose an alternative solution to calculate proper class probabilities, which can then be used in conjunction with utilities to perform the final classification or decision.
 
-This solution consists in a sort of \enquote{transducer} or \enquote{calibration curve} that transforms the algorithm's raw output into a probability. It has a low computational cost, can be applied to all commonly used classifiers and even to simple regression algorithms, does not need any changes in algorithm architecture or in training procedures, and is grounded on first principles.
+This solution consists in a sort of \enquote{transducer} or \enquote{calibration curve} that transforms the algorithm's raw output into a probability. It has a low computational cost, can be applied to all commonly used classifiers and to simple regression algorithms, does not need any changes in algorithm architecture or in training procedures, and is grounded on first principles. The probability thus obtained can be combined with utilities to perform the final classification task.
 
-Moreover, this transducer has two great benefits. First, it allows us to calculate both the probability of class conditional on features, and \emph{the probability of features conditional on class}. In other words it allows us to use the classification algorithm in both \enquote{discriminative} and \enquote{generative} modes \autocites[\sect~21.2.3]{russelletal1995_r2022}[\sect~8.6]{murphy2012}, even if the algorithm was not designed for a generative use. Second, its computation automatically also yields a \enquote{probability of the probability}, or more precisely a quantification of how much the probability would change if we had further training data.
+Moreover, this transducer has three other great benefits, which come automatically with its computation. First, it allows us to calculate both the probability of class conditional on features, and \emph{the probability of features conditional on class}. In other words it allows us to use the classification algorithm in both \enquote{discriminative} and \enquote{generative} modes \autocites[\sect~21.2.3]{russelletal1995_r2022}[\sect~8.6]{murphy2012}, even if the algorithm was not designed for a generative use. Second, its computation also gives a quantification of how much the probability would change if we had further training data. Third, it can give an \emph{evaluation of the whole classifier} -- including an uncertainty about such evaluation -- that allows us to compare it with other classifiers to choose the optimal one.
 
-The probability thus obtained is also combined with utilities to perform the final classification task.
+In \sect~\ref{sec:transducer} we present the general idea behind the probability-transducer and its calculation. Its combination with the rule of expected-utility maximization to perform classification is discussed in \sect~\ref{sec:utility_classification}; we call this combined use the \enquote{augmentation} of a classifier.
 
-We show on a concrete dataset that this solution always leads to an improvement in classification, in some cases with a relative increase as high as 30\%.
+In \sect~\ref{sec:demonstration} we demonstrate the implementation, use, and benefits of classifier augmentation in a concrete drug-discovery classification problem and dataset, with a \RF\ and a \CNN\ classifiers.
 
-The main idea is explained in \sect~\ref{sec:transducer}. Section\mynotep{\ldots} explains how the resulting probabilities are combined with utilities to perform classification. In \sect\mynotep{\ldots} we apply the transducer to\mynotep{\ldots}
+Finally, we give a summary and discussion in \sect~\ref{sec:summary_discussion}, including some teasers of further applications to be discussed in future work.
 
-\mynotew{finish synopsis}
 
 \section{An output-to-probability transducer}
 \label{sec:transducer}
@@ -928,7 +928,7 @@ For algorithms that yield an output much simpler than the features, such as a ve
 
 The idea above can also be informally understood in two ways. First: the classifier's output is regarded as a proxy for the feature. Second: the classifier is regarded as something analogous to a \emph{diagnostic test}, such as any common diagnostic or prognostic test used in medicine for example. We do not take diagnostic-test results at face value -- if a flu test is \enquote{positive} we do not conclude that the patient has the flu -- but rather arrive at a probability that the patient has the flu, given some statistics about results of tests performed on \enquote{verified samples} of true-positive and true-negative patients \autocites[\chap~5]{soxetal1988_r2013}[\chap~5]{huninketal2001_r2014}[see also][]{jennyetal2018}.
 
-The probability values~\eqref{eq:prob_output} for a fixed class and variable output give us a sort of \enquote{calibration curve} (or calibration hypersurface for multidimensional outputs) of the output-to-probability transducer for the classifier. See \fig\mynotep{\ldots} as an example. It must be stressed that such curve needs to be calculated only once, and it can be used for all further applications of the classifier to new units.
+The probability values~\eqref{eq:prob_output} for a fixed class and variable output give us a sort of \enquote{calibration curve} (or calibration hypersurface for multidimensional outputs) of the output-to-probability transducer for the classifier. See \fig~\ref{fig:prob_curve_RF} as an example. It must be stressed that such curve needs to be calculated only once, and it can be used for all further applications of the classifier to new units.
 
 \medskip
 
@@ -1299,15 +1299,17 @@ We can finally assess the performance of both classifiers, with and without augm
   \sum_{ij} U_{ij}\ C_{ij} \ .
 \end{equation}
 
-The utility yields for the different cases, classifiers, and methods are presented in table~\ref{tab:results_utilities}. The minimum and maximum theoretically achievable yields (all data correctly classified or wholly misclassified) are also shown for each case.
 
-Let us first compare the two algorithms when employed in the standard way (red). Their performance is very close to the theoretical maximum in most cases  The \RF\ outperforms the \CNN\ in utility cases~I and~II; vice versa in cases~II and~III.
+%%% Relative improvements over UM space:
+% ## > range((normallscores[3,]-normallscores[1,])/normallscores[1,])*100
+% ## [1] -0.09453707 32.09361399
+% ## > range((CNNnormallscores[3,]-CNNnormallscores[1,])/CNNnormallscores[1,])*100
+% ## [1] -0.2280634 17.5667907
+% ## > range((normallscores[3,]-normallscores[2,])/normallscores[2,])*100
+% ## [1] -0.3469935  9.2877534
+% ## > range((CNNnormallscores[3,]-CNNnormallscores[2,])/CNNnormallscores[2,])*100
+% ## [1] -0.9944227  1.5092731
 
-Then let us look at the performances obtained with the augmentation (blue bold). We notice the following:
-\begin{itemize}
-\item The augmentation always improves the performance of each algorithm; in some cases, such as~III, by a large relative amount. The improvement occurs also in cases, such as case~I, where the standard method already had an almost optimal performance.
-\item In three cases, the augmentation improves the originally worse algorithm above the originally better one. This almost happens also in case~I, the difference possibly being at the level of statistical variability.
-\end{itemize}
 
 %%% normalized scores RF
 % ##                 [,1]      [,2]      [,3]      [,4]      [,5]
@@ -1416,17 +1418,17 @@ Then let us look at the performances obtained with the augmentation (blue bold).
 \begin{table}[!p]
   \centering
   \small
-  \begin{tabular*}{\linewidth}{ccw{c}{0.12\linewidth}w{c}{0.12\linewidth}w{c}{0.12\linewidth}w{c}{0.12\linewidth}}
+  \begin{tabular*}{\linewidth}{clw{c}{0.12\linewidth}w{c}{0.12\linewidth}w{c}{0.12\linewidth}w{c}{0.12\linewidth}}
 &    &$\sumatrix{1}{0}{0}{1}$
  &$\sumatrix{1}{-10}{0}{10}$
  &$\sumatrix{1}{-100}{0}{100}$
  &$\sumatrix{10}{0}{-10}{1}$
  % &$\sumatrix{100}{0}{-100}{1}$
-    \\[3\jot]
+    \\[4\jot]
 % ## standard   0.968   1.364    5.553   8.954   88.92
 % ## transducer 0.974   1.720    9.632   9.091   90.91
 % ##            0.620  26.100   73.460   1.530    2.24
- &\parbox{0.21\linewidth}{\color{myred}\clap{standard method}}
+ &\parbox{0.21\linewidth}{\color{myred}\rlap{standard method}}
  &\multicolumn{4}{c}{\textcolor{myred}{$\sumatrix{3225}{79.5}{37}{246.5}$}}
  \\[2\jot]
  \smash{\rotatebox[origin=l]{90}{\quad\clap{\parbox{5em}{\centering Random\\Forest}}}}
@@ -1441,7 +1443,7 @@ Then let us look at the performances obtained with the augmentation (blue bold).
 % ## standard   0.959   1.518    7.237   8.628   85.58
 % ## transducer 0.962   1.645    9.591   9.091   90.91
 % ##            0.310   8.370   32.530   5.370    6.23
- &\parbox{0.21\linewidth}{\color{myred}\clap{standard method}}
+ &\parbox{0.21\linewidth}{\color{myred}\rlap{standard method}}
  &\multicolumn{4}{c}{\textcolor{myred}{$\sumatrix{3165}{49}{97}{277}$}}
  \\[2\jot]
  \smash{\rotatebox[origin=l]{90}{\quad\clap{\parbox{8em}{\centering Neural\\Network}}}}
@@ -1598,7 +1600,8 @@ Then let us look at the performances obtained with the augmentation (blue bold).
 %  % &$\sumatrix{100}{0}{-100}{1}$
 % &&\multicolumn{4}{c}{\footnotesize(rescaled utilities)}
 %     \\[2\jot]
- &\parbox{0.21\linewidth}{\rlap{\color{mygray}\footnotesize min achievable normalized utility}}
+\iffalse
+    &\parbox{0.21\linewidth}{\rlap{\color{mygray}\footnotesize min achievable normalized utility}}
  &\multicolumn{4}{c}{\textcolor{mygray}{\footnotesize 0}}
  % &\textcolor{mygray}{\footnotesize 0}
  % &\textcolor{mygray}{\footnotesize 0}
@@ -1612,6 +1615,7 @@ Then let us look at the performances obtained with the augmentation (blue bold).
  % &\textcolor{mygray}{\footnotesize 1}
  %&\textcolor{mygray}{\footnotesize 1}
     \\[5\jot]
+\fi
 %%% normalized scores RF
 % ##                 [,1]      [,2]      [,3]      [,4]      [,5]
 % ## standard   0.9675307 0.8336741 0.7672139 0.9875011 0.9885411
@@ -1662,17 +1666,66 @@ Then let us look at the performances obtained with the augmentation (blue bold).
   \end{tabular*}
   \\[1em]
   \caption{\emph{Rescaled} utility yields from demonstration dataset}
-  \label{tab:results_utilities}
+  \label{tab:results_utilities_normalized}
 
 \end{table}
+
+The utility yields for the different cases, classifiers, and methods are presented in table~\ref{tab:results_utilities}. The maximum and minimum theoretically achievable yields, which are obtained when all data are correctly classified or incorrectly  misclassified, are also shown for each case. Since the maximum and minimum differ from case to case, we also report the \emph{rescaled} utilities in table~\ref{tab:results_utilities_normalized}. For each case, the rescaled utility is obtained by a shift and a scaling of its measurement unit, which set the minimum and maximum achievable yields to $0$ and $1$:
+\begin{equation}
+  \label{eq:norm_utility_formula}
+  \texts{rescaled utility} =
+  \frac{\texts{utility} - \texts{theoretical min}}{
+    \texts{theoretical max} - \texts{theoretical min}
+  } \ .
+\end{equation}
 \FloatBlock
 
+\medskip
+
+Let us first compare the two algorithms when employed in the standard way (red). Their performance is very close to the theoretical maximum in most cases, the only exception being the \RF\ in case~III.  The \RF\ outperforms the \CNN\ in  cases~I and~II; vice versa in cases~II and~III.
+
+Then let us look at the performances obtained with the augmentation (blue bold). We note the following:
+\begin{itemize}
+\item The augmentation improves the performance of each algorithm in all cases. The improvement also occurs also in case~IV for the \RF, where the standard method already had an extremely high performance (rescaled utility of 0.988).
+\item In cases~II--IV the augmentation improves the originally worse algorithm above the originally better one. This almost happens also in case~I, the difference possibly being at the level of statistical variability.
+\item In case~IV the augmentation brings the utility yield to above 99\% of the theoretical maximum; remember from the previous section that this is achieved by classifying all data as class~0.
+\item With augmentation, the \RF\ outperforms the \CNN\ in all cases, with a possible tie for case~IV.
+\end{itemize}
+
+
+
+
+\medskip
+
+These were four particular cases only, though. Does the augmentation lead to an improvement (or at least to no change) for \emph{all} possible utility matrices? This must indeed be the case, owing to the internal consistency of decision theory.
+
+We give evidence of this fact by considering a large number (10\,000) of utility matrices selected uniformly from the utility-matrix space for binary classification. This two-dimensional space, shown in \fig~\ref{fig:space_UM}, is discussed in our companion work \autocites[\sect~3.2]{dyrlandetal2022}.
+\begin{figure}[t]
+  \centering
+  \includegraphics[width=0.5\linewidth]{space_UM2c.pdf}\\
+  \caption{Space of utility matrices (modulo equivalence) for binary classification.}
+  \label{fig:space_UM}
+\end{figure}
+
+For each of these utility matrices, we calculate the rescaled yields obtained by using either classifier in the standard way, and with the augmentation -- probability-transducer \amp\ utility-based classification. The yields obtained in the two ways are plotted against each other in \fig~\ref{fig:RF_gain_UMspace}. Only 2\,000 are plotted, in order to show the fact that most of the yields are quite high (they accumulate on the top right corner); but all 10\,000 lie along the jagged curves evident in the plot.
 \begin{figure}[t]
   \centering
   \includegraphics[width=\linewidth]{RFCNN_transducer_gains_max.pdf}\\
-  \caption{Normalized utility yields obtained using the two classifier in the standard way, vs those obtained with augmentation, for a uniform distribution of possible utility matrices over the utility-matrix space}
+  \caption{Rescaled utility yields obtained using the two classifiers in the standard way, vs those obtained with augmentation, for a uniform distribution of possible utility matrices over the utility-matrix space of \fig~\ref{fig:space_UM}. The augmentation always leads to an improved utility yield, especially in cases where the standard method has a low or high performance. Owing to noise coming from numerical rounding, in some cases the yield from augmentation may appear lower than from the standard method (points below the dashed grey line). Note that the minimum value of each axis is 0.75, so this plot is showing}
   \label{fig:RF_gain_UMspace}
 \end{figure}
+
+Clearly, the augmentation always leads to increased utility yields, especially for those cases where the standard performance of the two algorithms is particularly low or high (in relative terms); hence the U-shapes of the scattered points. Note that the minimum values of the plot's axes is 0.75, so the improvement is upon yields that are already quite high. Numerical rounding can lead to apparent decreases in some cases (maximum relative decreases: $-0.09\%$ for \RF, $-0.2\%$ for \CNN); this is actually useful for estimating the magnitude of numerical-rounding errors occurring in the computation and the number of significant digits.
+
+
+\mynotew{add final remark that this is not evaluation}
+
+
+\section{Summary, discussion, and teasers of further ...}
+\label{sec:summary_discussion}
+
+
+
 
 % \begin{figure}[t]
 %   \centering
@@ -1806,247 +1859,6 @@ Then let us look at the performances obtained with the augmentation (blue bold).
 % \end{figure}
 
 
-\section{Sensible probabilities for classifiers}
-\label{sec:intro}
-\mynotew{only pieces will be taken from this section}
-
-% Some machine-learning algorithms for classification, such as support-vector machines, typically output a class label. Others, such as deep networks, output a set of real numbers. These real numbers can be positive, normalized to unity, and can bear some qualitative relation to the plausibilities of the classes. But they cannot be reliably interpreted as sensible probabilities, that is, as the degrees of belief assigned to each possible class by a rational agent \autocites{mackay1992d,galetal2016}[\chaps~2, 12, 13]{russelletal1995_r2022}; or, in terms of \enquote{populations} \autocites{lindleyetal1981}[\sect~II.4]{fisher1956_r1967}, as the expected frequencies of the classes in the hypothetical population of units (degrees of belief and frequencies being related by de~Finetti's theorem \autocites[\chap~4]{bernardoetal1994_r2000}{dawid2013}).
-
-% Algorithms that internally do perform probabilistic calculations, such as naive-Bayes or logistic-regression classifiers \autocites[\sect~3.5, \chap~8]{murphy2012}[\sects~8.2, 4.3]{bishop2006}[\chap~10, \sect~17.4]{barber2007_r2020}, unfortunately rest on probabilistic assumptions, such as independence and particular shapes of distributions, that are often unrealistic (and their consistency with the specific application is rarely checked). Only particular classifiers such as Bayesian neural networks \autocites{nealetal2006}[\sect~5.7]{bishop2006} output sensible probabilities.
-
-% It is difficult to assess sensible probabilities for the possible classes. Some \ml\ algorithms only output a class label. Others, including deep networks, output real numbers that, even if normalized and usually called \enquote{probabilities}, cannot be reliably interpreted as proper probabilities, that is, degrees of belief or frequencies in the population of interest \autocites{mackay1992d,galetal2016} conditional on the information given as input to the classifier (this is why we used the qualifier \enquote{sensible}). Algorithms that internally do perform probabilistic calculations, such as naive-Bayes or logistic-regression classifiers \autocites[\sect~3.5, \chap~8]{murphy2012}[\sects~8.2, 4.3]{bishop2006}[\chap~10, \sect~17.4]{barber2007_r2020}, unfortunately rest on probabilistic assumptions -- independence and particular shapes of distributions, for example -- that are often unrealistic (and their consistency with the specific application is rarely checked).
-% 
-% As already mentioned in \sect~\ref{sec:intro}, some \ml\ classifiers only output a class label. Others can output a set of real numbers that are positive, normalized to unity, and bear some qualitative relation to the plausibilities of the classes; but their values cannot be considered as the correct degrees of belief in the classes conditional on the input features. It is these values that we need for decision theory. Determining these probabilities would require an analysis that is computationally unfeasible at present for problems that involve very high-dimensional spaces, such as image classification; in fact if an exact probabilistic analysis were possible we would not be developing \ml\ classifiers in the first place \autocites[\chaps~2, 12]{russelletal1995_r2022}{pearl1988}. \mynotew{\puzzle~Maybe useful to add a reminder that probability theory is the \emph{learning} theory par excellence (even if there's no \enquote{learning} in its name)? Its rules are all about making logical updates given new data.} Only particular classifiers such as Bayesian neural networks \autocites{nealetal2006}[\sect~5.7]{bishop2006} output somewhat sensible  probabilities. But we would like to find a solution that can be applied to all commonly used classifiers, without being forced to use specific ones.
-
-
-
-Why are probability values important? As we argue in a companion work \mynotew{\pencil}, our ultimate purpose in classification is seldom only to guess a class; most often it is to choose a specific course of action, or to make a decision, among several available ones. A clinician, for example, does not simply tell a patient \enquote*{you will probably not contract the disease}, but has to decide among dismissal or different kinds of preventive treatment \autocites{soxetal1988_r2013,huninketal2001_r2014}. Said otherwise, in classification we must choose the \emph{optimal} class, not the probably true one.
-Making optimal choices in situations of uncertainty is the domain of Decision Theory \autocites[\chap~15]{russelletal1995_r2022}{jeffrey1965,north1968,raiffa1968_r1970}. In order to make an optimal choice, decision theory requires the use of probability values that properly reflect our state of uncertainty.
-
-Determining class probabilities conditional on the input features is unfortunately computationally unfeasible at present for problems that involve very high-dimensional spaces, such as image classification; in fact if an exact probabilistic analysis were possible we would not be developing \ml\ classifiers in the first place \autocites[\chaps~2, 12]{russelletal1995_r2022}{pearl1988}.
-\mynotew{\scriptsize\puzzle~Maybe useful to add a reminder that probability theory is the \emph{learning} theory par excellence (even if there's no \enquote{learning} in its name)? Its rules are all about making logical updates given new data.
-
-}
-
-In the present work we propose an alternative solution that has a low computational cost and that can be applied to all commonly used classifiers, even those that only output class labels.
-
-The essential idea comes from seeing an analogy between a classifier and a diagnostic test, such as any common diagnostic or prognostic test used in medicine for example. There are many parallels in the way \ml\ classifiers and diagnostic tests, a flu test for instance, are devised and work. Our basic motivation in using either is that we would like to assess some situational variable -- class, pathological condition -- by means of its correlation (in the general sense of the word, not the linear Pearson one; and including deterministic dependence as a particular case) with a set of \enquote{difficult} variables that are either too complex or hidden -- image pixels, presence of replicating viral agents~--:
-\[
-  \text{situational variable} \longleftrightarrow \text{difficult variables}
-\]
-We devise an auxiliary variable -- algorithm output, test result -- to be correlated with the difficult variables:
-\[
-    \text{situational variable} \longleftrightarrow \text{difficult variables}
-    \longleftrightarrow \text{aux variable}
-\]
-% \[
-%   \begin{aligned}
-%     \text{situation} &\leftrightarrow \text{complicated variables}
-%     \\[-\jot]
-% \mathrel{\mathrlap{\nwarrow}\mkern-5mu\searrow}&\hphantom{{}\:\text{aux variable}}\mathrel{\mathrlap{\nearrow}\mkern-5mu\swarrow}
-% \\[-2.5\jot] &{}\:\text{aux variable}
-%   \end{aligned}
-% \]
-We can now assess the situational variable by observing the more easily accessible auxiliary variable instead of the difficult ones. In probability language we are \emph{marginalizing} over the difficult variables. This is the procedure dictated by the probability calculus whenever we do not have informational access to a set of variables. The correlation of the auxiliary variable is achieved by the training process in the case of the \ml\ algorithm, and by the exploitation of biochemical processes or reactions in the case of the flu test.
-
-The situational variable is \emph{informationally screened} from the auxiliary variable by the difficult variables. That is, the auxiliary variable does not -- in fact, cannot -- contain any more information about the situational variable than that contained in the difficult variables. This means that the probability relationship between the three variables is as follows:
-\begin{multline}
-  \label{eq:screening}
-  \p\Bigl(
-  \text{\parbox[c]{\widthof{\footnotesize situational}}{\centering\footnotesize situational\\[-1\jot]variable}}
-  \|[\Big]
-  \text{\parbox[c]{\widthof{\footnotesize variable}}{\centering\footnotesize aux\\[-1\jot]variable}}
-  \Bigr)
-  ={}\\[\jot]
-\sum_{\mathclap{
-    \text{\parbox[c]{\widthof{\scriptsize variables}}{\centering\scriptsize difficult\\[-1\jot]variables}}
-}}
-\p\Bigr(
-  \text{\parbox[c]{\widthof{\footnotesize situational}}{\centering\footnotesize situational\\[-1\jot]variable}}
-  \|[\Big]
-  \text{\parbox[c]{\widthof{\footnotesize variables}}{\centering\footnotesize difficult\\[-1\jot]variables}}
-  \Bigr)  \times
-  \p\Bigl(
-  \text{\parbox[c]{\widthof{\footnotesize variables}}{\centering\footnotesize difficult\\[-1\jot]variables}}
-  \|[\Big]
-  \text{\parbox[c]{\widthof{\footnotesize variable}}{\centering\footnotesize aux\\[-1\jot]variable}}
-\Bigr)   \ ,
-\end{multline}
-the sum running over all possible values of the difficult variables.
-
-In the case of the diagnostic test we determine the probability %
-$\p\bigl(%
-\text{\parbox[c]{\widthof{\footnotesize situational}}{\centering\footnotesize situational\\[-1\jot]variable}}%
-\|[\big]%
-\text{\parbox[c]{\widthof{\footnotesize variable}}{\centering\footnotesize aux\\[-1\jot]variable}}%
-\bigr)$ %
-by carrying out the test on a representative sample of cases and collecting joint statistics between the test's output and the true situation, the presence of the flu in our example. These statistics are typically displayed in a so-called contingency table \autocites{fienberg1980_r2007,mostelleretal1983_r2013}, akin to a confusion matrix. % It is from this contingency table that we derive the probabilities of the virus's presence, given all possible test result.
-
-\medskip
-
-Unlike the case of a diagnostic test, the output of a \ml\ classifier is usually taken at face value: if the output is a class label, that label is regarded as the true class; if the output is a unity-normalized tuple of positive numbers, that tuple is regarded as the probability distribution for the classes.
-
-We instead propose \emph{to treat the classifier's output just like a diagnostic test's result}. This output, discrete or continuous, is regarded as a quantity that has some correlation with the true class. This correlation can be analysed in a set of representative samples and used to calculate a sensible probability for the class given the classifier's output. This analysis only needs to be made once and is computationally cheap, because the classifier output takes values in a discrete or low-dimensional space.
-
-% Analogously we can use the statistics of the application of \ml\ classifier on a test set to derive the probability of a class, given the classifier output. This can be seamlessly done for both a discrete and a continuous output.
-
-% Consider for example a flu test. Having a specific kind of flu means that a large number of agents of a specific virus are present and replicating in one's body. These agents cannot be simply seen by visual inspection. Instead we devise some kind of biochemical mechanism that creates a correlation between the presence of the viral agents and some more easily measurable quantity; in simple cases just the colour on some display for example. Such correlation is often statistical, even if it can be strong. When we train a \ml\ classifier we are creating a statistical correlation between features of a particular kind and a discrete or continuous quantity: the classifier's output.
-
-% In the case of the diagnostic test we do not take its output at face value. Its application on a representative sample of cases gives us a table of joint statistics -- a so-called contingency table \autocites{fienberg1980_r2007,mostelleretal1983_r2013}, akin to a confusion matrix -- between the test's output and the true situation, the presence of the flu in our example. It is from this contingency table that we derive the probabilities of the virus's presence, given all possible test result. Analogously we can use the statistics of the application of \ml\ classifier on a test set to derive the probability of a class, given the classifier output. This can be seamlessly done for both a discrete and a continuous output.
-
-% The idea is \emph{to treat the classifier as a diagnostic test}, such as any common diagnostic or prognostic test used in medicine for example. We consider its output, discrete or continuous, as a quantity that has some correlation (in the general sense of the word, not the linear Pearson one) with the true class. This correlation can be analysed and quantified with probability theory in a test set and used to calculate a sensible probability for the class given the output of the test -- of the classifier. This analysis needs to be made only once and is computationally cheap, because the classifier output takes values in a discrete or low-dimensional space.
-
-This approach differs from the computationally infeasible one discussed above in that we are calculating the computationally easier probability
-\begin{equation}
-  \label{eq:approach_p_test}
-  \p(\texts{class} \| \texts{output})
-\end{equation}
-rather than
-\begin{equation}
-  \label{eq:approach_p_feature}
-  \p(\texts{class} \| \texts{feature}) \ .
-\end{equation}
-The former probability, as we saw in \eqn~\eqref{eq:screening}, is the marginal
-\begin{equation}
-  \label{eq:approach_p_marginal}
-  \p(\texts{class} \| \texts{output}) =
-  \sum_{\text{\clap{feature}}}
-  \p(\texts{class} \| \texts{feature})\times
-  \p(\texts{feature} \| \texts{output}) \ .
-\end{equation}
-We can thus think of this approach as a marginalization over the possible features, which is a necessary operation as have no effective access to them.
-
-A hallmark of this approach is that we are calculating exact probabilities conditional on reduced information, rather than approximate probabilities conditional on full information. This protects us from biases that are typically present in the approximation method. The price of using reduced information is that the probabilities may be open to more variability as we collect more representative data. But as we shall see this variability is actually quite low, and moreover it can be exactly assessed.
-
-This approach also offers the following advantages:
-\begin{itemize}
-\item It does not require any changes of the standard training procedures.
-\item It is easily implemented as an additional low-cost computation of a function at the end of the classifier's output, or as a replacement of a softmax-like computation.
-%\item For one classifier, the assessment of this function needs to be done only once.
-\item It does not make any assumptions such as linearity or Gaussianity.% , except for the (unavoidable) assumption of continuity \mynotew{\wrench\ need to explain this better}
-\item It yields not only the probability distribution for the classes, but also a measure of how much this distribution could change if we collected more test data (the \enquote{probability of the probability}, so to speak).
-\item It allows us to use the classifier both in a discriminative and generative way. That is, we can use either\; $\p(\texts{class} \| \texts{output})$, or\; $\p(\texts{output} \| \texts{class})$\; in conjunction with Bayes's theorem. The latter approach enables us to avoid possible base-rate fallacies \autocites[\sect~12.5]{russelletal1995_r2022}{axelsson2000,jennyetal2018}.
-\item It can be seamlessly integrated with a utility matrix to compute the optimal class, as shown in the companion work \mynotew{\pencil}.
-\end{itemize}
-
-\medskip
-
-In \sect~\ref{sec:prob_calc} we present some notation and the general procedure for the calculation of the probabilities; more technical details are given in appendix~\ref{sec:nonparam_regression_details}. Section~\ref{sec:implem_idea} explains how to augment a classifier's output with the probability calculation. Results of numerical experiments are presented in \sect~\ref{sec:results}.
-
-\mynotew{\wrench\ We could show that even if we used a biased test set, the method corrects the bias (provided we know what the bias is).}
-
-
-\section{Calculation of the probabilities: general procedure}
-\label{sec:prob_calc}
-
-Let us denote the class variable by $C$ and the classifier-output variable by $X$. We assume that $C$ is discrete and finite, its values can be simply renamed $1,2,3,\dotsc$. We also assume that $X$ is either discrete and finite (it is isomorphic to $C$ for many classifying algorithms) or a low-dimensional tuple of real variables; a combination of both cases can also be easily accommodated. We imagine to have a sample of $M$ such data pairs denoted collectively by $D$:
-\begin{equation}
-  \label{eq:sample_data_notation}
-  D \defd \set[\big]{(c_{1}, x_{1}), (c_{2}, x_{2}), \dotsc, (c_{M}, x_{M}) } \ .
-\end{equation}
-Let us call them \emph{calibration data}. It must be emphasized that these are not pairs of class\,\amp\,feature values, but pairs of class\,\amp\,classifier-output values, obtained as described in \sect~\ref{sec:implem_idea}.
-
-Instead of the conditional probability $\p(\texts{class} \| \texts{output})$, that is, $\p(C \| X)$,  we can actually calculate the joint probability
-\begin{equation}
-  \label{eq:approach_p_joint}
-  \p(C, X)
-\end{equation}
-given the sample data. The computational cost is the same, but from the joint probability we can easily derive both conditionals
-\begin{align}
-  \label{eq:approach_p_conditional_direct}
-  \p(C \| X) &= \frac{\p(C, X)}{ \sum_{C} \p(C, X) } \ ,
-  \\[\jot]
-  \label{eq:approach_p_conditional_inverse}
-  \p(X \| C) &= \frac{\p(C, X)}{ \sum_{X} \p(C, X) } \ .
-\end{align}
-It is advantageous to have both, as we shall see in \sect\mynotew{\pencil}: if one of them is biased owing to the way the test samples were obtained, we can still use the other.
-
-In our specific inference problem, where no time trends are assumed to exist in future data (the probability distribution for future data is exchangeable), probability theory dictates that the joint probability~\eqref{eq:approach_p_joint} for a new datapoint $(c_{0}, x_{0})$ is equal to the \emph{expected} frequency of that datapoint  in a hypothetically infinite run of observations, that is, the average
-\begin{equation}
-  \label{eq:prob_is_expe_freq}
-  \p(c_{0}, x_{0}) = \int\! F(c_{0}, x_{0})\ \wf(F)\ \di F \ .
-\end{equation}
-This formula is the so-called de~Finetti's theorem \autocites[\chap~4]{bernardoetal1994_r2000}{dawid2013,definetti1929,definetti1937}. It is derived from first principles but can be intuitively interpreted: We are considering every possible long-run frequency distribution $F(\dotv, \dotv)$, giving it a weight $\wf(F)$, and then taking the weighted sum of all such distributions. The result is still a distribution, and its value at $(c_{0}, x_{0})$ is the probability of this datapoint.
-
-The weight $\wf(F)$ -- a probability density -- given to a frequency distribution $F$ is proportional to two factors:
-\begin{equation}
-  \label{eq:weight_F_two_factors}
-  \wf(F) \propto F(D)\ \wfo(F) \ .
-\end{equation}
-\begin{itemize}
-  
-\item The first factor (\enquote{likelihood}) $F(D)$ quantifies how well $F$ \emph{fits} known data of the same kind, the sample data $D$ in our case. It is simply proportional to how frequent the known data would be, according to $F$:
-  \begin{equation}
-    \label{eq:factor_likelihood}
-F(D) = F(c_{1}, x_{1})\ F(c_{2}, x_{2})\ \dotsm\ F(c_{M}, x_{M}) \ .
-  \end{equation}
-
-\item The second factor (\enquote{prior}) $\wfo(F)$ quantifies how well $F$ \emph{generalizes} beyond the data we have seen, owing to reasons such as physical or biological constraints for example. In our case we expect $F$ to be somewhat smooth in $X$ when this variable is continuous \autocites[Cf.][]{goodetal1971} \mynotew{\wrench\ add a picture -- a sample from the prior over $F$ -- to illustrate the expected range of smoothness}. No assumptions are made about $F$ when $X$ is discrete. 
-\end{itemize}
-Formula~\eqref{eq:weight_F_two_factors} is just Bayes's theorem. Its normalization factor is the integral $\int F(D)\, \wfo(F)\, \di F$, which ensures that $\wf(F)$ is normalized.
-
-The first factor becomes larger as the number of known data increases. Thus a large amount of data indicating a non-smooth distribution $F$ will override any smoothness preferences embodied in the second factor. Note that no assumptions about the shape of $F$ -- no Gaussians, logistic curves, sigmoids, and so on -- are made in this approach.
-
-The integral in~\eqref{eq:prob_is_expe_freq} is calculated in either of two ways, depending on whether $X$ is discrete or continuous. For $X$ discrete and taking on the same values as the class variable $C$, the integral is over $\RR^{\nc^{2}}$ where $\nc$ is the number of possible classes, and can be done analytically. For $X$ continuous, the integral is numerically approximated by a sum over a representative sample, obtained by Markov-chain Monte Carlo, of distributions $F$ according to the weights~\eqref{eq:weight_F_two_factors}. The error of this approximation can be calculated and made as small as required by increasing the number of Monte Carlo samples.
-
-The expected value~\eqref{eq:prob_is_expe_freq} is calculated for all possible values of $(c_{0}, x_{0})$, obtaining the full joint probability distribution $\p(C, X)$. From this joint distribution we calculate the direct and inverse conditional distributions
-\begin{align}
-  \label{eq:conditional_direct}
-  \p(C \| X) &= \frac{\p(C, X)}{\sum_{C} \p(C, X)} \ , \\
-  \label{eq:conditional_inverse}
-  \p(X \| C) &= \frac{\p(C, X)}{\sum_{X} \p(C, X)} \ .
-\end{align}
-It is very convenient to have both, as discussed in \sect~\ref{sec:biases}.
-
-The conditional distributions above are just matrices when $X$ is discrete. For continuous $X$ they can be regarded as $\nc$ tuples of functions in $X$. We can find convenient approximate expressions, such as polynomial interpolants, for faster numerical implementations of these functions.
-
-The integration procedure for~\eqref{eq:prob_is_expe_freq} also tells us how much the probability distribution $\p(C, X)$ would change if we acquired new data (a sort of \enquote{probability of the probability}).
-
-For further mathematical details see appendix~\ref{sec:nonparam_regression_details}.
-
-\section{Implementation in the classifier output}
-\label{sec:implem_idea}
-
-The implementation of our approach takes place after the training of the classifier has been carried out in the usual way. We assume that a collection of $M$ \emph{test data} were set aside as usual:
-\begin{equation}
-  \label{eq:testdata_features}
-  T \defd \set[\big]{(c_{1}, z_{1}), (c_{2}, z_{2}), \dotsc, (c_{M}, z_{M})} \ ,
-\end{equation}
-where the $c_{i}$ are the true classes and $z_{i}$ the corresponding feature values.
-
-The $M$ feature values $z_{i}$ are given as inputs to the classifier, which produces $M$ corresponding outputs $x_{i}$. We now consider data pairs consisting in the true classes $c_{i}$ and the outputs $x_{i}$: these are the \emph{calibration data} discussed in \sect~\ref{sec:prob_calc}:
-\begin{equation*}
-  D \defd \set[\big]{(c_{1}, x_{1}), (c_{2}, x_{2}), \dotsc, (c_{M}, x_{M}) } \ .
-\end{equation*}
-They are used to find the direct and inverse conditional probability distributions $\p(C \| X)$ and $\p(X \| C)$ as described in \sect~\ref{sec:prob_calc}.
-
-We can finally augment our classifier either in a \enquote{direct} or \enquote{discriminative} way, or an \enquote{inverse} or \enquote{generative} way, by adding one computation step at the end of the classifier's operation:
-\begin{description}
-\item[Direct:] from its output $x_{0}$ we obtain the probability for each class, $\p(c \| x_{0})$.
-\item[Inverse:] from its output $x_{0}$ we obtain the probability of the output itself, conditional on each class, $\p(x_{0} \| c)$. 
-\end{description}
-These $\nc$ probabilities are the final output of the augmented classifier.
-
-In the direct or discriminative case, at each new use of the classifier the output probabilities can be used together with a utility matrix to choose the \emph{optimal} class for that case, as discussed in the companion paper\mynotew{\pencil}.
-
-In the inverse or generative case, at each new use of the classifier the probabilities for the classes are obtained via Bayes's theorem:
-\begin{equation}
-  \label{eq:bayes_theorem}
-  \p(c) = \frac{\p(x_{0} \| c)\ B(c)}{\sum_{c} \p(x_{0}\| c)\ B(c)} \ ,
-\end{equation}
-where $B(c)$ is the base rate of class $c$. The probabilities $\p(c)$ can finally be used together with a utility matrix to choose the \emph{optimal} class.
-
-
-
-
-
-\section{Circumventing biases}
-\label{sec:biases}
-
-\section{Alternative to ensembling}
-\label{sec:ensembling}
-
-\mynotew{\wrench\ The idea is to implement this output-to-probability conversion in several classifiers, \emph{in a generative way}. These probabilities can then be multiplied together and with a base rate, to obtain the \enquote{ensembled} probabilities of the classes. This way of doing ensembling would be a rigorous application of the probability calculus; should be superior to a majority vote or similar.}
 
 %%%%% Kjetil's
 \section{Methods and materials}
@@ -2650,6 +2462,248 @@ The authors were so immersed in the development of the present work, that unfort
 
 \printbibliography[prenote=prenote%,postnote=postnote
 ]
+
+\section{Sensible probabilities for classifiers}
+\label{sec:intro}
+\mynotew{only pieces will be taken from this section}
+
+% Some machine-learning algorithms for classification, such as support-vector machines, typically output a class label. Others, such as deep networks, output a set of real numbers. These real numbers can be positive, normalized to unity, and can bear some qualitative relation to the plausibilities of the classes. But they cannot be reliably interpreted as sensible probabilities, that is, as the degrees of belief assigned to each possible class by a rational agent \autocites{mackay1992d,galetal2016}[\chaps~2, 12, 13]{russelletal1995_r2022}; or, in terms of \enquote{populations} \autocites{lindleyetal1981}[\sect~II.4]{fisher1956_r1967}, as the expected frequencies of the classes in the hypothetical population of units (degrees of belief and frequencies being related by de~Finetti's theorem \autocites[\chap~4]{bernardoetal1994_r2000}{dawid2013}).
+
+% Algorithms that internally do perform probabilistic calculations, such as naive-Bayes or logistic-regression classifiers \autocites[\sect~3.5, \chap~8]{murphy2012}[\sects~8.2, 4.3]{bishop2006}[\chap~10, \sect~17.4]{barber2007_r2020}, unfortunately rest on probabilistic assumptions, such as independence and particular shapes of distributions, that are often unrealistic (and their consistency with the specific application is rarely checked). Only particular classifiers such as Bayesian neural networks \autocites{nealetal2006}[\sect~5.7]{bishop2006} output sensible probabilities.
+
+% It is difficult to assess sensible probabilities for the possible classes. Some \ml\ algorithms only output a class label. Others, including deep networks, output real numbers that, even if normalized and usually called \enquote{probabilities}, cannot be reliably interpreted as proper probabilities, that is, degrees of belief or frequencies in the population of interest \autocites{mackay1992d,galetal2016} conditional on the information given as input to the classifier (this is why we used the qualifier \enquote{sensible}). Algorithms that internally do perform probabilistic calculations, such as naive-Bayes or logistic-regression classifiers \autocites[\sect~3.5, \chap~8]{murphy2012}[\sects~8.2, 4.3]{bishop2006}[\chap~10, \sect~17.4]{barber2007_r2020}, unfortunately rest on probabilistic assumptions -- independence and particular shapes of distributions, for example -- that are often unrealistic (and their consistency with the specific application is rarely checked).
+% 
+% As already mentioned in \sect~\ref{sec:intro}, some \ml\ classifiers only output a class label. Others can output a set of real numbers that are positive, normalized to unity, and bear some qualitative relation to the plausibilities of the classes; but their values cannot be considered as the correct degrees of belief in the classes conditional on the input features. It is these values that we need for decision theory. Determining these probabilities would require an analysis that is computationally unfeasible at present for problems that involve very high-dimensional spaces, such as image classification; in fact if an exact probabilistic analysis were possible we would not be developing \ml\ classifiers in the first place \autocites[\chaps~2, 12]{russelletal1995_r2022}{pearl1988}. \mynotew{\puzzle~Maybe useful to add a reminder that probability theory is the \emph{learning} theory par excellence (even if there's no \enquote{learning} in its name)? Its rules are all about making logical updates given new data.} Only particular classifiers such as Bayesian neural networks \autocites{nealetal2006}[\sect~5.7]{bishop2006} output somewhat sensible  probabilities. But we would like to find a solution that can be applied to all commonly used classifiers, without being forced to use specific ones.
+
+
+
+Why are probability values important? As we argue in a companion work \mynotew{\pencil}, our ultimate purpose in classification is seldom only to guess a class; most often it is to choose a specific course of action, or to make a decision, among several available ones. A clinician, for example, does not simply tell a patient \enquote*{you will probably not contract the disease}, but has to decide among dismissal or different kinds of preventive treatment \autocites{soxetal1988_r2013,huninketal2001_r2014}. Said otherwise, in classification we must choose the \emph{optimal} class, not the probably true one.
+Making optimal choices in situations of uncertainty is the domain of Decision Theory \autocites[\chap~15]{russelletal1995_r2022}{jeffrey1965,north1968,raiffa1968_r1970}. In order to make an optimal choice, decision theory requires the use of probability values that properly reflect our state of uncertainty.
+
+Determining class probabilities conditional on the input features is unfortunately computationally unfeasible at present for problems that involve very high-dimensional spaces, such as image classification; in fact if an exact probabilistic analysis were possible we would not be developing \ml\ classifiers in the first place \autocites[\chaps~2, 12]{russelletal1995_r2022}{pearl1988}.
+\mynotew{\scriptsize\puzzle~Maybe useful to add a reminder that probability theory is the \emph{learning} theory par excellence (even if there's no \enquote{learning} in its name)? Its rules are all about making logical updates given new data.
+
+}
+
+In the present work we propose an alternative solution that has a low computational cost and that can be applied to all commonly used classifiers, even those that only output class labels.
+
+The essential idea comes from seeing an analogy between a classifier and a diagnostic test, such as any common diagnostic or prognostic test used in medicine for example. There are many parallels in the way \ml\ classifiers and diagnostic tests, a flu test for instance, are devised and work. Our basic motivation in using either is that we would like to assess some situational variable -- class, pathological condition -- by means of its correlation (in the general sense of the word, not the linear Pearson one; and including deterministic dependence as a particular case) with a set of \enquote{difficult} variables that are either too complex or hidden -- image pixels, presence of replicating viral agents~--:
+\[
+  \text{situational variable} \longleftrightarrow \text{difficult variables}
+\]
+We devise an auxiliary variable -- algorithm output, test result -- to be correlated with the difficult variables:
+\[
+    \text{situational variable} \longleftrightarrow \text{difficult variables}
+    \longleftrightarrow \text{aux variable}
+\]
+% \[
+%   \begin{aligned}
+%     \text{situation} &\leftrightarrow \text{complicated variables}
+%     \\[-\jot]
+% \mathrel{\mathrlap{\nwarrow}\mkern-5mu\searrow}&\hphantom{{}\:\text{aux variable}}\mathrel{\mathrlap{\nearrow}\mkern-5mu\swarrow}
+% \\[-2.5\jot] &{}\:\text{aux variable}
+%   \end{aligned}
+% \]
+We can now assess the situational variable by observing the more easily accessible auxiliary variable instead of the difficult ones. In probability language we are \emph{marginalizing} over the difficult variables. This is the procedure dictated by the probability calculus whenever we do not have informational access to a set of variables. The correlation of the auxiliary variable is achieved by the training process in the case of the \ml\ algorithm, and by the exploitation of biochemical processes or reactions in the case of the flu test.
+
+The situational variable is \emph{informationally screened} from the auxiliary variable by the difficult variables. That is, the auxiliary variable does not -- in fact, cannot -- contain any more information about the situational variable than that contained in the difficult variables. This means that the probability relationship between the three variables is as follows:
+\begin{multline}
+  \label{eq:screening}
+  \p\Bigl(
+  \text{\parbox[c]{\widthof{\footnotesize situational}}{\centering\footnotesize situational\\[-1\jot]variable}}
+  \|[\Big]
+  \text{\parbox[c]{\widthof{\footnotesize variable}}{\centering\footnotesize aux\\[-1\jot]variable}}
+  \Bigr)
+  ={}\\[\jot]
+\sum_{\mathclap{
+    \text{\parbox[c]{\widthof{\scriptsize variables}}{\centering\scriptsize difficult\\[-1\jot]variables}}
+}}
+\p\Bigr(
+  \text{\parbox[c]{\widthof{\footnotesize situational}}{\centering\footnotesize situational\\[-1\jot]variable}}
+  \|[\Big]
+  \text{\parbox[c]{\widthof{\footnotesize variables}}{\centering\footnotesize difficult\\[-1\jot]variables}}
+  \Bigr)  \times
+  \p\Bigl(
+  \text{\parbox[c]{\widthof{\footnotesize variables}}{\centering\footnotesize difficult\\[-1\jot]variables}}
+  \|[\Big]
+  \text{\parbox[c]{\widthof{\footnotesize variable}}{\centering\footnotesize aux\\[-1\jot]variable}}
+\Bigr)   \ ,
+\end{multline}
+the sum running over all possible values of the difficult variables.
+
+In the case of the diagnostic test we determine the probability %
+$\p\bigl(%
+\text{\parbox[c]{\widthof{\footnotesize situational}}{\centering\footnotesize situational\\[-1\jot]variable}}%
+\|[\big]%
+\text{\parbox[c]{\widthof{\footnotesize variable}}{\centering\footnotesize aux\\[-1\jot]variable}}%
+\bigr)$ %
+by carrying out the test on a representative sample of cases and collecting joint statistics between the test's output and the true situation, the presence of the flu in our example. These statistics are typically displayed in a so-called contingency table \autocites{fienberg1980_r2007,mostelleretal1983_r2013}, akin to a confusion matrix. % It is from this contingency table that we derive the probabilities of the virus's presence, given all possible test result.
+
+\medskip
+
+Unlike the case of a diagnostic test, the output of a \ml\ classifier is usually taken at face value: if the output is a class label, that label is regarded as the true class; if the output is a unity-normalized tuple of positive numbers, that tuple is regarded as the probability distribution for the classes.
+
+We instead propose \emph{to treat the classifier's output just like a diagnostic test's result}. This output, discrete or continuous, is regarded as a quantity that has some correlation with the true class. This correlation can be analysed in a set of representative samples and used to calculate a sensible probability for the class given the classifier's output. This analysis only needs to be made once and is computationally cheap, because the classifier output takes values in a discrete or low-dimensional space.
+
+% Analogously we can use the statistics of the application of \ml\ classifier on a test set to derive the probability of a class, given the classifier output. This can be seamlessly done for both a discrete and a continuous output.
+
+% Consider for example a flu test. Having a specific kind of flu means that a large number of agents of a specific virus are present and replicating in one's body. These agents cannot be simply seen by visual inspection. Instead we devise some kind of biochemical mechanism that creates a correlation between the presence of the viral agents and some more easily measurable quantity; in simple cases just the colour on some display for example. Such correlation is often statistical, even if it can be strong. When we train a \ml\ classifier we are creating a statistical correlation between features of a particular kind and a discrete or continuous quantity: the classifier's output.
+
+% In the case of the diagnostic test we do not take its output at face value. Its application on a representative sample of cases gives us a table of joint statistics -- a so-called contingency table \autocites{fienberg1980_r2007,mostelleretal1983_r2013}, akin to a confusion matrix -- between the test's output and the true situation, the presence of the flu in our example. It is from this contingency table that we derive the probabilities of the virus's presence, given all possible test result. Analogously we can use the statistics of the application of \ml\ classifier on a test set to derive the probability of a class, given the classifier output. This can be seamlessly done for both a discrete and a continuous output.
+
+% The idea is \emph{to treat the classifier as a diagnostic test}, such as any common diagnostic or prognostic test used in medicine for example. We consider its output, discrete or continuous, as a quantity that has some correlation (in the general sense of the word, not the linear Pearson one) with the true class. This correlation can be analysed and quantified with probability theory in a test set and used to calculate a sensible probability for the class given the output of the test -- of the classifier. This analysis needs to be made only once and is computationally cheap, because the classifier output takes values in a discrete or low-dimensional space.
+
+This approach differs from the computationally infeasible one discussed above in that we are calculating the computationally easier probability
+\begin{equation}
+  \label{eq:approach_p_test}
+  \p(\texts{class} \| \texts{output})
+\end{equation}
+rather than
+\begin{equation}
+  \label{eq:approach_p_feature}
+  \p(\texts{class} \| \texts{feature}) \ .
+\end{equation}
+The former probability, as we saw in \eqn~\eqref{eq:screening}, is the marginal
+\begin{equation}
+  \label{eq:approach_p_marginal}
+  \p(\texts{class} \| \texts{output}) =
+  \sum_{\text{\clap{feature}}}
+  \p(\texts{class} \| \texts{feature})\times
+  \p(\texts{feature} \| \texts{output}) \ .
+\end{equation}
+We can thus think of this approach as a marginalization over the possible features, which is a necessary operation as have no effective access to them.
+
+A hallmark of this approach is that we are calculating exact probabilities conditional on reduced information, rather than approximate probabilities conditional on full information. This protects us from biases that are typically present in the approximation method. The price of using reduced information is that the probabilities may be open to more variability as we collect more representative data. But as we shall see this variability is actually quite low, and moreover it can be exactly assessed.
+
+This approach also offers the following advantages:
+\begin{itemize}
+\item It does not require any changes of the standard training procedures.
+\item It is easily implemented as an additional low-cost computation of a function at the end of the classifier's output, or as a replacement of a softmax-like computation.
+%\item For one classifier, the assessment of this function needs to be done only once.
+\item It does not make any assumptions such as linearity or Gaussianity.% , except for the (unavoidable) assumption of continuity \mynotew{\wrench\ need to explain this better}
+\item It yields not only the probability distribution for the classes, but also a measure of how much this distribution could change if we collected more test data (the \enquote{probability of the probability}, so to speak).
+\item It allows us to use the classifier both in a discriminative and generative way. That is, we can use either\; $\p(\texts{class} \| \texts{output})$, or\; $\p(\texts{output} \| \texts{class})$\; in conjunction with Bayes's theorem. The latter approach enables us to avoid possible base-rate fallacies \autocites[\sect~12.5]{russelletal1995_r2022}{axelsson2000,jennyetal2018}.
+\item It can be seamlessly integrated with a utility matrix to compute the optimal class, as shown in the companion work \mynotew{\pencil}.
+\end{itemize}
+
+\medskip
+
+In \sect~\ref{sec:prob_calc} we present some notation and the general procedure for the calculation of the probabilities; more technical details are given in appendix~\ref{sec:nonparam_regression_details}. Section~\ref{sec:implem_idea} explains how to augment a classifier's output with the probability calculation. Results of numerical experiments are presented in \sect~\ref{sec:results}.
+
+\mynotew{\wrench\ We could show that even if we used a biased test set, the method corrects the bias (provided we know what the bias is).}
+
+
+\section{Calculation of the probabilities: general procedure}
+\label{sec:prob_calc}
+
+Let us denote the class variable by $C$ and the classifier-output variable by $X$. We assume that $C$ is discrete and finite, its values can be simply renamed $1,2,3,\dotsc$. We also assume that $X$ is either discrete and finite (it is isomorphic to $C$ for many classifying algorithms) or a low-dimensional tuple of real variables; a combination of both cases can also be easily accommodated. We imagine to have a sample of $M$ such data pairs denoted collectively by $D$:
+\begin{equation}
+  \label{eq:sample_data_notation}
+  D \defd \set[\big]{(c_{1}, x_{1}), (c_{2}, x_{2}), \dotsc, (c_{M}, x_{M}) } \ .
+\end{equation}
+Let us call them \emph{calibration data}. It must be emphasized that these are not pairs of class\,\amp\,feature values, but pairs of class\,\amp\,classifier-output values, obtained as described in \sect~\ref{sec:implem_idea}.
+
+Instead of the conditional probability $\p(\texts{class} \| \texts{output})$, that is, $\p(C \| X)$,  we can actually calculate the joint probability
+\begin{equation}
+  \label{eq:approach_p_joint}
+  \p(C, X)
+\end{equation}
+given the sample data. The computational cost is the same, but from the joint probability we can easily derive both conditionals
+\begin{align}
+  \label{eq:approach_p_conditional_direct}
+  \p(C \| X) &= \frac{\p(C, X)}{ \sum_{C} \p(C, X) } \ ,
+  \\[\jot]
+  \label{eq:approach_p_conditional_inverse}
+  \p(X \| C) &= \frac{\p(C, X)}{ \sum_{X} \p(C, X) } \ .
+\end{align}
+It is advantageous to have both, as we shall see in \sect\mynotew{\pencil}: if one of them is biased owing to the way the test samples were obtained, we can still use the other.
+
+In our specific inference problem, where no time trends are assumed to exist in future data (the probability distribution for future data is exchangeable), probability theory dictates that the joint probability~\eqref{eq:approach_p_joint} for a new datapoint $(c_{0}, x_{0})$ is equal to the \emph{expected} frequency of that datapoint  in a hypothetically infinite run of observations, that is, the average
+\begin{equation}
+  \label{eq:prob_is_expe_freq}
+  \p(c_{0}, x_{0}) = \int\! F(c_{0}, x_{0})\ \wf(F)\ \di F \ .
+\end{equation}
+This formula is the so-called de~Finetti's theorem \autocites[\chap~4]{bernardoetal1994_r2000}{dawid2013,definetti1929,definetti1937}. It is derived from first principles but can be intuitively interpreted: We are considering every possible long-run frequency distribution $F(\dotv, \dotv)$, giving it a weight $\wf(F)$, and then taking the weighted sum of all such distributions. The result is still a distribution, and its value at $(c_{0}, x_{0})$ is the probability of this datapoint.
+
+The weight $\wf(F)$ -- a probability density -- given to a frequency distribution $F$ is proportional to two factors:
+\begin{equation}
+  \label{eq:weight_F_two_factors}
+  \wf(F) \propto F(D)\ \wfo(F) \ .
+\end{equation}
+\begin{itemize}
+  
+\item The first factor (\enquote{likelihood}) $F(D)$ quantifies how well $F$ \emph{fits} known data of the same kind, the sample data $D$ in our case. It is simply proportional to how frequent the known data would be, according to $F$:
+  \begin{equation}
+    \label{eq:factor_likelihood}
+F(D) = F(c_{1}, x_{1})\ F(c_{2}, x_{2})\ \dotsm\ F(c_{M}, x_{M}) \ .
+  \end{equation}
+
+\item The second factor (\enquote{prior}) $\wfo(F)$ quantifies how well $F$ \emph{generalizes} beyond the data we have seen, owing to reasons such as physical or biological constraints for example. In our case we expect $F$ to be somewhat smooth in $X$ when this variable is continuous \autocites[Cf.][]{goodetal1971} \mynotew{\wrench\ add a picture -- a sample from the prior over $F$ -- to illustrate the expected range of smoothness}. No assumptions are made about $F$ when $X$ is discrete. 
+\end{itemize}
+Formula~\eqref{eq:weight_F_two_factors} is just Bayes's theorem. Its normalization factor is the integral $\int F(D)\, \wfo(F)\, \di F$, which ensures that $\wf(F)$ is normalized.
+
+The first factor becomes larger as the number of known data increases. Thus a large amount of data indicating a non-smooth distribution $F$ will override any smoothness preferences embodied in the second factor. Note that no assumptions about the shape of $F$ -- no Gaussians, logistic curves, sigmoids, and so on -- are made in this approach.
+
+The integral in~\eqref{eq:prob_is_expe_freq} is calculated in either of two ways, depending on whether $X$ is discrete or continuous. For $X$ discrete and taking on the same values as the class variable $C$, the integral is over $\RR^{\nc^{2}}$ where $\nc$ is the number of possible classes, and can be done analytically. For $X$ continuous, the integral is numerically approximated by a sum over a representative sample, obtained by Markov-chain Monte Carlo, of distributions $F$ according to the weights~\eqref{eq:weight_F_two_factors}. The error of this approximation can be calculated and made as small as required by increasing the number of Monte Carlo samples.
+
+The expected value~\eqref{eq:prob_is_expe_freq} is calculated for all possible values of $(c_{0}, x_{0})$, obtaining the full joint probability distribution $\p(C, X)$. From this joint distribution we calculate the direct and inverse conditional distributions
+\begin{align}
+  \label{eq:conditional_direct}
+  \p(C \| X) &= \frac{\p(C, X)}{\sum_{C} \p(C, X)} \ , \\
+  \label{eq:conditional_inverse}
+  \p(X \| C) &= \frac{\p(C, X)}{\sum_{X} \p(C, X)} \ .
+\end{align}
+It is very convenient to have both, as discussed in \sect~\ref{sec:biases}.
+
+The conditional distributions above are just matrices when $X$ is discrete. For continuous $X$ they can be regarded as $\nc$ tuples of functions in $X$. We can find convenient approximate expressions, such as polynomial interpolants, for faster numerical implementations of these functions.
+
+The integration procedure for~\eqref{eq:prob_is_expe_freq} also tells us how much the probability distribution $\p(C, X)$ would change if we acquired new data (a sort of \enquote{probability of the probability}).
+
+For further mathematical details see appendix~\ref{sec:nonparam_regression_details}.
+
+\section{Implementation in the classifier output}
+\label{sec:implem_idea}
+
+The implementation of our approach takes place after the training of the classifier has been carried out in the usual way. We assume that a collection of $M$ \emph{test data} were set aside as usual:
+\begin{equation}
+  \label{eq:testdata_features}
+  T \defd \set[\big]{(c_{1}, z_{1}), (c_{2}, z_{2}), \dotsc, (c_{M}, z_{M})} \ ,
+\end{equation}
+where the $c_{i}$ are the true classes and $z_{i}$ the corresponding feature values.
+
+The $M$ feature values $z_{i}$ are given as inputs to the classifier, which produces $M$ corresponding outputs $x_{i}$. We now consider data pairs consisting in the true classes $c_{i}$ and the outputs $x_{i}$: these are the \emph{calibration data} discussed in \sect~\ref{sec:prob_calc}:
+\begin{equation*}
+  D \defd \set[\big]{(c_{1}, x_{1}), (c_{2}, x_{2}), \dotsc, (c_{M}, x_{M}) } \ .
+\end{equation*}
+They are used to find the direct and inverse conditional probability distributions $\p(C \| X)$ and $\p(X \| C)$ as described in \sect~\ref{sec:prob_calc}.
+
+We can finally augment our classifier either in a \enquote{direct} or \enquote{discriminative} way, or an \enquote{inverse} or \enquote{generative} way, by adding one computation step at the end of the classifier's operation:
+\begin{description}
+\item[Direct:] from its output $x_{0}$ we obtain the probability for each class, $\p(c \| x_{0})$.
+\item[Inverse:] from its output $x_{0}$ we obtain the probability of the output itself, conditional on each class, $\p(x_{0} \| c)$. 
+\end{description}
+These $\nc$ probabilities are the final output of the augmented classifier.
+
+In the direct or discriminative case, at each new use of the classifier the output probabilities can be used together with a utility matrix to choose the \emph{optimal} class for that case, as discussed in the companion paper\mynotew{\pencil}.
+
+In the inverse or generative case, at each new use of the classifier the probabilities for the classes are obtained via Bayes's theorem:
+\begin{equation}
+  \label{eq:bayes_theorem}
+  \p(c) = \frac{\p(x_{0} \| c)\ B(c)}{\sum_{c} \p(x_{0}\| c)\ B(c)} \ ,
+\end{equation}
+where $B(c)$ is the base rate of class $c$. The probabilities $\p(c)$ can finally be used together with a utility matrix to choose the \emph{optimal} class.
+
+
+
+
+
+\section{Circumventing biases}
+\label{sec:biases}
+
+\section{Alternative to ensembling}
+\label{sec:ensembling}
+
+\mynotew{\wrench\ The idea is to implement this output-to-probability conversion in several classifiers, \emph{in a generative way}. These probabilities can then be multiplied together and with a base rate, to obtain the \enquote{ensembled} probabilities of the classes. This way of doing ensembling would be a rigorous application of the probability calculus; should be superior to a majority vote or similar.}
 
 \end{document}
 

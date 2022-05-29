@@ -1,6 +1,6 @@
 ## Author: PGL  Porta Mana
 ## Created: 2022-03-17T14:21:57+0100
-## Last-Updated: 2022-05-29T20:29:04+0200
+## Last-Updated: 2022-05-29T23:37:11+0200
 ################
 ## Exploration of several issues for binary classifiers
 ################
@@ -624,6 +624,7 @@ colMeans((t(allscores)-allmins)/(allmaxs-allmins))
 ##   standard      mixed transducer 
 ##  0.9522946  0.9677246  0.9748890 
 
+normallscores <- t((t(allscores)-allmins)/(allmaxs-allmins))
 
 #### Longer MCMC
 ##   standard      mixed transducer 
@@ -638,6 +639,17 @@ colMeans((t(allscores)-allmins)/(allmaxs-allmins))
 saveRDS(allscores,'RFallscores.rds')
 
 CNNallscores <- readRDS('CNNallscores.rds')
+
+CNNnormallscores <- t((t(CNNallscores)-allmins)/(allmaxs-allmins))
+
+## > range((normallscores[3,]-normallscores[1,])/normallscores[1,])*100
+## [1] -0.09453707 32.09361399
+## > range((CNNnormallscores[3,]-CNNnormallscores[1,])/CNNnormallscores[1,])*100
+## [1] -0.2280634 17.5667907
+## > range((normallscores[3,]-normallscores[2,])/normallscores[2,])*100
+## [1] -0.3469935  9.2877534
+## > range((CNNnormallscores[3,]-CNNnormallscores[2,])/CNNnormallscores[2,])*100
+## [1] -0.9944227  1.5092731
 
 
 rmins <- allmins[1:nn2]
