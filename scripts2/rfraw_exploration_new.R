@@ -1,6 +1,6 @@
 ## Author: PGL  Porta Mana
 ## Created: 2022-03-17T14:21:57+0100
-## Last-Updated: 2022-05-28T23:12:15+0200
+## Last-Updated: 2022-05-29T09:39:25+0200
 ################
 ## Exploration of several issues for binary classifiers
 ################
@@ -152,6 +152,36 @@ polygon(x=c(xgrid,rev(xgrid)), y=c(qgrid[1,],rev(qgrid[2,])), col=paste0(palette
 polygon(x=c(xgrid,rev(xgrid)), y=1-c(qgrid[1,],rev(qgrid[2,])), col=paste0(palette()[2],'40'), border=NA)
 dev.off()
 
+
+############################ check for discrepancies with other cond-prob calculation method
+plan(sequential)
+plan(multisession, workers=6)
+jpgrid <- samplesF(Y=cbind(class=1,vpoints), parmList=parmlist, inorder=F)
+cpgrid <- rbind(samplesF(Y=cbind(class=1), parmList=parmlist, inorder=F))
+ypgrid <- samplesF(Y=vpoints, parmList=parmlist, inorder=F)
+##
+qgrid <- apply(jpgrid/ypgrid,1,function(x){quantile(x, c(1,7)/8)})
+##
+
+range(rowMeans(jpgrid/ypgrid))*100
+## [1]  0.1411262 92.9317592
+
+testpgrid <- samplesF(Y=cbind(class=1), X=vpoints, parmList=parmlist, inorder=F)
+
+
+
+pdff('../transducer_curve_RFraw3', asp=1)
+tplot(x=xgrid, y=cbind(rowMeans(jpgrid)/rowMeans(ypgrid), 1- rowMeans(jpgrid)/rowMeans(ypgrid)), xlab='output',
+##      ylab=expression(p~group('(',class~output,')')),
+      ylab=bquote('P'~group('(','class', '.')~group('|', ' output',')')),
+      mar=c(4.5,5.5,1,1),
+      ylim=c(0,1), lwd=3, family='Palatino', asp=1)
+legend(x=0.25,y=1.05, c('class 1', 'class 0'), lty=c(1,2), col=c(1,2), lwd=3, bty='n', cex=1.5)
+##
+polygon(x=c(xgrid,rev(xgrid)), y=c(qgrid[1,],rev(qgrid[2,])), col=paste0(palette()[1],'40'), border=NA)
+polygon(x=c(xgrid,rev(xgrid)), y=1-c(qgrid[1,],rev(qgrid[2,])), col=paste0(palette()[2],'40'), border=NA)
+dev.off()
+
 #########################################################
 ## transducer curve p(y | c)
 #########################################################
@@ -166,12 +196,12 @@ plan(sequential)
 plan(multisession, workers=6)
 py0grid <- samplesF(Y=vpoints, X=cbind(class=0), parmList=parmlist, inorder=F)
 py1grid <- samplesF(Y=vpoints, X=cbind(class=1), parmList=parmlist, inorder=F)
-##
+
 q0grid <- apply(py0grid,1,function(x){quantile(x, c(1,7)/8)})
 q1grid <- apply(py1grid,1,function(x){quantile(x, c(1,7)/8)})
 ##
 
-pdff('../transducer_curve_RFraw2_inverse')
+pdff('../transducer_curve_RFraw2b_inverse')
 tplot(x=xgrid, y=cbind(rowMeans(py1grid), rowMeans(py0grid))*Xjacobian[[outputcov]](xgrid), xlab='output',
 ##      ylab=expression(p~group('(',class~output,')')),
       ylab=bquote('p'~group('(','output', '.')~group('|', ' class',')')),
@@ -183,7 +213,7 @@ polygon(x=c(xgrid,rev(xgrid)), y=c(q1grid[1,]*Xjacobian[[outputcov]](xgrid),rev(
 polygon(x=c(xgrid,rev(xgrid)), y=c(q0grid[1,]*Xjacobian[[outputcov]](xgrid),rev(q0grid[2,]*Xjacobian[[outputcov]](xgrid))), col=paste0(palette()[2],'40'), border=NA)
 dev.off()
 ##
-pdff('../transducer_curve_RFraw2_inverse_trunc')
+pdff('../transducer_curve_RFraw2b_inverse_trunc')
 tplot(x=xgrid, y=cbind(rowMeans(py1grid), rowMeans(py0grid))*Xjacobian[[outputcov]](xgrid), xlab='output',
 ##      ylab=expression(p~group('(',class~output,')')),
       ylab=bquote('p'~group('(','output', '.')~group('|', ' class',')')),
@@ -195,14 +225,45 @@ polygon(x=c(xgrid,rev(xgrid)), y=c(q1grid[1,]*Xjacobian[[outputcov]](xgrid),rev(
 polygon(x=c(xgrid,rev(xgrid)), y=c(q0grid[1,]*Xjacobian[[outputcov]](xgrid),rev(q0grid[2,]*Xjacobian[[outputcov]](xgrid))), col=paste0(palette()[2],'40'), border=NA)
 dev.off()
 
+####################### This is a check for discrepancy in two ways of calculating conditional prob
+## plan(sequential)
+## plan(multisession, workers=6)
+## py0grid <- samplesF(Y=vpoints, X=cbind(class=0), parmList=parmlist, inorder=F)
+## py1grid <- samplesF(Y=vpoints, X=cbind(class=1), parmList=parmlist, inorder=F)
+
+## q0grid <- apply(py0grid,1,function(x){quantile(x, c(1,7)/8)})
+## q1grid <- apply(py1grid,1,function(x){quantile(x, c(1,7)/8)})
+## ##
+
+## py0gridB <- (rowMeans(ypgrid)-rowMeans(jpgrid))/(1-rowMeans(cpgrid))
+## py1gridB <- (rowMeans(jpgrid))/(rowMeans(cpgrid))
 
 
-## legend('topleft', legend=c(
-##                        paste0(paste0(rownames(qgrid),collapse='\u2013'), ' uncertainty')
-##                    ),
-##        lty=c('solid'), lwd=c(10),
-##        col=paste0(palette()[1],c('40')),
-##        bty='n', cex=1.25)
+## pdff('../transducer_curve_RFraw3_inverse')
+## tplot(x=xgrid, y=cbind(py1gridB, py0gridB)*Xjacobian[[outputcov]](xgrid), xlab='output',
+## ##      ylab=expression(p~group('(',class~output,')')),
+##       ylab=bquote('p'~group('(','output', '.')~group('|', ' class',')')),
+##       mar=c(4.5,5.5,1,1),
+##       ylim=c(0,max(q0grid,q1grid)), lwd=3, family='Palatino')
+## legend('top', c('class 1', 'class 0'), lty=c(1,2), col=c(1,2), lwd=3, bty='n', cex=1.5)
+## ##
+## ## polygon(x=c(xgrid,rev(xgrid)), y=c(q1grid[1,]*Xjacobian[[outputcov]](xgrid),rev(q1grid[2,]*Xjacobian[[outputcov]](xgrid))), col=paste0(palette()[1],'40'), border=NA)
+## ## polygon(x=c(xgrid,rev(xgrid)), y=c(q0grid[1,]*Xjacobian[[outputcov]](xgrid),rev(q0grid[2,]*Xjacobian[[outputcov]](xgrid))), col=paste0(palette()[2],'40'), border=NA)
+## dev.off()
+
+## ##
+## pdff('../transducer_curve_RFraw3_inverse_trunc')
+## tplot(x=xgrid, y=cbind(py1gridB, py0gridB)*Xjacobian[[outputcov]](xgrid), xlab='output',
+## ##      ylab=expression(p~group('(',class~output,')')),
+##       ylab=bquote('p'~group('(','output', '.')~group('|', ' class',')')),
+##       mar=c(4.5,5.5,1,1),
+##       ylim=c(0,exp(mean(log(c(max(q0grid),max(q1grid)))))), lwd=3, family='Palatino')
+## legend('top', c('class 1', 'class 0'), lty=c(1,2), col=c(1,2), lwd=3, bty='n', cex=1.5)
+## ##
+## polygon(x=c(xgrid,rev(xgrid)), y=c(q1grid[1,]*Xjacobian[[outputcov]](xgrid),rev(q1grid[2,]*Xjacobian[[outputcov]](xgrid))), col=paste0(palette()[1],'40'), border=NA)
+## polygon(x=c(xgrid,rev(xgrid)), y=c(q0grid[1,]*Xjacobian[[outputcov]](xgrid),rev(q0grid[2,]*Xjacobian[[outputcov]](xgrid))), col=paste0(palette()[2],'40'), border=NA)
+## dev.off()
+
 
 
 #########################################################
@@ -257,9 +318,17 @@ plan(multisession, workers=6)
 probs1 <- rowMeans(samplesF(Y=cbind(class=1), X=transfoutputs1, parmList=parmlist, inorder=F))
 
 
+
 probsinv1 <- rowMeans(samplesF(Y=transfoutputs1, X=cbind(class=1), parmList=parmlist, inorder=F))*Xjacobian[[1]](outputs1)
 ##
 probsinv0 <- rowMeans(samplesF(Y=transfoutputs1, X=cbind(class=0), parmList=parmlist, inorder=F))*Xjacobian[[1]](outputs1)
+
+
+## jprobs1 <- rowMeans(samplesF(Y=cbind(class=1,transfoutputs1), parmList=parmlist, inorder=F))
+## cprobs1 <- rbind(rowMeans(samplesF(Y=cbind(class=1), parmList=parmlist, inorder=F)))
+## yprobs <- rowMeans(samplesF(Y=transfoutputs1, parmList=parmlist, inorder=F))
+
+
 
 fwrite(cbind(ddata, 'RF_prob1'=probs1,
              'RF_invprob0'=probsinv0, 'RF_invprob1'=probsinv1),
@@ -733,9 +802,71 @@ abline(0,1, col=paste0(palette()[2],'88'), lwd=2, lty=1)
 ## abline(0,1, col=paste0(palette()[4],'88'), lwd=2, lty=1)
 dev.off()
 
+
+
+
+
+#########################################################
+## Calculation of algorithm's expected utility yields
+#########################################################
+
+Myield <- function(yprobgrid,cprobgrid,um){
+    sum(yprobgrid *
+        sapply(cprobgrid, function(x){max(um %*%  cbind(c(1-x,x)))})
+        )/sum(yprobgrid)
+}
+
+ulist <- list(c(1,0,0,1),
+              c(1,-10,0,10),
+              c(1,-100,0,100),
+              c(10,0,-10,1),
+              c(100,0,-100,1),
+              ##
+              c(1,-10,-1,10),
+              c(1,-100,-1,100),
+              c(10,-1,-10,1),
+              c(100,-1,-100,1)
+              )
+##
+umlist <- c(lapply(ulist, function(x){ matrix(x,2,2, byrow=T) } ),
+    lapply(ulist, function(x){
+        x <- x-min(x)
+        x <- x/max(x)
+        matrix(x,2,2, byrow=T)
+    }
+) )
+##
+ulist2 <- unlist(umlist)
+dim(ulist2) <- c(4,2*length(ulist))
+ulist2 <- t(ulist2)
+
+
+sapply(umlist, function(um){Myield(rowMeans(ypgrid), rowMeans(opgrid), um)})[1:4]
+## [1] 0.9725162 1.6815698 9.5864235 9.0783451
+
+
+results1 <- t(sapply(umlist, function(um){
+    comparescores(trueclasses=classes, um=um, outputs=outputs1, probs=probs1)/length(classes)}))
+##
+rresults <- round(results1,3)
+##
+options(width=160)
+cbind(ulist2, rresults,
+      'd_std'=round(apply(rresults,1,function(x){diff(x[c(1,3)])}),4),
+      'd_mix'=round(apply(rresults,1,function(x){diff(x[c(2,3)])}),4),
+      'rd%_std'=round(100*apply(rresults,1,function(x){diff(x[c(1,3)])/abs(x[1])}),2),
+      'rd%_mix'=round(100*apply(rresults,1,function(x){diff(x[c(2,3)])/abs(x[2])}),2))
+
+
 #########################################################
 ## 
 #########################################################
+
+
+
+
+
+
 
 
 #########################################################

@@ -1,6 +1,6 @@
 ## Author: PGL  Porta Mana
 ## Created: 2022-03-17T14:21:57+0100
-## Last-Updated: 2022-05-28T22:55:28+0200
+## Last-Updated: 2022-05-29T09:40:07+0200
 ################
 ## Exploration of several issues for binary classifiers
 ################
@@ -117,6 +117,9 @@ colnames(vpoints) <- realCovs
 opgrid <- readRDS('_opgrid_cnn_exploration_new.rds')
 
 ## system.time(opgrid2 <- samplesFp(Y=cbind(class=1), X=vpoints, batchsize=1024, parmList=parmlist, inorder=F))
+
+ypgrid <- samplesF(Y=vpoints, parmList=parmlist, inorder=F)
+
 
 
 mpgrid <- rowMeans(opgrid)
@@ -821,7 +824,46 @@ abline(0,1, col=paste0(palette()[2],'88'), lwd=2, lty=1)
 dev.off()
 
 
+#########################################################
+## Calculation of algorithm's expected utility yields
+#########################################################
 
+Myield <- function(yprobgrid,cprobgrid,um){
+    sum(yprobgrid *
+        sapply(cprobgrid, function(x){max(um %*%  cbind(c(1-x,x)))})
+        )/sum(yprobgrid)
+}
+
+ulist <- list(c(1,0,0,1),
+              c(1,-10,0,10),
+              c(1,-100,0,100),
+              c(10,0,-10,1),
+              c(100,0,-100,1),
+              ##
+              c(1,-10,-1,10),
+              c(1,-100,-1,100),
+              c(10,-1,-10,1),
+              c(100,-1,-100,1)
+              )
+##
+umlist <- c(lapply(ulist, function(x){ matrix(x,2,2, byrow=T) } ),
+    lapply(ulist, function(x){
+        x <- x-min(x)
+        x <- x/max(x)
+        matrix(x,2,2, byrow=T)
+    }
+) )
+##
+ulist2 <- unlist(umlist)
+dim(ulist2) <- c(4,2*length(ulist))
+ulist2 <- t(ulist2)
+
+
+sapply(umlist, function(um){Myield(rowMeans(ypgrid), rowMeans(opgrid), um)})[1:4]
+## [1] 0.9623081 1.6206641 9.5603046 9.0772883
+
+## RF:
+## [1] 0.9725162 1.6815698 9.5864235 9.0783451
 
 #########################################################
 ## combining evidence from both algorithms
