@@ -1,7 +1,7 @@
 \pdfoutput=1
 %% Author: PGL  Porta Mana
 %% Created: 2022-04-14T17:18:22+0200
-%% Last-Updated: 2022-05-29T16:46:02+0200
+%% Last-Updated: 2022-05-29T20:26:31+0200
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Probabilities for classifier outputs
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -1245,20 +1245,22 @@ For illustration we choose four utility matrices:
 \end{equation}
 Case~I represents any case where the correct classification of either class is equally valuable; and the incorrect classification, equally invaluable. Note that this utility matrix is equivalent to any other of the form $\sumatrix{a}{b}{b}{a}$ with $a>b$. Accuracy is the correct metric to evaluate this case. Case~II represents any case where the correct classification of class~1, \enquote{active}, is ten times more valuable than that of class~0 \enquote{inactive}, and its incorrect classification is as damaging as correct classification is valuable. The remaining two cases are interpreted in an analogous way. The \enquote{value} could simply be the final average monetary revenue at the end of the drug-discovery project that typically follows any of these four situations. Of particular relevance to drug discovery, where false positives are known to be especially costly \autocites{sinketal2010,hingoranietal2019}, is the utility matrix of case~II and possibly that of case~III.
 
-We consider each of these utility matrices, in turn, to be the one underlying our classification problem. In each case we perform the classification of every item -- a molecule -- in the demonstration data as follows, according to the utility-maximization procedure explained in \sect~\ref{sec:utility_classification}:
+We consider each of these utility matrices, in turn, to be the one underlying our classification problem. In each case we perform the classification of every item -- a molecule -- in the demonstration data as follows:
+% , first by applying the probability transducer and then by finding the class with maximal expected utility, as explained in \sect~\ref{sec:utility_classification}.
 \begin{enumerate}[label=\arabic*.]
 \item feed the features of the item to the classifier and record its output
 \item feed this output to the probability transducer and record the resulting probability for class~1; form the normalized probability vector for the two classes 
 \item multiply the probability vector by the utility matrix to determine the expected utility of each class choice, \eqn~\eqref{eq:expe_utilities}
 \item choose the class with higher expected utility (ties have to be decided unsystematically, to avoid biased results), \eqn~\eqref{eq:max_expe_utility}.
 \end{enumerate}
-This is done for each classifier.
+We call this procedure \emph{augmentation}. It used with each classifier.
+
 
 \subsubsection{Confusion matrices -- and a peculiar situation}
 
 Once all items in the demonstration dataset are classified, we compare their chosen classes with their true ones and compute the resulting confusion matrix, which we also write in the format~\eqref{eq:format_matrix}. The confusion matrices for all cases, methods, and algorithms are presented in table~\ref{tab:results_CM} on page~\pageref{tab:results_CM}. Ties (both classes were equally preferable) are solved by giving half a point to each class.
 
-The standard method produces the same confusion matrix in all four utility cases because it does not use utilities to choose a class. The method with the transducer produces instead a different confusion matrix in each utility case: even if the class probabilities for a give datum are the same in all cases, the threshold of acceptance varies so as to always be optimal for the utilities involved.
+The standard method produces the same confusion matrix in all four utility cases because it does not use utilities to choose a class. The augmentation produces instead a different confusion matrix in each utility case: even if the class probabilities for a give datum are the same in all cases, the threshold of acceptance varies so as to always be optimal for the utilities involved.
 
 A peculiar case of this automatic optimization of the threshold is visible for the transducer applied to either algorithm in case~IV: it leads to the confusion matrix
 \begin{equation}
@@ -1281,7 +1283,7 @@ It is optimal to choose class~1 only if (disregarding ties)
   \qquad\text{or}\qquad
   p > 20/21 \approx 0.952 \ ,
 \end{equation}
-that is, only if the probability of class~1 is higher than 95\%. The threshold is so high because on the one hand there's a high cost ($-10$) if the class isn't actually~1, and on the other hand a high reward ($10$) if the class is actually~0. Now, a look at the transducer curve for the \RF, \fig~\ref{fig:prob_curve_RF}, shows that the transducer never gives a probability higher than 93\% to class~1. Similarly the transducer for the \CNN, \fig~\ref{fig:prob_curve_CNN}, never reacher probabilities above 92\%. So the threshold of 95\% will never be met in either case, and no item will be classified as~1. It is simply never rewarding, on average, to do so \autocites[\cf\ the analysis by]{drummondetal2005}. It can be seen that this situation will occur with any utility matrix $\sumatrix{a}{b}{c}{d}$, with $a>c$ and $d>b$, such that $\frac{a-c}{a-c+d-b}\approx 0.93$.
+that is, only if the probability of class~1 is higher than 95\%. The threshold is so high because on the one hand there's a high cost ($-10$) if the class isn't actually~1, and on the other hand a high reward ($10$) if the class is actually~0. Now, a look at the transducer curve for the \RF, \fig~\ref{fig:prob_curve_RF}, shows that the transducer never gives a probability higher than 93\% to class~1. Similarly the transducer for the \CNN, \fig~\ref{fig:prob_curve_CNN}, never reaches probabilities above 92\%. So the threshold of 95\% will never be met in either case, and no item will be classified as~1. It is simply never rewarding, on average, to do so \autocites[\cf\ the analysis by]{drummondetal2005}. It can be seen that this situation will occur with any utility matrix $\sumatrix{a}{b}{c}{d}$, with $a>c$ and $d>b$, such that $\frac{a-c}{a-c+d-b}\approx 0.93$.
 
 This peculiar situation has a notable practical consequence. We have found the transducer curve for a classifier, and see that its maximum probability for class~1 is 93\%. We have assessed that the utilities involved are $\sumatrix{10}{0}{-10}{1}$, so the threshold to classify as~1 is 95\%. Then we immediately find that \emph{there is no need to employ that classifier, in this utility case}: it is simply more profitable to automatically treat all data as class~0.
 
@@ -1291,16 +1293,33 @@ A look at the other confusion matrices of table~\ref{tab:results_CM} shows the e
 
 \subsubsection{Utility yields}
 
-We can finally assess the performance of both classifiers, with or without the use of the transducer and utility-maximization, on the demonstration dataset. As explained in our companion work \autocites{dyrlandetal2022} and summarized in \sect~\ref{sec:utility_classification}, the correct metric for such performance must naturally depend on the utilities that underlie the problem. It is the utility yield per datum produced by the classifier on the dataset, obtained by taking the grand sum of the products of the homologous elements of the utility matrix $(U_{ij})$ and the confusion matrix $(C_{ij})$:
+We can finally assess the performance of both classifiers, with and without augmentation, on the demonstration dataset. As explained in our companion work \autocites{dyrlandetal2022} and summarized in \sect~\ref{sec:utility_classification}, the correct metric for such performance must naturally depend on the utilities that underlie the problem. It is the utility yield per datum produced by the classifier on the dataset, obtained by taking the grand sum of the products of the homologous elements of the utility matrix $(U_{ij})$ and the confusion matrix $(C_{ij})$:
 \begin{equation}
   \label{eq:performance_metric}
   \sum_{ij} U_{ij}\ C_{ij} \ .
 \end{equation}
 
-The utility yields for the different cases, classifiers, and methods are presented in table~\ref{tab:results_utilities}.
+The utility yields for the different cases, classifiers, and methods are presented in table~\ref{tab:results_utilities}. The minimum and maximum theoretically achievable yields (all data correctly classified or wholly misclassified) are also shown for each case.
 
+Let us first compare the two algorithms when employed in the standard way (red). Their performance is very close to the theoretical maximum in most cases  The \RF\ outperforms the \CNN\ in utility cases~I and~II; vice versa in cases~II and~III.
 
+Then let us look at the performances obtained with the augmentation (blue bold). We notice the following:
+\begin{itemize}
+\item The augmentation always improves the performance of each algorithm; in some cases, such as~III, by a large relative amount. The improvement occurs also in cases, such as case~I, where the standard method already had an almost optimal performance.
+\item In three cases, the augmentation improves the originally worse algorithm above the originally better one. This almost happens also in case~I, the difference possibly being at the level of statistical variability.
+\end{itemize}
 
+%%% normalized scores RF
+% ##                 [,1]      [,2]      [,3]      [,4]      [,5]
+% ## standard   0.9675307 0.8336741 0.7672139 0.9875011 0.9885411
+% ## mixed      0.9675307 0.9034962 0.9547778 0.9945856 0.9995036
+% ## transducer 0.9740803 0.9640155 0.9809529 0.9950279 0.9995006
+
+%%% normalized scores CNN
+% ##                 [,1]      [,2]      [,3]      [,4]      [,5]
+% ## standard   0.9593088 0.8898998 0.8554381 0.9696642 0.9702034
+% ## mixed      0.9593088 0.9302801 0.9754316 0.9853278 0.9941522
+% ## transducer 0.9615385 0.9366183 0.9788058 0.9950279 0.9995006
 
 %%%% RF confusion matrices
 % standard
@@ -1381,6 +1400,12 @@ The utility yields for the different cases, classifiers, and methods are present
 % ## [1,] 3262  326
 % ## [2,]    0    0
 
+%% max achievable utilities
+% ## [1,]  1.000000
+% ## [2,]  1.817726
+% ## [3,]  9.994983
+% ## [4,]  9.182274
+% ## [5,] 91.005017
 
 
 % classes
@@ -1404,8 +1429,8 @@ The utility yields for the different cases, classifiers, and methods are present
  &\parbox{0.21\linewidth}{\color{myred}\clap{standard method}}
  &\multicolumn{4}{c}{\textcolor{myred}{$\sumatrix{3225}{79.5}{37}{246.5}$}}
  \\[2\jot]
- \rotatebox[origin=l]{90}{\quad\clap{\parbox{5em}{\centering Random\\Forest}}}
- &\parbox{0.21\linewidth}{\color{mypurpleblue}transducer \amp\\max utility}
+ \smash{\rotatebox[origin=l]{90}{\quad\clap{\parbox{5em}{\centering Random\\Forest}}}}
+ &\parbox{0.21\linewidth}{\color{mypurpleblue}augmentation}
  &\textcolor{mypurpleblue}{$\sumatrix{3207}{38}{55}{288}$}
  &\textcolor{mypurpleblue}{$\sumatrix{3050}{7}{212}{319}$}
  &\textcolor{mypurpleblue}{$\sumatrix{2358}{2}{904}{324}$}
@@ -1419,8 +1444,8 @@ The utility yields for the different cases, classifiers, and methods are present
  &\parbox{0.21\linewidth}{\color{myred}\clap{standard method}}
  &\multicolumn{4}{c}{\textcolor{myred}{$\sumatrix{3165}{49}{97}{277}$}}
  \\[2\jot]
- \rotatebox[origin=l]{90}{\quad\clap{\parbox{8em}{\centering Neural\\Network}}}
- &\parbox{0.21\linewidth}{\color{mypurpleblue}transducer \amp\\max utility}
+ \smash{\rotatebox[origin=l]{90}{\quad\clap{\parbox{8em}{\centering Neural\\Network}}}}
+ &\parbox{0.21\linewidth}{\color{mypurpleblue} augmentation}
  &\textcolor{mypurpleblue}{$\sumatrix{3189}{65}{73}{261}$}
  &\textcolor{mypurpleblue}{$\sumatrix{2882}{12}{380}{314}$}
  &\textcolor{mypurpleblue}{$\sumatrix{2011}{1}{1251}{325}$}
@@ -1428,10 +1453,10 @@ The utility yields for the different cases, classifiers, and methods are present
  %&\textcolor{mypurpleblue}{$\sumatrix{3262}{326}{0}{0}$}
  \end{tabular*}
   \\[1em]
-  \caption{Confusion matrices}
+  \caption{Confusion matrices from demonstration dataset}
   \label{tab:results_CM}
 
-\vspace{3em}
+\vspace{6em}
   
 % classes
 % 3262  326 
@@ -1447,7 +1472,32 @@ The utility yields for the different cases, classifiers, and methods are present
  &$\sumatrix{1}{-100}{0}{100}$
  &$\sumatrix{10}{0}{-10}{1}$
  % &$\sumatrix{100}{0}{-100}{1}$
-    \\[3\jot]
+     \\[2\jot]
+ &\parbox{0.21\linewidth}{\clap{\color{mygray}\footnotesize min achievable utility}}
+% ##             [,1]
+% ## [1,]   0.0000000
+% ## [2,]  -0.9085842
+% ## [3,]  -9.0858417
+% ## [4,]  -9.0914158
+% ## [5,] -90.9141583
+ &\textcolor{mygray}{\footnotesize 0}
+ &\textcolor{mygray}{\footnotesize $-0.91$}
+ &\textcolor{mygray}{\footnotesize $-9.09$}
+ &\textcolor{mygray}{\footnotesize $-9.09$}
+ %&\textcolor{mygray}{\footnotesize $-90.9$}
+     \\[0\jot]
+ &\parbox{0.21\linewidth}{\clap{\color{mygray}\footnotesize max achievable utility}}
+% ## [1,]  1.000000
+% ## [2,]  1.817726
+% ## [3,]  9.994983
+% ## [4,]  9.182274
+% ## [5,] 91.005017
+ &\textcolor{mygray}{\footnotesize 1}
+ &\textcolor{mygray}{\footnotesize 1.82}
+ &\textcolor{mygray}{\footnotesize 9.99}
+ &\textcolor{mygray}{\footnotesize 9.18}
+ %&\textcolor{mygray}{\footnotesize 91.0}
+    \\[5\jot]
 % ## standard   0.968   1.364    5.553   8.954   88.92
 % ## transducer 0.974   1.720    9.632   9.091   90.91
 % ##            0.620  26.100   73.460   1.530    2.24
@@ -1458,22 +1508,35 @@ The utility yields for the different cases, classifiers, and methods are present
  &\textcolor{myred}{8.95}
  %& \textcolor{myred}{88.9}
  \\[1\jot]
- \rotatebox[origin=l]{90}{\ \clap{\parbox{5em}{\centering Random\\Forest}}}
- &\parbox{0.21\linewidth}{\color{mypurpleblue}transducer \amp\\max utility}
- &\textcolor{mypurpleblue}{0.974}
- &\textcolor{mypurpleblue}{1.72}
- &\textcolor{mypurpleblue}{9.63}
- &\textcolor{mypurpleblue}{9.09}
- %&\textcolor{mypurpleblue}{90.9}
- \\[2\jot]
- &\parbox{0.21\linewidth}{\footnotesize relative increase}
- &\footnotesize+0.6\%
- &\footnotesize+26\%
- &\footnotesize+73\%
- &\footnotesize+1.5\%
- % &\footnotesize+2.2\%
- \\[6\jot]
+ \smash{\rotatebox[origin=l]{90}{\hspace{1em}\clap{\parbox{5em}{\centering Random\\Forest}}}}
+ &\parbox{0.21\linewidth}{\color{mypurpleblue}\bfseries augmentation}
+ &\textcolor{mypurpleblue}{\bfseries 0.974}
+ &\textcolor{mypurpleblue}{\bfseries 1.72}
+ &\textcolor{mypurpleblue}{\bfseries 9.63}
+ &\textcolor{mypurpleblue}{\bfseries 9.09}
+ %&\textcolor{mypurpleblue}{\bfseries 90.9}
+ % \\[2\jot]
+ % &\parbox{0.21\linewidth}{\footnotesize relative increase}
+ % &\footnotesize+0.6\%
+ % &\footnotesize+26\%
+ % &\footnotesize+73\%
+ % &\footnotesize+1.5\%
+ % % &\footnotesize+2.2\%
+ \\[5\jot]
 %%%%%%%%
+%  &\parbox{0.21\linewidth}{\clap{\color{mygray}\footnotesize min achievable utility}}
+% % ##             [,1]
+% % ## [1,]   0.0000000
+% % ## [2,]  -0.9085842
+% % ## [3,]  -9.0858417
+% % ## [4,]  -9.0914158
+% % ## [5,] -90.9141583
+%  &\textcolor{mygray}{\footnotesize 0}
+%  &\textcolor{mygray}{\footnotesize $-0.91$}
+%  &\textcolor{mygray}{\footnotesize $-9.09$}
+%  &\textcolor{mygray}{\footnotesize $-9.09$}
+%  %&\textcolor{mygray}{\footnotesize $-90.9$}
+%     \\[2\jot]
 % ## standard   0.959   1.518    7.237   8.628   85.58
 % ## transducer 0.962   1.645    9.591   9.091   90.91
 % ##            0.310   8.370   32.530   5.370    6.23
@@ -1484,24 +1547,125 @@ The utility yields for the different cases, classifiers, and methods are present
  &\textcolor{myred}{8.63}
  %&\textcolor{myred}{85.6}
  \\[1\jot]
- \rotatebox[origin=l]{90}{\ \clap{\parbox{8em}{\centering Neural\\Network}}}
- &\parbox{0.21\linewidth}{\color{mypurpleblue}transducer \amp\\max utility}
- &\textcolor{mypurpleblue}{0.962}
- &\textcolor{mypurpleblue}{1.64}
- &\textcolor{mypurpleblue}{9.59}
- &\textcolor{mypurpleblue}{9.09}
- %&\textcolor{mypurpleblue}{90.9}
- \\[2\jot]
- &\parbox{0.21\linewidth}{\footnotesize relative increase}
- &\footnotesize+0.3\%
- &\footnotesize+8.4\%
- &\footnotesize+33\%
- &\footnotesize+5.4\%
- %&\footnotesize+6.2\%
+ \smash{\rotatebox[origin=l]{90}{\hspace{1em}\clap{\parbox{8em}{\centering Neural\\Network}}}}
+ &\parbox{0.21\linewidth}{\color{mypurpleblue}\bfseries augmentation}
+ &\textcolor{mypurpleblue}{\bfseries 0.962}
+ &\textcolor{mypurpleblue}{\bfseries 1.64}
+ &\textcolor{mypurpleblue}{\bfseries 9.59}
+ &\textcolor{mypurpleblue}{\bfseries 9.09}
+ %&\textcolor{mypurpleblue}{\bfseries 90.9}
+%      \\[2\jot]
+%  &\parbox{0.21\linewidth}{\clap{\color{mygray}\footnotesize max achievable utility}}
+% % ## [1,]  1.000000
+% % ## [2,]  1.817726
+% % ## [3,]  9.994983
+% % ## [4,]  9.182274
+% % ## [5,] 91.005017
+%  &\textcolor{mygray}{\footnotesize 1}
+%  &\textcolor{mygray}{\footnotesize 1.82}
+%  &\textcolor{mygray}{\footnotesize 9.99}
+%  &\textcolor{mygray}{\footnotesize 9.18}
+ %&\textcolor{mygray}{\footnotesize 91.0}
+ % \\[2\jot]
+ % &\parbox{0.21\linewidth}{\footnotesize relative increase}
+ % &\footnotesize+0.3\%
+ % &\footnotesize+8.4\%
+ % &\footnotesize+33\%
+ % &\footnotesize+5.4\%
+ % %&\footnotesize+6.2\%
   \end{tabular*}
   \\[1em]
-  \caption{Utility yields}
+  \caption{Utility yields from demonstration dataset}
   \label{tab:results_utilities}
+
+
+
+\vspace{3em}
+  
+% classes
+% 3262  326 
+%
+% baserates
+% 0.90914158 0.09085842 
+% \begin{table}[!t]
+%   \centering
+%   \small
+  \begin{tabular*}{\linewidth}{ccw{c}{0.12\linewidth}w{c}{0.12\linewidth}w{c}{0.12\linewidth}w{c}{0.12\linewidth}}
+% &    &$\sumatrix{1}{0}{0}{1}$
+%  &$\sumatrix{1}{-10}{0}{10}$
+%  &$\sumatrix{1}{-100}{0}{100}$
+%  &$\sumatrix{10}{0}{-10}{1}$
+%  % &$\sumatrix{100}{0}{-100}{1}$
+% &&\multicolumn{4}{c}{\footnotesize(rescaled utilities)}
+%     \\[2\jot]
+ &\parbox{0.21\linewidth}{\clap{\color{mygray}\footnotesize min achievable utility}}
+ &\multicolumn{4}{c}{\textcolor{mygray}{\footnotesize 0}}
+ % &\textcolor{mygray}{\footnotesize 0}
+ % &\textcolor{mygray}{\footnotesize 0}
+ % &\textcolor{mygray}{\footnotesize 0}
+ %&\textcolor{mygray}{\footnotesize 0}
+     \\[0\jot]
+ &\parbox{0.21\linewidth}{\clap{\color{mygray}\footnotesize max achievable utility}}
+ &\multicolumn{4}{c}{\textcolor{mygray}{\footnotesize 1}}
+ % &\textcolor{mygray}{\footnotesize 1}
+ % &\textcolor{mygray}{\footnotesize 1}
+ % &\textcolor{mygray}{\footnotesize 1}
+ %&\textcolor{mygray}{\footnotesize 1}
+    \\[5\jot]
+%%% normalized scores RF
+% ##                 [,1]      [,2]      [,3]      [,4]      [,5]
+% ## standard   0.9675307 0.8336741 0.7672139 0.9875011 0.9885411
+% ## mixed      0.9675307 0.9034962 0.9547778 0.9945856 0.9995036
+% ## transducer 0.9740803 0.9640155 0.9809529 0.9950279 0.9995006
+ &\parbox{0.21\linewidth}{\color{myred}\clap{standard method}}
+ &\textcolor{myred}{0.968}
+ &\textcolor{myred}{0.834}
+ &\textcolor{myred}{0.767}
+ &\textcolor{myred}{0.988}
+ %& \textcolor{myred}{0.989}
+ \\[1\jot]
+ \smash{\rotatebox[origin=l]{90}{\hspace{1em}\clap{\parbox{5em}{\centering Random\\Forest}}}}
+ &\parbox{0.21\linewidth}{\color{mypurpleblue}\bfseries augmentation}
+ &\textcolor{mypurpleblue}{\bfseries 0.974}
+ &\textcolor{mypurpleblue}{\bfseries 0.964}
+ &\textcolor{mypurpleblue}{\bfseries 0.981}
+ &\textcolor{mypurpleblue}{\bfseries 0.995}
+ %&\textcolor{mypurpleblue}{\bfseries 1.000}
+ % \\[2\jot]
+ % &\parbox{0.21\linewidth}{\footnotesize relative increase}
+ % &\footnotesize+0.6\%
+ % &\footnotesize+26\%
+ % &\footnotesize+73\%
+ % &\footnotesize+1.5\%
+ % % &\footnotesize+2.2\%
+ \\[5\jot]
+%%%%%%%%
+%%% normalized scores CNN
+% ##                 [,1]      [,2]      [,3]      [,4]      [,5]
+% ## standard   0.9593088 0.8898998 0.8554381 0.9696642 0.9702034
+% ## mixed      0.9593088 0.9302801 0.9754316 0.9853278 0.9941522
+% ## transducer 0.9615385 0.9366183 0.9788058 0.9950279 0.9995006
+ &\parbox{0.21\linewidth}{\color{myred}\clap{standard method}}
+ &\textcolor{myred}{0.959}
+ &\textcolor{myred}{0.890}
+ &\textcolor{myred}{0.855}
+ &\textcolor{myred}{0.970}
+ %&\textcolor{myred}{0.970}
+ \\[1\jot]
+ \smash{\rotatebox[origin=l]{90}{\hspace{1em}\clap{\parbox{8em}{\centering Neural\\Network}}}}
+ &\parbox{0.21\linewidth}{\color{mypurpleblue}\bfseries augmentation}
+ &\textcolor{mypurpleblue}{\bfseries 0.962}
+ &\textcolor{mypurpleblue}{\bfseries 0.937}
+ &\textcolor{mypurpleblue}{\bfseries 0.979}
+ &\textcolor{mypurpleblue}{\bfseries 0.995}
+ %&\textcolor{mypurpleblue}{\bfseries 1.000}
+  \end{tabular*}
+  \\[1em]
+  \caption{\emph{Rescaled} utility yields from demonstration dataset}
+  \label{tab:results_utilities}
+
+
+
 \end{table}
 \FloatBlock
 

@@ -1,6 +1,6 @@
 ## Author: PGL  Porta Mana
 ## Created: 2022-03-17T14:21:57+0100
-## Last-Updated: 2022-05-29T12:56:51+0200
+## Last-Updated: 2022-05-29T19:40:15+0200
 ################
 ## Exploration of several issues for binary classifiers
 ################
@@ -464,10 +464,42 @@ lapply(umlist[1:5],function(um){buildcm(classes, probs1, um)})
 ## [2,]    0    0
 
 
+Fclass0 <- sum(classes==0)
+Fclass1 <- sum(classes==1)
+fclass1 <- Fclass1/length(classes)
+
+maxscores <- sapply(umlist, function(um){um[1,1]*(1-fclass1)+um[2,2]*fclass1})
+maxscores[1:5]
+## [1,]  1.000000
+## [2,]  1.817726
+## [3,]  9.994983
+## [4,]  9.182274
+## [5,] 91.005017
+
+minscores <- sapply(umlist, function(um){um[2,1]*(1-fclass1)+um[1,2]*fclass1})
+minscores[1:5]
+##             [,1]
+## [1,]   0.0000000
+## [2,]  -0.9085842
+## [3,]  -9.0858417
+## [4,]  -9.0914158
+## [5,] -90.9141583
+
 
 
 results1 <- t(sapply(umlist, function(um){
     comparescores(trueclasses=classes, um=um, outputs=t(outputs2), probs=probs1, softmaxs=softmax2)/length(classes)}))
+
+
+t((results1-minscores)/(maxscores-minscores))[,1:5]
+##                 [,1]      [,2]      [,3]      [,4]      [,5]
+## standard   0.9593088 0.8898998 0.8554381 0.9696642 0.9702034
+## mixed      0.9593088 0.9302801 0.9754316 0.9853278 0.9941522
+## transducer 0.9615385 0.9366183 0.9788058 0.9950279 0.9995006
+
+
+
+
 ##
 rresults <- round(results1,3)
 ##
@@ -501,7 +533,11 @@ cbind(ulist2, rresults,
 ## [18,]   1.000    0.000    0.495   0.505    0.928  0.948      0.954 0.026  0.006    2.80    0.63
 
 
-t(cbind(ulist2, signif(rresults[,c(1,3)],4), round(100*apply(rresults,1,function(x){diff(x[c(1,3)])/abs(x[1])}),2)))[,1:5]
+t(cbind(ulist2, signif(rresults[,c(1,3)],4),
+        round(100*apply(rresults,1,function(x){diff(x[c(1,3)])/abs(x[1])}),2),
+  round(100*sapply(1:nrow(rresults),function(i){
+      (rresults[i,3]-minscores[i])/(rresults[i,1]-minscores[i])
+      }),2))  )[,1:5]
 ## standard   0.959   1.518    7.237   8.628   85.58
 ## transducer 0.962   1.645    9.591   9.091   90.91
 ##            0.310   8.370   32.530   5.370    6.23
@@ -560,7 +596,7 @@ allscores <- apply(lut, 3, function(um){
       sum(buildcm(classes, softmax2, um) * um),
       sum(buildcm(classes, probs1, um) * um)
       )
-})/length(classes)
+})
 ## allscores <- (foreach(i=1:nn, .combine=cbind, .inorder=F)%dopar%{
 ##     um <- lut[,,i]
 ##     c(sum(cmstandard * um),
@@ -570,22 +606,50 @@ allscores <- apply(lut, 3, function(um){
 ## })/length(classes)
 rownames(allscores) <- c('standard', 'mixed', 'transducer')
 
-rowMeans(allscores)
+allmins <- apply(lut, 3, function(um){
+    um[2,1]*Fclass0 + um[1,2]*Fclass1
+})
+
+allmaxs <- apply(lut, 3, function(um){
+    um[1,1]*Fclass0 + um[2,2]*Fclass1
+})
+
+
+
+
+colMeans((t(allscores)-allmins)/(allmaxs-allmins))
+ ##  standard      mixed transducer 
+ ## 0.9514084  0.9588223  0.9605364 
 #### correct params
 ##   standard      mixed transducer 
 ##  0.7527198  0.7555375  0.7569162 
 
+rowMeans(t(t(allscores)/allscores[4,]))
+ ##  standard      mixed transducer        max 
+ ## 0.9680203  0.9722645  0.9737862  1.0000000 
 
+saveRDS(allscores,'CNNallscores.rds')
 
-pdff('../CNN_transducer_gainsx2', asp=1)
+rmins <- allmins[1:nn2]
+norms <- allmaxs[1:nn2]-allmins[1:nn2]
+lbound <- min((allscores[1,1:nn2]-rmins)/norms, (allscores[3,1:nn2]-rmins)/norms)
+pdff('../CNN_transducer_gains_max', asp=1)
 ## tplot(x=allscores[1,1:nn2], y=allscores[2,1:nn2]-allscores[1,1:nn2], type='p', pch=16, cex=1, alpha=0.5)
-tplot(x=log10(allscores[1,1:nn2]), y=log10(allscores[3,1:nn2]), type='p', pch=16, cex=0.5, alpha=0.25, asp=1,
-      xticks=log10(sort(c(1:9)*rep(10^c(-1,0),each=9))),
-      xlabels=sort(c(1:9)*rep(10^c(-1,0),each=9)),
-      yticks=log10(sort(c(1:9)*rep(10^c(-1,0),each=9))),
-      ylabels=sort(c(1:9)*rep(10^c(-1,0),each=9)),
-      xlab='utility yield with standard method',
-      ylab='utility yield with transducer & utility maximization')
+tplot(x=(allscores[1,1:nn2]-rmins)/norms,
+      y=(allscores[3,1:nn2]-rmins)/norms,
+      type='p', pch=16, cex=1, alpha=0.75,
+      xlim=c(lbound,1),
+      ylim=c(lbound,1),
+      ## xlim=c(min(allscores[1,1:nn2]/allscores[4,1:nn2],allscores[3,1:nn2]/allscores[4,1:nn2]),1),
+      ## ylim=c(min(allscores[1,1:nn2]/allscores[4,1:nn2],allscores[3,1:nn2]/allscores[4,1:nn2]),1),
+      ## xticks=log10(sort(c(1:9)*rep(10^c(-1,0),each=9))),
+      ## xlabels=sort(c(1:9)*rep(10^c(-1,0),each=9)),
+      ## yticks=log10(sort(c(1:9)*rep(10^c(-1,0),each=9))),
+      ## ylabels=sort(c(1:9)*rep(10^c(-1,0),each=9)),
+      ##mar=c(6.5,7.5,1,1),lx=2,
+      xlab='rescaled utility yield, standard method',#bquote(frac('utility yield','max utility yield')~', standard method'),
+      ylab='rescaled utility yield, augmentation'#bquote(frac('utility yield','max utility yield')~', augmentation')
+      )
 abline(0,1, col=paste0(palette()[2],'88'), lwd=2, lty=1)
 ## tplot(x=log10(allscores[2,1:nn2]), y=log10(allscores[3,1:nn2]), type='p', pch=16, cex=0.5, alpha=0.25, col=2,
 ##       xticks=log10(sort(c(1:9)*rep(10^c(-1,0),each=9))),
@@ -596,6 +660,45 @@ abline(0,1, col=paste0(palette()[2],'88'), lwd=2, lty=1)
 ##       ylab='utility yield from transducer & utility maximization')
 ## abline(0,1, col=paste0(palette()[4],'88'), lwd=2, lty=1)
 dev.off()
+
+
+pdff('../noCNN_transducer_gains_max', asp=1)
+## tplot(x=allscores[1,1:nn2], y=allscores[2,1:nn2]-allscores[1,1:nn2], type='p', pch=16, cex=1, alpha=0.5)
+tplot(x=log10(allscores[1,1:nn2]), y=log10(allscores[3,1:nn2]), type='p', pch=16, cex=0.5, alpha=0.25, asp=1,
+      xticks=log10(sort(c(1:9)*rep(10^c(-1,0),each=9))),
+      xlabels=sort(c(1:9)*rep(10^c(-1,0),each=9)),
+      yticks=log10(sort(c(1:9)*rep(10^c(-1,0),each=9))),
+      ylabels=sort(c(1:9)*rep(10^c(-1,0),each=9)),
+      xlab='utility yield with standard method',
+      ylab='utility yield with transducer & utility maximization')
+abline(0,1, col=paste0(palette()[2],'88'), lwd=2, lty=1)
+tplot(x=log10(allscores[1,1:nn2]), y=log10(allscores[4,1:nn2]), col=3, type='p', pch=16, cex=0.5, alpha=0.25, asp=1,
+      xticks=log10(sort(c(1:9)*rep(10^c(-1,0),each=9))),
+      xlabels=sort(c(1:9)*rep(10^c(-1,0),each=9)),
+      yticks=log10(sort(c(1:9)*rep(10^c(-1,0),each=9))),
+      ylabels=sort(c(1:9)*rep(10^c(-1,0),each=9)),
+      xlab='utility yield with standard method',
+      ylab='utility yield with transducer & utility maximization')
+tplot(x=allscores[1,1:nn2]/allscores[4,1:nn2], y=allscores[3,1:nn2]/allscores[4,1:nn2], col=3, type='p', pch=16, cex=0.5, alpha=0.25,
+      xlim=c(min(allscores[1,1:nn2]/allscores[4,1:nn2],allscores[3,1:nn2]/allscores[4,1:nn2]),1),
+      ylim=c(min(allscores[1,1:nn2]/allscores[4,1:nn2],allscores[3,1:nn2]/allscores[4,1:nn2]),1),
+      ## xticks=log10(sort(c(1:9)*rep(10^c(-1,0),each=9))),
+      ## xlabels=sort(c(1:9)*rep(10^c(-1,0),each=9)),
+      ## yticks=log10(sort(c(1:9)*rep(10^c(-1,0),each=9))),
+      ## ylabels=sort(c(1:9)*rep(10^c(-1,0),each=9)),
+      xlab='utility yield with standard method',
+      ylab='utility yield with transducer & utility maximization')
+## tplot(x=log10(allscores[2,1:nn2]), y=log10(allscores[3,1:nn2]), type='p', pch=16, cex=0.5, alpha=0.25, col=2,
+##       xticks=log10(sort(c(1:9)*rep(10^c(-1,0),each=9))),
+##       xlabels=sort(c(1:9)*rep(10^c(-1,0),each=9)),
+##       yticks=log10(sort(c(1:9)*rep(10^c(-1,0),each=9))),
+##       ylabels=sort(c(1:9)*rep(10^c(-1,0),each=9)),
+##       xlab='utility yield from mixed method',
+##       ylab='utility yield from transducer & utility maximization')
+## abline(0,1, col=paste0(palette()[4],'88'), lwd=2, lty=1)
+dev.off()
+
+
 
 
 
@@ -747,7 +850,6 @@ t(cbind(ulist2, signif(rresults[,c(1,2,3)],4),
 ## gener    0.930   6.802   66.67   3.742   33.36
 ##          4.030  36.310   41.99  -0.930    2.11
 ##          8.010   5.200    0.31  12.270    0.09
-
 
 
 

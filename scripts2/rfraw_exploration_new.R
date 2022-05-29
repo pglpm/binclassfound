@@ -1,6 +1,6 @@
 ## Author: PGL  Porta Mana
 ## Created: 2022-03-17T14:21:57+0100
-## Last-Updated: 2022-05-29T13:45:02+0200
+## Last-Updated: 2022-05-29T20:29:04+0200
 ################
 ## Exploration of several issues for binary classifiers
 ################
@@ -446,11 +446,34 @@ lapply(umlist[1:5],function(um){round(buildcm(classes, probs1, um)/length(classe
 ## [1,] 3262  326
 ## [2,]    0    0
 
+Fclass0 <- sum(classes==0)
+Fclass1 <- sum(classes==1)
+fclass1 <- Fclass1/length(classes)
+
+maxscores <- sapply(umlist, function(um){um[1,1]*(1-fclass1)+um[2,2]*fclass1})
+cbind(maxscores[1:5])
+## [1,]  1.000000
+## [2,]  1.817726
+## [3,]  9.994983
+## [4,]  9.182274
+## [5,] 91.005017
+
+minscores <- sapply(umlist, function(um){um[2,1]*(1-fclass1)+um[1,2]*fclass1})
+cbind(minscores[1:5])
+
 
 
 results1 <- t(sapply(umlist, function(um){
     comparescores(trueclasses=classes, um=um, outputs=outputs1, probs=probs1)/length(classes)}))
 ##
+
+t((results1-minscores)/(maxscores-minscores))[,1:5]
+##                 [,1]      [,2]      [,3]      [,4]      [,5]
+## standard   0.9675307 0.8336741 0.7672139 0.9875011 0.9885411
+## mixed      0.9675307 0.9034962 0.9547778 0.9945856 0.9995036
+## transducer 0.9740803 0.9640155 0.9809529 0.9950279 0.9995006
+
+
 rresults <- round(results1,3)
 ##
 options(width=160)
@@ -579,7 +602,7 @@ allscores <- apply(lut, 3, function(um){
       sum(buildcm(classes, outputs1, um) * um),
       sum(buildcm(classes, probs1, um) * um)
       )
-})/length(classes)
+})
 ## allscores <- (foreach(i=1:nn, .combine=cbind, .inorder=F)%dopar%{
 ##     um <- lut[,,i]
 ##     c(sum(cmstandard * um),
@@ -589,10 +612,18 @@ allscores <- apply(lut, 3, function(um){
 ## })/length(classes)
 rownames(allscores) <- c('standard', 'mixed', 'transducer')
 
-rowMeans(allscores)
-#### Correct params
-## > + >   standard      mixed transducer 
-##  0.7571809  0.7602045  0.7629040 
+allmins <- apply(lut, 3, function(um){
+    um[2,1]*Fclass0 + um[1,2]*Fclass1
+})
+
+allmaxs <- apply(lut, 3, function(um){
+    um[1,1]*Fclass0 + um[2,2]*Fclass1
+})
+
+colMeans((t(allscores)-allmins)/(allmaxs-allmins))
+##   standard      mixed transducer 
+##  0.9522946  0.9677246  0.9748890 
+
 
 #### Longer MCMC
 ##   standard      mixed transducer 
@@ -602,6 +633,192 @@ rowMeans(allscores)
 #### With transf:
 ##   standard      mixed transducer 
 ##  0.7571809  0.7602045  0.7629903 
+
+
+saveRDS(allscores,'RFallscores.rds')
+
+CNNallscores <- readRDS('CNNallscores.rds')
+
+
+rmins <- allmins[1:nn2]
+norms <- allmaxs[1:nn2]-allmins[1:nn2]
+lbound <- min((allscores[1,1:nn2]-rmins)/norms, (allscores[3,1:nn2]-rmins)/norms)
+pdff('../RF_transducer_gains_max', asp=1)
+## tplot(x=allscores[1,1:nn2], y=allscores[2,1:nn2]-allscores[1,1:nn2], type='p', pch=16, cex=1, alpha=0.5)
+tplot(x=(allscores[1,1:nn2]-rmins)/norms,
+      y=(allscores[3,1:nn2]-rmins)/norms,
+      type='p', pch=16, cex=1, alpha=0.75,
+      xlim=c(lbound,1),
+      ylim=c(lbound,1),
+      ## xlim=c(min(allscores[1,1:nn2]/allscores[4,1:nn2],allscores[3,1:nn2]/allscores[4,1:nn2]),1),
+      ## ylim=c(min(allscores[1,1:nn2]/allscores[4,1:nn2],allscores[3,1:nn2]/allscores[4,1:nn2]),1),
+      ## xticks=log10(sort(c(1:9)*rep(10^c(-1,0),each=9))),
+      ## xlabels=sort(c(1:9)*rep(10^c(-1,0),each=9)),
+      ## yticks=log10(sort(c(1:9)*rep(10^c(-1,0),each=9))),
+      ## ylabels=sort(c(1:9)*rep(10^c(-1,0),each=9)),
+      ##mar=c(6.5,7.5,1,1),lx=2,
+      xlab='rescaled utility yield, standard method',#bquote(frac('utility yield','max utility yield')~', standard method'),
+      ylab='rescaled utility yield, augmentation'#bquote(frac('utility yield','max utility yield')~', augmentation')
+      )
+abline(0,1, col=paste0(palette()[2],'88'), lwd=2, lty=1)
+## tplot(x=log10(allscores[2,1:nn2]), y=log10(allscores[3,1:nn2]), type='p', pch=16, cex=0.5, alpha=0.25, col=2,
+##       xticks=log10(sort(c(1:9)*rep(10^c(-1,0),each=9))),
+##       xlabels=sort(c(1:9)*rep(10^c(-1,0),each=9)),
+##       yticks=log10(sort(c(1:9)*rep(10^c(-1,0),each=9))),
+##       ylabels=sort(c(1:9)*rep(10^c(-1,0),each=9)),
+##       xlab='utility yield from mixed method',
+##       ylab='utility yield from transducer & utility maximization')
+## abline(0,1, col=paste0(palette()[4],'88'), lwd=2, lty=1)
+dev.off()
+
+nn2 <- 2000
+rmins <- allmins[1:nn2]
+norms <- allmaxs[1:nn2]-allmins[1:nn2]
+lbound <- min((allscores[1,1:nn2]-rmins)/norms, (allscores[3,1:nn2]-rmins)/norms,
+              (CNNallscores[1,1:nn2]-rmins)/norms, (CNNallscores[3,1:nn2]-rmins)/norms)
+pdff('../RFCNN_transducer_gains_max', asp=1)
+## tplot(x=allscores[1,1:nn2], y=allscores[2,1:nn2]-allscores[1,1:nn2], type='p', pch=16, cex=1, alpha=0.5)
+tplot(x=cbind((allscores[1,1:nn2]-rmins)/norms, (CNNallscores[1,1:nn2]-rmins)/norms),
+      y=cbind((allscores[3,1:nn2]-rmins)/norms, (CNNallscores[3,1:nn2]-rmins)/norms),
+      type='p', pch=c(16,17), cex=1, alpha=0.67,
+      xlim=c(lbound,1),
+      ylim=c(lbound,1),
+      ## xlim=c(min(allscores[1,1:nn2]/allscores[4,1:nn2],allscores[3,1:nn2]/allscores[4,1:nn2]),1),
+      ## ylim=c(min(allscores[1,1:nn2]/allscores[4,1:nn2],allscores[3,1:nn2]/allscores[4,1:nn2]),1),
+      ## xticks=log10(sort(c(1:9)*rep(10^c(-1,0),each=9))),
+      ## xlabels=sort(c(1:9)*rep(10^c(-1,0),each=9)),
+      ## yticks=log10(sort(c(1:9)*rep(10^c(-1,0),each=9))),
+      ## ylabels=sort(c(1:9)*rep(10^c(-1,0),each=9)),
+      ##mar=c(6.5,7.5,1,1),lx=2,
+      xlab='rescaled utility yield, standard method',#bquote(frac('utility yield','max utility yield')~', standard method'),
+      ylab='rescaled utility yield, augmentation'#bquote(frac('utility yield','max utility yield')~', augmentation')
+      )
+abline(0,1, col=paste0(palette()[7],'FF'), lwd=4, lty=2)
+legend('left',c('Random Forest', 'Neural Network'), pch=c(16,17), col=palette()[1:2], cex=1.5, bty='n')
+## tplot(x=log10(allscores[2,1:nn2]), y=log10(allscores[3,1:nn2]), type='p', pch=16, cex=0.5, alpha=0.25, col=2,
+##       xticks=log10(sort(c(1:9)*rep(10^c(-1,0),each=9))),
+##       xlabels=sort(c(1:9)*rep(10^c(-1,0),each=9)),
+##       yticks=log10(sort(c(1:9)*rep(10^c(-1,0),each=9))),
+##       ylabels=sort(c(1:9)*rep(10^c(-1,0),each=9)),
+##       xlab='utility yield from mixed method',
+##       ylab='utility yield from transducer & utility maximization')
+## abline(0,1, col=paste0(palette()[4],'88'), lwd=2, lty=1)
+dev.off()
+
+nn2 <- 2000
+rmins <- allmins[1:nn2]
+norms <- allmaxs[1:nn2]-allmins[1:nn2]
+lbound <- min((allscores[1,1:nn2]-rmins)/norms, (allscores[2,1:nn2]-rmins)/norms,
+              (CNNallscores[1,1:nn2]-rmins)/norms, (CNNallscores[2,1:nn2]-rmins)/norms)
+pdff('../RFCNN_transducer_gains_max_mixedstd', asp=1)
+## tplot(x=allscores[1,1:nn2], y=allscores[2,1:nn2]-allscores[1,1:nn2], type='p', pch=16, cex=1, alpha=0.5)
+tplot(x=cbind((allscores[1,1:nn2]-rmins)/norms, (CNNallscores[1,1:nn2]-rmins)/norms),
+      y=cbind((allscores[2,1:nn2]-rmins)/norms, (CNNallscores[2,1:nn2]-rmins)/norms),
+      type='p', pch=c(16,17), cex=1, alpha=0.25,
+      xlim=c(lbound,1),
+      ylim=c(lbound,1),
+      ## xlim=c(min(allscores[1,1:nn2]/allscores[4,1:nn2],allscores[3,1:nn2]/allscores[4,1:nn2]),1),
+      ## ylim=c(min(allscores[1,1:nn2]/allscores[4,1:nn2],allscores[3,1:nn2]/allscores[4,1:nn2]),1),
+      ## xticks=log10(sort(c(1:9)*rep(10^c(-1,0),each=9))),
+      ## xlabels=sort(c(1:9)*rep(10^c(-1,0),each=9)),
+      ## yticks=log10(sort(c(1:9)*rep(10^c(-1,0),each=9))),
+      ## ylabels=sort(c(1:9)*rep(10^c(-1,0),each=9)),
+      ##mar=c(6.5,7.5,1,1),lx=2,
+      xlab='rescaled utility yield, standard method',#bquote(frac('utility yield','max utility yield')~', standard method'),
+      ylab='rescaled utility yield, mixed method'#bquote(frac('utility yield','max utility yield')~', augmentation')
+      )
+abline(0,1, col=paste0(palette()[7],'FF'), lwd=4, lty=2)
+legend('left',c('Random Forest', 'Neural Network'), pch=c(16,17), col=palette()[1:2], cex=1.5, bty='n')
+## tplot(x=log10(allscores[2,1:nn2]), y=log10(allscores[3,1:nn2]), type='p', pch=16, cex=0.5, alpha=0.25, col=2,
+##       xticks=log10(sort(c(1:9)*rep(10^c(-1,0),each=9))),
+##       xlabels=sort(c(1:9)*rep(10^c(-1,0),each=9)),
+##       yticks=log10(sort(c(1:9)*rep(10^c(-1,0),each=9))),
+##       ylabels=sort(c(1:9)*rep(10^c(-1,0),each=9)),
+##       xlab='utility yield from mixed method',
+##       ylab='utility yield from transducer & utility maximization')
+## abline(0,1, col=paste0(palette()[4],'88'), lwd=2, lty=1)
+dev.off()
+
+nn2 <- 10000
+rmins <- allmins[1:nn2]
+norms <- allmaxs[1:nn2]-allmins[1:nn2]
+lbound <- min((allscores[3,1:nn2]-rmins)/norms, (allscores[2,1:nn2]-rmins)/norms,
+              (CNNallscores[3,1:nn2]-rmins)/norms, (CNNallscores[2,1:nn2]-rmins)/norms)
+pdff('../RFCNN_transducer_gains_max_mixedaug', asp=1)
+## tplot(x=allscores[1,1:nn2], y=allscores[2,1:nn2]-allscores[1,1:nn2], type='p', pch=16, cex=1, alpha=0.5)
+tplot(x=cbind((allscores[2,1:nn2]-rmins)/norms, (CNNallscores[2,1:nn2]-rmins)/norms),
+      y=cbind((allscores[3,1:nn2]-rmins)/norms, (CNNallscores[3,1:nn2]-rmins)/norms),
+      type='p', pch=c(16,17), cex=1, alpha=0.25,
+      xlim=c(lbound,1),
+      ylim=c(lbound,1),
+      ## xlim=c(min(allscores[1,1:nn2]/allscores[4,1:nn2],allscores[3,1:nn2]/allscores[4,1:nn2]),1),
+      ## ylim=c(min(allscores[1,1:nn2]/allscores[4,1:nn2],allscores[3,1:nn2]/allscores[4,1:nn2]),1),
+      ## xticks=log10(sort(c(1:9)*rep(10^c(-1,0),each=9))),
+      ## xlabels=sort(c(1:9)*rep(10^c(-1,0),each=9)),
+      ## yticks=log10(sort(c(1:9)*rep(10^c(-1,0),each=9))),
+      ## ylabels=sort(c(1:9)*rep(10^c(-1,0),each=9)),
+      ##mar=c(6.5,7.5,1,1),lx=2,
+      xlab='rescaled utility yield, mixed method',#bquote(frac('utility yield','max utility yield')~', standard method'),
+      ylab='rescaled utility yield, augmentation'#bquote(frac('utility yield','max utility yield')~', augmentation')
+      )
+abline(0,1, col=paste0(palette()[7],'FF'), lwd=4, lty=2)
+legend('left',c('Random Forest', 'Neural Network'), pch=c(16,17), col=palette()[1:2], cex=1.5, bty='n')
+## tplot(x=log10(allscores[2,1:nn2]), y=log10(allscores[3,1:nn2]), type='p', pch=16, cex=0.5, alpha=0.25, col=2,
+##       xticks=log10(sort(c(1:9)*rep(10^c(-1,0),each=9))),
+##       xlabels=sort(c(1:9)*rep(10^c(-1,0),each=9)),
+##       yticks=log10(sort(c(1:9)*rep(10^c(-1,0),each=9))),
+##       ylabels=sort(c(1:9)*rep(10^c(-1,0),each=9)),
+##       xlab='utility yield from mixed method',
+##       ylab='utility yield from transducer & utility maximization')
+## abline(0,1, col=paste0(palette()[4],'88'), lwd=2, lty=1)
+dev.off()
+
+
+
+
+
+
+
+
+
+
+
+nn2 <- 2000
+rmins <- allmins[1:nn2]
+norms <- allmaxs[1:nn2]-allmins[1:nn2]
+lbound <- min((allscores[1,1:nn2]-rmins)/norms, (allscores[3,1:nn2]-rmins)/norms,
+              (CNNallscores[1,1:nn2]-rmins)/norms, (CNNallscores[3,1:nn2]-rmins)/norms)
+pdff('../RFCNN_transducer_gains_max', asp=1)
+## tplot(x=allscores[1,1:nn2], y=allscores[2,1:nn2]-allscores[1,1:nn2], type='p', pch=16, cex=1, alpha=0.5)
+tplot(x=cbind((allscores[1,1:nn2]-rmins)/norms, (CNNallscores[1,1:nn2]-rmins)/norms),
+      y=cbind((allscores[3,1:nn2]-rmins)/norms, (CNNallscores[3,1:nn2]-rmins)/norms),
+      type='p', pch=c(16,17), cex=1, alpha=0.25,
+      xlim=c(lbound,1),
+      ylim=c(lbound,1),
+      ## xlim=c(min(allscores[1,1:nn2]/allscores[4,1:nn2],allscores[3,1:nn2]/allscores[4,1:nn2]),1),
+      ## ylim=c(min(allscores[1,1:nn2]/allscores[4,1:nn2],allscores[3,1:nn2]/allscores[4,1:nn2]),1),
+      ## xticks=log10(sort(c(1:9)*rep(10^c(-1,0),each=9))),
+      ## xlabels=sort(c(1:9)*rep(10^c(-1,0),each=9)),
+      ## yticks=log10(sort(c(1:9)*rep(10^c(-1,0),each=9))),
+      ## ylabels=sort(c(1:9)*rep(10^c(-1,0),each=9)),
+      ##mar=c(6.5,7.5,1,1),lx=2,
+      xlab='rescaled utility yield, standard method',#bquote(frac('utility yield','max utility yield')~', standard method'),
+      ylab='rescaled utility yield, augmentation'#bquote(frac('utility yield','max utility yield')~', augmentation')
+      )
+abline(0,1, col=paste0(palette()[7],'FF'), lwd=4, lty=2)
+legend('left',c('Random Forest', 'Neural Network'), pch=c(16,17), col=palette()[1:2], cex=1.5, bty='n')
+## tplot(x=log10(allscores[2,1:nn2]), y=log10(allscores[3,1:nn2]), type='p', pch=16, cex=0.5, alpha=0.25, col=2,
+##       xticks=log10(sort(c(1:9)*rep(10^c(-1,0),each=9))),
+##       xlabels=sort(c(1:9)*rep(10^c(-1,0),each=9)),
+##       yticks=log10(sort(c(1:9)*rep(10^c(-1,0),each=9))),
+##       ylabels=sort(c(1:9)*rep(10^c(-1,0),each=9)),
+##       xlab='utility yield from mixed method',
+##       ylab='utility yield from transducer & utility maximization')
+## abline(0,1, col=paste0(palette()[4],'88'), lwd=2, lty=1)
+dev.off()
+
+
+
 
 pdff('../RF_transducer_gainsraw2', asp=1)
 ## tplot(x=allscores[1,1:nn2], y=allscores[2,1:nn2]-allscores[1,1:nn2], type='p', pch=16, cex=1, alpha=0.5)
