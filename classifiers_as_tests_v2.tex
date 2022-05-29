@@ -1,7 +1,7 @@
 \pdfoutput=1
 %% Author: PGL  Porta Mana
 %% Created: 2022-04-14T17:18:22+0200
-%% Last-Updated: 2022-05-29T23:44:27+0200
+%% Last-Updated: 2022-05-30T00:06:18+0200
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Probabilities for classifier outputs
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -839,7 +839,7 @@ In summary, there is place to improve classifiers so as to
 
 In artificial intelligence and machine learning it is known how to address all these issues in principle -- the theoretical framework is for example beautifully presented in the first 18 chapters or so of Russell \amp\ Norvig's \parencites*{russelletal1995_r2022} text \autocites[see also]{selfetal1987,cheeseman1988,cheeseman1995_r2018,pearl1988,mackay1995_r2005}.
 
-Issues~\ref{item:gain_loss}--\ref{item:optimal_truth} are simply solved by adopting the standpoint of \emph{Decision Theory}, which we briefly review in \sect~\ref{sec:decision_theory} below and discuss at length in a companion work \autocites{dyrlandetal2022}. In short: The set of decisions and the set of classes pertinent to a problem are separated if necessary. A utility is associated to each decision, relative to the occurrence of each particular class; these utilities are assembled into a utility matrix: one row per decision, one column per class. This matrix is multiplied by a column vector consisting in the probability for the classes. The resulting vector of numbers contains the expected utility of each decision. Finally we select the decision having \emph{maximal expected utility}, according to the principle bearing this name. Such procedure also takes care of the class imbalance problem \autocites[\cf\ the analysis by][(they use the term \enquote{cost} instead of \enquote{utility})]{drummondetal2005}.
+Issues~\ref{item:gain_loss}--\ref{item:optimal_truth} are simply solved by adopting the standpoint of \emph{Decision Theory}, which we briefly review in \sect~\ref{sec:utility_classification} below and discuss at length in a companion work \autocites{dyrlandetal2022}. In short: The set of decisions and the set of classes pertinent to a problem are separated if necessary. A utility is associated to each decision, relative to the occurrence of each particular class; these utilities are assembled into a utility matrix: one row per decision, one column per class. This matrix is multiplied by a column vector consisting in the probability for the classes. The resulting vector of numbers contains the expected utility of each decision. Finally we select the decision having \emph{maximal expected utility}, according to the principle bearing this name. Such procedure also takes care of the class imbalance problem \autocites[\cf\ the analysis by][(they use the term \enquote{cost} instead of \enquote{utility})]{drummondetal2005}.
 
 Clearly this procedure is computationally inexpensive and ridiculously easy to implement in any \ml\ classifier. The difficulty is that this procedure requires \emph{sensible probabilities} for the classes, which brings us to issue~\ref{item:determ_statist}, the most difficult.
 
@@ -1724,6 +1724,7 @@ Clearly, the augmentation always leads to increased utility yields, especially f
 \section{Summary, discussion, and teasers of further ...}
 \label{sec:summary_discussion}
 
+\mynotew{Maybe add note about how (sequential) decision theory was used during World War I; see  \textcites{good1950} around \sect~6.2 }
 
 
 
@@ -1859,9 +1860,20 @@ Clearly, the augmentation always leads to increased utility yields, especially f
 % \end{figure}
 
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%% Appendices
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 
+\clearpage
+\bigskip
+\renewcommand*{\appendixpagename}{Appendices: mathematical and technical details}
+% \renewcommand*{\appendixname}{Appendix: test2}
+% %\appendixpage
+\appendix
+
+
 
 %%%%% Kjetil's
-\section{Methods and materials}
+\section{Algorithms and data used in the demonstration}
  
 \subsection{Data} 
   
@@ -1870,9 +1882,9 @@ The data comes from the open-access CheMBL bioactivity database \autocites{bento
 
 \subsection{Pre-processing} 
 
-For our pre-processing pipeline, we use two different methods to represent the molecule, one for the Random Forest (RF) and one for the Convolutional Neural Network. The first method turns the molecule into a hashed bit vector of circular fingerprints called Extended Connectivity Fingerprints (ECFP) \autocites{rogersetal2010}. From our numerical analysis, there was little to no improvement using a 2048-bit vector over a 1024-bit vector. 
+For our pre-processing pipeline, we use two different methods to represent the molecule, one for the Random Forest (RF) and one for the Convolutional Neural Network (CNN). The first method turns the molecule into a hashed bit vector of circular fingerprints called Extended Connectivity Fingerprints (ECFP) \autocites{rogersetal2010}. From our numerical analysis, there was little to no improvement using a 2048-bit vector over a 1024-bit vector. 
   
-For our convolutional neural network (CNN), the data is represented by converting the molecule into images of 224~pixels \texttimes\ 224~pixels. This is done by taking a molecule's SMILES (Simplified Molecular Input Line Entry System) string \autocites{davidetal2020} from the dataset and converting it into a canonical graph structure by means of RdKit \autocites{rdkit2017}. This differs from ECFP in that it represents the actual spatial and chemical structure (or something very close to it) of the molecule rather than properties generated from the molecule.
+For our convolutional neural network, the data is represented by converting the molecule into images of 224~pixels \texttimes\ 224~pixels. This is done by taking a molecule's SMILES (Simplified Molecular Input Line Entry System) string \autocites{davidetal2020} from the dataset and converting it into a canonical graph structure by means of RdKit \autocites{rdkit2017}. This differs from ECFP in that it represents the actual spatial and chemical structure (or something very close to it) of the molecule rather than properties generated from the molecule.
 
 The dataset has in total 1631 active molecules and 16310 non-active molecules which act as decoys. For training, the active molecules are oversampled, as usually done with imbalanced datasets \autocites{provost2000}, to match the same number of non-active molecules.
 % The data is therefore unbalanced and we solve this by giving the loss functions different weights for each class, which give the same result but have better performance as oversampling.
@@ -1891,26 +1903,32 @@ The first machine learning model used in the experiments is an RF model implemen
 
 \medskip
 
-\fbox{\parbox{\textwidth}{
-\begin{description}
-    \item[Number of trees:] 200 
-    \item[Criterion:] Entropy 
-    \item[Max Features:] Square root
-\end{description}}}
+%\fbox{\parbox{\textwidth}{
+\begin{framed}
+  \begin{description}
+  \item[Number of trees:] 200 
+  \item[Criterion:] Entropy 
+  \item[Max Features:] Square root
+  \end{description}
+\end{framed}
+%}}
 
 \subsubsection{\textit{Convolutional Neural Network}} 
 The second model is a pre-trained residual network (ResNet) \autocites{heetal2016} with 18 hidden layers trained on the well-known ImageNet dataset  \autocites{russakovskyetal2015} by using the PyTorch framework \autocites{paszkeetal2019}. ResNet has shown to outperform other pre-trained convolutional neural network models \autocites{heetal2016}. A ResNet with 34 hidden layers showed little to no performance gain, so we chose to go with the simpler model. The model is trained with the following hyperparameters:
 \medskip
 
-\fbox{\parbox{\textwidth}{
-\begin{description}
-    \item[Learning rate:] 0.003 
-    \item[Optimization technique:] Stochastic Gradient Descent 
-    \item[Activation Function:] Rectified linear unit (ReLU) 
-    \item[Dropout:] 50\% 
-    \item[Number of epochs:] 20 
-    \item[Loss function:] Cross-entropy loss
-\end{description}}}
+%\fbox{\parbox{\textwidth}{
+\begin{framed}
+  \begin{description}
+  \item[Learning rate:] 0.003 
+  \item[Optimization technique:] Stochastic Gradient Descent 
+  \item[Activation Function:] Rectified linear unit (ReLU) 
+  \item[Dropout:] 50\% 
+  \item[Number of epochs:] 20 
+  \item[Loss function:] Cross-entropy loss
+  \end{description}
+\end{framed}
+%}}
 
 \subsection{Train, Validation, Test split}
 
@@ -1924,12 +1942,80 @@ The data set is split into four parts:
 %%%%
 
 
+\section{Mathematical details and computation of the transducer}
+\label{sec:maths_transducer}
 
-\section{Summary and discussion}
-\label{sec:summary_discussion}
 
-\mynotew{Add note about how (sequential) decision theory was used during World War I; see  \textcites{good1950} around \sect~6.2 }
 
+
+
+
+
+%%%% examples use empheq
+%   \begin{empheq}[left={\mathllap{\begin{aligned}    \de\yF_{\yc}/\de\yp&=0\text{:} \\
+%         \de\yF_{\yc}/\de\ym&=0\text{:}\\ \de\yF_{\yc}/\de\yl&=0\text{:}\end{aligned}}\qquad}\empheqlbrace]{align}
+%     \label{eq:con_p}
+% %    \de\yF_{\yc}/\de\yp &\equiv
+%     -\ln\yp + \ln\yq + \yl\yM + \ym\yu &=0,\\
+%     \label{eq:con_u}
+% %    \de\yF_{\yc}/\de\ym &\equiv
+%     \yu\yp-1 &=0,\\
+%     \label{eq:con_l}
+%     %\de\yF_{\yc}/\de\yl &\equiv
+%     \yM\yp-\yc &=0.
+%   \end{empheq}
+%%%%
+% \begin{empheq}[box=\widefbox]{equation}
+%   \label{eq:maxent_question}
+%   \p\bigl[\yE{N+1}{k} \bigcond \tsum\yo\yf{N}\in\yA, \yM\bigr] = \mathord{?}
+% \end{empheq}
+
+
+%%\setlength{\intextsep}{0ex}% with wrapfigure
+%%\setlength{\columnsep}{0ex}% with wrapfigure
+%\begin{figure}[p!]% with figure
+%\begin{wrapfigure}{r}{0.4\linewidth} % with wrapfigure
+%  \centering\includegraphics[trim={12ex 0 18ex 0},clip,width=\linewidth]{maxent_saddle.png}\\
+%\caption{caption}\label{fig:comparison_a5}
+%\end{figure}% exp_family_maxent.nb
+
+
+\clearpage
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%% Acknowledgements
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 
+\begin{contributions}
+The authors were so immersed in the development of the present work, that unfortunately they forgot to keep a detailed record of who did what.
+\end{contributions}
+
+\begin{acknowledgements}
+  KD and ASL acknowledge support from the Trond Mohn Research Foundation, grant number BFS2018TMT07, and PGLPM from The Research Council of Norway, grant number 294594.
+
+  The computations of the parameters for the probability transducer were performed on resources provided by Sigma2 -- the National Infrastructure for High Performance Computing and Data Storage in Norway.
+
+  KD would like to thank family for endless support; partner Synne for constant love, support, and encouragement; and the developers and maintainers of Python, FastAi, PyTorch, scikit-learn, NumPy and RDKit for free open source software and for making the experiments possible. 
+
+  PGLPM thanks Maja, Mari, Miri, Emma for continuous encouragement and affection;  Buster Keaton and Saitama for filling life with awe and inspiration; and the developers and maintainers of \LaTeX, Emacs, AUC\TeX, Open Science Framework, R, Python, Inkscape, LibreOffice, Sci-Hub for making a free and impartial scientific exchange possible.
+  % Our work was supported by the Trond Mohn Research Foundation, grant number BFS2018TMT07
+%\rotatebox{15}{P}\rotatebox{5}{I}\rotatebox{-10}{P}\rotatebox{10}{\reflectbox{P}}\rotatebox{-5}{O}.
+%\sourceatright{\autanet}
+%\mbox{}\hfill\autanet
+\end{acknowledgements}
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%% Bibliography
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 
+\renewcommand*{\finalnamedelim}{\addcomma\space}
+\defbibnote{prenote}{{\footnotesize (\enquote{de $X$} is listed under D,
+    \enquote{van $X$} under V, and so on, regardless of national
+    conventions.)\par}}
+% \defbibnote{postnote}{\par\medskip\noindent{\footnotesize% Note:
+%     \arxivp \mparcp \philscip \biorxivp}}
+
+\printbibliography[prenote=prenote%,postnote=postnote
+]
 
 \clearpage
 
@@ -2105,7 +2191,7 @@ All the issues above are manifestly connected: they involve considerations of im
 
 In the present work we show how issues~\ref{item:metrics}--\ref{item:optimal_true} are all solved at once by using the principles of \emph{Decision Theory}. Decision theory gives a logically and mathematically self-consistent procedure to catalogue all possible valuation metrics, to make optimal choices under uncertainty, and to evaluate and compare the performance of several decision algorithms. Most important, we show that implementing decision-theoretic procedures in a \ml\ classifier does not require any changes in current training practices \mynotez{(possibly it may even make procedures like under- or over-sampling unnecessary!)}, is computationally inexpensive, and takes place downstream after the output of the classifier.
 
-The use of decision theory requires sensible probabilities for the possible classes, which brings us to issue~\ref{item:no_probs} above. In the present work we also present and use a computationally inexpensive way of calculating these probabilities from the ordinary output of a \ml\ classifier, both for classifiers such as \mynotez{example here} that can only output a class label, and for classifiers that can output some sort of continuous score.
+The use of decision theory requires sensible probabilities for the possible classes, which brings us to issue*** above. In the present work we also present and use a computationally inexpensive way of calculating these probabilities from the ordinary output of a \ml\ classifier, both for classifiers such as \mynotez{example here} that can only output a class label, and for classifiers that can output some sort of continuous score.
 
 \mynotew{Write here a summary or outlook of the rest of the paper and a summary of results:  
 \begin{itemize*}
@@ -2203,7 +2289,7 @@ In using \ml\ classifiers one typically considers situations where the set of av
 \subsection{Optimality vs truth (issue~\ref{item:optimal_true})}
 \label{sec:optimality_truth}
 
-According to decision theory a classification algorithm should, at each application, calculate the probabilities $(p_{c\|z})$ for the possible classes, given the feature $z$ provided as input; calculate the expected utility of the available decisions according to \eqn~\eqref{eq:exp_utility}, using the probabilities and the utility matrix; and finally output the decision $d^{*}$ having maximal expected utility:
+According to decision theory a classification algorithm should, at each application, calculate the probabilities $(p_{c\|z})$ for the possible classes, given the feature $z$ provided as input; calculate the expected utility of the available decisions according to \eqn***, using the probabilities and the utility matrix; and finally output the decision $d^{*}$ having maximal expected utility:
 \begin{equation}
   \label{eq:argmax_decision}
   d^{*} = \argmax_{d}   \sum_{c} U_{dc}\, p_{c\|z} \ .
@@ -2273,7 +2359,7 @@ If $Z$ can take on a continuum of values, as is the case for a brain scan for ex
 
 Given the unit's feature $Z$ we will assign probabilities to the possible values of the unit's class:  according to the rules of the probability calculus.
 
-As mentioned in \sect~\ref{sec:decision_theory}, a decision problem under uncertainty is conceptually divided into two steps 
+As mentioned in \sect***, a decision problem under uncertainty is conceptually divided into two steps 
 
 The Suppose we have a population of units or individuals characterized by a possibly multidimensional variable $Z$ and a binary variable $X \in \set{0,1}$. Different joint combinations of $(X,Z)$ values can appear in this population. Denote by $F(X\mo x, Z\mo z)$, or more simply $F(x, z)$ when there is no confusion, the number of individuals having specific joint values $(X\mo x, Z\mo z)$. This is the absolute frequency of the values $(x,z)$. We can also count the number of individuals having a specific value of $Z\mo z$, regardless of $X$; this is the marginal absolute frequency $F(z)$. It is easy to see that
 \begin{equation}
@@ -2387,81 +2473,6 @@ In supervised learning the classifier is trained to learn the most probable $f(X
 
 
 
-
-%%%% examples use empheq
-%   \begin{empheq}[left={\mathllap{\begin{aligned}    \de\yF_{\yc}/\de\yp&=0\text{:} \\
-%         \de\yF_{\yc}/\de\ym&=0\text{:}\\ \de\yF_{\yc}/\de\yl&=0\text{:}\end{aligned}}\qquad}\empheqlbrace]{align}
-%     \label{eq:con_p}
-% %    \de\yF_{\yc}/\de\yp &\equiv
-%     -\ln\yp + \ln\yq + \yl\yM + \ym\yu &=0,\\
-%     \label{eq:con_u}
-% %    \de\yF_{\yc}/\de\ym &\equiv
-%     \yu\yp-1 &=0,\\
-%     \label{eq:con_l}
-%     %\de\yF_{\yc}/\de\yl &\equiv
-%     \yM\yp-\yc &=0.
-%   \end{empheq}
-%%%%
-% \begin{empheq}[box=\widefbox]{equation}
-%   \label{eq:maxent_question}
-%   \p\bigl[\yE{N+1}{k} \bigcond \tsum\yo\yf{N}\in\yA, \yM\bigr] = \mathord{?}
-% \end{empheq}
-
-
-%%\setlength{\intextsep}{0ex}% with wrapfigure
-%%\setlength{\columnsep}{0ex}% with wrapfigure
-%\begin{figure}[p!]% with figure
-%\begin{wrapfigure}{r}{0.4\linewidth} % with wrapfigure
-%  \centering\includegraphics[trim={12ex 0 18ex 0},clip,width=\linewidth]{maxent_saddle.png}\\
-%\caption{caption}\label{fig:comparison_a5}
-%\end{figure}% exp_family_maxent.nb
-
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%% Acknowledgements
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 
-\begin{contributions}
-The authors were so immersed in the development of the present work, that unfortunately they forgot to keep a detailed record of who did what.
-\end{contributions}
-
-\begin{acknowledgements}
-  KD and ASL acknowledge support from the Trond Mohn Research Foundation, grant number BFS2018TMT07, and PGLPM from The Research Council of Norway, grant number 294594.
-
-  The computations of the parameters for the probability transducer were performed on resources provided by Sigma2 -- the National Infrastructure for High Performance Computing and Data Storage in Norway.
-
-  KD would like to thank family for endless support; partner Synne for constant love, support, and encouragement; and the developers and maintainers of Python, FastAi, PyTorch, scikit-learn, NumPy and RDKit for free open source software and for making the experiments possible. 
-
-  PGLPM thanks Maja, Mari, Miri, Emma for continuous encouragement and affection;  Buster Keaton and Saitama for filling life with awe and inspiration; and the developers and maintainers of \LaTeX, Emacs, AUC\TeX, Open Science Framework, R, Python, Inkscape, LibreOffice, Sci-Hub for making a free and impartial scientific exchange possible.
-  % Our work was supported by the Trond Mohn Research Foundation, grant number BFS2018TMT07
-%\rotatebox{15}{P}\rotatebox{5}{I}\rotatebox{-10}{P}\rotatebox{10}{\reflectbox{P}}\rotatebox{-5}{O}.
-%\sourceatright{\autanet}
-%\mbox{}\hfill\autanet
-\end{acknowledgements}
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%% Appendices
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 
-%\clearpage
-% \bigskip
-% \renewcommand*{\appendixpagename}{}
-% % \renewcommand*{\appendixname}{Appendix: test2}
-% % %\appendixpage
-% \appendix
-
-
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%% Bibliography
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 
-\renewcommand*{\finalnamedelim}{\addcomma\space}
-\defbibnote{prenote}{{\footnotesize (\enquote{de $X$} is listed under D,
-    \enquote{van $X$} under V, and so on, regardless of national
-    conventions.)\par}}
-% \defbibnote{postnote}{\par\medskip\noindent{\footnotesize% Note:
-%     \arxivp \mparcp \philscip \biorxivp}}
-
-\printbibliography[prenote=prenote%,postnote=postnote
-]
 
 \section{Sensible probabilities for classifiers}
 \label{sec:intro}
@@ -2588,7 +2599,7 @@ This approach also offers the following advantages:
 
 \medskip
 
-In \sect~\ref{sec:prob_calc} we present some notation and the general procedure for the calculation of the probabilities; more technical details are given in appendix~\ref{sec:nonparam_regression_details}. Section~\ref{sec:implem_idea} explains how to augment a classifier's output with the probability calculation. Results of numerical experiments are presented in \sect~\ref{sec:results}.
+In \sect~\ref{sec:prob_calc} we present some notation and the general procedure for the calculation of the probabilities; more technical details are given in appendix***. Section*** explains how to augment a classifier's output with the probability calculation. Results of numerical experiments are presented in \sect***.
 
 \mynotew{\wrench\ We could show that even if we used a biased test set, the method corrects the bias (provided we know what the bias is).}
 
@@ -2659,7 +2670,7 @@ The conditional distributions above are just matrices when $X$ is discrete. For 
 
 The integration procedure for~\eqref{eq:prob_is_expe_freq} also tells us how much the probability distribution $\p(C, X)$ would change if we acquired new data (a sort of \enquote{probability of the probability}).
 
-For further mathematical details see appendix~\ref{sec:nonparam_regression_details}.
+For further mathematical details see appendix***
 
 \section{Implementation in the classifier output}
 \label{sec:implem_idea}
