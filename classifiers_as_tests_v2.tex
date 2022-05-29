@@ -1,7 +1,7 @@
 \pdfoutput=1
 %% Author: PGL  Porta Mana
 %% Created: 2022-04-14T17:18:22+0200
-%% Last-Updated: 2022-05-29T14:49:56+0200
+%% Last-Updated: 2022-05-29T16:46:02+0200
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Probabilities for classifier outputs
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -1218,7 +1218,8 @@ The essential point of the decision-theoretic approach is that we first need to 
 \item the metric to evaluate a classifier's performance.
 \end{enumerate*}
 The utilities are assembled into a utility matrix which we write in the format
-\begin{equation*}
+\begin{equation}
+\label{eq:format_matrix}
   \rotatebox[origin=c]{90}{
     \clap{\textit{\parbox{4em}{\centering\scriptsize decision\\$1\hspace{1.5em}0$}}
     }}\ 
@@ -1228,7 +1229,7 @@ The utilities are assembled into a utility matrix which we write in the format
       }^{
       \clap{\textit{\parbox{6em}{\centering\scriptsize true class\\$0\hspace{3em}1$}}
     }} \ .
-\end{equation*}
+\end{equation}
 We call \emph{equivalent} two utility matrices that differ by a constant additive term and a positive multiplicative term, since changes in the zero or unit of measurement of utilities do not affect comparative evaluations.
 
 \smallskip
@@ -1237,10 +1238,10 @@ We call \emph{equivalent} two utility matrices that differ by a constant additiv
 For illustration we choose four utility matrices:
 \begin{equation}
   \label{eq:utility_matrices_demo}
-  \overbracket[0pt]{\umatrix{1}{0}{0}{1}}^{\text{case I}} \qquad
-  \overbracket[0pt]{\umatrix{1}{-10}{0}{10}}^{\text{case II}} \qquad
-  \overbracket[0pt]{\umatrix{1}{-100}{0}{100}}^{\text{case III}} \qquad
-  \overbracket[0pt]{\umatrix{10}{0}{-10}{1}}^{\text{case IV}} \ .
+  \overbracket[0pt]{\umatrix{1}{0}{0}{1}}^{\text{utility case I}} \qquad
+  \overbracket[0pt]{\umatrix{1}{-10}{0}{10}}^{\text{utility case II}} \qquad
+  \overbracket[0pt]{\umatrix{1}{-100}{0}{100}}^{\text{utility case III}} \qquad
+  \overbracket[0pt]{\umatrix{10}{0}{-10}{1}}^{\text{utility case IV}} \ .
 \end{equation}
 Case~I represents any case where the correct classification of either class is equally valuable; and the incorrect classification, equally invaluable. Note that this utility matrix is equivalent to any other of the form $\sumatrix{a}{b}{b}{a}$ with $a>b$. Accuracy is the correct metric to evaluate this case. Case~II represents any case where the correct classification of class~1, \enquote{active}, is ten times more valuable than that of class~0 \enquote{inactive}, and its incorrect classification is as damaging as correct classification is valuable. The remaining two cases are interpreted in an analogous way. The \enquote{value} could simply be the final average monetary revenue at the end of the drug-discovery project that typically follows any of these four situations. Of particular relevance to drug discovery, where false positives are known to be especially costly \autocites{sinketal2010,hingoranietal2019}, is the utility matrix of case~II and possibly that of case~III.
 
@@ -1253,9 +1254,52 @@ We consider each of these utility matrices, in turn, to be the one underlying ou
 \end{enumerate}
 This is done for each classifier.
 
+\subsubsection{Confusion matrices -- and a peculiar situation}
+
+Once all items in the demonstration dataset are classified, we compare their chosen classes with their true ones and compute the resulting confusion matrix, which we also write in the format~\eqref{eq:format_matrix}. The confusion matrices for all cases, methods, and algorithms are presented in table~\ref{tab:results_CM} on page~\pageref{tab:results_CM}. Ties (both classes were equally preferable) are solved by giving half a point to each class.
+
+The standard method produces the same confusion matrix in all four utility cases because it does not use utilities to choose a class. The method with the transducer produces instead a different confusion matrix in each utility case: even if the class probabilities for a give datum are the same in all cases, the threshold of acceptance varies so as to always be optimal for the utilities involved.
+
+A peculiar case of this automatic optimization of the threshold is visible for the transducer applied to either algorithm in case~IV: it leads to the confusion matrix
+\begin{equation}
+  \label{eq:peculiar_CM}
+  \umatrix{3262}{326}{0}{0}
+\end{equation}
+which means that \emph{all} items were classified as \enquote{0}, \enquote{inactive}. How can this happen? Let us say that the probabilities for class~0 and~1, determined by the transducer from the \rf\ output, are $1-p$ and $p$. In case~IV, the expected utilities of choosing class~0 or~1 are given by the matrix multiplication $\sumatrix{10}{0}{-10}{1} \begin{bsmallmatrix}1-p\\p\end{bsmallmatrix}$:
+\begin{equation}
+  \label{eq:expe_utilities_peculiar}
+  \begin{aligned}
+    \texts{choose 0:\; expect}&& 10 \cdot (1-p) + 0 \cdot p &= 10 - 10\ p \ ,
+                                                            \\
+    \texts{choose 1:\; expect}&& -10 \cdot (1-p) + 1 \cdot p &= -10 + 11\ p \ .
+  \end{aligned}
+\end{equation}
+It is optimal to choose class~1 only if (disregarding ties)
+\begin{equation}
+  \label{eq:when_choose_0}
+  -10 + 11\ p > 10 - 10\ p
+  \qquad\text{or}\qquad
+  p > 20/21 \approx 0.952 \ ,
+\end{equation}
+that is, only if the probability of class~1 is higher than 95\%. The threshold is so high because on the one hand there's a high cost ($-10$) if the class isn't actually~1, and on the other hand a high reward ($10$) if the class is actually~0. Now, a look at the transducer curve for the \RF, \fig~\ref{fig:prob_curve_RF}, shows that the transducer never gives a probability higher than 93\% to class~1. Similarly the transducer for the \CNN, \fig~\ref{fig:prob_curve_CNN}, never reacher probabilities above 92\%. So the threshold of 95\% will never be met in either case, and no item will be classified as~1. It is simply never rewarding, on average, to do so \autocites[\cf\ the analysis by]{drummondetal2005}. It can be seen that this situation will occur with any utility matrix $\sumatrix{a}{b}{c}{d}$, with $a>c$ and $d>b$, such that $\frac{a-c}{a-c+d-b}\approx 0.93$.
+
+This peculiar situation has a notable practical consequence. We have found the transducer curve for a classifier, and see that its maximum probability for class~1 is 93\%. We have assessed that the utilities involved are $\sumatrix{10}{0}{-10}{1}$, so the threshold to classify as~1 is 95\%. Then we immediately find that \emph{there is no need to employ that classifier, in this utility case}: it is simply more profitable to automatically treat all data as class~0.
+
 \medskip
 
-Once all items in the demonstration dataset have been classified, we compare their chosen classes with their true ones and compute the resulting confusion matrix.
+A look at the other confusion matrices of table~\ref{tab:results_CM} shows the effect of the automatic threshold optimization also in utility cases~II and~III: as the cost of misclassifying true class~1 increases ($-10$ or $-100$), the number of such misclassifications decreases. It does so at the detriment of class~0 classification, which, however, incurs lower costs and benefits.
+
+\subsubsection{Utility yields}
+
+We can finally assess the performance of both classifiers, with or without the use of the transducer and utility-maximization, on the demonstration dataset. As explained in our companion work \autocites{dyrlandetal2022} and summarized in \sect~\ref{sec:utility_classification}, the correct metric for such performance must naturally depend on the utilities that underlie the problem. It is the utility yield per datum produced by the classifier on the dataset, obtained by taking the grand sum of the products of the homologous elements of the utility matrix $(U_{ij})$ and the confusion matrix $(C_{ij})$:
+\begin{equation}
+  \label{eq:performance_metric}
+  \sum_{ij} U_{ij}\ C_{ij} \ .
+\end{equation}
+
+The utility yields for the different cases, classifiers, and methods are presented in table~\ref{tab:results_utilities}.
+
+
 
 
 %%%% RF confusion matrices
@@ -1380,8 +1424,8 @@ Once all items in the demonstration dataset have been classified, we compare the
  &\textcolor{mypurpleblue}{$\sumatrix{3189}{65}{73}{261}$}
  &\textcolor{mypurpleblue}{$\sumatrix{2882}{12}{380}{314}$}
  &\textcolor{mypurpleblue}{$\sumatrix{2011}{1}{1251}{325}$}
- &\textcolor{mypurpleblue}{$\sumatrix{3262}{326}{5}{288}$}
- %&\textcolor{mypurpleblue}{$\sumatrix{3262}{326}{5}{288}$}
+ &\textcolor{mypurpleblue}{$\sumatrix{3262}{326}{0}{0}$}
+ %&\textcolor{mypurpleblue}{$\sumatrix{3262}{326}{0}{0}$}
  \end{tabular*}
   \\[1em]
   \caption{Confusion matrices}
@@ -1413,7 +1457,7 @@ Once all items in the demonstration dataset have been classified, we compare the
  &\textcolor{myred}{5.55}
  &\textcolor{myred}{8.95}
  %& \textcolor{myred}{88.9}
- \\[2\jot]
+ \\[1\jot]
  \rotatebox[origin=l]{90}{\ \clap{\parbox{5em}{\centering Random\\Forest}}}
  &\parbox{0.21\linewidth}{\color{mypurpleblue}transducer \amp\\max utility}
  &\textcolor{mypurpleblue}{0.974}
@@ -1439,7 +1483,7 @@ Once all items in the demonstration dataset have been classified, we compare the
  &\textcolor{myred}{7.24}
  &\textcolor{myred}{8.63}
  %&\textcolor{myred}{85.6}
- \\[2\jot]
+ \\[1\jot]
  \rotatebox[origin=l]{90}{\ \clap{\parbox{8em}{\centering Neural\\Network}}}
  &\parbox{0.21\linewidth}{\color{mypurpleblue}transducer \amp\\max utility}
  &\textcolor{mypurpleblue}{0.962}
