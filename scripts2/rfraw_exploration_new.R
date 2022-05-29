@@ -1,6 +1,6 @@
 ## Author: PGL  Porta Mana
 ## Created: 2022-03-17T14:21:57+0100
-## Last-Updated: 2022-05-29T09:39:25+0200
+## Last-Updated: 2022-05-29T12:24:48+0200
 ################
 ## Exploration of several issues for binary classifiers
 ################
@@ -507,7 +507,10 @@ cbind(ulist2, rresults,
 
 
 
-t(cbind(ulist2, signif(rresults[,c(1,3)],3), round(100*apply(rresults,1,function(x){diff(x[c(1,3)])/abs(x[1])}),1)))[,1:5]
+t(cbind(ulist2, signif(rresults[,c(1,3)],4), round(100*apply(rresults,1,function(x){diff(x[c(1,3)])/abs(x[1])}),2)))[,1:5]
+## standard   0.968   1.364    5.553   8.954   88.92
+## transducer 0.974   1.720    9.632   9.091   90.91
+##            0.620  26.100   73.460   1.530    2.24
 
 
 
@@ -811,9 +814,25 @@ dev.off()
 #########################################################
 
 Myield <- function(yprobgrid,cprobgrid,um){
-    sum(yprobgrid *
-        sapply(cprobgrid, function(x){max(um %*%  cbind(c(1-x,x)))})
-        )/sum(yprobgrid)
+yprobgrid <- cbind(yprobgrid)
+cprobgrid <- cbind(cprobgrid)
+
+
+cprobgrid2 <- c(1-cprobgrid, cprobpgrid)
+dim(cprobgrid2) <- c(dim(opgrid),2)
+utv <- apply(um, 1, function(x){colSums(x * aperm(cprobgrid2, c(3,1,2)))})
+dim(utv) <- c(dim(opgrid),2)
+
+test <- apply(utv, c(1,2), max)
+
+u0 <- colSums(um[1,] * aperm(cprobgrid2, c(3,1,2)))
+u1 <- colSums(um[2,] * aperm(cprobgrid2, c(3,1,2)))
+
+
+Myield <- function(yprobgrid,cprobgrid,um){
+    colSums(cbind(yprobgrid) *
+        apply(cbind(cprobgrid), c(1,2), function(x){max(um %*%  cbind(c(1-x,x)))})
+        )/colSums(cbind(yprobgrid))
 }
 
 ulist <- list(c(1,0,0,1),
@@ -845,18 +864,11 @@ sapply(umlist, function(um){Myield(rowMeans(ypgrid), rowMeans(opgrid), um)})[1:4
 ## [1] 0.9725162 1.6815698 9.5864235 9.0783451
 
 
-results1 <- t(sapply(umlist, function(um){
-    comparescores(trueclasses=classes, um=um, outputs=outputs1, probs=probs1)/length(classes)}))
-##
-rresults <- round(results1,3)
-##
-options(width=160)
-cbind(ulist2, rresults,
-      'd_std'=round(apply(rresults,1,function(x){diff(x[c(1,3)])}),4),
-      'd_mix'=round(apply(rresults,1,function(x){diff(x[c(2,3)])}),4),
-      'rd%_std'=round(100*apply(rresults,1,function(x){diff(x[c(1,3)])/abs(x[1])}),2),
-      'rd%_mix'=round(100*apply(rresults,1,function(x){diff(x[c(2,3)])/abs(x[2])}),2))
+utdistr <- t(sapply(umlist[1:4], function(um){
+        Myield(ypgrid, opgrid, um)
+    }))
 
+saveRDS(utdistr,'RFutdistr.rds')
 
 #########################################################
 ## 

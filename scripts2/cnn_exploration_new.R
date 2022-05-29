@@ -1,6 +1,6 @@
 ## Author: PGL  Porta Mana
 ## Created: 2022-03-17T14:21:57+0100
-## Last-Updated: 2022-05-29T09:40:07+0200
+## Last-Updated: 2022-05-29T12:30:47+0200
 ################
 ## Exploration of several issues for binary classifiers
 ################
@@ -501,11 +501,10 @@ cbind(ulist2, rresults,
 ## [18,]   1.000    0.000    0.495   0.505    0.928  0.948      0.954 0.026  0.006    2.80    0.63
 
 
-t(cbind(ulist2, signif(rresults[,c(1,3)],3), round(100*apply(rresults,1,function(x){diff(x[c(1,3)])/abs(x[1])}),1)))[,1:5]
-
-## standard   0.959   1.52    7.24   8.63   85.6
-## transducer 0.962   1.64    9.59   9.09   90.9
-##            0.300   8.40   32.50   5.40    6.2
+t(cbind(ulist2, signif(rresults[,c(1,3)],4), round(100*apply(rresults,1,function(x){diff(x[c(1,3)])/abs(x[1])}),2)))[,1:5]
+## standard   0.959   1.518    7.237   8.628   85.58
+## transducer 0.962   1.645    9.591   9.091   90.91
+##            0.310   8.370   32.530   5.370    6.23
 
 
 #### nskip = 8:
@@ -829,9 +828,9 @@ dev.off()
 #########################################################
 
 Myield <- function(yprobgrid,cprobgrid,um){
-    sum(yprobgrid *
-        sapply(cprobgrid, function(x){max(um %*%  cbind(c(1-x,x)))})
-        )/sum(yprobgrid)
+    colSums(cbind(yprobgrid) *
+        apply(cbind(cprobgrid), c(1,2), function(x){max(um %*%  cbind(c(1-x,x)))})
+        )/colSums(cbind(yprobgrid))
 }
 
 ulist <- list(c(1,0,0,1),
@@ -864,6 +863,46 @@ sapply(umlist, function(um){Myield(rowMeans(ypgrid), rowMeans(opgrid), um)})[1:4
 
 ## RF:
 ## [1] 0.9725162 1.6815698 9.5864235 9.0783451
+
+
+utdistr <- t(sapply(umlist[1:4], function(um){
+        Myield(ypgrid, opgrid, um)
+    }))
+
+saveRDS(utdistr,'CNNutdistr.rds')
+
+rfutdistr <- readRDS('RFutdistr.rds')
+
+for(i in 1:nrow(utdistr)){
+histcnn <- thist(utdistr[i,])
+histrf <- thist(rfutdistr[i,])
+##
+pdff(paste0('../histogram_alg_utilities_',i), asp=1)
+tplot(x=list(histrf$breaks, histcnn$breaks), y=list(histrf$density, histcnn$density),
+      yticks=F, ylab=(if(i==1){'probability density'}else{NA}),
+      xlab="algorithm's long-run utility", family='Palatino')
+if(i==1){
+legend('topleft',c('Random Forest', 'Conv. Neural Net'), col=paste0(palette()[1:2],'80'), lwd=3, lty=c(1,2),
+       bty='n', cex=1.5)
+}
+dev.off()
+}
+
+utdistr <- t(sapply(umlist[1:4], function(um){
+    sapply(1:ncol(ypgrid),function(i){
+        Myield(ypgrid[,i], opgrid[,i], um)
+    })
+}))
+
+## utdistr <- foreach(um=umlist, .combine=rbind)%dopar%{
+##     sapply(1:ncol(ypgrid),function(i){
+##         Myield(ypgrid[,i], opgrid[,i], um)
+##     })
+## }
+
+
+saveRDS(utdistr,'CNNutdistr.rds')
+
 
 #########################################################
 ## combining evidence from both algorithms
