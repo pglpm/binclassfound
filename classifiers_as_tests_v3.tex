@@ -1,7 +1,7 @@
 \pdfoutput=1
 %% Author: PGL  Porta Mana
 %% Created: 2022-04-14T17:18:22+0200
-%% Last-Updated: 2022-05-30T09:54:12+0200
+%% Last-Updated: 2022-05-30T10:13:35+0200
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Probabilities for classifier outputs
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -944,7 +944,7 @@ The probability values~\eqref{eq:prob_output}, for a fixed class and variable ou
 
 \medskip
 
-What is the relation between the ideal incomputable probability~\eqref{eq:prob_essential} and the probability~\eqref{eq:prob_output} obtained by proxy? If the output $y$ of the classifier is already very close to the ideal probability~\eqref{eq:prob_essential}, or a monotonic function thereof, isn't the proxy probability~\eqref{eq:prob_output} throwing it away and replacing it with something different? Quite the opposite. Owing to de~Finetti's theorem, if the output $y$ is almost identical with the ideal probability, then it becomes increasingly close to the frequency distribution of the training data, as their number increases (see appendix~\ref{sec:deFinetti}); the same happens with the proxy probability and the frequency distribution of the calibration data. But these two data sets should be representative of each other and of future data -- otherwise we would be \enquote{learning} from wrong data -- and therefore their frequency distributions should also converge to each other. Consequently, by transitivity we expect the proxy probability to become increasingly close to the output $y$. Actually, if the output is not exactly the ideal probability~\eqref{eq:prob_essential} but a monotonic function of it, the proxy probability~\eqref{eq:prob_output} will reverse such monotonic relationship, giving us back the ideal probability.
+What is the relation between the ideal incomputable probability~\eqref{eq:prob_essential} and the probability~\eqref{eq:prob_output} obtained by proxy? If the output $y$ of the classifier is already very close to the ideal probability~\eqref{eq:prob_essential}, or a monotonic function thereof, isn't the proxy probability~\eqref{eq:prob_output} throwing it away and replacing it with something different? Quite the opposite. Owing to de~Finetti's theorem, if the output $y$ is almost identical with the ideal probability, then it becomes increasingly close to the frequency distribution of the training data, as their number increases (see appendix~\ref{sec:deFinetti}); the same happens with the proxy probability and the frequency distribution of the calibration data. But these two data sets should be representative of each other and of future data -- otherwise we would be \enquote{learning} from irrelevant data -- and therefore their frequency distributions should also converge to each other. Consequently, by transitivity we expect the proxy probability to become increasingly close to the output $y$. Actually, if the output is not exactly the ideal probability~\eqref{eq:prob_essential} but a monotonic function of it, the proxy probability~\eqref{eq:prob_output} will reverse such monotonic relationship, giving us back the ideal probability.
 
 Obviously all these considerations only hold if we have good training and calibration sets, exchangeable with (representative of) the real data that will occur in our application.
 
@@ -960,7 +960,16 @@ Obviously all these considerations only hold if we have good training and calibr
 % where $w$ are positive and normalized functions. This means that the proxy probability is generally less sharp, that is, farther away from $0$ and $1$, than the ideal one. This is an obvious consequence of the loss of information about the feature value. Such mixing, on the other hand, only leads to more conservative probabilities, not to over-confident ones.
 % \mynotep{add note about the fact that the goodness of the results still greatly depends on the goodness of the classifier.}
 
-\mynotew{add that \emph{no new test set is needed}! The calibration set also works as \enquote{test set} thanks to the probability calculus}
+\medskip
+
+Since we are using as calibration data the data traditionally set aside as \enquote{test data} instead, an important question arises. Do we then need a third, separate test dataset for the final evaluation and comparison of candidate classifiers or hyperparameters? This would be inconvenient: it would reduce the amount of data available for training.
+
+The answer is no: \emph{the calibration set automatically also acts as a test set}. It may be useful to explain why this is the case, especially for those who may mistakenly take for granted the universal necessity of a test set.
+
+Many standard \ml\ methodologies need a test set because they are only an approximation of ideal inference performed with the probability calculus. The latter needs no division of available data into different sets: something analogous to such division is automatically made internally, so to speak. It can be shown \autocites{portamana2019b,fongetal2020,wald1949}[many examples of this fact are scattered across the text by][]{jaynes1994_r2003} that the mathematical operations behind the probability rules correspond to making \emph{all possible} divisions of available data between \enquote{training} and \enquote{test}, as well as all possible cross-validations with folds of all orders. This is the reason why ideal inference by means of the probability calculus is almost computationally impossible in some cases, and we have to resort to approximate but faster \ml\ methods. The latter typically do not do such data partitions automatically; the latter need to be made -- and only approximately -- by hand.
+
+
+\mynotep{explain how testing is done}
 
 
 \subsection{Calculation of the probabilities}
@@ -1055,23 +1064,6 @@ The generative mode, generally not available for classifiers with a discriminati
 % \end{equation}
 % where $\p(c)$ is a population prevalence or an initial probability assessment.
 
-\subsection{The double role of the calibration data set}
-\label{sec:role_calibration_set}
-
-In the preceding analysis we discussed why the construction of the probability transducer requires a calibration set separate from the training \amp\ validation set. Do we then need a third, separate \enquote{test set} for the final evaluation and comparison of candidate classifiers or hyperparameters? This would be inconvenient: it would reduce the amount of data available for training.
-
-The answer is no: \emph{the calibration set automatically also serves as a test set}.
-
-It may be useful to explain why this is the case, especially for those who may take for granted the universal necessity of a test set.
-
-Many standard \ml\ methodologies need a test set because they are only an approximation of ideal inference performed with the probability calculus. The latter needs no division of available data into different sets: something analogous to such division is automatically made internally, so to speak. It can be shown \autocites{portamana2019b,fongetal2020,wald1949}[many examples of this fact are scattered across the text by][]{jaynes1994_r2003} that the mathematical operations behind the probability rules correspond to making \emph{all possible} divisions of available data between \enquote{training} and \enquote{test}, as well as all possible cross-validations with folds of all orders. This is the reason why ideal inference by means of the probability calculus is almost computationally impossible in some cases, and we have to resort to approximate but faster \ml\ methods. The latter typically do not do such data partitions automatically; the latter need to be made -- and only approximately -- by hand.
-
-
-\mynotep{explain how testing is done}
-
-\mynotew{explain that if output is already a probability, the transducer will asymptotically reproduce it.}
-
-
 \section{Utility-based classification}
 \label{sec:utility_classification}
 
@@ -1088,15 +1080,15 @@ The expected utility $\eu_{i}$ of decision $i$ is then given by the product of t
 \end{equation}
 
 Finally, according to the principle of maximum expected utility, we choose the decision $i^{*}$ having largest $\eu_{i}$:
-\begin{equation}
+\begin{empheq}[box=\widefbox]{equation}
   \label{eq:max_expe_utility}
   \text{choose}\quad
   i^{*} = \argmax_{i}\set*{\eu_{i}} \equiv \argmax_{i}\set[\bigg]{\sum_{c} U_{ic}\ p_{c}} \ .
-\end{equation}
+\end{empheq}
 
 The matrix multiplication and subsequent selection are computationally inexpensive; they can be considered as substitutes of the \enquote{argmax} selection that typically happen at the continuous output of a classifier.
 
-\section{Demonstration and results}
+\section{Demonstration}
 \label{sec:demonstration}
 
 \subsection{Overview}
@@ -1116,15 +1108,12 @@ Two \ml\ classifiers are considered: a Random Forest and a residual Convolutiona
 
 We use data from the ChEMBL database \autocites{bentoetal2014}, previously used in the literature for other studies of \ml\ applications to drug discovery \autocites{koutsoukasetal2017}. One set with 60\% of the data is used to train and validate the two classifiers. One set with 20\% is used for the calibration of the probability transducer and evaluation of the classifiers. One further data set with 20\% is here used as fictive \enquote{real data} to illustrate the results of our procedure; we call this the \enquote{demonstration set}.
 
-Note that \emph{the additional demonstration dataset has an illustrative purpose only} for the sake of the present example. In a real design \amp\ evaluation of a set of candidate classifiers, the calibration set will at the same time be the evaluation test set, and no further data subset will be necessary, as explained in \sect~\ref{sec:role_calibration_set}.
+Note that \emph{the additional demonstration dataset has an illustrative purpose only} for the sake of the present example. In a real design \amp\ evaluation of a set of candidate classifiers, the calibration set will at the same time be the evaluation test set, and no further data subset will be necessary, as explained in \sect~\ref{sec:calibration_data}.
 
 In all data sets, class~$0$ (\enquote{inactive}) occurs with a 91\% relative frequency, and class~$1$ (\enquote{active}) with 9\%; a high class imbalance.
 
-Technical details about the setup and training of the two classifiers and of the calculation of the probability-transducer parameters are given in appendix\mynotew{\ldots}.
+Technical details about the setup and training of the two classifiers and of the calculation of the probability-transducer parameters are given in appendix~\ref{sec:MCMC}.
 
-
-\mynotew{move this to technical appendix}
-The Monte Carlo calculation of the parameters for the transducer took approximately 45\,min for the \RF\ and 75\,min for the \CNN, wall-clock time (16 parallel cores each). The resulting parameters are available in our supplementary data\footcites[\addcomma\ files \texttt{transducer\_params-Random\_Forest.zip} and \texttt{transducer\_params-Neural\_Net.zip}]{dyrlandetal2022c}.
 
 
 \subsection{Probability-transducer curves}
@@ -1715,7 +1704,7 @@ For each of these utility matrices, we calculate the rescaled yields obtained by
 \begin{figure}[t]
   \centering
   \includegraphics[width=\linewidth]{RFCNN_transducer_gains_max.pdf}\\
-  \caption{Rescaled utility yields obtained using the two classifiers in the standard way, vs those obtained with augmentation, for a uniform distribution of possible utility matrices over the utility-matrix space of \fig~\ref{fig:space_UM}. The augmentation always leads to an improved utility yield, especially in cases where the standard method has a low or high performance. Owing to noise coming from numerical rounding, in some cases the yield from augmentation may appear lower than from the standard method (points below the dashed grey line). Note that the minimum value of each axis is 0.75, so this plot is showing}
+  \caption{Rescaled utility yields obtained using the two classifiers in the standard way, vs those obtained with augmentation, for a uniform distribution of possible utility matrices over the utility-matrix space of \fig~\ref{fig:space_UM}. The augmentation always leads to an improved utility yield, especially in cases where the standard method has a low or high performance. Owing to noise coming from numerical rounding, in some cases the yield from augmentation may appear lower than from the standard method (points below the dashed grey line).}
   \label{fig:RF_gain_UMspace}
 \end{figure}
 
@@ -2047,6 +2036,8 @@ Effectively we obtain samples of the coordinates $(w_{l}, \alpha_{l}, \beta_{l})
 For the demonstration of \sect~\ref{sec:demonstration} we use a Dirichlet distribution for $(w_{l})$, a beta distribution for $(\alpha_{l})$, a Gaussian distribution for $(\mu_{l})$, and a gamma distribution for $(1/{\sigma_{l}}^{2})$.
 
 The Markov-chain Monte Carlo sampling scheme is implemented using the R \autocites{rcoreteam1995_r2022} package NIMBLE \autocites{nimble2016_r2021}, and uses 16 parallel chains \autocites[scripts available in][]{dyrlandetal2022c}.
+The sampling took approximately 45\,min for the \RF\ and 75\,min for the \CNN, wall-clock time. The resulting parameters are available in our supplementary data\footcites[\addcomma\ files \texttt{transducer\_params-Random\_Forest.zip} and \texttt{transducer\_params-Neural\_Net.zip}]{dyrlandetal2022c}.
+
 
 
 
