@@ -1,7 +1,7 @@
 \pdfoutput=1
 %% Author: PGL  Porta Mana
 %% Created: 2022-04-14T17:18:22+0200
-%% Last-Updated: 2022-05-30T16:18:32+0200
+%% Last-Updated: 2022-05-30T16:20:15+0200
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Probabilities for classifier outputs
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -1709,7 +1709,7 @@ The additional uses are mainly three:
 \item \enquote{Generative use} of the augmented algorithm, even if the original algorithm is not designed for generative use.
 \end{itemize}
 
-\subsection{Variability of the transducer probability curve}
+\subsection{Variability of the transducer's probability curve}
 \label{sec:variability_curve}
 
 The output-to-probability function, \eqn~\eqref{eq:prob_output}, such as those plotted in \figs~\ref{fig:prob_curve_RF} and \ref{fig:prob_curve_CNN}--\ref{fig:prob_curve_CNN_section}, is determined by the data in the calibration set. There is the question, then, of how the function could change if we used more calibration data. Such possible variability could be of importance. For example, we may find that the transducer only yields class probabilities around 0.5, and wonder whether this is just a statistical effect of a too small calibration dataset, or whether it would persist even if we used more calibration data.
@@ -1818,7 +1818,7 @@ The generative mode, generally not available for classifiers with a discriminati
 % where $\p(c)$ is a population prevalence or an initial probability assessment.
 
 
-\section{Summary, discussion, and teasers of further developments}
+\section{Summary and discussion}
 \label{sec:summary_discussion}
 
 
@@ -2039,6 +2039,7 @@ The data set is split into four parts:
 \end{itemize}
 %%%%
 
+\bigskip
 
 \section{Mathematical details and computation of the transducer}
 \label{sec:maths_transducer}
