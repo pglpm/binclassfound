@@ -1,7 +1,7 @@
 \pdfoutput=1
 %% Author: PGL  Porta Mana
 %% Created: 2022-04-14T17:18:22+0200
-%% Last-Updated: 2022-05-30T12:55:20+0200
+%% Last-Updated: 2022-05-30T13:13:40+0200
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Probabilities for classifier outputs
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -1724,6 +1724,45 @@ Clearly, the augmentation always leads to increased utility yields, especially f
 
 \mynotew{Maybe add note about how (sequential) decision theory was used during World War I; see  \textcites{good1950} around \sect~6.2 }
 
+% CNN:
+%  0.9623081 1.6206641 9.5603046 9.0772883
+% RF:
+%  0.9725162 1.6815698 9.5864235 9.0783451
+\begin{table}[!ht]
+  \centering
+  \begin{tabular*}{\linewidth}{lw{c}{0.12\linewidth}w{c}{0.12\linewidth}w{c}{0.12\linewidth}w{c}{0.12\linewidth}}
+    &$\sumatrix{1}{0}{0}{1}$
+    &$\sumatrix{1}{-10}{0}{10}$
+    &$\sumatrix{1}{-100}{0}{100}$
+    &$\sumatrix{10}{0}{-10}{1}$
+    % &$\sumatrix{100}{0}{-100}{1}$
+    \\[2\jot]
+    \parbox{0.21\linewidth}{\color{mypurpleblue}Random Forest}
+    &\textcolor{mypurpleblue}{0.973}
+    &\textcolor{mypurpleblue}{1.68}
+    &\textcolor{mypurpleblue}{9.59}
+      &\textcolor{mypurpleblue}{9.08}
+    \\[1\jot]
+    \parbox{0.21\linewidth}{\color{myred}Neural Net}
+    &\textcolor{myred}{0.962}
+    &\textcolor{myred}{1.62}
+    &\textcolor{myred}{9.56}
+      &\textcolor{myred}{9.08}
+  \end{tabular*}
+  \caption{Expected utilities for the two algorithms of \sect~\ref{sec:demonstration}}
+  \label{tab:algorithms_utilities}
+\end{table}
+
+
+\begin{figure}[t]
+  \centering
+  \includegraphics[width=0.49\linewidth]{histogram_alg_utilities_1.pdf}\hfill
+  \includegraphics[width=0.49\linewidth]{histogram_alg_utilities_2.pdf}\\
+  \includegraphics[width=0.49\linewidth]{histogram_alg_utilities_3.pdf}\hfill
+  \includegraphics[width=0.49\linewidth]{histogram_alg_utilities_4.pdf}\\
+  \caption{\mynotew{}}
+  \label{fig:algorithms_utilities_histograms}
+\end{figure}
 
 
 % \begin{figure}[t]
@@ -2091,38 +2130,14 @@ The sum are replaced by integrals over densities if the quantities $c$ or $y$ ar
 What is important in the formula above is that the probabilities for the outputs and the conditional probabilities for the classes given the outputs are known: \emph{they are the ones calculated for the transducer from the calibration set}.
 
 We have performed this calculation for the \RF\ and \CNN\ (both with augmentation) of \sect~\ref{sec:demonstration}, obtaining the values shown in table~\ref{tab:algorithms_utilities} (these utilities are not rescaled).
-% CNN:
-%  0.9623081 1.6206641 9.5603046 9.0772883
-% RF:
-%  0.9725162 1.6815698 9.5864235 9.0783451
-\begin{table}[!ht]
-  \centering
-  \begin{tabular*}{\linewidth}{lw{c}{0.12\linewidth}w{c}{0.12\linewidth}w{c}{0.12\linewidth}w{c}{0.12\linewidth}}
-    &$\sumatrix{1}{0}{0}{1}$
-    &$\sumatrix{1}{-10}{0}{10}$
-    &$\sumatrix{1}{-100}{0}{100}$
-    &$\sumatrix{10}{0}{-10}{1}$
-    % &$\sumatrix{100}{0}{-100}{1}$
-    \\[2\jot]
-    \parbox{0.21\linewidth}{\color{mypurpleblue}Random Forest}
-    &\textcolor{mypurpleblue}{0.973}
-    &\textcolor{mypurpleblue}{1.68}
-    &\textcolor{mypurpleblue}{9.59}
-      &\textcolor{mypurpleblue}{9.08}
-    \\[1\jot]
-    \parbox{0.21\linewidth}{\color{myred}Neural Net}
-    &\textcolor{myred}{0.962}
-    &\textcolor{myred}{1.62}
-    &\textcolor{myred}{9.56}
-      &\textcolor{myred}{9.08}
-  \end{tabular*}
-  \caption{Expected utilities for the two algorithms of \sect}
-  \label{tab:algorithms_utilities}
-\end{table}
 
-The augmented \RF\ is optimal for cases~I--III, and there is no preference in case~IV. We emphasize again that \emph{this algorithm evaluation is done from the calibration set; no demonstration data are used}. Our results from the demonstration dataset, reported in table~\ref{tab:results_utilities}, corroborate these findings.
+The augmented \RF\ is optimal for cases~I--III, and there is no preference in case~IV. We emphasize again that \emph{this algorithm evaluation is done from the calibration set; no demonstration data are used}. The results from the demonstration dataset, reported in table~\ref{tab:results_utilities}, corroborate these assessments.
 
+\medskip
 
+These values are \emph{expected} utilities, though. One may ask: what is the probability that the final utility of one model will actually be higher or lower than the other's?
+
+We can answer this question, again thanks to de~Finetti's formula~\eqref{eq:prob_is_expe_freq}, similarly to how we did with the variability of the transducer curves, explained in the previous \sect~\ref{sec:variability_prob}. The long-run utility of the algorithm $M$ is given by formula~\eqref{eq:algorithm_utility} but with the probabilities replaced by the long-term frequencies $F(c\|y)$ and $F(y)$. The probability of this long-run utility is then determined by the density $\wf(F)$ represented by a set of samples. Calculating the long-run utility for each sample we can finally construct a probability histogram for each algorithm's utility. These are the histograms shown in \sect\mynotew{}
 
 %%%% examples use empheq
 %   \begin{empheq}[left={\mathllap{\begin{aligned}    \de\yF_{\yc}/\de\yp&=0\text{:} \\
