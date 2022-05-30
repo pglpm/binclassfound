@@ -1,7 +1,7 @@
 \pdfoutput=1
 %% Author: PGL  Porta Mana
 %% Created: 2022-04-14T17:18:22+0200
-%% Last-Updated: 2022-05-30T20:07:10+0200
+%% Last-Updated: 2022-05-30T20:34:01+0200
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Probabilities for classifier outputs
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -988,7 +988,7 @@ The joint probability is calculated using standard non-parametric Bayesian metho
 
 Non-parametric methods differ from one another in the kind of \enquote{coordinate system} they select on the infinite-dimensional space of all possible probability curves, that is, in the way they represent a general positive normalized function.
 
-We choose the representation discussed by Dunson \amp\ Bhattacharya\autocites{dunsonetal2011}[see also the special case presented by][]{rasmussen1999}. The end result of interest in the present section is that the probability density $p(c,y \| D)$, with $c$ discrete and $y$ continuous and possibly multi-dimensional, is expressed as a sum
+We choose the representation discussed by Dunson \amp\ Bhattacharya\autocites{dunsonetal2011}[see also the special case discussed by][]{rasmussen1999}. The end result of interest in the present section is that the probability density $p(c,y \| D)$, with $c$ discrete and $y$ continuous and possibly multi-dimensional, is expressed as a sum
 \begin{equation}
   \label{eq:representation_P}
   p(c, y \| D) = \sum_{k} q_{k}\ A(c \| \alpha_{k})\ B(y \| \beta_{k})
@@ -1519,67 +1519,24 @@ We can finally assess the performance of both classifiers, with and without augm
  &\textcolor{mypurpleblue}{\bfseries 9.59}
  &\textcolor{mypurpleblue}{\bfseries 9.09}
  %&\textcolor{mypurpleblue}{\bfseries 90.9}
-%      \\[2\jot]
-%  &\parbox{0.21\linewidth}{\clap{\color{mygray}\footnotesize max achievable utility}}
-% % ## [1,]  1.000000
-% % ## [2,]  1.817726
-% % ## [3,]  9.994983
-% % ## [4,]  9.182274
-% % ## [5,] 91.005017
-%  &\textcolor{mygray}{\footnotesize 1}
-%  &\textcolor{mygray}{\footnotesize 1.82}
-%  &\textcolor{mygray}{\footnotesize 9.99}
-%  &\textcolor{mygray}{\footnotesize 9.18}
- %&\textcolor{mygray}{\footnotesize 91.0}
- % \\[2\jot]
- % &\parbox{0.21\linewidth}{\footnotesize relative increase}
- % &\footnotesize+0.3\%
- % &\footnotesize+8.4\%
- % &\footnotesize+33\%
- % &\footnotesize+5.4\%
- % %&\footnotesize+6.2\%
-  \end{tabular*}
-  \\[1em]
-  \caption{Utility yields from demonstration dataset}
-  \label{tab:results_utilities}
-
-
-
-\vspace{3em}
-  
-% classes
-% 3262  326 
-%
-% baserates
-% 0.90914158 0.09085842 
-% \begin{table}[!t]
-%   \centering
-%   \small
-  \begin{tabular*}{\linewidth}{clw{c}{0.12\linewidth}w{c}{0.12\linewidth}w{c}{0.12\linewidth}w{c}{0.12\linewidth}}
-% &    &$\sumatrix{1}{0}{0}{1}$
-%  &$\sumatrix{1}{-10}{0}{10}$
-%  &$\sumatrix{1}{-100}{0}{100}$
-%  &$\sumatrix{10}{0}{-10}{1}$
-%  % &$\sumatrix{100}{0}{-100}{1}$
-% &&\multicolumn{4}{c}{\footnotesize(rescaled utilities)}
-%     \\[2\jot]
-\iffalse
-    &\parbox{0.21\linewidth}{\rlap{\color{mygray}\footnotesize min achievable normalized utility}}
- &\multicolumn{4}{c}{\textcolor{mygray}{\footnotesize 0}}
- % &\textcolor{mygray}{\footnotesize 0}
- % &\textcolor{mygray}{\footnotesize 0}
- % &\textcolor{mygray}{\footnotesize 0}
- %&\textcolor{mygray}{\footnotesize 0}
-     \\[0\jot]
- &\parbox{0.21\linewidth}{\rlap{\color{mygray}\footnotesize max achievable normalized utility}}
- &\multicolumn{4}{c}{\textcolor{mygray}{\footnotesize 1}}
- % &\textcolor{mygray}{\footnotesize 1}
- % &\textcolor{mygray}{\footnotesize 1}
- % &\textcolor{mygray}{\footnotesize 1}
- %&\textcolor{mygray}{\footnotesize 1}
-    \\[5\jot]
-\fi
-%%% normalized scores RF
+%   \end{tabular*}
+%   \\[1em]
+%   \caption{Utility yields from demonstration dataset}
+%   \label{tab:results_utilities}
+    \\[2em]
+&&\multicolumn{4}{c}{\scriptsize \rule[0.5ex]{6em}{0.25pt}\quad\emph{Rescaled} utility yields\quad\rule[0.5ex]{6em}{0.25pt}}
+\\[2\jot]
+% \vspace{3em}
+% % classes
+% % 3262  326 
+% %
+% % baserates
+% % 0.90914158 0.09085842 
+% % \begin{table}[!t]
+% %   \centering
+% %   \small
+%   \begin{tabular*}{\linewidth}{clw{c}{0.12\linewidth}w{c}{0.12\linewidth}w{c}{0.12\linewidth}w{c}{0.12\linewidth}}
+%%% normalized scores RF    
 % ##                 [,1]      [,2]      [,3]      [,4]      [,5]
 % ## standard   0.9675307 0.8336741 0.7672139 0.9875011 0.9885411
 % ## mixed      0.9675307 0.9034962 0.9547778 0.9945856 0.9995036
@@ -1598,13 +1555,6 @@ We can finally assess the performance of both classifiers, with and without augm
  &\textcolor{mypurpleblue}{\bfseries 0.981}
  &\textcolor{mypurpleblue}{\bfseries 0.995}
  %&\textcolor{mypurpleblue}{\bfseries 1.000}
- % \\[2\jot]
- % &\parbox{0.21\linewidth}{\footnotesize relative increase}
- % &\footnotesize+0.6\%
- % &\footnotesize+26\%
- % &\footnotesize+73\%
- % &\footnotesize+1.5\%
- % % &\footnotesize+2.2\%
  \\[5\jot]
 %%%%%%%%
 %%% normalized scores CNN
@@ -1628,12 +1578,12 @@ We can finally assess the performance of both classifiers, with and without augm
  %&\textcolor{mypurpleblue}{\bfseries 1.000}
   \end{tabular*}
   \\[1em]
-  \caption{\emph{Rescaled} utility yields from demonstration dataset}
-  \label{tab:results_utilities_normalized}
+  \caption{Utility yields from demonstration dataset}
+  \label{tab:results_utilities}
 
 \end{table}
 
-The utility yields for the different cases, classifiers, and methods are presented in table~\ref{tab:results_utilities}. The maximum and minimum theoretically achievable yields, which are obtained when all data are correctly classified or incorrectly  misclassified, are also shown for each case. Since the maximum and minimum differ from case to case, we also report the \emph{rescaled} utilities in table~\ref{tab:results_utilities_normalized}. For each case, the rescaled utility is obtained by a shift and a scaling of its measurement unit, which set the minimum and maximum achievable yields to $0$ and $1$:
+The utility yields for the different cases, classifiers, and methods are presented in table~\ref{tab:results_utilities}. The maximum and minimum theoretically achievable yields, which are obtained when all data are correctly classified or incorrectly misclassified, are also shown for each case. Since the maximum and minimum differ from case to case, the table also reports the \emph{rescaled} utilities: for each case, the rescaled utility is obtained by a change in the zero and scale of its measurement unit such that the minimum and maximum achievable yields become $0$ and $1$:
 \begin{equation}
   \label{eq:norm_utility_formula}
   \texts{rescaled utility} =
@@ -2288,7 +2238,7 @@ The authors were so immersed in the development of the present work, that unfort
 \begin{acknowledgements}
   KD and ASL acknowledge support from the Trond Mohn Research Foundation, grant number BFS2018TMT07, and PGLPM from The Research Council of Norway, grant number 294594.
 
-  The computations of the parameters for the probability transducer were performed on resources provided by Sigma2 -- the National Infrastructure for High Performance Computing and Data Storage in Norway.
+  The computations of the parameters for the probability transducer were performed on resources provided by Sigma2 -- the National Infrastructure for High Performance Computing and Data Storage in Norway (project NN8050K).
 
   KD would like to thank family for endless support; partner Synne for constant love, support, and encouragement; and the developers and maintainers of Python, FastAi, PyTorch, scikit-learn, NumPy and RDKit for free open source software and for making the experiments possible. 
 
