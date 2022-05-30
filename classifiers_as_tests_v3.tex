@@ -1,7 +1,7 @@
 \pdfoutput=1
 %% Author: PGL  Porta Mana
 %% Created: 2022-04-14T17:18:22+0200
-%% Last-Updated: 2022-05-30T15:36:21+0200
+%% Last-Updated: 2022-05-30T16:18:32+0200
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Probabilities for classifier outputs
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -993,7 +993,7 @@ We choose the representation discussed by Dunson \amp\ Bhattacharya\autocites{du
   \label{eq:representation_P}
   p(c, y \| D) = \sum_{k} q_{k}\ A(c \| \alpha_{k})\ B(y \| \beta_{k})
 \end{equation}
-of a finite but large number of terms. Each term is the product of a positive weight $q_{k}$, a probability distribution $A(c \| \alpha_{k})$ for $c$ depending on parameters $\alpha_{k}$, and a probability density $B(c \| \beta_{k})$ for $y$ depending on parameters $\beta_{k}$. The parameter values can be different from term to term, as indicated by the index ${}_{k}$. The weights $\set{q_{k}}$ are normalized.
+of a finite but large number of terms. Each term is the product of a positive weight $q_{k}$, a probability distribution $A(c \| \alpha_{k})$ for $c$ depending on parameters $\alpha_{k}$, and a probability density $B(c \| \beta_{k})$ for $y$ depending on parameters $\beta_{k}$. These distributions are chosen by us according to convenience; see the appendix~\ref{sec:deFinetti} for further details. The parameter values can be different from term to term, as indicated by the index $k$. The weights $\set{q_{k}}$ are normalized. For simplicity we shall from now on omit the dependence \enquote{$\|\dotsc, D)$} on the calibration data, leaving it implicitly understood.
 
 This mathematical representation can approximate (under some norm) any smooth probability density in $c$ and $y$. It has the advantages of being automatically positive and normalized, and of readily producing the marginal distributions for $c$ and for $y$:
 \begin{equation}
@@ -1006,9 +1006,9 @@ from which also the conditional distributions are easily obtained:
 \begin{subequations} \label{eq:conditionals}
   \begin{align}
     \label{eq:conditional_c_given_y}
-    p(c \| y) &= \sum_{k} \frac{q_{k}\ B(y \| \beta_{k})
+  \Aboxed{  p(c \| y) &= \sum_{k} \frac{q_{k}\ B(y \| \beta_{k})
                 }{\sum_{l} q_{l}\ B(y \| \beta_{l})}\
-                A(c \| \alpha_{k})\  \ ,
+                A(c \| \alpha_{k})}
     \\
     \label{eq:conditional_y_given_c}
     p(y \| c) &= \sum_{k} \frac{q_{k}\ A(c \| \alpha_{k})
@@ -1016,12 +1016,12 @@ from which also the conditional distributions are easily obtained:
                 B(y \| \beta_{k}) \ .
   \end{align}
 \end{subequations}
-These will be important in the following discussion.
 
-The parametric distributions $A(c \| \alpha)$ and $B(y \| \beta)$ are chosen by us according to convenience; see the appendix~\ref{sec:deFinetti} for further details.
+In the rest of the paper we shall use formula~\eqref{eq:conditional_c_given_y}, the probability of the class given the algorithm's output, as typically done with discriminative algorithms. 
+
 \medskip
 
-The weights $\set{q_{k}}$ and the parameters $\set{\alpha_{k}}$, $\set{\beta_{k}}$ are the heart of this representation, because the shape of the probability curve $p(c \| y, D)$ depends on their values. They are determined by the test data $D$. Their calculation is done via Markon-chain Monte Carlo sampling, discussed in appendix~\ref{sec:MCMC}. For low-dimensional $y$ and discrete $c$ (or even continuous, low-dimensional $c$, which means we are working with a regression algorithm), this calculation can be done in a matter of hours, and \emph{it only needs to be done once}.
+The weights and parameters $\set{q_{k}, \alpha_{k}, \beta_{k}}$ are the heart of this representation, because the shape of the probability curve $p(c \| y, D)$ depends on their values. They are determined by the test data $D$. Their calculation is done via Markon-chain Monte Carlo sampling, discussed in appendix~\ref{sec:MCMC}. For low-dimensional $y$ and discrete $c$ (or even continuous, low-dimensional $c$, which means we are working with a regression algorithm), this calculation can be done in a matter of hours, and \emph{it only needs to be done once}.
 
 Once calculated, these parameters are saved in memory and can be used to compute any of the probabilities~\eqref{eq:representation_P}, \eqref{eq:marginals}, \eqref{eq:conditionals} as needed, as discussed in the next subsection. Such computations take less than a second.
 
@@ -1036,22 +1036,38 @@ We refer to our companion work \cite{dyrlandetal2022}, \sect~2, for a more detai
 
 Our classification or decision problem has a set of decisions, which we can index by $i = 1,2,\dotsc$. As discussed in \sect~\ref{sec:goal_class}, these need not be the same as the possible classes; the two sets may even be different in number. But the true class, which is unknown, determines the \emph{utility} that a decision yields. If we choose decision $i$ and the class $c$ is true, our eventual utility will be $U_{ic}$.\footnote{We apologize for the difference in notation from our companion work, where the class variable is \enquote{$j$} and the utilities \enquote{$U_{ij}$}} These utilities are assembled into a rectangular matrix $(U_{ic})$ with one row per decision and one column per class. Note that the case where decisions and classes are in a natural one-one correspondence, as in the cat-vs-dog classification example of \sect~\ref{sec:goal_class}, is just a particular case of this more general point of view. In such a specific case we may replace \enquote{decision} with \enquote{class} in the following discussion, and the utility matrix is square.
 
-Denote by $(p_{c})$ the probabilities for the classes, calculated as described in \sect~\ref{sec:effect_transd} above, and collect them into a column vector.
+\medskip
 
-The expected utility $\eu_{i}$ of decision $i$ is then given by the product of the matrix $(U_{ic})$ and the column vector $(p_{c})$:
-\begin{equation}
-  \label{eq:expe_utilities}
-  \eu_{i} \defd \sum_{c} U_{ic}\ p_{c} \ .
-\end{equation}
+Now let us consider the application of the algorithm, with the probabilities calculated in the preceding section, to a new unit.
 
-Finally, according to the principle of maximum expected utility, we choose the decision $i^{*}$ having largest $\eu_{i}$:
-\begin{empheq}[box=\widefbox]{equation}
-  \label{eq:max_expe_utility}
-  \text{choose}\quad
-  i^{*} = \argmax_{i}\set*{\eu_{i}} \equiv \argmax_{i}\set[\bigg]{\sum_{c} U_{ic}\ p_{c}} \ .
-\end{empheq}
+\begin{enumerate}[label=\arabic*.]
+\item Fed the unit's features to the classifier, which outputs the real value $y$.
 
-The matrix multiplication and subsequent selection are computationally inexpensive; they can be considered as substitutes of the \enquote{argmax} selection that typically happen at the continuous output of a classifier.
+\item\label{item:calculate_probs} Calculate $p(c \| y)$, for each value of $c$, from formula~\eqref{eq:conditional_c_given_y}, using the parameters $\set{q_{k}, \alpha_{k}, \beta_{k}}$ stored in memory. These are the probabilities of the classes, which are collected in a column vector $(p_{c})$.
+
+\item\label{item:combine_prob_utilities} The expected utility $\eu_{i}$ of decision $i$ is given by the matrix product of an appropriate utility matrix $(U_{ic})$ and the column vector $(p_{c})$:
+  \begin{equation}
+    \label{eq:expe_utilities}
+    \eu_{i} \defd \sum_{c} U_{ic}\ p_{c} \ .
+  \end{equation}
+
+\item\label{item:maximize_utility} Choose the decision $i^{*}$ having largest $\eu_{i}$, according to the principle of maximum expected utility:
+  \begin{empheq}[box=\widefbox]{equation}
+    \label{eq:max_expe_utility}
+    \text{choose}\quad
+    i^{*} = \argmax_{i}\set*{\eu_{i}} \equiv \argmax_{i}\set[\bigg]{\sum_{c} U_{ic}\ p_{c}}
+  \end{empheq}
+\end{enumerate}
+
+\medskip
+
+We call the procedure above, especially steps~\ref{item:calculate_probs}--\ref{item:maximize_utility}, the \emph{augmentation} of the classifier.
+
+In step~\ref{item:calculate_probs} we have effectively translated the classifier's raw output into a more sensible probability. From this point of view the function $p(c \| y)$ can be considered as a more appropriate substitute of the softmax function, for instance, at the output of a neural network (compare \fig~\ref{fig:prob_curve_CNN}).
+
+The matrix multiplication of and subsequent selection of steps~\ref{item:combine_prob_utilities}--\ref{item:maximize_utility} are computationally inexpensive; they can be considered as substitutes of the \enquote{argmax} selection that typically happen at the continuous output of a classifier.
+
+It should be noted that the utilities $U_{ic}$ used in step~\ref{item:combine_prob_utilities} can either be the same for each new unit, or different from unit to unit. The augmentation procedure is therefore extremely flexible, at no additional computational cost.
 
 \section{Demonstration}
 \label{sec:demonstration}
@@ -1211,7 +1227,6 @@ We consider each of these utility matrices, in turn, to be the one underlying ou
 \item multiply the probability vector by the utility matrix to determine the expected utility of each class choice, \eqn~\eqref{eq:expe_utilities}
 \item choose the class with higher expected utility (ties have to be decided unsystematically, to avoid biased results), \eqn~\eqref{eq:max_expe_utility}.
 \end{enumerate}
-We call this procedure \emph{augmentation}. It used with each classifier.
 
 
 \subsubsection{Confusion matrices -- and a peculiar situation}
@@ -1713,9 +1728,10 @@ For the \RF\ and \CNN\ of the demonstration \sect~\ref{sec:demonstration}, for i
 %  0.9623081 1.6206641 9.5603046 9.0772883
 % RF:
 %  0.9725162 1.6815698 9.5864235 9.0783451
-\begin{table}[!ht]
+\begin{table}[!p]
   \centering
-  \begin{tabular*}{\linewidth}{lw{c}{0.12\linewidth}w{c}{0.12\linewidth}w{c}{0.12\linewidth}w{c}{0.12\linewidth}}
+  \begin{tabular}%{\linewidth}%{lw{c}{0.12\linewidth}w{c}{0.12\linewidth}w{c}{0.12\linewidth}w{c}{0.12\linewidth}}
+{lcccc}
     &$\sumatrix{1}{0}{0}{1}$
     &$\sumatrix{1}{-10}{0}{10}$
     &$\sumatrix{1}{-100}{0}{100}$
@@ -1733,19 +1749,12 @@ For the \RF\ and \CNN\ of the demonstration \sect~\ref{sec:demonstration}, for i
     &\textcolor{myred}{1.62}
     &\textcolor{myred}{9.56}
       &\textcolor{myred}{9.08}
-  \end{tabular*}
+  \end{tabular}
   \caption{Expected utilities for the two algorithms of \sect~\ref{sec:demonstration}}
   \label{tab:algorithms_utilities}
 \end{table}
-The augmented \RF\ is expected to be optimal for cases~I and~II, possibly also in case~III, although the difference in utilities is likely affected by numerical-precision error. There is no preference in case~IV.
-
-Let us emphasize again that these values are obtained \emph{from the parameters of the transducer curve, without the need of any additional dataset}. The demonstration dataset discussed in \sect~\ref{sec:demo_overview} was not used for their calculation. The results from that dataset, reported in table~\ref{tab:results_utilities}, corroborate these values.
-
-
-One may ask: but how can you be sure that what you basically found from the calibration data will generalize to new data? The answer goes back to the discussion at the end of \sect~\ref{sec:calibration_data}, about how the probability calculus works, and to the technical details explained in appendix~\ref{sec:maths_transducer}: the probability calculus automatically considers all possible sets of new data that could be encountered in the future application.
-
-In fact, the calculation of an algorithm's expected utility automatically produces a probability distribution of the possible long-run yields the algorithm could give. The distributions for the long-run utilities of the \RF\ and the \CNN\ in cases~I--IV of \sect~\ref{sec:demonstration} are shown in \fig~\ref{fig:algorithms_utilities_histograms}.
-\begin{figure}[!t]
+%
+\begin{figure}[!p]
   \centering
   \parbox{0.495\linewidth}{\centering
     \includegraphics[width=\linewidth]{histogram_alg_utilities_1.pdf}
@@ -1766,24 +1775,26 @@ In fact, the calculation of an algorithm's expected utility automatically produc
   \caption{Probability distributions of the long-run utility yields of \RF\ and \CNN\ in the four cases of \sect~\ref{sec:demonstration}}
   \label{fig:algorithms_utilities_histograms}
 \end{figure}
+%
+The augmented \RF\ is expected to be optimal for cases~I and~II, possibly also in case~III, although the difference in utilities is likely affected by numerical-precision error. There is no preference in case~IV.
+
+Let us emphasize again that these values are obtained \emph{from the parameters of the transducer curve, without the need of any additional dataset}. The demonstration dataset discussed in \sect~\ref{sec:demo_overview} was not used for their calculation. The results from that dataset, reported in table~\ref{tab:results_utilities}, corroborate these values.
+
+
+One may ask: but how can you be sure that what you basically found from the calibration data will generalize to new data? The answer goes back to the discussion at the end of \sect~\ref{sec:calibration_data}, about how the probability calculus works, and to the technical details explained in appendix~\ref{sec:maths_transducer}: the probability calculus automatically considers all possible sets of new data that could be encountered in the future application.
+
+In fact, the calculation of an algorithm's expected utility automatically produces a probability distribution of the possible long-run yields the algorithm could give. The distributions for the long-run utilities of the \RF\ and the \CNN\ in cases~I--IV of \sect~\ref{sec:demonstration} are shown in \fig~\ref{fig:algorithms_utilities_histograms}.
 We see that in case~I the \RF\ will very probably (and the actual probability can be easily calculated) be superior to the \CNN. In case~II the probability is somewhat lower. In cases~III and~IV it is completely uncertain which algorithm will be best.
 
 The evaluation of candidate classifiers' performances and their uncertainties are obviously extremely important for the choice and final deployment of the optimal classifier.
 
-\subsection{Applying the probability transduction: discriminative and generative modes}
+\subsection{Discriminative and generative modes}
 \label{sec:effect_transd}
 
-Let us now discuss the application of the various probability functions presented above. For simplicity we shall omit the dependence \enquote{$\|\dotsc, D)$} on the calibration data, leaving it implicitly understood.
+The transducer parameters, calculated as discussed in \sect~\ref{sec:calculation_transducer} and appendix~\ref{sec:maths_transducer}, allow us to calculate not only the \enquote{discriminative} probability of the class given the algorithm's output, formula~\eqref{eq:conditional_c_given_y}, but also the inverse, \enquote{generative} probability of the output given the class, formula~\eqref{eq:conditional_y_given_c}.
 
-We have a new unit, which could be part of an evaluation test-set or coming from a real application after deployment. Its features are fed to the classifier, which outputs the real value $y$. We can then proceed in two ways:
+
 \begin{description}[font=\textit]
-\item[Discriminative mode:] \textit{probability of class given output}\\
- We calculate $p(c \| y)$ from formula~\eqref{eq:conditional_c_given_y}, for each value of $c$, say $c=0$ and $c=1$ in a binary-classification case. These are the probabilities of the classes.
-\end{description}
-The discriminative mode is the standard way of proceeding in classification and does not need further discussion. We have simply translated the classifier's raw output into a more sensible probability. From this point of view the function $p(c \| y)$ can be considered as a more appropriate substitute of the softmax function, for instance, at the output of a neural network.
-
-
-\begin{description}[resume, font=\textit]
 \item[Generative mode:] \textit{probability of class given output and base rates}\\
   We calculate $p(y \| c)$ from formula~\eqref{eq:conditional_y_given_c}, again for each value of $c$. The probability of each class $c$ is then obtained through Bayes's theorem after supplying the \emph{population prevalence} $\br_{c}$ of the class:
   \begin{equation}
@@ -2944,14 +2955,10 @@ where $B(c)$ is the base rate of class $c$. The probabilities $\p(c)$ can finall
 
 
 
+% \section{Alternative to ensembling}
+% \label{sec:ensembling}
 
-\section{Circumventing biases}
-\label{sec:biases}
-
-\section{Alternative to ensembling}
-\label{sec:ensembling}
-
-\mynotew{\wrench\ The idea is to implement this output-to-probability conversion in several classifiers, \emph{in a generative way}. These probabilities can then be multiplied together and with a base rate, to obtain the \enquote{ensembled} probabilities of the classes. This way of doing ensembling would be a rigorous application of the probability calculus; should be superior to a majority vote or similar.}
+% \mynotew{\wrench\ The idea is to implement this output-to-probability conversion in several classifiers, \emph{in a generative way}. These probabilities can then be multiplied together and with a base rate, to obtain the \enquote{ensembled} probabilities of the classes. This way of doing ensembling would be a rigorous application of the probability calculus; should be superior to a majority vote or similar.}
 
 \end{document}
 
