@@ -1,7 +1,7 @@
 \pdfoutput=1
 %% Author: PGL  Porta Mana
 %% Created: 2022-04-14T17:18:22+0200
-%% Last-Updated: 2022-05-30T20:05:02+0200
+%% Last-Updated: 2022-05-30T20:07:10+0200
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Probabilities for classifier outputs
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -837,7 +837,7 @@ In summary, there is place to improve classifiers so as to
 
 \medskip
 
-In artificial intelligence and machine learning it is known how to address all these issues in principle -- the theoretical framework is for example beautifully presented in the first 18 chapters or so of Russell \amp\ Norvig's \cites*{russelletal1995_r2022} text \autocites[see also]{selfetal1987,cheeseman1988,cheeseman1995_r2018,pearl1988,mackay1995_r2005}.
+In artificial intelligence and machine learning it is known how to address all these issues in principle -- the theoretical framework is for example beautifully presented in the first 18 chapters or so of Russell \amp\ Norvig's \cites*{russelletal1995_r2022} text \autocites[see also][]{selfetal1987,cheeseman1988,cheeseman1995_r2018,pearl1988,mackay1995_r2005}.
 
 Issues~\ref{item:gain_loss}--\ref{item:optimal_truth} are simply solved by adopting the standpoint of \emph{Decision Theory}, which we briefly review in \sect~\ref{sec:utility_classification} below and discuss at length in a companion work \autocites{dyrlandetal2022}. In short: The set of decisions and the set of classes pertinent to a problem are separated if necessary. A utility is associated to each decision, relative to the occurrence of each particular class; these utilities are assembled into a utility matrix: one row per decision, one column per class. This matrix is multiplied by a column vector consisting in the probability for the classes. The resulting vector of numbers contains the expected utility of each decision. Finally we select the decision having \emph{maximal expected utility}, according to the principle bearing this name. Such procedure also takes care of the class imbalance problem \autocites[\cf\ the analysis by][(they use the term \enquote{cost} instead of \enquote{utility})]{drummondetal2005}.
 
