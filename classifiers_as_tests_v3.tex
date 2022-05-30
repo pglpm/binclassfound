@@ -1,7 +1,7 @@
 \pdfoutput=1
 %% Author: PGL  Porta Mana
 %% Created: 2022-04-14T17:18:22+0200
-%% Last-Updated: 2022-05-30T03:01:01+0200
+%% Last-Updated: 2022-05-30T09:54:12+0200
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Probabilities for classifier outputs
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -869,31 +869,35 @@ Finally, we give a summary and discussion in \sect~\ref{sec:summary_discussion},
 \section{An output-to-probability transducer}
 \label{sec:transducer}
 
-In the present section we explain the main idea in informal and intuitive terms, and give its  mathematical essentials only. Stricter logical derivation and more mathematical details are left to appendix\mynotep{\ldots}.
+In the present section we explain the main idea in informal and intuitive terms, and give its  mathematical essentials only. % Stricter logical derivation and more mathematical details are left to appendix\mynotep{\ldots}.
 
 
 
 \subsection{Main idea: algorithm output as a proxy for the features}
 \label{sec:essential_idea}
 
-Let us consider first the essentials behind a classification (or regression) problem. We have the following quantities:
+Let us first consider the essentials behind a classification (or regression) problem. We have the following quantities:
 \begin{itemize}
 \item the \emph{feature} values of a set of known units,
 \item the \emph{classes} of the same set of units,
 \end{itemize}
-which together form our \emph{training data}; and
+which together form our \emph{learning} or \emph{training data}; and
 \begin{itemize}[resume]
-\item the feature value of a new unit,
+\item the feature value of a \emph{new} unit,
 \end{itemize}
-where the \enquote{units} can be widgets, images, patients, drug compounds, and so on, depending on the classification problem. From these quantities we would like to infer the class of the new unit. This inference consists in probability values (we omit \enquote{new} in equations for brevity)
+where the \enquote{units} could be widgets, images, patients, drug compounds, and so on, depending on the classification problem. From these quantities we would like to infer
+\begin{itemize}[resume]
+\item  the class of the new unit.
+\end{itemize}
+This inference consists in probabilities
 \begin{equation}
   \label{eq:prob_essential}
-  \P(\texts{class of unit} \| \texts{feature of unit},\,
-  \texts{classes \amp\ features of training data})
+  \P(\texts{class of new unit} \| \texts{feature of new unit},\,
+  \texts{classes \amp\ features of known units})
 \end{equation}
 for each possible class.
 
-These probabilities are obtained through the rules of the probability calculus \autocites{jaynes1994_r2003}[\chaps~12--13]{russelletal1995_r2022}{gregory2005,hailperin2011,jeffreys1939_r1983}; in this case specifically through the so-called de~Finetti theorem \autocites[\chap~4]{bernardoetal1994_r2000}{dawid2013} which connects training data and new unit.
+These probabilities are obtained through the rules of the probability calculus \autocites{jaynes1994_r2003}[\chaps~12--13]{russelletal1995_r2022}[\addcolon see further references in appendix~\ref{sec:maths_transducer}]{gregory2005,hailperin2011,jeffreys1939_r1983}; in this case specifically through the so-called de~Finetti theorem \autocites[\chap~4]{bernardoetal1994_r2000}{dawid2013} which connects training data and new unit. This theorem is briefly summarized in appendix~\ref{sec:deFinetti}.
 
 Combined with a set of utilities, these probabilities allow us to determine an optimal, further decision to be made among a set of alternatives. Note that the inference~\eqref{eq:prob_essential} includes deterministic interpolation, \ie\ the assessment of a function $\texts{class} \mo f(\texts{feature})$, as a special case, when the probabilities are essentially $0$s and $1$s.
 
@@ -907,42 +911,54 @@ A trained classifier should ideally output the probabilities above when applied 
 % \end{equation}
 % This probability must be numerically equal to~\eqref{eq:prob_essential} because the classifier's output cannot give more information about the class than is already present in the feature and in the training data (the classifier would be biased otherwise).
 
-Now we acknowledge the fact that the information contained in the feature and in the training data, relevant to the class of the new unit, is simply inaccessible to us because of computational limitations. We do have access to the output for the new unit, however, which does carry relevant information. Thus want to calculate a probability such as $\P(\texts{class of unit} \| \texts{output for unit})$.
+Our first step is to acknowledge that the information contained in the feature and in the training data, relevant to the class of the new unit, is simply inaccessible to us because of computational limitations. We do have access to the output for the new unit, however, which does carry relevant information. Thus what we can do is to calculate the probability
+\begin{empheq}[box=\widefbox]{equation}
+  \label{eq:accessible_prob_newunit}
+  \P(\texts{class of new unit} \| \texts{output for new unit})
+\end{empheq}
+for each class.
 
-To calculate this probability, however, it is necessary to have examples of further pairs $(\texts{class of unit}, \texts{output for unit})$, of which the new unit's pair can be considered a \enquote{representative sample} \autocites[for a critical analysis of the sometimes hollow term \enquote{representative sample} see][]{kruskaletal1979,kruskaletal1979b,kruskaletal1979c,kruskaletal1980} and vice versa -- exactly for the same reason why we need training data in the first place.
 
-For this purpose, can we use the pairs $(\texts{class of unit}, \texts{output for unit})$ of the training data? This would be very convenient, as those pairs are readily available. But answer is no. The reason is that the outputs of the training data are produced from the features \emph{and the classes} jointly; this is the very point of the training phase. There is therefore a direct informational dependence between the classes and the outputs of the training data. For the new unit, on the other hand, the classifier produces its output from the feature alone. The new unit is not a representative sample of the training data.
+This idea can also be informally understood in two ways. First: the classifier's output is regarded as a proxy for the feature. Second: the classifier is regarded as something analogous to a \emph{diagnostic test}, such as any common diagnostic or prognostic test used in medicine for example. We do not take diagnostic-test results at face value -- if a flu test is \enquote{positive} we do not conclude that the patient has the flu -- but rather arrive at a probability that the patient has the flu, given some statistics about results of tests performed on \enquote{verified samples} of true-positive and true-negative patients \autocites[\chap~5]{soxetal1988_r2013}[\chap~5]{huninketal2001_r2014}[see also][]{jennyetal2018}.
 
-We need a data set where the outputs are generated by simple application of the algorithm to the feature, as it would occur in its concrete use, and the classes are known. The \emph{test data} of standard \ml\ procedures are exactly what we need. The new unit can be considered a representative sample of the test data, and vice versa. We call such data \enquote{transducer-calibration data}, owing to its specific purpose.
 
-The probability we arrive at is therefore
+\subsection{Calibration data}
+\label{sec:calibration_data}
+
+To calculate the probability above, however, it is necessary to have examples of further pairs $(\texts{class of unit}, \texts{output for unit})$, of which the new unit's pair can be considered a \enquote{representative sample} \autocites[for a critical analysis of the sometimes hollow term \enquote{representative sample} see][]{kruskaletal1979,kruskaletal1979b,kruskaletal1979c,kruskaletal1980} and vice versa -- exactly for the same reason why we need training data in the first place to calculate the probability of a class given the feature. Or, with a more precise term, the examples and the new unit must be \emph{exchangeable} \autocites{lindleyetal1981}.
+
+For this purpose, can we use the pairs $(\texts{class of unit}, \texts{output for unit})$ of the training data? This would be very convenient, as those pairs are readily available. But answer is no. The reason is that the outputs of the training data are produced from the features \emph{and the classes} jointly; this is the very point of the training phase. There is therefore a direct informational dependence between the classes and the outputs of the training data. For the new unit, on the other hand, the classifier produces its output from the feature alone. \emph{As regards the probabilistic relation between class and output, the new unit is not exchangeable with (or a representative sample of) the training data}.
+
+We need a data set where the outputs are generated by simple application of the algorithm to the feature, as it would occur in its concrete use, and the classes are known. The \emph{test data} of standard \ml\ procedures are exactly what we need. The new unit can be considered exchangeable with the test data. We rename such data \enquote{transducer-calibration data}, owing to its new purpose.
+
+The probability we want to calculate is therefore
 \begin{equation}
   \label{eq:prob_output}
-  \P(\texts{class of unit} \| \texts{output for unit},\,
-  \texts{classes \amp\ outputs for calibration data}) \ .
+  \P(\texts{class of new unit} \| \texts{output for new unit},\,
+  \texts{classes \amp\ outputs of calibr. data}) \ .
 \end{equation}
-For algorithms that yield an output much simpler than the features, such as a vector of few real components, the probability above can be exactly calculated. Thus, once we obtain the classifier's output for the new unit, we can calculate a probability for the new unit's class.
+For classification algorithms that output a quantity much simpler than the features, like a vector of few real components for instance, the probability above can be exactly calculated. Thus, once we obtain the classifier's output for the new unit, we can calculate a probability for the new unit's class.
+
+
+The probability values~\eqref{eq:prob_output}, for a fixed class and variable output, constitute a sort of \enquote{calibration curve} (or hypersurface for multidimensional outputs) of the output-to-probability transducer for the classifier. See the concrete examples of \figs~\ref{fig:prob_curve_RF} on page~\pageref{fig:prob_curve_RF}, and~\ref{fig:prob_curve_CNN} on page~\pageref{fig:prob_curve_CNN}. It must be stressed that such curve needs to be calculated only once, and it can be used for all further applications of the classifier to new units.
 
 \medskip
 
-The idea above can also be informally understood in two ways. First: the classifier's output is regarded as a proxy for the feature. Second: the classifier is regarded as something analogous to a \emph{diagnostic test}, such as any common diagnostic or prognostic test used in medicine for example. We do not take diagnostic-test results at face value -- if a flu test is \enquote{positive} we do not conclude that the patient has the flu -- but rather arrive at a probability that the patient has the flu, given some statistics about results of tests performed on \enquote{verified samples} of true-positive and true-negative patients \autocites[\chap~5]{soxetal1988_r2013}[\chap~5]{huninketal2001_r2014}[see also][]{jennyetal2018}.
+What is the relation between the ideal incomputable probability~\eqref{eq:prob_essential} and the probability~\eqref{eq:prob_output} obtained by proxy? If the output $y$ of the classifier is already very close to the ideal probability~\eqref{eq:prob_essential}, or a monotonic function thereof, isn't the proxy probability~\eqref{eq:prob_output} throwing it away and replacing it with something different? Quite the opposite. Owing to de~Finetti's theorem, if the output $y$ is almost identical with the ideal probability, then it becomes increasingly close to the frequency distribution of the training data, as their number increases (see appendix~\ref{sec:deFinetti}); the same happens with the proxy probability and the frequency distribution of the calibration data. But these two data sets should be representative of each other and of future data -- otherwise we would be \enquote{learning} from wrong data -- and therefore their frequency distributions should also converge to each other. Consequently, by transitivity we expect the proxy probability to become increasingly close to the output $y$. Actually, if the output is not exactly the ideal probability~\eqref{eq:prob_essential} but a monotonic function of it, the proxy probability~\eqref{eq:prob_output} will reverse such monotonic relationship, giving us back the ideal probability.
 
-The probability values~\eqref{eq:prob_output} for a fixed class and variable output give us a sort of \enquote{calibration curve} (or calibration hypersurface for multidimensional outputs) of the output-to-probability transducer for the classifier. See the concrete examples of \figs~\ref{fig:prob_curve_RF} on page~\pageref{fig:prob_curve_RF}, and~\ref{fig:prob_curve_CNN} on page~\pageref{fig:prob_curve_CNN}. It must be stressed that such curve needs to be calculated only once, and it can be used for all further applications of the classifier to new units.
+Obviously all these considerations only hold if we have good training and calibration sets, exchangeable with (representative of) the real data that will occur in our application.
 
-\medskip
-
-What is the relation between the ideal incomputable probability~\eqref{eq:prob_essential} and the probability~\eqref{eq:prob_output} obtained by proxy? It can be shown that the two are related by convex combination or mixing:
-\begin{multline}
-  \label{eq:relation_two_probs}
-  \P(\texts{class} \| \texts{output},\,
-  \texts{classes \amp\ outputs for calibration data}) ={}\\[\jot]
-  \sum_{\mathclap{\substack{\text{feature}\\\text{training data}}}}
-  w(\texts{feature}, \texts{training data})\times
-  \P(\texts{class} \| \texts{feature},\, \texts{training data})
-\end{multline}
-where $w$ are positive and normalized functions. This means that the proxy probability is generally less sharp, that is, farther away from $0$ and $1$, than the ideal one. This is an obvious consequence of the loss of information about the feature value. Such mixing, on the other hand, only leads to more conservative probabilities, not to over-confident ones.
-
-\mynotep{add note about the fact that the goodness of the results still greatly depends on the goodness of the classifier.}
+% It can be shown that the two are related by convex combination or mixing:
+% \begin{multline}
+%   \label{eq:relation_two_probs}
+%   \P(\texts{class} \| \texts{output},\,
+%   \texts{classes \amp\ outputs for calibration data}) ={}\\[\jot]
+%   \sum_{\mathclap{\substack{\text{feature}\\\text{training data}}}}
+%   w(\texts{feature}, \texts{training data})\times
+%   \P(\texts{class} \| \texts{feature},\, \texts{training data})
+% \end{multline}
+% where $w$ are positive and normalized functions. This means that the proxy probability is generally less sharp, that is, farther away from $0$ and $1$, than the ideal one. This is an obvious consequence of the loss of information about the feature value. Such mixing, on the other hand, only leads to more conservative probabilities, not to over-confident ones.
+% \mynotep{add note about the fact that the goodness of the results still greatly depends on the goodness of the classifier.}
 
 \mynotew{add that \emph{no new test set is needed}! The calibration set also works as \enquote{test set} thanks to the probability calculus}
 
@@ -1960,15 +1976,17 @@ The weight $\wf(F)$ -- a probability density -- given to a frequency distributio
   \item The first factor (\enquote{likelihood}) $F(D)$ quantifies how well $F$ \emph{fits} known data of the same kind, in our case the calibration data $D \defd \set{d_{1}, \dotsc, d_{M}}$. It is simply proportional to how frequent the known data would be, according to $F$:
   \begin{equation}
     \label{eq:factor_likelihood}
-F(D) \equiv F(d_{1})\cdot F(d_{2})\cdot \dotsm\cdot F(d_{M}) \ .
+    F(D) \defd F(d_{1})\cdot F(d_{2})\cdot \dotsm\cdot F(d_{M})
+    \equiv \exp\biggl[M \sum_{d} \hat{F}(d) \ln F(d)\biggr] \ ,
   \end{equation}
-
+where $\hat{F}(d)$ is the frequency distribution \emph{observed} in the data.
+  
 \item The second factor (\enquote{prior}) $\wfo(F)$ quantifies how well $F$ \emph{generalizes} beyond the data we have seen, owing to reasons such as physical or biological constraints for example. In our case we expect $F$ to be somewhat smooth in $X$ when this variable is continuous \autocites[Cf.][]{goodetal1971}. No assumptions are made about $F$ when $X$ is discrete.
   %%\mynotew{add plot of prior transducer curves}
 \end{itemize}
 Formula~\eqref{eq:weight_F_two_factors} is just Bayes's theorem. Its normalization factor is the integral $\int F(D)\, \wfo(F)\, \di F$, which ensures that $\wf(F)$ is normalized.
 
-The first factor becomes larger as the number of known data increases. Thus a large amount of data indicating a non-smooth distribution $F$ will override any smoothness preferences embodied in the second factor. Note that no assumptions about the shape of $F$ -- Gaussians, logistic curves, sigmoids, or similar -- are made in this approach.
+The exponential expression in \eqn~\eqref{eq:factor_likelihood} is proportional to the number $M$ of data, and in it we recognize the cross-entropy between the observed frequency distribution $\hat{F}$ and $F$. This has two consequences. First, it makes the final probability $p(d_{0})$ increasingly identical with the distribution $\hat{F}(d)$ observed in the data, because the average~\eqref{eq:prob_is_expe_freq} gets more and more concentrated around $\hat{F}$. Second, a large amount of data indicating a non-smooth distribution $F$ will override any smoothness preferences embodied in the second factor. Note that no assumptions about the shape of $F$ -- Gaussians, logistic curves, sigmoids, or similar -- are made in this approach.
 
 The weight $\wf(F)$  tells us how much we can expect the long-run frequency distribution $F$ to change, given new data.
 
