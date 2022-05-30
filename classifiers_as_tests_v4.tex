@@ -1,7 +1,7 @@
 \pdfoutput=1
 %% Author: PGL  Porta Mana
 %% Created: 2022-04-14T17:18:22+0200
-%% Last-Updated: 2022-05-30T21:34:51+0200
+%% Last-Updated: 2022-05-30T21:48:12+0200
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Probabilities for classifier outputs
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -2025,14 +2025,14 @@ The second model is a pre-trained residual network (ResNet) \autocites{heetal201
 \end{framed}
 %}}
 
-\subsection{Train, Validation, Test split}
+\subsection{Dateset split}
 
 The data set is split into four parts:
 \begin{itemize}
 \item Training set: 45\% of the dataset to train the model.
 \item Validation set: 15\%, for validating the model after each epoch.
 \item Calibration set: 20\%, for calibrating the probability transducer.
-\item Test set: 20\%, for evaluation.
+\item Demonstration set: 20\%, for evaluation.
 \end{itemize}
 %%%%
 
@@ -2043,7 +2043,7 @@ The data set is split into four parts:
 
 The notation is the one used in \sect~\ref{sec:calculation_transducer}: the class is denoted $c$ and the algorithm output $y$. In our demonstration $c$ takes on values in $\set{0,1}$, and $y$ either in $\clcl{0,1}$ or in $\RR^{2}$; but the method can be applied to more general cases, such as continuous but low-dimensional spaces for both $c$ and $y$, or combinations of continuous and discrete spaces. For convenience we use a single symbol for the pair $d \defd (c, y)$.
 
-For general references about the probability calculus and concepts, and specific probability distributions see \cites{jaynes1994_r2003,mackay1995_r2005,jeffreys1939_r1983,gregory2005,bernardoetal1994_r2000,hailperin1996,johnsonetal1969_r1996,johnsonetal1969b_r2005,johnsonetal1970_r1994,johnsonetal1970b_r1995,kotzetal1972_r2000}.
+For general references about the probability calculus and concepts and specific probability distributions see \cites{jaynes1994_r2003,mackay1995_r2005,jeffreys1939_r1983,gregory2005,bernardoetal1994_r2000,hailperin1996,good1950,johnsonetal1969_r1996,johnsonetal1969b_r2005,johnsonetal1970_r1994,johnsonetal1970b_r1995,kotzetal1972_r2000}.
 
 \subsection{Exchangeability and expression for the probability transducer}
 \label{sec:deFinetti}
@@ -2162,7 +2162,7 @@ Our double decision \amp\ uncertainty problem can be represented as a \emph{deci
 \begin{figure}[!t]
   \centering
   \includegraphics[width=\linewidth]{decision_tree_algorithm.pdf}\\
-  \caption{Decision tree for the choice of algorithm}
+  \caption{Decision tree for the choice of algorithm. From left to right: Decision node about the algorithm (green), uncertainty node about the algorithm's output (yellow), decision node (\eg\ about class) for the inspected item (blue), uncertainty node about the class (red). Only some example nodes and branches are labelled.}
   \label{fig:decision_tree}
 \end{figure}
 
