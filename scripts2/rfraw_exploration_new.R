@@ -1,6 +1,6 @@
 ## Author: PGL  Porta Mana
 ## Created: 2022-03-17T14:21:57+0100
-## Last-Updated: 2022-05-29T23:37:11+0200
+## Last-Updated: 2022-05-30T02:27:33+0200
 ################
 ## Exploration of several issues for binary classifiers
 ################
@@ -1008,7 +1008,7 @@ allscoresb <- apply(lut, 3, function(um){
       sum(buildcm(classesb, probs1b, um) * um),
       sum(buildcm(classesb, bayesprobs1, um) * um)
       )
-})/length(classesb)
+})
 ## allscores <- (foreach(i=1:nn, .combine=cbind, .inorder=F)%dopar%{
 ##     um <- lut[,,i]
 ##     c(sum(cmstandard * um),
@@ -1018,13 +1018,67 @@ allscoresb <- apply(lut, 3, function(um){
 ## })/length(classes)
 rownames(allscoresb) <- c('standard', 'discr', 'gener')
 
-rowMeans(allscoresb)
-#### correct params
+Fclass0b <- sum(classesb==0)
+Fclass1b <- sum(classesb==1)
+fclass1b <- Fclass1b/length(classesb)
+
+allminsb <- apply(lut, 3, function(um){
+    um[2,1]*Fclass0b + um[1,2]*Fclass1b
+})
+
+allmaxsb <- apply(lut, 3, function(um){
+    um[1,1]*Fclass0b + um[2,2]*Fclass1b
+})
+
+colMeans((t(allscoresb)-allminsb)/(allmaxsb-allminsb))
 ##  standard     discr     gener 
-## 0.6864915 0.7372485 0.7601126 
-### old
-##  standard     discr     gener 
-## 0.6864915 0.7401895 0.7606006 
+## 0.8451217 0.9244552 0.9683010 
+
+normallscoresb <- t((t(allscoresb)-allminsb)/(allmaxsb-allminsb))
+
+
+rmins <- allminsb[1:nn2]
+norms <- allmaxsb[1:nn2]-allminsb[1:nn2]
+lbound <- min((allscoresb[1,1:nn2]-rmins)/norms, (allscoresb[3,1:nn2]-rmins)/norms)
+pdff('../RF_transducer_gains_max_generative', asp=1)
+## tplot(x=allscores[1,1:nn2], y=allscores[2,1:nn2]-allscores[1,1:nn2], type='p', pch=16, cex=1, alpha=0.5)
+tplot(x=(allscoresb[1,1:nn2]-rmins)/norms,
+      y=cbind((allscoresb[3,1:nn2]-rmins)/norms, (allscoresb[2,1:nn2]-rmins)/norms),
+      type='p', pch=16, cex=1, alpha=0.75,
+      xlim=c(lbound,1),
+      ylim=c(lbound,1),
+      ## xlim=c(min(allscores[1,1:nn2]/allscores[4,1:nn2],allscores[3,1:nn2]/allscores[4,1:nn2]),1),
+      ## ylim=c(min(allscores[1,1:nn2]/allscores[4,1:nn2],allscores[3,1:nn2]/allscores[4,1:nn2]),1),
+      ## xticks=log10(sort(c(1:9)*rep(10^c(-1,0),each=9))),
+      ## xlabels=sort(c(1:9)*rep(10^c(-1,0),each=9)),
+      ## yticks=log10(sort(c(1:9)*rep(10^c(-1,0),each=9))),
+      ## ylabels=sort(c(1:9)*rep(10^c(-1,0),each=9)),
+      ##mar=c(6.5,7.5,1,1),lx=2,
+      xlab='rescaled utility yield, standard method',#bquote(frac('utility yield','max utility yield')~', standard method'),
+      ylab='rescaled utility yield, augmentation'#bquote(frac('utility yield','max utility yield')~', augmentation')
+      )
+abline(0,1, col=paste0(palette()[2],'88'), lwd=2, lty=1)
+## tplot(x=log10(allscores[2,1:nn2]), y=log10(allscores[3,1:nn2]), type='p', pch=16, cex=0.5, alpha=0.25, col=2,
+##       xticks=log10(sort(c(1:9)*rep(10^c(-1,0),each=9))),
+##       xlabels=sort(c(1:9)*rep(10^c(-1,0),each=9)),
+##       yticks=log10(sort(c(1:9)*rep(10^c(-1,0),each=9))),
+##       ylabels=sort(c(1:9)*rep(10^c(-1,0),each=9)),
+##       xlab='utility yield from mixed method',
+##       ylab='utility yield from transducer & utility maximization')
+## abline(0,1, col=paste0(palette()[4],'88'), lwd=2, lty=1)
+dev.off()
+
+
+
+
+
+
+
+
+
+
+
+
 
 pdff('../RF_transducer_gains_generraw2', asp=1)
 ## tplot(x=allscores[1,1:nn2], y=allscores[2,1:nn2]-allscores[1,1:nn2], type='p', pch=16, cex=1, alpha=0.5)

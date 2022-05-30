@@ -1,0 +1,2874 @@
+\pdfoutput=1
+%% Author: PGL  Porta Mana
+%% Created: 2022-04-14T17:18:22+0200
+%% Last-Updated: 2022-05-30T03:01:01+0200
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% Probabilities for classifier outputs
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newif\ifarxiv
+\arxivfalse
+\iftrue\pdfmapfile{+classico.map}\fi
+\newif\ifafour
+\afourfalse% true = A4, false = A5
+\newif\iftypodisclaim % typographical disclaim on the side
+\typodisclaimtrue
+\newcommand*{\memfontfamily}{zplx}
+\newcommand*{\memfontpack}{newpxtext}
+\documentclass[\ifafour a4paper,12pt,\else a5paper,10pt,\fi%extrafontsizes,%
+onecolumn,oneside,article,%french,italian,german,swedish,latin,
+british%
+]{memoir}
+\newcommand*{\firstdraft}{14 April 2022}
+\newcommand*{\firstpublished}{\firstdraft}
+\newcommand*{\updated}{\ifarxiv***\else\today\fi}
+\newcommand*{\propertitle}{A probability transducer\\and decision-theoretic augmentation\\for machine-learning classifiers}%\\ {\Large}}
+% title uses LARGE; set Large for smaller
+\newcommand*{\pdftitle}{\propertitle}
+\newcommand*{\headtitle}{Transducer \amp\ augmentation for classifiers}
+\newcommand*{\pdfauthor}{K. Dyrland, A. S. Lundervold, P.G.L.  Porta Mana}
+\newcommand*{\headauthor}{Dyrland, Lundervold, Porta Mana}
+\newcommand*{\reporthead}{\ifarxiv\else Open Science Framework \href{https://doi.org/10.31219/osf.io/***}{\textsc{doi}:10.31219/osf.io/***}\fi}% Report number
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%% Calls to packages (uncomment as needed)
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%\usepackage{pifont}
+
+%\usepackage{fontawesome}
+
+\usepackage[T1]{fontenc} 
+\input{glyphtounicode} \pdfgentounicode=1
+
+\usepackage[utf8]{inputenx}
+
+%\usepackage{newunicodechar}
+% \newunicodechar{Ĕ}{\u{E}}
+% \newunicodechar{ĕ}{\u{e}}
+% \newunicodechar{Ĭ}{\u{I}}
+% \newunicodechar{ĭ}{\u{\i}}
+% \newunicodechar{Ŏ}{\u{O}}
+% \newunicodechar{ŏ}{\u{o}}
+% \newunicodechar{Ŭ}{\u{U}}
+% \newunicodechar{ŭ}{\u{u}}
+% \newunicodechar{Ā}{\=A}
+% \newunicodechar{ā}{\=a}
+% \newunicodechar{Ē}{\=E}
+% \newunicodechar{ē}{\=e}
+% \newunicodechar{Ī}{\=I}
+% \newunicodechar{ī}{\={\i}}
+% \newunicodechar{Ō}{\=O}
+% \newunicodechar{ō}{\=o}
+% \newunicodechar{Ū}{\=U}
+% \newunicodechar{ū}{\=u}
+% \newunicodechar{Ȳ}{\=Y}
+% \newunicodechar{ȳ}{\=y}
+
+\newcommand*{\bmmax}{0} % reduce number of bold fonts, before font packages
+\newcommand*{\hmmax}{0} % reduce number of heavy fonts, before font packages
+
+\usepackage{textcomp}
+
+%\usepackage[normalem]{ulem}% package for underlining
+% \makeatletter
+% \def\ssout{\bgroup \ULdepth=-.35ex%\UL@setULdepth
+%  \markoverwith{\lower\ULdepth\hbox
+%    {\kern-.03em\vbox{\hrule width.2em\kern1.2\p@\hrule}\kern-.03em}}%
+%  \ULon}
+% \makeatother
+
+\usepackage{amsmath}
+
+\usepackage{mathtools}
+%\addtolength{\jot}{\jot} % increase spacing in multiline formulae
+\setlength{\multlinegap}{0pt}
+
+\usepackage{empheq}% automatically calls amsmath and mathtools
+\newcommand*{\widefbox}[1]{\fbox{\hspace{1em}#1\hspace{1em}}}
+
+%%%% empheq above seems more versatile than these:
+%\usepackage{fancybox}
+%\usepackage{framed}
+
+% \usepackage[misc]{ifsym} % for dice
+% \newcommand*{\diceone}{{\scriptsize\Cube{1}}}
+
+\usepackage{amssymb}
+
+\usepackage{amsxtra}
+
+\usepackage[main=british]{babel}\selectlanguage{british}
+%\newcommand*{\langnohyph}{\foreignlanguage{nohyphenation}}
+\newcommand{\langnohyph}[1]{\begin{hyphenrules}{nohyphenation}#1\end{hyphenrules}}
+
+\usepackage[autostyle=false,autopunct=false,english=british]{csquotes}
+\setquotestyle{british}
+\newcommand*{\defquote}[1]{`\,#1\,'}
+
+% \makeatletter
+% \renewenvironment{quotation}%
+%                {\list{}{\listparindent 1.5em%
+%                         \itemindent    \listparindent
+%                         \rightmargin=1em   \leftmargin=1em
+%                         \parsep        \z@ \@plus\p@}%
+%                 \item[]\footnotesize}%
+%                 {\endlist}
+% \makeatother                
+
+
+\usepackage{amsthm}
+%% from https://tex.stackexchange.com/a/404680/97039
+\makeatletter
+\def\@endtheorem{\endtrivlist}
+\makeatother
+
+\newcommand*{\QED}{\textsc{q.e.d.}}
+\renewcommand*{\qedsymbol}{\QED}
+\theoremstyle{remark}
+\newtheorem{note}{Note}
+\newtheorem*{remark}{Note}
+\newtheoremstyle{innote}{\parsep}{\parsep}{\footnotesize}{}{}{}{0pt}{}
+\theoremstyle{innote}
+\newtheorem*{innote}{}
+
+\usepackage[shortlabels,inline]{enumitem}
+\SetEnumitemKey{para}{itemindent=\parindent,leftmargin=0pt,listparindent=\parindent,parsep=0pt,itemsep=\topsep}
+% \begin{asparaenum} = \begin{enumerate}[para]
+% \begin{inparaenum} = \begin{enumerate*}
+\setlist{itemsep=0pt,topsep=\parsep}
+\setlist[enumerate,2]{label=(\roman*)}
+\setlist[enumerate]{label=(\alph*),leftmargin=1.5\parindent}
+\setlist[itemize]{leftmargin=1.5\parindent}
+\setlist[description]{leftmargin=1.5\parindent}
+% old alternative:
+% \setlist[enumerate,2]{label=\alph*.}
+% \setlist[enumerate]{leftmargin=\parindent}
+% \setlist[itemize]{leftmargin=\parindent}
+% \setlist[description]{leftmargin=\parindent}
+
+\usepackage[babel,theoremfont,largesc]{newpxtext}
+
+% For Baskerville see https://ctan.org/tex-archive/fonts/baskervillef?lang=en
+% and http://mirrors.ctan.org/fonts/baskervillef/doc/baskervillef-doc.pdf
+% \usepackage[p]{baskervillef}
+% \usepackage[varqu,varl,var0]{inconsolata}
+% \usepackage[scale=.95,type1]{cabin}
+% \usepackage[baskerville,vvarbb]{newtxmath}
+% \usepackage[cal=boondoxo]{mathalfa}
+
+
+\usepackage[bigdelims,nosymbolsc%,smallerops % probably arXiv doesn't have it
+]{newpxmath}
+%\useosf
+%\linespread{1.083}%
+%\linespread{1.05}% widely used
+\linespread{1.1}% best for text with maths
+%% smaller operators for old version of newpxmath
+\makeatletter
+\def\re@DeclareMathSymbol#1#2#3#4{%
+    \let#1=\undefined
+    \DeclareMathSymbol{#1}{#2}{#3}{#4}}
+%\re@DeclareMathSymbol{\bigsqcupop}{\mathop}{largesymbols}{"46}
+%\re@DeclareMathSymbol{\bigodotop}{\mathop}{largesymbols}{"4A}
+\re@DeclareMathSymbol{\bigoplusop}{\mathop}{largesymbols}{"4C}
+\re@DeclareMathSymbol{\bigotimesop}{\mathop}{largesymbols}{"4E}
+\re@DeclareMathSymbol{\sumop}{\mathop}{largesymbols}{"50}
+\re@DeclareMathSymbol{\prodop}{\mathop}{largesymbols}{"51}
+\re@DeclareMathSymbol{\bigcupop}{\mathop}{largesymbols}{"53}
+\re@DeclareMathSymbol{\bigcapop}{\mathop}{largesymbols}{"54}
+%\re@DeclareMathSymbol{\biguplusop}{\mathop}{largesymbols}{"55}
+\re@DeclareMathSymbol{\bigwedgeop}{\mathop}{largesymbols}{"56}
+\re@DeclareMathSymbol{\bigveeop}{\mathop}{largesymbols}{"57}
+%\re@DeclareMathSymbol{\bigcupdotop}{\mathop}{largesymbols}{"DF}
+%\re@DeclareMathSymbol{\bigcapplusop}{\mathop}{largesymbolsPXA}{"00}
+%\re@DeclareMathSymbol{\bigsqcupplusop}{\mathop}{largesymbolsPXA}{"02}
+%\re@DeclareMathSymbol{\bigsqcapplusop}{\mathop}{largesymbolsPXA}{"04}
+%\re@DeclareMathSymbol{\bigsqcapop}{\mathop}{largesymbolsPXA}{"06}
+\re@DeclareMathSymbol{\bigtimesop}{\mathop}{largesymbolsPXA}{"10}
+%\re@DeclareMathSymbol{\coprodop}{\mathop}{largesymbols}{"60}
+%\re@DeclareMathSymbol{\varprod}{\mathop}{largesymbolsPXA}{16}
+\makeatother
+%%
+%% With euler font cursive for Greek letters - the [1] means 100% scaling
+\DeclareFontFamily{U}{egreek}{\skewchar\font'177}%
+\DeclareFontShape{U}{egreek}{m}{n}{<-6>s*[1]eurm5 <6-8>s*[1]eurm7 <8->s*[1]eurm10}{}%
+\DeclareFontShape{U}{egreek}{m}{it}{<->s*[1]eurmo10}{}%
+\DeclareFontShape{U}{egreek}{b}{n}{<-6>s*[1]eurb5 <6-8>s*[1]eurb7 <8->s*[1]eurb10}{}%
+\DeclareFontShape{U}{egreek}{b}{it}{<->s*[1]eurbo10}{}%
+\DeclareSymbolFont{egreeki}{U}{egreek}{m}{it}%
+\SetSymbolFont{egreeki}{bold}{U}{egreek}{b}{it}% from the amsfonts package
+\DeclareSymbolFont{egreekr}{U}{egreek}{m}{n}%
+\SetSymbolFont{egreekr}{bold}{U}{egreek}{b}{n}% from the amsfonts package
+% Take also \sum, \prod, \coprod symbols from Euler fonts
+\DeclareFontFamily{U}{egreekx}{\skewchar\font'177}
+\DeclareFontShape{U}{egreekx}{m}{n}{%
+       <-7.5>s*[0.9]euex7%
+    <7.5-8.5>s*[0.9]euex8%
+    <8.5-9.5>s*[0.9]euex9%
+    <9.5->s*[0.9]euex10%
+}{}
+\DeclareSymbolFont{egreekx}{U}{egreekx}{m}{n}
+\DeclareMathSymbol{\sumop}{\mathop}{egreekx}{"50}
+\DeclareMathSymbol{\prodop}{\mathop}{egreekx}{"51}
+\DeclareMathSymbol{\coprodop}{\mathop}{egreekx}{"60}
+\makeatletter
+\def\sum{\DOTSI\sumop\slimits@}
+\def\prod{\DOTSI\prodop\slimits@}
+\def\coprod{\DOTSI\coprodop\slimits@}
+\makeatother
+\input{definegreek.tex}% Greek letters not usually given in LaTeX.
+
+%\usepackage%[scaled=0.9]%
+%{classico}%  Optima as sans-serif font
+\renewcommand\sfdefault{uop}
+\DeclareMathAlphabet{\mathsf}  {T1}{\sfdefault}{m}{sl}
+\SetMathAlphabet{\mathsf}{bold}{T1}{\sfdefault}{b}{sl}
+\newcommand*{\mathte}[1]{\textbf{\textit{\textsf{#1}}}}
+% Upright sans-serif math alphabet
+% \DeclareMathAlphabet{\mathsu}  {T1}{\sfdefault}{m}{n}
+% \SetMathAlphabet{\mathsu}{bold}{T1}{\sfdefault}{b}{n}
+
+% DejaVu Mono as typewriter text
+\usepackage[scaled=0.84]{DejaVuSansMono}
+
+\usepackage{mathdots}
+
+\usepackage[usenames]{xcolor}
+% Tol (2012) colour-blind-, print-, screen-friendly colours, alternative scheme; Munsell terminology
+\definecolor{mypurpleblue}{RGB}{68,119,170}
+\definecolor{myblue}{RGB}{102,204,238}
+\definecolor{mygreen}{RGB}{34,136,51}
+\definecolor{myyellow}{RGB}{204,187,68}
+\definecolor{myred}{RGB}{238,102,119}
+\definecolor{myredpurple}{RGB}{170,51,119}
+\definecolor{mygrey}{RGB}{187,187,187}
+% Tol (2012) colour-blind-, print-, screen-friendly colours; Munsell terminology
+% \definecolor{lbpurple}{RGB}{51,34,136}
+% \definecolor{lblue}{RGB}{136,204,238}
+% \definecolor{lbgreen}{RGB}{68,170,153}
+% \definecolor{lgreen}{RGB}{17,119,51}
+% \definecolor{lgyellow}{RGB}{153,153,51}
+% \definecolor{lyellow}{RGB}{221,204,119}
+% \definecolor{lred}{RGB}{204,102,119}
+% \definecolor{lpred}{RGB}{136,34,85}
+% \definecolor{lrpurple}{RGB}{170,68,153}
+\definecolor{lgrey}{RGB}{221,221,221}
+%\newcommand*\mycolourbox[1]{%
+%\colorbox{mygrey}{\hspace{1em}#1\hspace{1em}}}
+\colorlet{shadecolor}{lgrey}
+
+\usepackage{bm}
+
+\usepackage{microtype}
+
+\usepackage[backend=biber,mcite,%subentry,
+citestyle=authoryear-comp,bibstyle=pglpm-authoryear,autopunct=false,sorting=ny,sortcites=false,natbib=false,maxcitenames=2,maxbibnames=8,minbibnames=8,giveninits=true,uniquename=false,uniquelist=false,maxalphanames=1,block=space,hyperref=true,defernumbers=false,useprefix=true,sortupper=false,language=british,parentracker=false,autocite=footnote]{biblatex}
+\DeclareSortingTemplate{ny}{\sort{\field{sortname}\field{author}\field{editor}}\sort{\field{year}}}
+\DeclareFieldFormat{postnote}{#1}
+\iffalse\makeatletter%%% replace parenthesis with brackets
+\newrobustcmd*{\parentexttrack}[1]{%
+  \begingroup
+  \blx@blxinit
+  \blx@setsfcodes
+  \blx@bibopenparen#1\blx@bibcloseparen
+  \endgroup}
+\AtEveryCite{%
+  \let\parentext=\parentexttrack%
+  \let\bibopenparen=\bibopenbracket%
+  \let\bibcloseparen=\bibclosebracket}
+\makeatother\fi
+\DefineBibliographyExtras{british}{\def\finalandcomma{\addcomma}}
+\renewcommand*{\finalnamedelim}{\addspace\amp\space}
+% \renewcommand*{\finalnamedelim}{\addcomma\space}
+\renewcommand*{\textcitedelim}{\addcomma\space}
+% \setcounter{biburlnumpenalty}{1} % to allow url breaks anywhere
+% \setcounter{biburlucpenalty}{0}
+% \setcounter{biburllcpenalty}{1}
+\DeclareDelimFormat{multicitedelim}{\addsemicolon\addspace\space}
+\DeclareDelimFormat{compcitedelim}{\addsemicolon\addspace\space}
+\DeclareDelimFormat{postnotedelim}{\addspace}
+\ifarxiv\else\addbibresource{portamanabib.bib}\fi
+\renewcommand{\bibfont}{\footnotesize}
+%\appto{\citesetup}{\footnotesize}% smaller font for citations
+\defbibheading{bibliography}[\bibname]{\section*{#1}\addcontentsline{toc}{section}{#1}%\markboth{#1}{#1}
+}
+\newcommand*{\citep}{\footcites}
+\newcommand*{\citey}{\footcites}%{\parencites*}
+\newcommand*{\ibid}{\unspace\addtocounter{footnote}{-1}\footnotemark{}}
+%\renewcommand*{\cite}{\parencite}
+%\renewcommand*{\cites}{\parencites}
+\providecommand{\href}[2]{#2}
+\providecommand{\eprint}[2]{\texttt{\href{#1}{#2}}}
+\newcommand*{\amp}{\&}
+% \newcommand*{\citein}[2][]{\textnormal{\textcite[#1]{#2}}%\addtocategory{extras}{#2}
+% }
+\newcommand*{\citein}[2][]{\textnormal{\textcite[#1]{#2}}%\addtocategory{extras}{#2}
+}
+\newcommand*{\citebi}[2][]{\textcite[#1]{#2}%\addtocategory{extras}{#2}
+}
+\newcommand*{\subtitleproc}[1]{}
+\newcommand*{\chapb}{ch.}
+%
+%\def\UrlOrds{\do\*\do\-\do\~\do\'\do\"\do\-}%
+\def\myUrlOrds{\do\0\do\1\do\2\do\3\do\4\do\5\do\6\do\7\do\8\do\9\do\a\do\b\do\c\do\d\do\e\do\f\do\g\do\h\do\i\do\j\do\k\do\l\do\m\do\n\do\o\do\p\do\q\do\r\do\s\do\t\do\u\do\v\do\w\do\x\do\y\do\z\do\A\do\B\do\C\do\D\do\E\do\F\do\G\do\H\do\I\do\J\do\K\do\L\do\M\do\N\do\O\do\P\do\Q\do\R\do\S\do\T\do\U\do\V\do\W\do\X\do\Y\do\Z}%
+\makeatletter
+%\g@addto@macro\UrlSpecials{\do={\newline}}
+\g@addto@macro{\UrlBreaks}{\myUrlOrds}
+\makeatother
+\newcommand*{\arxiveprint}[1]{%
+arXiv \doi{10.48550/arXiv.#1}%
+}
+\newcommand*{\mparceprint}[1]{%
+\href{http://www.ma.utexas.edu/mp_arc-bin/mpa?yn=#1}{mp\_arc:\allowbreak\nolinkurl{#1}}%
+}
+\newcommand*{\haleprint}[1]{%
+\href{https://hal.archives-ouvertes.fr/#1}{\textsc{hal}:\allowbreak\nolinkurl{#1}}%
+}
+\newcommand*{\philscieprint}[1]{%
+\href{http://philsci-archive.pitt.edu/archive/#1}{PhilSci:\allowbreak\nolinkurl{#1}}%
+}
+\newcommand*{\doi}[1]{%
+\href{https://doi.org/#1}{\textsc{doi}:\allowbreak\nolinkurl{#1}}%
+}
+\newcommand*{\biorxiveprint}[1]{%
+bioRxiv \doi{10.1101/#1}%
+}
+\newcommand*{\osfeprint}[1]{%
+Open Science Framework \doi{10.31219/osf.io/#1}%
+}
+
+\usepackage{graphicx}
+
+%\usepackage{wrapfig}
+
+%\usepackage{tikz-cd}
+
+\PassOptionsToPackage{hyphens}{url}\usepackage[hypertexnames=false,pdfencoding=unicode,psdextra]{hyperref}
+
+\usepackage[depth=4]{bookmark}
+\hypersetup{colorlinks=true,bookmarksnumbered,pdfborder={0 0 0.25},citebordercolor={0.2667 0.4667 0.6667},citecolor=mypurpleblue,linkbordercolor={0.6667 0.2 0.4667},linkcolor=myredpurple,urlbordercolor={0.1333 0.5333 0.2},urlcolor=mygreen,breaklinks=true,pdftitle={\pdftitle},pdfauthor={\pdfauthor}}
+% \usepackage[vertfit=local]{breakurl}% only for arXiv
+\providecommand*{\urlalt}{\href}
+
+\usepackage[british]{datetime2}
+\DTMnewdatestyle{mydate}%
+{% definitions
+\renewcommand*{\DTMdisplaydate}[4]{%
+\number##3\ \DTMenglishmonthname{##2} ##1}%
+\renewcommand*{\DTMDisplaydate}{\DTMdisplaydate}%
+}
+\DTMsetdatestyle{mydate}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%% Layout. I do not know on which kind of paper the reader will print the
+%%% paper on (A4? letter? one-sided? double-sided?). So I choose A5, which
+%%% provides a good layout for reading on screen and save paper if printed
+%%% two pages per sheet. Average length line is 66 characters and page
+%%% numbers are centred.
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\ifafour\setstocksize{297mm}{210mm}%{*}% A4
+\else\setstocksize{210mm}{5.5in}%{*}% 210x139.7
+\fi
+\settrimmedsize{\stockheight}{\stockwidth}{*}
+\setlxvchars[\normalfont] %313.3632pt for a 66-characters line
+\setxlvchars[\normalfont]
+% \setlength{\trimtop}{0pt}
+% \setlength{\trimedge}{\stockwidth}
+% \addtolength{\trimedge}{-\paperwidth}
+%\settrims{0pt}{0pt}
+% The length of the normalsize alphabet is 133.05988pt - 10 pt = 26.1408pc
+% The length of the normalsize alphabet is 159.6719pt - 12pt = 30.3586pc
+% Bringhurst gives 32pc as boundary optimal with 69 ch per line
+% The length of the normalsize alphabet is 191.60612pt - 14pt = 35.8634pc
+\ifafour\settypeblocksize{*}{32pc}{1.618} % A4
+%\setulmargins{*}{*}{1.667}%gives 5/3 margins % 2 or 1.667
+\else\settypeblocksize{*}{26pc}{1.618}% nearer to a 66-line newpx and preserves GR
+\fi
+\setulmargins{*}{*}{1}%gives equal margins
+\setlrmargins{*}{*}{*}
+\setheadfoot{\onelineskip}{2.5\onelineskip}
+\setheaderspaces{*}{2\onelineskip}{*}
+\setmarginnotes{2ex}{10mm}{0pt}
+\checkandfixthelayout[nearest]
+%%% End layout
+%% this fixes missing white spaces
+%\pdfmapline{+dummy-space <dummy-space.pfb}
+%\pdfinterwordspaceon% seems to add a white margin to Sumatrapdf
+
+%%% Sectioning
+\newcommand*{\asudedication}[1]{%
+{\par\centering\textit{#1}\par}}
+\newenvironment{contributions}{\section*{Author contributions}\addcontentsline{toc}{section}{Author contributions}}{\par}
+\newenvironment{acknowledgements}{\section*{Thanks}\addcontentsline{toc}{section}{Thanks}}{\par}
+\makeatletter\renewcommand{\appendix}{\par
+  \bigskip{\centering
+   \interlinepenalty \@M
+   \normalfont
+   \printchaptertitle{\sffamily\appendixpagename}\par}
+  \setcounter{section}{0}%
+  \gdef\@chapapp{\appendixname}%
+  \gdef\thesection{\@Alph\c@section}%
+  \anappendixtrue}\makeatother
+\counterwithout{section}{chapter}
+\setsecnumformat{\upshape\csname the#1\endcsname\quad}
+\setsecheadstyle{\large\bfseries\sffamily%
+\centering}
+\setsubsecheadstyle{\bfseries\sffamily%
+\raggedright}
+%\setbeforesecskip{-1.5ex plus 1ex minus .2ex}% plus 1ex minus .2ex}
+%\setaftersecskip{1.3ex plus .2ex }% plus 1ex minus .2ex}
+%\setsubsubsecheadstyle{\bfseries\sffamily\slshape\raggedright}
+%\setbeforesubsecskip{1.25ex plus 1ex minus .2ex }% plus 1ex minus .2ex}
+%\setaftersubsecskip{-1em}%{-0.5ex plus .2ex}% plus 1ex minus .2ex}
+\setsubsecindent{0pt}%0ex plus 1ex minus .2ex}
+\setparaheadstyle{\bfseries\sffamily%
+\raggedright}
+\setcounter{secnumdepth}{2}
+\setlength{\headwidth}{\textwidth}
+\newcommand{\addchap}[1]{\chapter*[#1]{#1}\addcontentsline{toc}{chapter}{#1}}
+\newcommand{\addsec}[1]{\section*{#1}\addcontentsline{toc}{section}{#1}}
+\newcommand{\addsubsec}[1]{\subsection*{#1}\addcontentsline{toc}{subsection}{#1}}
+\newcommand{\addpara}[1]{\paragraph*{#1.}\addcontentsline{toc}{subsubsection}{#1}}
+\newcommand{\addparap}[1]{\paragraph*{#1}\addcontentsline{toc}{subsubsection}{#1}}
+
+%%% Headers, footers, pagestyle
+\copypagestyle{manaart}{plain}
+\makeheadrule{manaart}{\headwidth}{0.5\normalrulethickness}
+\makeoddhead{manaart}{%
+{\footnotesize%\sffamily%
+\scshape\headauthor}}{}{{\footnotesize\sffamily%
+\headtitle}}
+\makeoddfoot{manaart}{}{\thepage}{}
+\newcommand*\autanet{\includegraphics[height=\heightof{M}]{autanet.pdf}}
+\definecolor{mygray}{gray}{0.333}
+\iftypodisclaim%
+\ifafour\newcommand\addprintnote{\begin{picture}(0,0)%
+\put(245,149){\makebox(0,0){\rotatebox{90}{\tiny\color{mygray}\textsf{This
+            document is designed for screen reading and
+            two-up printing on A4 or Letter paper}}}}%
+\end{picture}}% A4
+\else\newcommand\addprintnote{\begin{picture}(0,0)%
+\put(176,112){\makebox(0,0){\rotatebox{90}{\tiny\color{mygray}\textsf{This
+            document is designed for screen reading and
+            two-up printing on A4 or Letter paper}}}}%
+\end{picture}}\fi%afourtrue
+\makeoddfoot{plain}{}{\makebox[0pt]{\thepage}\addprintnote}{}
+\else
+\makeoddfoot{plain}{}{\makebox[0pt]{\thepage}}{}
+\fi%typodisclaimtrue
+\makeoddhead{plain}{\scriptsize\reporthead}{}{}
+% \copypagestyle{manainitial}{plain}
+% \makeheadrule{manainitial}{\headwidth}{0.5\normalrulethickness}
+% \makeoddhead{manainitial}{%
+% \footnotesize\sffamily%
+% \scshape\headauthor}{}{\footnotesize\sffamily%
+% \headtitle}
+% \makeoddfoot{manaart}{}{\thepage}{}
+
+\pagestyle{manaart}
+
+\setlength{\droptitle}{-3.9\onelineskip}
+\pretitle{\begin{center}\LARGE\sffamily%
+\bfseries}
+\posttitle{\bigskip\end{center}}
+
+\makeatletter\newcommand*{\atf}{\includegraphics[totalheight=\heightof{@}]{atblack.png}}\makeatother
+\providecommand{\affiliation}[1]{\textsl{\textsf{\footnotesize #1}}}
+\providecommand{\epost}[1]{\texttt{\footnotesize\textless#1\textgreater}}
+\providecommand{\email}[2]{\href{mailto:#1ZZ@#2 ((remove ZZ))}{#1\protect\atf#2}}
+%\providecommand{\email}[2]{\href{mailto:#1@#2}{#1@#2}}
+
+\preauthor{\vspace{-0\baselineskip}\begin{center}
+\normalsize\sffamily%
+\lineskip  0.5em}
+\postauthor{\par\end{center}}
+\predate{\DTMsetdatestyle{mydate}\begin{center}\footnotesize}
+\postdate{\end{center}\vspace{-\medskipamount}}
+
+\setfloatadjustment{figure}{\footnotesize}
+\captiondelim{\quad}
+\captionnamefont{\footnotesize\sffamily%
+}
+\captiontitlefont{\footnotesize}
+%\firmlists*
+\midsloppy
+% handling orphan/widow lines, memman.pdf
+% \clubpenalty=10000
+% \widowpenalty=10000
+% \raggedbottom
+% Downes, memman.pdf
+\clubpenalty=9996
+\widowpenalty=9999
+\brokenpenalty=4991
+\predisplaypenalty=10000
+\postdisplaypenalty=1549
+\displaywidowpenalty=1602
+\raggedbottom
+
+\paragraphfootnotes
+\setlength{\footmarkwidth}{2ex}
+% \threecolumnfootnotes
+%\setlength{\footmarksep}{0em}
+\footmarkstyle{\textsuperscript{%\color{myred}
+\scriptsize\bfseries#1}~}
+%\footmarkstyle{\textsuperscript{\color{myred}\scriptsize\bfseries#1}~}
+%\footmarkstyle{\textsuperscript{[#1]}~}
+
+\selectlanguage{british}\frenchspacing
+
+\definecolor{notecolour}{RGB}{68,170,153}
+%\newcommand*{\puzzle}{\maltese}
+\newcommand*{\puzzle}{{\fontencoding{U}\fontfamily{fontawesometwo}\selectfont\symbol{225}}}
+\newcommand*{\wrench}{{\fontencoding{U}\fontfamily{fontawesomethree}\selectfont\symbol{114}}}
+\newcommand*{\pencil}{{\fontencoding{U}\fontfamily{fontawesometwo}\selectfont\symbol{210}}}
+\newcommand{\mynotew}[1]{{\footnotesize\color{notecolour}\wrench\ #1}}
+\newcommand{\mynotep}[1]{{\footnotesize\color{notecolour}\pencil\ #1}}
+\newcommand{\mynotez}[1]{{\footnotesize\color{notecolour}\puzzle\ #1}}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%% Paper's details
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\title{\propertitle}
+\author{%
+%\hspace*{\stretch{0}}%
+%% uncomment if additional authors present
+\parbox{\linewidth}%\makebox[0pt][c]%
+{\protect\centering K. Dyrland \href{https://orcid.org/0000-0002-7674-5733}{\protect\includegraphics[scale=0.16]{orcid_32x32.png}}\\\scriptsize\epost{\email{kjetil.dyrland}{gmail.com}}}%
+%\hspace*{\stretch{1}}%
+\\%
+\parbox{\linewidth}%\makebox[0pt][c]%
+{\protect\centering A. S. Lundervold \href{https://orcid.org/0000-0001-8663-4247}{\protect\includegraphics[scale=0.16]{orcid_32x32.png}}\textsuperscript{\ensuremath{\dagger}} \\\scriptsize\epost{\email{alexander.selvikvag.lundervold}{hvl.no}}}%
+%\hspace*{\stretch{1}}%
+\\%
+\parbox{\linewidth}%\makebox[0pt][c]%
+{\protect\centering P.G.L.  Porta Mana  \href{https://orcid.org/0000-0002-6070-0784}{\protect\includegraphics[scale=0.16]{orcid_32x32.png}}\\\scriptsize\epost{\email{pgl}{portamana.org}}}%
+%\hspace*{\stretch{0}}%
+% Mohn Medical Imaging and Visualization Centre, 
+%% uncomment if additional authors present
+% \hspace*{\stretch{1}}%
+% \parbox{0.5\linewidth}%\makebox[0pt][c]%
+% {\protect\centering ***\\%
+% \footnotesize\epost{\email{***}{***}}}%
+%\hspace*{\stretch{1}}%
+\\\tiny(listed alphabetically)
+\\\footnotesize Dept of Computer science, Electrical Engineering and Mathematical Sciences,\\Western Norway University of Applied Sciences, Bergen, Norway
+\\[\jot]\textsuperscript{\ensuremath{\dagger}}\amp\ Mohn Medical Imaging and Visualization Centre, Dept of Radiology,\\Haukeland University Hospital, Bergen, Norway}
+
+%\date{Draft of \today\ (first drafted \firstdraft)}
+\date{\textbf{Draft}. \firstpublished; updated \updated}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%% Macros @@@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% Common ones - uncomment as needed
+%\providecommand{\nequiv}{\not\equiv}
+%\providecommand{\coloneqq}{\mathrel{\mathop:}=}
+%\providecommand{\eqqcolon}{=\mathrel{\mathop:}}
+%\providecommand{\varprod}{\prod}
+\newcommand*{\de}{\partialup}%partial diff
+\newcommand*{\pu}{\piup}%constant pi
+\newcommand*{\delt}{\deltaup}%Kronecker, Dirac
+%\newcommand*{\eps}{\varepsilonup}%Levi-Civita, Heaviside
+%\newcommand*{\riem}{\zetaup}%Riemann zeta
+%\providecommand{\degree}{\textdegree}% degree
+%\newcommand*{\celsius}{\textcelsius}% degree Celsius
+%\newcommand*{\micro}{\textmu}% degree Celsius
+\newcommand*{\I}{\mathrm{i}}%imaginary unit
+\newcommand*{\e}{\mathrm{e}}%Neper
+\newcommand*{\di}{\mathrm{d}}%differential
+%\newcommand*{\Di}{\mathrm{D}}%capital differential
+%\newcommand*{\planckc}{\hslash}
+%\newcommand*{\avogn}{N_{\textrm{A}}}
+%\newcommand*{\NN}{\bm{\mathrm{N}}}
+%\newcommand*{\ZZ}{\bm{\mathrm{Z}}}
+%\newcommand*{\QQ}{\bm{\mathrm{Q}}}
+\newcommand*{\RR}{\bm{\mathrm{R}}}
+%\newcommand*{\CC}{\bm{\mathrm{C}}}
+%\newcommand*{\nabl}{\bm{\nabla}}%nabla
+%\DeclareMathOperator{\lb}{lb}%base 2 log
+%\DeclareMathOperator{\tr}{tr}%trace
+%\DeclareMathOperator{\card}{card}%cardinality
+%\DeclareMathOperator{\im}{Im}%im part
+%\DeclareMathOperator{\re}{Re}%re part
+%\DeclareMathOperator{\sgn}{sgn}%signum
+%\DeclareMathOperator{\ent}{ent}%integer less or equal to
+%\DeclareMathOperator{\Ord}{O}%same order as
+%\DeclareMathOperator{\ord}{o}%lower order than
+%\newcommand*{\incr}{\triangle}%finite increment
+\newcommand*{\defd}{\coloneqq}
+\newcommand*{\defs}{\eqqcolon}
+%\newcommand*{\Land}{\bigwedge}
+%\newcommand*{\Lor}{\bigvee}
+%\newcommand*{\lland}{\DOTSB\;\land\;}
+%\newcommand*{\llor}{\DOTSB\;\lor\;}
+\newcommand*{\limplies}{\mathbin{\Rightarrow}}%implies
+%\newcommand*{\suchthat}{\mid}%{\mathpunct{|}}%such that (eg in sets)
+%\newcommand*{\with}{\colon}%with (list of indices)
+%\newcommand*{\mul}{\times}%multiplication
+%\newcommand*{\inn}{\cdot}%inner product
+\newcommand*{\dotv}{\mathord{\,\cdot\,}}%variable place
+%\newcommand*{\comp}{\circ}%composition of functions
+%\newcommand*{\con}{\mathbin{:}}%scal prod of tensors
+%\newcommand*{\equi}{\sim}%equivalent to 
+\renewcommand*{\asymp}{\simeq}%equivalent to 
+%\newcommand*{\corr}{\mathrel{\hat{=}}}%corresponds to
+%\providecommand{\varparallel}{\ensuremath{\mathbin{/\mkern-7mu/}}}%parallel (tentative symbol)
+\renewcommand*{\le}{\leqslant}%less or equal
+\renewcommand*{\ge}{\geqslant}%greater or equal
+\DeclarePairedDelimiter\clcl{[}{]}
+%\DeclarePairedDelimiter\clop{[}{[}
+%\DeclarePairedDelimiter\opcl{]}{]}
+%\DeclarePairedDelimiter\opop{]}{[}
+\DeclarePairedDelimiter\abs{\lvert}{\rvert}
+%\DeclarePairedDelimiter\norm{\lVert}{\rVert}
+\DeclarePairedDelimiter\set{\{}{\}} %}
+%\DeclareMathOperator{\pr}{P}%probability
+\newcommand*{\p}{\mathrm{p}}%probability
+\renewcommand*{\P}{\mathrm{P}}%probability
+\newcommand*{\E}{\mathrm{E}}
+%% The "\:" space is chosen to correctly separate inner binary and external rels
+\renewcommand*{\|}[1][]{\nonscript\:#1\vert\nonscript\:\mathopen{}}
+%\DeclarePairedDelimiterX{\cp}[2]{(}{)}{#1\nonscript\:\delimsize\vert\nonscript\:\mathopen{}#2}
+%\DeclarePairedDelimiterX{\ct}[2]{[}{]}{#1\nonscript\;\delimsize\vert\nonscript\:\mathopen{}#2}
+%\DeclarePairedDelimiterX{\cs}[2]{\{}{\}}{#1\nonscript\:\delimsize\vert\nonscript\:\mathopen{}#2}
+%\newcommand*{\+}{\lor}
+%\renewcommand{\*}{\land}
+%% symbol = for equality statements within probabilities
+%% from https://tex.stackexchange.com/a/484142/97039
+% \newcommand*{\eq}{\mathrel{\!=\!}}
+% \let\texteq\=
+% \renewcommand*{\=}{\TextOrMath\texteq\eq}
+% \newcommand*{\eq}[1][=]{\mathrel{\!#1\!}}
+\newcommand*{\mo}[1][=]{\mathrel{\mkern-3.5mu#1\mkern-3.5mu}}
+%\newcommand*{\moo}[1][=]{\mathrel{\!#1\!}}
+%\newcommand*{\mo}[1][=]{\mathord{#1}}
+%\newcommand*{\mo}[1][=]{\mathord{\,#1\,}}
+%%
+\newcommand*{\sect}{\S}% Sect.~
+\newcommand*{\sects}{\S\S}% Sect.~
+\newcommand*{\chap}{ch.}%
+\newcommand*{\chaps}{chs}%
+\newcommand*{\bref}{ref.}%
+\newcommand*{\brefs}{refs}%
+%\newcommand*{\fn}{fn}%
+\newcommand*{\eqn}{eq.}%
+\newcommand*{\eqns}{eqs}%
+\newcommand*{\fig}{fig.}%
+\newcommand*{\figs}{figs}%
+\newcommand*{\vs}{{vs}}
+\newcommand*{\eg}{{e.g.}}
+\newcommand*{\etc}{{etc.}}
+\newcommand*{\ie}{{i.e.}}
+%\newcommand*{\ca}{{c.}}
+\newcommand*{\foll}{{ff.}}
+%\newcommand*{\viz}{{viz}}
+\newcommand*{\cf}{{cf.}}
+%\newcommand*{\Cf}{{Cf.}}
+%\newcommand*{\vd}{{v.}}
+\newcommand*{\etal}{{et al.}}
+%\newcommand*{\etsim}{{et sim.}}
+%\newcommand*{\ibid}{{ibid.}}
+%\newcommand*{\sic}{{sic}}
+%\newcommand*{\id}{\mathte{I}}%id matrix
+%\newcommand*{\nbd}{\nobreakdash}%
+%\newcommand*{\bd}{\hspace{0pt}}%
+%\def\hy{-\penalty0\hskip0pt\relax}
+%\newcommand*{\labelbis}[1]{\tag*{(\ref{#1})$_\text{r}$}}
+%\newcommand*{\mathbox}[2][.8]{\parbox[t]{#1\columnwidth}{#2}}
+%\newcommand*{\zerob}[1]{\makebox[0pt][l]{#1}}
+\newcommand*{\tprod}{\mathop{\textstyle\prod}\nolimits}
+\newcommand*{\tsum}{\mathop{\textstyle\sum}\nolimits}
+%\newcommand*{\tint}{\begingroup\textstyle\int\endgroup\nolimits}
+%\newcommand*{\tland}{\mathop{\textstyle\bigwedge}\nolimits}
+%\newcommand*{\tlor}{\mathop{\textstyle\bigvee}\nolimits}
+%\newcommand*{\sprod}{\mathop{\textstyle\prod}}
+%\newcommand*{\ssum}{\mathop{\textstyle\sum}}
+%\newcommand*{\sint}{\begingroup\textstyle\int\endgroup}
+%\newcommand*{\sland}{\mathop{\textstyle\bigwedge}}
+%\newcommand*{\slor}{\mathop{\textstyle\bigvee}}
+%\newcommand*{\T}{^\transp}%transpose
+%%\newcommand*{\QEM}%{\textnormal{$\Box$}}%{\ding{167}}
+%\newcommand*{\qem}{\leavevmode\unskip\penalty9999 \hbox{}\nobreak\hfill
+%\quad\hbox{\QEM}}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%% Custom macros for this file @@@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\newcommand*{\widebar}[1]{{\mkern1.5mu\skew{2}\overline{\mkern-1.5mu#1\mkern-1.5mu}\mkern 1.5mu}}
+
+% \newcommand{\explanation}[4][t]{%\setlength{\tabcolsep}{-1ex}
+% %\smash{
+% \begin{tabular}[#1]{c}#2\\[0.5\jot]\rule{1pt}{#3}\\#4\end{tabular}}%}
+% \newcommand*{\ptext}[1]{\text{\small #1}}
+\DeclareMathOperator*{\argmax}{arg\,max}
+\newcommand*{\dob}{degree of belief}
+\newcommand*{\dobs}{degrees of belief}
+\newcommand*{\Fs}{F_{\textrm{s}}}
+\newcommand*{\fs}{f_{\textrm{s}}}
+\newcommand*{\uF}{\bar{F}}
+\newcommand*{\uf}{\bar{f}}
+\newcommand*{\za}{\hat{0}}
+\newcommand*{\zb}{\hat{1}}
+\newcommand*{\eu}{\bar{U}}
+\newcommand*{\nd}{n_{\textrm{d}}}
+\newcommand*{\nc}{n_{\textrm{c}}}
+\newcommand*{\Po}{\mathord{+}}
+\newcommand*{\Ne}{\mathord{-}}
+\newcommand*{\tp}{\textrm{tp}}
+\newcommand*{\fp}{\textrm{fp}}
+\newcommand*{\fn}{\textrm{fn}}
+\newcommand*{\tn}{\textrm{tn}}
+\newcommand*{\itemyes}{{\fontencoding{U}\fontfamily{pzd}\selectfont\symbol{51}}}
+\newcommand*{\itemno}{{\fontencoding{U}\fontfamily{pzd}\selectfont\symbol{55}}}
+\newcommand*{\wf}{w}
+\newcommand*{\wfo}{w_{\textrm{g}}}
+\newcommand*{\tI}{\textit{I}}
+\newcommand*{\tII}{\textit{II}}
+\newcommand*{\tA}{\textit{A}}
+\newcommand*{\tB}{\textit{B}}
+\newcommand*{\tC}{\textit{C}}
+%%
+\newcommand*{\texts}[1]{\text{\small #1}}
+\newcommand*{\ml}{machine-learning}
+\newcommand*{\RF}{random forest}
+\newcommand*{\rf}{random-forest}
+\newcommand*{\CNN}{convolutional neural network}
+\newcommand*{\cnn}{convolutional-neural-network}
+\newcommand*{\br}{r}
+\newcommand*{\No}{\mathrm{N}}
+\newcommand*{\umatrix}[4]{\begin{bmatrix*}[r]#1&#2\\#3&#4\end{bmatrix*}}
+\newcommand*{\sumatrix}[4]{\begin{bsmallmatrix*}[r]#1&#2\\#3&#4\end{bsmallmatrix*}}
+%%% Custom macros end @@@
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%% Beginning of document
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%\firmlists
+\begin{document}
+\captiondelim{\quad}\captionnamefont{\footnotesize}\captiontitlefont{\footnotesize}
+\selectlanguage{british}\frenchspacing
+\maketitle
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%% Abstract
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\abstractrunin
+\abslabeldelim{}
+\renewcommand*{\abstractname}{}
+\renewcommand*{\abstracttextfont}{\normalfont\footnotesize}
+% \setlength{\absleftindent}{0pt}
+% \setlength{\absrightindent}{0pt}
+\setlength{\abstitleskip}{-\absparindent}
+\begin{abstract}\labelsep 0pt%
+  \noindent \mynotep{}
+  The present work sells probabilities for \ml\ algorithms at a bargain price. It shows that these probabilities are just what those algorithms need in order to increase their sales.
+% \\\noindent\emph{\footnotesize Note: Dear Reader
+%     \amp\ Peer, this manuscript is being peer-reviewed by you. Thank you.}
+% \par%\\[\jot]
+% \noindent
+% {\footnotesize PACS: ***}\qquad%
+% {\footnotesize MSC: ***}%
+%\qquad{\footnotesize Keywords: ***}
+\end{abstract}
+\selectlanguage{british}\frenchspacing
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%% Epigraph
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% \asudedication{\small ***}
+% \vspace{\bigskipamount}
+% \setlength{\epigraphwidth}{.7\columnwidth}
+% %\epigraphposition{flushright}
+% \epigraphtextposition{flushright}
+% %\epigraphsourceposition{flushright}
+% \epigraphfontsize{\footnotesize}
+% \setlength{\epigraphrule}{0pt}
+% %\setlength{\beforeepigraphskip}{0pt}
+% %\setlength{\afterepigraphskip}{0pt}
+% \epigraph{\emph{text}}{source}
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%% BEGINNING OF MAIN TEXT
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\section{The inadequacy of common classification approaches}
+\label{sec:goal_class}
+
+As the potential of using \ml\ algorithms in important fields such as medicine or drug discovery increases \autocites{lundervoldetal2019,chenetal2018,green2019}, the \ml\ community ought to keep in mind what the actual needs and inference contexts in such fields are. We must avoid trying (intentionally or unintentionally) to convince such fields to change their needs, or to ignore their own contexts just to fit \ml\ solutions that are available and fashionable at the moment. Rather, we must make sure the that solutions fit needs \amp\ context, and amend them if they do not.
+
+The \ml\ mindset and approach to problems such as classification in such new important fields is often still inadequate in many respects. It reflects simpler needs and contexts of many  inference problems successfully tackled by machine learning earlier on.
+
+A stereotypical \enquote{cat vs dog} image classification, for instance, has four very important differences from a \enquote{disease \tI\ vs disease \tII} medical classification, or from an \enquote{active vs inactive} drug classification:
+\begin{enumerate}[label=(\roman*),wide]
+
+\item\label{item:gain_loss}Nobody presumably dies or loses large amounts of money if a cat image is misclassified as dog or vice versa. But a person can die if a disease is misdiagnosed; huge capitals can be lost if an ultimately ineffective drug candidate is pursued. The \emph{gains and losses} -- or generally speaking the \emph{utilities} -- of correct and incorrect classifications in the former problem and in the two latter problems are vastly different.
+
+\item\label{item:decisions_classes} To what purpose do we try to guess whether an image's subject is a cat or a dog? For example because we must decide whether to put it in the folder \enquote{cats} or in the folder \enquote{dogs}. To what purpose do we try to guess a patient's disease or a compound's chemical activity? A clinician does not simply tell a patient \enquote*{You probably have such-and-such disease. Goodbye!}, but has to decide among many different kinds of treatments. The candidate drug compound may be discarded, pursued as it is, modified, and so on. \emph{The ultimate goal of a classification is always some kind of decision}, not just a class guess. In the cat-vs-dog problem there is a natural one-one correspondence between classes and decisions. But in the medical or drug-discovery problems \emph{the set of classes and the set of decisions are very different}, and have even different numbers of elements.
+
+\item\label{item:optimal_truth} If there is a 70\% probability that an image's subject is a cat, then it is natural to put it in the folder \enquote{cats} rather than \enquote{dogs} (if the decision is only between these two folders). If there is a 70\% probability that a patient has a particular health condition, it may nonetheless be better to dismiss the patient -- that is, to behave as if there was no condition. This is the optimal decision, for example, when the only available treatment for the condition would severely harm the patient if the condition were not present. Such treatment would be recommended only if the probability for the condition were much higher than 70\%. Similarly, even if there is a 70\% probability that a candidate drug is active it may nonetheless be best to discard it. This is the economically most advantageous choice if pursuing a false-positive leads to large economic losses. \emph{The target of a classification is not what’s most probable, but what’s optimal.} \mynotep{add something on proper probabilities, connecting to~\ref{item:determ_statist}}
+
+  
+\item\label{item:determ_statist} The relation from image pixels to house-pet subject may be almost deterministic; so we are effectively looking for or extrapolating a function $\texts{pet} \mo f(\texts{pixels})$ contaminated by little noise. But the relation between medical-test scores or biochemical features on one side, and disease or drug activity on the other, is typically \emph{probabilistic}; so a function $\texts{disease} \mo f(\texts{scores})$
+  % scores${}\!\mapsto\!{}$disease
+  or $\texts{activity} \mo f(\texts{features})$
+  % features${}\!\mapsto\!{}$activity
+  does not even exist. \emph{We are assessing statistical relationships} $\P(\texts{disease} , \texts{scores})$ or $\P(\texts{activity} , \texts{features})$ instead, which include deterministic ones as special cases.
+
+\end{enumerate}
+
+In summary, there is place to improve classifiers so as to
+\begin{enumerate*}[label=(\roman*)]
+\item quantitatively take into account actual utilities,
+\item separate classes from decisions,
+\item target optimality rather than \enquote{truth}, %-- which cannot be targeted because it is unknown.
+\item output and use proper probabilities.
+\end{enumerate*}
+% \begin{enumerate*}[label=(\roman*)]
+% \item neglect actual gains and losses or treat them only qualitatively,
+% \item neglect proper probabilities and often demotes density regression (statistical inference) to functional regression (interpolation),
+% \item confuse classes and decisions,
+% \item mistake truth for optimality.
+% \end{enumerate*}
+
+\medskip
+
+In artificial intelligence and machine learning it is known how to address all these issues in principle -- the theoretical framework is for example beautifully presented in the first 18 chapters or so of Russell \amp\ Norvig's \parencites*{russelletal1995_r2022} text \autocites[see also]{selfetal1987,cheeseman1988,cheeseman1995_r2018,pearl1988,mackay1995_r2005}.
+
+Issues~\ref{item:gain_loss}--\ref{item:optimal_truth} are simply solved by adopting the standpoint of \emph{Decision Theory}, which we briefly review in \sect~\ref{sec:utility_classification} below and discuss at length in a companion work \autocites{dyrlandetal2022}. In short: The set of decisions and the set of classes pertinent to a problem are separated if necessary. A utility is associated to each decision, relative to the occurrence of each particular class; these utilities are assembled into a utility matrix: one row per decision, one column per class. This matrix is multiplied by a column vector consisting in the probability for the classes. The resulting vector of numbers contains the expected utility of each decision. Finally we select the decision having \emph{maximal expected utility}, according to the principle bearing this name. Such procedure also takes care of the class imbalance problem \autocites[\cf\ the analysis by][(they use the term \enquote{cost} instead of \enquote{utility})]{drummondetal2005}.
+
+Clearly this procedure is computationally inexpensive and ridiculously easy to implement in any \ml\ classifier. The difficulty is that this procedure requires \emph{sensible probabilities} for the classes, which brings us to issue~\ref{item:determ_statist}, the most difficult.
+
+Some machine-learning algorithms for classification, such as support-vector machines, output only a class label. Others, such as deep networks, output a set of real numbers that can bear some qualitative relation to the plausibilities of the classes. But these numbers cannot be reliably interpreted as proper probabilities, that is, as the degrees of belief assigned to the classes by a rational agent \autocites{mackay1992d,galetal2016}[\chaps~2, 12, 13]{russelletal1995_r2022}; or, in terms of \enquote{populations} \autocites{lindleyetal1981}%[\sect~II.4]{fisher1956_r1967}
+, as the expected frequencies of the classes in the hypothetical population of units (degrees of belief and frequencies being related by de~Finetti's theorem \autocites[\chap~4]{bernardoetal1994_r2000}{dawid2013}). Algorithms that internally do perform probabilistic calculations, for instance naive-Bayes or logistic-regression classifiers \autocites[\sect~3.5, \chap~8]{murphy2012}[\sects~8.2, 4.3]{bishop2006}[\chap~10, \sect~17.4]{barber2007_r2020}, unfortunately rest on strong probabilistic assumptions, such as independence and particular shapes of distributions, that are often unrealistic (and their consistency with the specific application is rarely checked). Only particular classifiers such as Bayesian neural networks \autocites{nealetal2006}[\sect~5.7]{bishop2006} output sensible probabilities, but they are computationally very expensive. The stumbling block is the extremely high dimensionality of the feature space, which makes the calculation of the probabilities
+\[
+  \P(\texts{class}, \texts{feature} \| \texts{training data})
+\]
+(a problem opaquely called \enquote{density regression} or \enquote{density estimation}\autocites{ferguson1983,thorburn1986,hjort1996,dunsonetal2007}) computationally unfeasible.
+
+If we solved the issue of outputting proper probabilities then the remaining three issues would be easy to solve, as discussed above.
+
+\bigskip
+
+In the present work we propose an alternative solution to calculate proper class probabilities, which can then be used in conjunction with utilities to perform the final classification or decision.
+
+This solution consists in a sort of \enquote{transducer} or \enquote{calibration curve} that transforms the algorithm's raw output into a probability. It has a low computational cost, can be applied to all commonly used classifiers and to simple regression algorithms, does not need any changes in algorithm architecture or in training procedures, and is grounded on first principles. The probability thus obtained can be combined with utilities to perform the final classification task.
+
+Moreover, this transducer has three other great benefits, which come automatically with its computation. First, it allows us to calculate both the probability of class conditional on features, and \emph{the probability of features conditional on class}. In other words it allows us to use the classification algorithm in both \enquote{discriminative} and \enquote{generative} modes \autocites[\sect~21.2.3]{russelletal1995_r2022}[\sect~8.6]{murphy2012}, even if the algorithm was not designed for a generative use. Second, its computation also gives a quantification of how much the probability would change if we had further training data. Third, it can give an \emph{evaluation of the whole classifier} -- including an uncertainty about such evaluation -- that allows us to compare it with other classifiers to choose the optimal one.
+
+In \sect~\ref{sec:transducer} we present the general idea behind the probability-transducer and its calculation. Its combination with the rule of expected-utility maximization to perform classification is discussed in \sect~\ref{sec:utility_classification}; we call this combined use the \enquote{augmentation} of a classifier.
+
+In \sect~\ref{sec:demonstration} we demonstrate the implementation, use, and benefits of classifier augmentation in a concrete drug-discovery classification problem and dataset, with a \RF\ and a \CNN\ classifiers.
+
+Finally, we give a summary and discussion in \sect~\ref{sec:summary_discussion}, including some teasers of further applications to be discussed in future work.
+
+
+\section{An output-to-probability transducer}
+\label{sec:transducer}
+
+In the present section we explain the main idea in informal and intuitive terms, and give its  mathematical essentials only. Stricter logical derivation and more mathematical details are left to appendix\mynotep{\ldots}.
+
+
+
+\subsection{Main idea: algorithm output as a proxy for the features}
+\label{sec:essential_idea}
+
+Let us consider first the essentials behind a classification (or regression) problem. We have the following quantities:
+\begin{itemize}
+\item the \emph{feature} values of a set of known units,
+\item the \emph{classes} of the same set of units,
+\end{itemize}
+which together form our \emph{training data}; and
+\begin{itemize}[resume]
+\item the feature value of a new unit,
+\end{itemize}
+where the \enquote{units} can be widgets, images, patients, drug compounds, and so on, depending on the classification problem. From these quantities we would like to infer the class of the new unit. This inference consists in probability values (we omit \enquote{new} in equations for brevity)
+\begin{equation}
+  \label{eq:prob_essential}
+  \P(\texts{class of unit} \| \texts{feature of unit},\,
+  \texts{classes \amp\ features of training data})
+\end{equation}
+for each possible class.
+
+These probabilities are obtained through the rules of the probability calculus \autocites{jaynes1994_r2003}[\chaps~12--13]{russelletal1995_r2022}{gregory2005,hailperin2011,jeffreys1939_r1983}; in this case specifically through the so-called de~Finetti theorem \autocites[\chap~4]{bernardoetal1994_r2000}{dawid2013} which connects training data and new unit.
+
+Combined with a set of utilities, these probabilities allow us to determine an optimal, further decision to be made among a set of alternatives. Note that the inference~\eqref{eq:prob_essential} includes deterministic interpolation, \ie\ the assessment of a function $\texts{class} \mo f(\texts{feature})$, as a special case, when the probabilities are essentially $0$s and $1$s.
+
+A trained classifier should ideally output the probabilities above when applied to the new unit. Machine-learning classifiers trade this capability for computational speed -- with an increase in the latter of several orders of magnitude \autocites[to understand this trade-off in the case of neural-network classifiers see \eg][]{mackay1992,mackay1992b,mackay1992d}[\sect~16.5 esp.~16.5.7]{murphy2012}[see also the discussion by][]{selfetal1987}. Thus their output cannot be considered a probability, but \emph{it still carries information about both class and feature variables}.
+
+% We can introduce the known output variable provided by the classifier in the probability~\eqref{eq:prob_essential}:
+% \begin{equation}
+%   \label{eq:prob_essential_output}
+%   \P(\texts{class of unit} \| \texts{output for unit}, 
+%   \texts{feature of unit}, \texts{training data}) \ .
+% \end{equation}
+% This probability must be numerically equal to~\eqref{eq:prob_essential} because the classifier's output cannot give more information about the class than is already present in the feature and in the training data (the classifier would be biased otherwise).
+
+Now we acknowledge the fact that the information contained in the feature and in the training data, relevant to the class of the new unit, is simply inaccessible to us because of computational limitations. We do have access to the output for the new unit, however, which does carry relevant information. Thus want to calculate a probability such as $\P(\texts{class of unit} \| \texts{output for unit})$.
+
+To calculate this probability, however, it is necessary to have examples of further pairs $(\texts{class of unit}, \texts{output for unit})$, of which the new unit's pair can be considered a \enquote{representative sample} \autocites[for a critical analysis of the sometimes hollow term \enquote{representative sample} see][]{kruskaletal1979,kruskaletal1979b,kruskaletal1979c,kruskaletal1980} and vice versa -- exactly for the same reason why we need training data in the first place.
+
+For this purpose, can we use the pairs $(\texts{class of unit}, \texts{output for unit})$ of the training data? This would be very convenient, as those pairs are readily available. But answer is no. The reason is that the outputs of the training data are produced from the features \emph{and the classes} jointly; this is the very point of the training phase. There is therefore a direct informational dependence between the classes and the outputs of the training data. For the new unit, on the other hand, the classifier produces its output from the feature alone. The new unit is not a representative sample of the training data.
+
+We need a data set where the outputs are generated by simple application of the algorithm to the feature, as it would occur in its concrete use, and the classes are known. The \emph{test data} of standard \ml\ procedures are exactly what we need. The new unit can be considered a representative sample of the test data, and vice versa. We call such data \enquote{transducer-calibration data}, owing to its specific purpose.
+
+The probability we arrive at is therefore
+\begin{equation}
+  \label{eq:prob_output}
+  \P(\texts{class of unit} \| \texts{output for unit},\,
+  \texts{classes \amp\ outputs for calibration data}) \ .
+\end{equation}
+For algorithms that yield an output much simpler than the features, such as a vector of few real components, the probability above can be exactly calculated. Thus, once we obtain the classifier's output for the new unit, we can calculate a probability for the new unit's class.
+
+\medskip
+
+The idea above can also be informally understood in two ways. First: the classifier's output is regarded as a proxy for the feature. Second: the classifier is regarded as something analogous to a \emph{diagnostic test}, such as any common diagnostic or prognostic test used in medicine for example. We do not take diagnostic-test results at face value -- if a flu test is \enquote{positive} we do not conclude that the patient has the flu -- but rather arrive at a probability that the patient has the flu, given some statistics about results of tests performed on \enquote{verified samples} of true-positive and true-negative patients \autocites[\chap~5]{soxetal1988_r2013}[\chap~5]{huninketal2001_r2014}[see also][]{jennyetal2018}.
+
+The probability values~\eqref{eq:prob_output} for a fixed class and variable output give us a sort of \enquote{calibration curve} (or calibration hypersurface for multidimensional outputs) of the output-to-probability transducer for the classifier. See the concrete examples of \figs~\ref{fig:prob_curve_RF} on page~\pageref{fig:prob_curve_RF}, and~\ref{fig:prob_curve_CNN} on page~\pageref{fig:prob_curve_CNN}. It must be stressed that such curve needs to be calculated only once, and it can be used for all further applications of the classifier to new units.
+
+\medskip
+
+What is the relation between the ideal incomputable probability~\eqref{eq:prob_essential} and the probability~\eqref{eq:prob_output} obtained by proxy? It can be shown that the two are related by convex combination or mixing:
+\begin{multline}
+  \label{eq:relation_two_probs}
+  \P(\texts{class} \| \texts{output},\,
+  \texts{classes \amp\ outputs for calibration data}) ={}\\[\jot]
+  \sum_{\mathclap{\substack{\text{feature}\\\text{training data}}}}
+  w(\texts{feature}, \texts{training data})\times
+  \P(\texts{class} \| \texts{feature},\, \texts{training data})
+\end{multline}
+where $w$ are positive and normalized functions. This means that the proxy probability is generally less sharp, that is, farther away from $0$ and $1$, than the ideal one. This is an obvious consequence of the loss of information about the feature value. Such mixing, on the other hand, only leads to more conservative probabilities, not to over-confident ones.
+
+\mynotep{add note about the fact that the goodness of the results still greatly depends on the goodness of the classifier.}
+
+\mynotew{add that \emph{no new test set is needed}! The calibration set also works as \enquote{test set} thanks to the probability calculus}
+
+
+\subsection{Calculation of the probabilities}
+\label{sec:calculation_transducer}
+
+Let us denote by $c$ the class value of a new unit, by $y$ the output of the classifier for the new unit, and by $D \defd \set{c_{i}, y_{i}}$ the classes and classifier outputs for the transducer-calibration data.
+
+It is more convenient to focus on the \emph{joint} probability of class and output given the data,
+\begin{equation}
+  \label{eq:prob_output}
+  \p(c, y \| D) \ ,
+\end{equation}
+rather than on the conditional probability of the class given the output and calibration data,~\eqref{eq:prob_output}.
+
+The joint probability is calculated using standard non-parametric Bayesian methods \autocites[for introductions and reviews see \eg][]{walker2013,muelleretal2004b,hjort1996}. \enquote{Non-parametric} in this case means that we do not make any assumptions about the shape of the probability curve as a function of $c,y$ (contrast this with logistic regression, for instance), or about special independence between the variables (contrast this with naive-Bayes). The only assumption made -- and we believe it is quite realistic -- is that the curve must have some minimal degree of smoothness. This assumption allows for much leeway, however: \fig\mynotep{\ldots} for instance shows that the probability curve can still have very sharp bends, as long as they are not cusps.
+
+Non-parametric methods differ from one another in the kind of \enquote{coordinate system} they select on the infinite-dimensional space of all possible probability curves, that is, in the way they represent a general positive normalized function.
+
+We choose the representation discussed by Dunson \amp\ Bhattacharya\autocites{dunsonetal2011}[see also the special case presented by][]{rasmussen1999}. The end result of interest in the present section is that the probability density $p(c,y \| D)$, with $c$ discrete and $y$ continuous and possibly multi-dimensional, is expressed as a sum
+\begin{equation}
+  \label{eq:representation_P}
+  p(c, y \| D) = \sum_{k} q_{k}\ A(c \| \alpha_{k})\ B(y \| \beta_{k})
+\end{equation}
+of a finite but large number of terms. Each term is the product of a positive weight $q_{k}$, a probability distribution $A(c \| \alpha_{k})$ for $c$ depending on parameters $\alpha_{k}$, and a probability density $B(c \| \beta_{k})$ for $y$ depending on parameters $\beta_{k}$. The parameter values can be different from term to term, as indicated by the index ${}_{k}$. The weights $\set{q_{k}}$ are normalized.
+
+This mathematical representation can approximate (under some norm) any smooth probability density in $c$ and $y$. It has the advantages of being automatically positive and normalized, and of readily producing the marginal distributions for $c$ and for $y$:
+\begin{equation}
+  \label{eq:marginals}
+  p(c) = \sum_{k} q_{k}\ A(c \| \alpha_{k})\ ,
+  \qquad
+  p(y) = \sum_{k} q_{k}\ B(y \| \beta_{k}) \ ,
+\end{equation}
+from which also the conditional distributions are easily obtained:
+\begin{subequations} \label{eq:conditionals}
+  \begin{align}
+    \label{eq:conditional_c_given_y}
+    p(c \| y) &= \sum_{k} \frac{q_{k}\ B(y \| \beta_{k})
+                }{\sum_{l} q_{l}\ B(y \| \beta_{l})}\
+                A(c \| \alpha_{k})\  \ ,
+    \\
+    \label{eq:conditional_y_given_c}
+    p(y \| c) &= \sum_{k} \frac{q_{k}\ A(c \| \alpha_{k})
+                }{\sum_{l} q_{l}\ A(c \| \alpha_{l})}\
+                B(y \| \beta_{k}) \ .
+  \end{align}
+\end{subequations}
+These will be important in the following discussion.
+
+The parametric distributions $A(c \| \alpha)$ and $B(y \| \beta)$ are chosen by us according to convenience; see the appendix~\ref{sec:deFinetti} for further details.
+\medskip
+
+The weights $\set{q_{k}}$ and the parameters $\set{\alpha_{k}}$, $\set{\beta_{k}}$ are the heart of this representation, because the shape of the probability curve $p(c \| y, D)$ depends on their values. They are determined by the test data $D$. Their calculation is done via Markon-chain Monte Carlo sampling, discussed in appendix~\ref{sec:MCMC}. For low-dimensional $y$ and discrete $c$ (or even continuous, low-dimensional $c$, which means we are working with a regression algorithm), this calculation can be done in a matter of hours, and \emph{it only needs to be done once}.
+
+Once calculated, these parameters are saved in memory and can be used to compute any of the probabilities~\eqref{eq:representation_P}, \eqref{eq:marginals}, \eqref{eq:conditionals} as needed, as discussed in the next subsection. Such computations take less than a second.
+
+Note that the role of the classifier in this calculation is simply to produce the outputs $y$ for the calibration data, after having been trained in any standard way on a training data set. No changes in its architecture or in its training procedure have been made, nor are any required.
+
+
+\subsection{Applying the probability transduction: discriminative and generative modes}
+\label{sec:effect_transd}
+
+Let us now discuss the application of the various probability functions presented above. For simplicity we shall omit the dependence \enquote{$\|\dotsc, D)$} on the calibration data, leaving it implicitly understood.
+
+We have a new unit, which could be part of an evaluation test-set or coming from a real application after deployment. Its features are fed to the classifier, which outputs the real value $y$. We can then proceed in two ways:
+\begin{description}[font=\textit]
+\item[Discriminative mode:] \textit{probability of class given output}\\
+ We calculate $p(c \| y)$ from formula~\eqref{eq:conditional_c_given_y}, for each value of $c$, say $c=0$ and $c=1$ in a binary-classification case. These are the probabilities of the classes.
+\end{description}
+The discriminative mode is the standard way of proceeding in classification and does not need further discussion. We have simply translated the classifier's raw output into a more sensible probability. From this point of view the function $p(c \| y)$ can be considered as a more appropriate substitute of the softmax function, for instance, at the output of a neural network.
+
+
+\begin{description}[resume, font=\textit]
+\item[Generative mode:] \textit{probability of class given output and base rates}\\
+  We calculate $p(y \| c)$ from formula~\eqref{eq:conditional_y_given_c}, again for each value of $c$. The probability of each class $c$ is then obtained through Bayes's theorem after supplying the \emph{population prevalence} $\br_{c}$ of the class:
+  \begin{equation}
+    \label{eq:bayes_baserate}
+    p(c \| y,\, \texts{prevalences}) = \frac{p(y \| c)\ \br_{c}}{ \sum_{c} p(y \| c)\ \br_{c} } \ .
+  \end{equation}
+\end{description}
+The population prevalences \autocites[\chap~3]{soxetal1988_r2013}[\sect~5.1]{huninketal2001_r2014}, also called \emph{base rates} \autocites{barhillel1980,axelsson2000}, are the relative frequencies of occurrence of the various classes in the population whence our unit originates. This notion is very familiar in medicine and epidemiology. For example, a particular type of tumour can have a prevalence of 0.01\% among people of a given age and sex, meaning that 1 person in 10\,000 among them has that kind of tumour, as obtained through a large survey.
+
+\mynotew{maybe move parts below to independent section}
+
+The generative mode, generally not available for classifiers with a discriminative design, is the required way to calculate the class probabilities if the calibration set does not have the same class frequencies as the population on which the classifier will be employed -- let us call the latter the \enquote{real population}. For example, two classes may appear in a 50\%/50\% proportion in the calibration set but in a  90\%/10\% proportion in the real population. This frequency discrepancy can occur for several reasons.  Examples: samples of the real population are unavailable or too expensive to be used for calibration purposes; the class statistics of the real population has suddenly changed right after the deployment of the classifier; it is necessary to use the classifier on a slightly different population; the sampling of calibration data was poorly designed.
+
+% \mynotez{The discussion below is not true, because the probabilities of the outputs of different classifiers are not independent (they are conditional on the same data)}
+% The generative mode is also required if we want to combine the outputs $y_{1}, y_{2}, \dotsc$ of several independent classifiers. According to the probability calculus, the probability of class $c$ is in this case proportional to the probabilities of the outputs \emph{given the class}\autocites[\sect~8.9]{jaynes1994_r2003}{hailperin2006}:
+% \begin{equation}
+%   \label{eq:combine_probs}
+%   \p(c \| y_{1}, y_{2}, \dotsc) \propto \p(c) \times
+%   \p(y_{1} \| c) \times \p(y_{2} \| c)\times \dotsm
+% \end{equation}
+% where $\p(c)$ is a population prevalence or an initial probability assessment.
+
+\subsection{The double role of the calibration data set}
+\label{sec:role_calibration_set}
+
+In the preceding analysis we discussed why the construction of the probability transducer requires a calibration set separate from the training \amp\ validation set. Do we then need a third, separate \enquote{test set} for the final evaluation and comparison of candidate classifiers or hyperparameters? This would be inconvenient: it would reduce the amount of data available for training.
+
+The answer is no: \emph{the calibration set automatically also serves as a test set}.
+
+It may be useful to explain why this is the case, especially for those who may take for granted the universal necessity of a test set.
+
+Many standard \ml\ methodologies need a test set because they are only an approximation of ideal inference performed with the probability calculus. The latter needs no division of available data into different sets: something analogous to such division is automatically made internally, so to speak. It can be shown \autocites{portamana2019b,fongetal2020,wald1949}[many examples of this fact are scattered across the text by][]{jaynes1994_r2003} that the mathematical operations behind the probability rules correspond to making \emph{all possible} divisions of available data between \enquote{training} and \enquote{test}, as well as all possible cross-validations with folds of all orders. This is the reason why ideal inference by means of the probability calculus is almost computationally impossible in some cases, and we have to resort to approximate but faster \ml\ methods. The latter typically do not do such data partitions automatically; the latter need to be made -- and only approximately -- by hand.
+
+
+\mynotep{explain how testing is done}
+
+\mynotew{explain that if output is already a probability, the transducer will asymptotically reproduce it.}
+
+
+\section{Utility-based classification}
+\label{sec:utility_classification}
+
+We refer to our companion work \cite{dyrlandetal2022}, \sect~2, for a more detailed presentation of decision theory and for references. In the following we assume familiarity with the material presented there.
+
+Our classification or decision problem has a set of decisions, which we can index by $i = 1,2,\dotsc$. As discussed in \sect~\ref{sec:goal_class}, these need not be the same as the possible classes; the two sets may even be different in number. But the true class, which is unknown, determines the \emph{utility} that a decision yields. If we choose decision $i$ and the class $c$ is true, our eventual utility will be $U_{ic}$.\footnote{We apologize for the difference in notation from our companion work, where the class variable is \enquote{$j$} and the utilities \enquote{$U_{ij}$}} These utilities are assembled into a rectangular matrix $(U_{ic})$ with one row per decision and one column per class. Note that the case where decisions and classes are in a natural one-one correspondence, as in the cat-vs-dog classification example of \sect~\ref{sec:goal_class}, is just a particular case of this more general point of view. In such a specific case we may replace \enquote{decision} with \enquote{class} in the following discussion, and the utility matrix is square.
+
+Denote by $(p_{c})$ the probabilities for the classes, calculated as described in \sect~\ref{sec:effect_transd} above, and collect them into a column vector.
+
+The expected utility $\eu_{i}$ of decision $i$ is then given by the product of the matrix $(U_{ic})$ and the column vector $(p_{c})$:
+\begin{equation}
+  \label{eq:expe_utilities}
+  \eu_{i} \defd \sum_{c} U_{ic}\ p_{c} \ .
+\end{equation}
+
+Finally, according to the principle of maximum expected utility, we choose the decision $i^{*}$ having largest $\eu_{i}$:
+\begin{equation}
+  \label{eq:max_expe_utility}
+  \text{choose}\quad
+  i^{*} = \argmax_{i}\set*{\eu_{i}} \equiv \argmax_{i}\set[\bigg]{\sum_{c} U_{ic}\ p_{c}} \ .
+\end{equation}
+
+The matrix multiplication and subsequent selection are computationally inexpensive; they can be considered as substitutes of the \enquote{argmax} selection that typically happen at the continuous output of a classifier.
+
+\section{Demonstration and results}
+\label{sec:demonstration}
+
+\subsection{Overview}
+\label{sec:demo_overview}
+
+We illustrate the implementation of the probability transducer and its combination with utility-based decisions in a concrete example. The evaluation of the results is also made from the standpoint of decision theory, using utility-based metrics, as explained in our companion paper \autocites{dyrlandetal2022}.
+
+A couple of remarks may clarify the purpose of this illustration and our choice of classification problem.
+
+The internal consistency of decision theory guarantees that utility-based decisions always improve on, or at least give as good results as, any other procedure, including the standard classification procedures used in machine learning. This is intuitively obvious: we are, after all, grounding our single class choices upon the same gains \amp\ losses that underlie our classification problem and that are used in its evaluation. The present illustration is therefore not a proof for such improvement -- none is needed. It is a reassuring safety check, though: if the results were negative it would mean that errors were made in applying the method or in the computations.
+
+Rather than looking for some classification problem and dataset on which the decision-theoretic approach could lead to astounding improvements, we choose one where \ml\ classifiers already give excellent results, therefore difficult to improve upon; and which is characterized by a naturally high class imbalance. The classification problem is moreover of interest to us for other ongoing research projects.
+
+The binary-classification task is a simplified version of an early-stage drug-discovery problem: to determine whether a molecule is chemically \enquote{inactive} (class~$0$) or \enquote{active} (class~$1$) towards one specific target protein.
+
+Two \ml\ classifiers are considered: a Random Forest and a residual Convolutional Neural Network (ResNet), details of which are given in appendix\mynotep{\ldots}. The \RF\ takes as input a set of particular physico-chemical characteristics of a molecule, and outputs a real number in the range $\clcl{0,1}$, corresponding to the fraction of decision trees which vote for class~$1$, \enquote{active}. The \cnn\ takes as input an image representing the chemical and spatial structure of the molecule, and outputs two real numbers roughly corresponding to scores for the two classes.
+
+We use data from the ChEMBL database \autocites{bentoetal2014}, previously used in the literature for other studies of \ml\ applications to drug discovery \autocites{koutsoukasetal2017}. One set with 60\% of the data is used to train and validate the two classifiers. One set with 20\% is used for the calibration of the probability transducer and evaluation of the classifiers. One further data set with 20\% is here used as fictive \enquote{real data} to illustrate the results of our procedure; we call this the \enquote{demonstration set}.
+
+Note that \emph{the additional demonstration dataset has an illustrative purpose only} for the sake of the present example. In a real design \amp\ evaluation of a set of candidate classifiers, the calibration set will at the same time be the evaluation test set, and no further data subset will be necessary, as explained in \sect~\ref{sec:role_calibration_set}.
+
+In all data sets, class~$0$ (\enquote{inactive}) occurs with a 91\% relative frequency, and class~$1$ (\enquote{active}) with 9\%; a high class imbalance.
+
+Technical details about the setup and training of the two classifiers and of the calculation of the probability-transducer parameters are given in appendix\mynotew{\ldots}.
+
+
+\mynotew{move this to technical appendix}
+The Monte Carlo calculation of the parameters for the transducer took approximately 45\,min for the \RF\ and 75\,min for the \CNN, wall-clock time (16 parallel cores each). The resulting parameters are available in our supplementary data\footcites[\addcomma\ files \texttt{transducer\_params-Random\_Forest.zip} and \texttt{transducer\_params-Neural\_Net.zip}]{dyrlandetal2022c}.
+
+
+\subsection{Probability-transducer curves}
+\label{sec:demo_curves}
+
+\subsubsection{Random forest}
+\label{sec:curve_RF}
+
+The joint probability of class $c$ and output $y$, \eqn~\eqref{eq:representation_P}, for the \RF\ is expressed by the sum
+\begin{equation}
+  \label{eq:P_c_out_RF}
+  p(c, y) = \sum_{k} q_{k}\
+  [c\ \alpha_{k} + (1-c)\ (1-\alpha_{k})]\ 
+  \No(y \| \mu_{k}, \sigma_{k})
+\end{equation}
+where $\No(\cdot)$ is a Gaussian as in \eqn~\eqref{eq:distr_output}. The sum contains $2^{18} \approx 260\,000$ terms.
+% ; $L(y)$ is a logit transformation composed with a small contraction around $0.5$, to take care of $0$ and $1$ values, which maps the output $y\in \clcl{0,1}$ onto the real numbers \autocites[\cf][\sect~3.3 \eqn~(19)]{johnson1949}; $L'(y)$ is its Jacobian determinant;
+
+\begin{figure}[t]
+% P range:  0.1411262 92.9317592
+  \centering
+  \includegraphics[width=\linewidth]{transducer_curve_RFraw2.pdf}\\
+  \caption{Probabilities of class~1 (\enquote{active}, \textcolor{mypurpleblue}{blue solid curve}) and class~0 (\enquote{inactive}, \textcolor{myred}{red dashed curve}) conditional on the \rf\ output. Their extremal values are 0.0014 and 0.929. The shaded region around each curve represents its 12.5\%--87.5\% range of possible variability if more data were used to calculate the probabilities.}
+  \label{fig:prob_curve_RF}
+\end{figure}
+%
+Figure~\ref{fig:prob_curve_RF} shows the probabilities of classes~1 and~0 conditional on the \rf\ output: $\p(\texts{class 1} \| \texts{output})$ and $\p(\texts{class 0} \| \texts{output})$. It also shows the range of variability that these probabilities could have if more data were used for the calibration: with a 75\% probability they would remain within the shaded regions. This variability information is provided for free by the calculation; we plan to discuss and use it more in future work.
+
+The probabilities increase (class~1) or decrease (class~0) monotonically up to output values of around 0.9. The minimum and maximum probabilities are 0.14\% and 92.9\%; these values will be important for a later discussion. The output, if interpreted as a probability for class~1 (\enquote{active}), tends to be too pessimistic for this class (and too optimistic for the other) in a range from roughly 0.25 to 0.95; and too optimistic outside this range. For instance, for an output of 0.3 the probability for class~1 is 40\%; for an output of 1 the probability for class 1 is 92\%.
+
+\begin{figure}[t]
+  \centering
+  \includegraphics[width=\linewidth]{transducer_curve_RFraw2_inverse_trunc.pdf}\\
+  \caption{Probability densities of the \rf\ output conditional on class~1 (\enquote{active}, \textcolor{mypurpleblue}{blue solid curve}) and on class~0 (\enquote{inactive}, \textcolor{myred}{red dashed curve}, truncated). The shaded region around each curve represents its 12.5\%--87.5\% range of possible variability upon increase of the calibration dataset.}
+  \label{fig:prob_curve_RF_inverse}
+\end{figure}
+%
+Figure~\ref{fig:prob_curve_RF_inverse} shows the \enquote{generative} probability densities of the \rf\ output conditional on each class, $\p(\texts{output} \| \texts{class 1})$ and $\p(\texts{output} \| \texts{class 0})$. These probabilities densities are also provided for free by the parameter calculation, as explained in \sect~\ref{sec:calculation_transducer}. The shaded regions are again 75\% intervals of possible variability upon increase of the calibration dataset.
+
+There is a high probability of output values close to~0 when the true class is~0 (\enquote{inactive}), and a peak density around 0.8 when the true class is~1 (\enquote{active}), as expected. The density conditional on class~0 is narrower than the one conditional on class~1 owing to the much larger proportion data in the former class. Intuitively speaking, we have seen that most data in class~1 correspond to high output values, but we have seen too few data in this class to reliably conclude, yet, that future data will show the same correspondence. % But there is also a high density of output value~0 when the true class is~1. This peak comes from the fact that the \RF\ had some very low output values
+
+\subsubsection{Convolutional neural network}
+\label{sec:curve_CNN}
+
+The joint probability of class $c$ and the bivariate output $y\equiv (y_{0}, y_{1})$ of the \CNN\ is expressed by the sum
+\begin{multline}
+  \label{eq:P_c_out_CNN}
+  p(c, y_{0}, y_{1}) ={}\\ \sum_{k} q_{k}\
+  [c\ \alpha_{k} + (1-c)\ (1-\alpha_{k})]\
+  \No(y_{0} \| \mu_{0k}, \sigma_{0k})\ 
+  \No(y_{1} \| \mu_{1k}, \sigma_{1k})
+\end{multline}
+containing again $2^{18} \approx 260\,000$ terms, and with parameters analogous to those of \eqn~\eqref{eq:P_c_out_RF}.
+
+\begin{figure}[!t]
+  \centering
+% P range: 0.1363446 92.3322319
+\includegraphics[width=\linewidth]{transducer_surface_CNN_crop.png}\\[4em]%
+%\hfill\makebox[0pt][r]{\smash{\includegraphics[width=0.4\linewidth]{softmaxr_surface_CNN_transp.png}}}\\
+% \vspace{-0.75\linewidth}
+% \hspace{\stretch{1}}
+% \makebox[0pt]{\smash{\includegraphics[width=0.33\linewidth]{softmaxr_surface_CNN.png}}}\hspace{\stretch{3}}\mbox{}
+% \\
+% \vspace{0.65\linewidth}
+\parbox[b]{0.63\linewidth}{\caption{Probability of class~1 conditional on the \cnn\ outputs. Its extremal values are 0.0014 and 0.923. Plot on the side: softmax function of the same outputs, for comparison.\label{fig:prob_curve_CNN}}}\hfill%
+\parbox[b]{0.34\linewidth}{\smash{\includegraphics[width=\linewidth]{softmaxr_surface_CNN_transp.png}}}
+\end{figure}
+%
+Figure~\ref{fig:prob_curve_CNN} shows the probability of class~1 conditional on the bivariate output of the \CNN, $\p(\texts{class 1} \| \texts{outputs})$. Its extremal values are 0.14\% and 92.3\%. It is interesting to compare this probability with the softmax function of the outputs, shown in the smaller side plot, typically used as a proxy for the probability.
+% \begin{figure}[!t]
+%   \centering
+% \includegraphics[width=0.66\linewidth]{softmaxr_surface_CNN.png}\\
+%   \caption{Softmax function of the \cnn\ outputs}
+%   \label{fig:softmax_CNN}
+% \end{figure}
+
+A cross-section of this probability surface along the bisector of the II and IV quadrants of the output space is shown in \fig~\ref{fig:prob_curve_CNN_section}, together with the cross-section of the softmax. The probability takes on extremal values, around 1\% and 90\%, only in very narrow ranges, and quickly returns and extrapolates to 50\% everywhere else. The softmax, on the other hand, extrapolates to extreme probability values -- a known problem of neural networks \autocites{galetal2016}. The conservative extrapolation of the transducer is also reflected in the 75\% interval of possible variability of the probability (shaded region), which becomes extremely wide at the extremities.
+
+%
+\begin{figure}[!t]
+  \centering
+  \includegraphics[width=\linewidth]{transducer_curve_diagonal_CNN_prob_softmax.pdf}\\
+  \caption{Cross-section of the probability surface of \fig~\ref{fig:prob_curve_CNN} across the bisector of the II and IV quadrants of output space. The shaded region represents the 12.5\%--87.5\% range of possible variability upon increase of the calibration dataset. The cross-section of the softmax function (\textcolor{mygray}{grey dashed curve}) is also shown for comparison.}
+  \label{fig:prob_curve_CNN_section}
+\end{figure}
+
+
+
+\subsection{Results on demonstration data}
+\label{sec:demo_evaluation}
+
+The essential point of the decision-theoretic approach is that we first need to specify the utilities involved in the classification problem, because they determine
+\begin{enumerate*}[label=(\roman*)]
+\item together with the probabilities, which class we choose in each single instance;
+\item the metric to evaluate a classifier's performance.
+\end{enumerate*}
+The utilities are assembled into a utility matrix which we write in the format
+\begin{equation}
+\label{eq:format_matrix}
+  \rotatebox[origin=c]{90}{
+    \clap{\textit{\parbox{4em}{\centering\scriptsize decision\\$1\hspace{1.5em}0$}}
+    }}\ 
+    \overbracket[0pt]{\umatrix{
+    \text{\footnotesize True 0} }{ \text{\footnotesize False 0}}{
+    \text{\footnotesize False 1} }{ \text{\footnotesize True 1}}
+      }^{
+      \clap{\textit{\parbox{6em}{\centering\scriptsize true class\\$0\hspace{3em}1$}}
+    }} \ .
+\end{equation}
+We call \emph{equivalent} two utility matrices that differ by a constant additive term and a positive multiplicative term, since changes in the zero or unit of measurement of utilities do not affect comparative evaluations.
+
+\smallskip
+
+
+For illustration we choose four utility matrices:
+\begin{equation}
+  \label{eq:utility_matrices_demo}
+  \overbracket[0pt]{\umatrix{1}{0}{0}{1}}^{\text{utility case I}} \qquad
+  \overbracket[0pt]{\umatrix{1}{-10}{0}{10}}^{\text{utility case II}} \qquad
+  \overbracket[0pt]{\umatrix{1}{-100}{0}{100}}^{\text{utility case III}} \qquad
+  \overbracket[0pt]{\umatrix{10}{0}{-10}{1}}^{\text{utility case IV}} \ .
+\end{equation}
+Case~I represents any case where the correct classification of either class is equally valuable; and the incorrect classification, equally invaluable. Note that this utility matrix is equivalent to any other of the form $\sumatrix{a}{b}{b}{a}$ with $a>b$. Accuracy is the correct metric to evaluate this case. Case~II represents any case where the correct classification of class~1, \enquote{active}, is ten times more valuable than that of class~0 \enquote{inactive}, and its incorrect classification is as damaging as correct classification is valuable. The remaining two cases are interpreted in an analogous way. The \enquote{value} could simply be the final average monetary revenue at the end of the drug-discovery project that typically follows any of these four situations. Of particular relevance to drug discovery, where false positives are known to be especially costly \autocites{sinketal2010,hingoranietal2019}, is the utility matrix of case~II and possibly that of case~III.
+
+We consider each of these utility matrices, in turn, to be the one underlying our classification problem. In each case we perform the classification of every item -- a molecule -- in the demonstration data as follows:
+% , first by applying the probability transducer and then by finding the class with maximal expected utility, as explained in \sect~\ref{sec:utility_classification}.
+\begin{enumerate}[label=\arabic*.]
+\item feed the features of the item to the classifier and record its output
+\item feed this output to the probability transducer and record the resulting probability for class~1; form the normalized probability vector for the two classes 
+\item multiply the probability vector by the utility matrix to determine the expected utility of each class choice, \eqn~\eqref{eq:expe_utilities}
+\item choose the class with higher expected utility (ties have to be decided unsystematically, to avoid biased results), \eqn~\eqref{eq:max_expe_utility}.
+\end{enumerate}
+We call this procedure \emph{augmentation}. It used with each classifier.
+
+
+\subsubsection{Confusion matrices -- and a peculiar situation}
+
+Once all items in the demonstration dataset are classified, we compare their chosen classes with their true ones and compute the resulting confusion matrix, which we also write in the format~\eqref{eq:format_matrix}. The confusion matrices for all cases, methods, and algorithms are presented in table~\ref{tab:results_CM} on page~\pageref{tab:results_CM}. Ties (both classes were equally preferable) are solved by giving half a point to each class.
+
+The standard method produces the same confusion matrix in all four utility cases because it does not use utilities to choose a class. The augmentation produces instead a different confusion matrix in each utility case: even if the class probabilities for a give datum are the same in all cases, the threshold of acceptance varies so as to always be optimal for the utilities involved.
+
+A peculiar case of this automatic optimization of the threshold is visible for the transducer applied to either algorithm in case~IV: it leads to the confusion matrix
+\begin{equation}
+  \label{eq:peculiar_CM}
+  \umatrix{3262}{326}{0}{0}
+\end{equation}
+which means that \emph{all} items were classified as \enquote{0}, \enquote{inactive}. How can this happen? Let us say that the probabilities for class~0 and~1, determined by the transducer from the \rf\ output, are $1-p$ and $p$. In case~IV, the expected utilities of choosing class~0 or~1 are given by the matrix multiplication $\sumatrix{10}{0}{-10}{1} \begin{bsmallmatrix}1-p\\p\end{bsmallmatrix}$:
+\begin{equation}
+  \label{eq:expe_utilities_peculiar}
+  \begin{aligned}
+    \texts{choose 0:\; expect}&& 10 \cdot (1-p) + 0 \cdot p &= 10 - 10\ p \ ,
+                                                            \\
+    \texts{choose 1:\; expect}&& -10 \cdot (1-p) + 1 \cdot p &= -10 + 11\ p \ .
+  \end{aligned}
+\end{equation}
+It is optimal to choose class~1 only if (disregarding ties)
+\begin{equation}
+  \label{eq:when_choose_0}
+  -10 + 11\ p > 10 - 10\ p
+  \qquad\text{or}\qquad
+  p > 20/21 \approx 0.952 \ ,
+\end{equation}
+that is, only if the probability of class~1 is higher than 95\%. The threshold is so high because on the one hand there's a high cost ($-10$) if the class isn't actually~1, and on the other hand a high reward ($10$) if the class is actually~0. Now, a look at the transducer curve for the \RF, \fig~\ref{fig:prob_curve_RF}, shows that the transducer never gives a probability higher than 93\% to class~1. Similarly the transducer for the \CNN, \fig~\ref{fig:prob_curve_CNN}, never reaches probabilities above 92\%. So the threshold of 95\% will never be met in either case, and no item will be classified as~1. It is simply never rewarding, on average, to do so \autocites[\cf\ the analysis by]{drummondetal2005}. It can be seen that this situation will occur with any utility matrix $\sumatrix{a}{b}{c}{d}$, with $a>c$ and $d>b$, such that $\frac{a-c}{a-c+d-b}\approx 0.93$.
+
+This peculiar situation has a notable practical consequence. We have found the transducer curve for a classifier, and see that its maximum probability for class~1 is 93\%. We have assessed that the utilities involved are $\sumatrix{10}{0}{-10}{1}$, so the threshold to classify as~1 is 95\%. Then we immediately find that \emph{there is no need to employ that classifier, in this utility case}: it is simply more profitable to automatically treat all data as class~0.
+
+\medskip
+
+A look at the other confusion matrices of table~\ref{tab:results_CM} shows the effect of the automatic threshold optimization also in utility cases~II and~III: as the cost of misclassifying true class~1 increases ($-10$ or $-100$), the number of such misclassifications decreases. It does so at the detriment of class~0 classification, which, however, incurs lower costs and benefits.
+
+\subsubsection{Utility yields}
+
+We can finally assess the performance of both classifiers, with and without augmentation, on the demonstration dataset. As explained in our companion work \autocites{dyrlandetal2022} and summarized in \sect~\ref{sec:utility_classification}, the correct metric for such performance must naturally depend on the utilities that underlie the problem. It is the utility yield per datum produced by the classifier on the dataset, obtained by taking the grand sum of the products of the homologous elements of the utility matrix $(U_{ij})$ and the confusion matrix $(C_{ij})$:
+\begin{equation}
+  \label{eq:performance_metric}
+  \sum_{ij} U_{ij}\ C_{ij} \ .
+\end{equation}
+
+
+%%% Relative improvements over UM space:
+% ## > range((normallscores[3,]-normallscores[1,])/normallscores[1,])*100
+% ## [1] -0.09453707 32.09361399
+% ## > range((CNNnormallscores[3,]-CNNnormallscores[1,])/CNNnormallscores[1,])*100
+% ## [1] -0.2280634 17.5667907
+% ## > range((normallscores[3,]-normallscores[2,])/normallscores[2,])*100
+% ## [1] -0.3469935  9.2877534
+% ## > range((CNNnormallscores[3,]-CNNnormallscores[2,])/CNNnormallscores[2,])*100
+% ## [1] -0.9944227  1.5092731
+
+
+%%% normalized scores RF
+% ##                 [,1]      [,2]      [,3]      [,4]      [,5]
+% ## standard   0.9675307 0.8336741 0.7672139 0.9875011 0.9885411
+% ## mixed      0.9675307 0.9034962 0.9547778 0.9945856 0.9995036
+% ## transducer 0.9740803 0.9640155 0.9809529 0.9950279 0.9995006
+
+%%% normalized scores CNN
+% ##                 [,1]      [,2]      [,3]      [,4]      [,5]
+% ## standard   0.9593088 0.8898998 0.8554381 0.9696642 0.9702034
+% ## mixed      0.9593088 0.9302801 0.9754316 0.9853278 0.9941522
+% ## transducer 0.9615385 0.9366183 0.9788058 0.9950279 0.9995006
+
+%%%% RF confusion matrices
+% standard
+%        [,1]   [,2]
+% [1,] 0.8988 0.0222
+% [2,] 0.0103 0.0687
+% ##      [,1]  [,2]
+% ## [1,] 3225  79.5
+% ## [2,]   37 246.5
+%
+% utility-based
+% [[1]]
+%        [,1]   [,2]
+% [1,] 0.8938 0.0106
+% [2,] 0.0153 0.0803
+% [[2]]
+%        [,1]   [,2]
+% [1,] 0.8501 0.0020
+% [2,] 0.0591 0.0889
+% [[3]]
+%        [,1]   [,2]
+% [1,] 0.6572 0.0006
+% [2,] 0.2520 0.0903
+% [[4]]
+%        [,1]   [,2]
+% [1,] 0.9091 0.0909
+% [2,] 0.0000 0.0000
+% [[5]]
+%        [,1]   [,2]
+% [1,] 0.9091 0.0909
+% [2,] 0.0000 0.0000
+% ## [[1]]
+% ##      [,1] [,2]
+% ## [1,] 3207   38
+% ## [2,]   55  288
+% ## [[2]]
+% ##      [,1] [,2]
+% ## [1,] 3050    7
+% ## [2,]  212  319
+% ## [[3]]
+% ##      [,1] [,2]
+% ## [1,] 2358    2
+% ## [2,]  904  324
+% ## [[4]]
+% ##      [,1] [,2]
+% ## [1,] 3262  326
+% ## [2,]    0    0
+% ## [[5]]
+% ##      [,1] [,2]
+% ## [1,] 3262  326
+% ## [2,]    0    0
+
+%%%% CNN confusion matrices
+% standard
+% ##      [,1] [,2]
+% ## [1,] 3165   49
+% ## [2,]   97  277
+%
+% utility-based
+% ## [[1]]
+% ##      [,1] [,2]
+% ## [1,] 3189   65
+% ## [2,]   73  261
+% ## [[2]]
+% ##      [,1] [,2]
+% ## [1,] 2882   12
+% ## [2,]  380  314
+% ## [[3]]
+% ##      [,1] [,2]
+% ## [1,] 2011    1
+% ## [2,] 1251  325
+% ## [[4]]
+% ##      [,1] [,2]
+% ## [1,] 3262  326
+% ## [2,]    0    0
+% ## [[5]]
+% ##      [,1] [,2]
+% ## [1,] 3262  326
+% ## [2,]    0    0
+
+%% max achievable utilities
+% ## [1,]  1.000000
+% ## [2,]  1.817726
+% ## [3,]  9.994983
+% ## [4,]  9.182274
+% ## [5,] 91.005017
+
+
+% classes
+% 3262  326 
+%
+% baserates
+% 0.90914158 0.09085842 
+\begin{table}[!p]
+  \centering
+  \small
+  \begin{tabular*}{\linewidth}{clw{c}{0.12\linewidth}w{c}{0.12\linewidth}w{c}{0.12\linewidth}w{c}{0.12\linewidth}}
+&    &$\sumatrix{1}{0}{0}{1}$
+ &$\sumatrix{1}{-10}{0}{10}$
+ &$\sumatrix{1}{-100}{0}{100}$
+ &$\sumatrix{10}{0}{-10}{1}$
+ % &$\sumatrix{100}{0}{-100}{1}$
+    \\[4\jot]
+% ## standard   0.968   1.364    5.553   8.954   88.92
+% ## transducer 0.974   1.720    9.632   9.091   90.91
+% ##            0.620  26.100   73.460   1.530    2.24
+ &\parbox{0.21\linewidth}{\color{myred}\rlap{standard method}}
+ &\multicolumn{4}{c}{\textcolor{myred}{$\sumatrix{3225}{79.5}{37}{246.5}$}}
+ \\[2\jot]
+ \smash{\rotatebox[origin=l]{90}{\quad\clap{\parbox{5em}{\centering Random\\Forest}}}}
+ &\parbox{0.21\linewidth}{\color{mypurpleblue}augmentation}
+ &\textcolor{mypurpleblue}{$\sumatrix{3207}{38}{55}{288}$}
+ &\textcolor{mypurpleblue}{$\sumatrix{3050}{7}{212}{319}$}
+ &\textcolor{mypurpleblue}{$\sumatrix{2358}{2}{904}{324}$}
+ &\textcolor{mypurpleblue}{$\sumatrix{3262}{326}{0}{0}$}
+ %&\textcolor{mypurpleblue}{$\sumatrix{3262}{326}{0}{0}$}
+ \\[6\jot]
+%%%%%%%%
+% ## standard   0.959   1.518    7.237   8.628   85.58
+% ## transducer 0.962   1.645    9.591   9.091   90.91
+% ##            0.310   8.370   32.530   5.370    6.23
+ &\parbox{0.21\linewidth}{\color{myred}\rlap{standard method}}
+ &\multicolumn{4}{c}{\textcolor{myred}{$\sumatrix{3165}{49}{97}{277}$}}
+ \\[2\jot]
+ \smash{\rotatebox[origin=l]{90}{\quad\clap{\parbox{8em}{\centering Neural\\Network}}}}
+ &\parbox{0.21\linewidth}{\color{mypurpleblue} augmentation}
+ &\textcolor{mypurpleblue}{$\sumatrix{3189}{65}{73}{261}$}
+ &\textcolor{mypurpleblue}{$\sumatrix{2882}{12}{380}{314}$}
+ &\textcolor{mypurpleblue}{$\sumatrix{2011}{1}{1251}{325}$}
+ &\textcolor{mypurpleblue}{$\sumatrix{3262}{326}{0}{0}$}
+ %&\textcolor{mypurpleblue}{$\sumatrix{3262}{326}{0}{0}$}
+ \end{tabular*}
+  \\[1em]
+  \caption{Confusion matrices from demonstration dataset}
+  \label{tab:results_CM}
+
+\vspace{6em}
+  
+% classes
+% 3262  326 
+%
+% baserates
+% 0.90914158 0.09085842 
+% \begin{table}[!t]
+%   \centering
+%   \small
+  \begin{tabular*}{\linewidth}{clw{c}{0.12\linewidth}w{c}{0.12\linewidth}w{c}{0.12\linewidth}w{c}{0.12\linewidth}}
+&    &$\sumatrix{1}{0}{0}{1}$
+ &$\sumatrix{1}{-10}{0}{10}$
+ &$\sumatrix{1}{-100}{0}{100}$
+ &$\sumatrix{10}{0}{-10}{1}$
+ % &$\sumatrix{100}{0}{-100}{1}$
+     \\[2\jot]
+ &\parbox{0.21\linewidth}{\rlap{\color{mygray}\footnotesize min achievable utility}}
+% ##             [,1]
+% ## [1,]   0.0000000
+% ## [2,]  -0.9085842
+% ## [3,]  -9.0858417
+% ## [4,]  -9.0914158
+% ## [5,] -90.9141583
+ &\textcolor{mygray}{\footnotesize 0}
+ &\textcolor{mygray}{\footnotesize $-0.91$}
+ &\textcolor{mygray}{\footnotesize $-9.09$}
+ &\textcolor{mygray}{\footnotesize $-9.09$}
+ %&\textcolor{mygray}{\footnotesize $-90.9$}
+     \\[0\jot]
+ &\parbox{0.21\linewidth}{\rlap{\color{mygray}\footnotesize max achievable utility}}
+% ## [1,]  1.000000
+% ## [2,]  1.817726
+% ## [3,]  9.994983
+% ## [4,]  9.182274
+% ## [5,] 91.005017
+ &\textcolor{mygray}{\footnotesize 1}
+ &\textcolor{mygray}{\footnotesize 1.82}
+ &\textcolor{mygray}{\footnotesize 9.99}
+ &\textcolor{mygray}{\footnotesize 9.18}
+ %&\textcolor{mygray}{\footnotesize 91.0}
+    \\[5\jot]
+% ## standard   0.968   1.364    5.553   8.954   88.92
+% ## transducer 0.974   1.720    9.632   9.091   90.91
+% ##            0.620  26.100   73.460   1.530    2.24
+ &\parbox{0.21\linewidth}{\color{myred}\rlap{standard method}}
+ &\textcolor{myred}{0.968}
+ &\textcolor{myred}{1.36}
+ &\textcolor{myred}{5.55}
+ &\textcolor{myred}{8.95}
+ %& \textcolor{myred}{88.9}
+ \\[1\jot]
+ \smash{\rotatebox[origin=l]{90}{\hspace{1em}\clap{\parbox{5em}{\centering Random\\Forest}}}}
+ &\parbox{0.21\linewidth}{\color{mypurpleblue}\bfseries augmentation}
+ &\textcolor{mypurpleblue}{\bfseries 0.974}
+ &\textcolor{mypurpleblue}{\bfseries 1.72}
+ &\textcolor{mypurpleblue}{\bfseries 9.63}
+ &\textcolor{mypurpleblue}{\bfseries 9.09}
+ %&\textcolor{mypurpleblue}{\bfseries 90.9}
+ % \\[2\jot]
+ % &\parbox{0.21\linewidth}{\footnotesize relative increase}
+ % &\footnotesize+0.6\%
+ % &\footnotesize+26\%
+ % &\footnotesize+73\%
+ % &\footnotesize+1.5\%
+ % % &\footnotesize+2.2\%
+ \\[5\jot]
+%%%%%%%%
+%  &\parbox{0.21\linewidth}{\clap{\color{mygray}\footnotesize min achievable utility}}
+% % ##             [,1]
+% % ## [1,]   0.0000000
+% % ## [2,]  -0.9085842
+% % ## [3,]  -9.0858417
+% % ## [4,]  -9.0914158
+% % ## [5,] -90.9141583
+%  &\textcolor{mygray}{\footnotesize 0}
+%  &\textcolor{mygray}{\footnotesize $-0.91$}
+%  &\textcolor{mygray}{\footnotesize $-9.09$}
+%  &\textcolor{mygray}{\footnotesize $-9.09$}
+%  %&\textcolor{mygray}{\footnotesize $-90.9$}
+%     \\[2\jot]
+% ## standard   0.959   1.518    7.237   8.628   85.58
+% ## transducer 0.962   1.645    9.591   9.091   90.91
+% ##            0.310   8.370   32.530   5.370    6.23
+ &\parbox{0.21\linewidth}{\color{myred}\rlap{standard method}}
+ &\textcolor{myred}{0.959}
+ &\textcolor{myred}{1.52}
+ &\textcolor{myred}{7.24}
+ &\textcolor{myred}{8.63}
+ %&\textcolor{myred}{85.6}
+ \\[1\jot]
+ \smash{\rotatebox[origin=l]{90}{\hspace{1em}\clap{\parbox{8em}{\centering Neural\\Network}}}}
+ &\parbox{0.21\linewidth}{\color{mypurpleblue}\bfseries augmentation}
+ &\textcolor{mypurpleblue}{\bfseries 0.962}
+ &\textcolor{mypurpleblue}{\bfseries 1.64}
+ &\textcolor{mypurpleblue}{\bfseries 9.59}
+ &\textcolor{mypurpleblue}{\bfseries 9.09}
+ %&\textcolor{mypurpleblue}{\bfseries 90.9}
+%      \\[2\jot]
+%  &\parbox{0.21\linewidth}{\clap{\color{mygray}\footnotesize max achievable utility}}
+% % ## [1,]  1.000000
+% % ## [2,]  1.817726
+% % ## [3,]  9.994983
+% % ## [4,]  9.182274
+% % ## [5,] 91.005017
+%  &\textcolor{mygray}{\footnotesize 1}
+%  &\textcolor{mygray}{\footnotesize 1.82}
+%  &\textcolor{mygray}{\footnotesize 9.99}
+%  &\textcolor{mygray}{\footnotesize 9.18}
+ %&\textcolor{mygray}{\footnotesize 91.0}
+ % \\[2\jot]
+ % &\parbox{0.21\linewidth}{\footnotesize relative increase}
+ % &\footnotesize+0.3\%
+ % &\footnotesize+8.4\%
+ % &\footnotesize+33\%
+ % &\footnotesize+5.4\%
+ % %&\footnotesize+6.2\%
+  \end{tabular*}
+  \\[1em]
+  \caption{Utility yields from demonstration dataset}
+  \label{tab:results_utilities}
+
+
+
+\vspace{3em}
+  
+% classes
+% 3262  326 
+%
+% baserates
+% 0.90914158 0.09085842 
+% \begin{table}[!t]
+%   \centering
+%   \small
+  \begin{tabular*}{\linewidth}{clw{c}{0.12\linewidth}w{c}{0.12\linewidth}w{c}{0.12\linewidth}w{c}{0.12\linewidth}}
+% &    &$\sumatrix{1}{0}{0}{1}$
+%  &$\sumatrix{1}{-10}{0}{10}$
+%  &$\sumatrix{1}{-100}{0}{100}$
+%  &$\sumatrix{10}{0}{-10}{1}$
+%  % &$\sumatrix{100}{0}{-100}{1}$
+% &&\multicolumn{4}{c}{\footnotesize(rescaled utilities)}
+%     \\[2\jot]
+\iffalse
+    &\parbox{0.21\linewidth}{\rlap{\color{mygray}\footnotesize min achievable normalized utility}}
+ &\multicolumn{4}{c}{\textcolor{mygray}{\footnotesize 0}}
+ % &\textcolor{mygray}{\footnotesize 0}
+ % &\textcolor{mygray}{\footnotesize 0}
+ % &\textcolor{mygray}{\footnotesize 0}
+ %&\textcolor{mygray}{\footnotesize 0}
+     \\[0\jot]
+ &\parbox{0.21\linewidth}{\rlap{\color{mygray}\footnotesize max achievable normalized utility}}
+ &\multicolumn{4}{c}{\textcolor{mygray}{\footnotesize 1}}
+ % &\textcolor{mygray}{\footnotesize 1}
+ % &\textcolor{mygray}{\footnotesize 1}
+ % &\textcolor{mygray}{\footnotesize 1}
+ %&\textcolor{mygray}{\footnotesize 1}
+    \\[5\jot]
+\fi
+%%% normalized scores RF
+% ##                 [,1]      [,2]      [,3]      [,4]      [,5]
+% ## standard   0.9675307 0.8336741 0.7672139 0.9875011 0.9885411
+% ## mixed      0.9675307 0.9034962 0.9547778 0.9945856 0.9995036
+% ## transducer 0.9740803 0.9640155 0.9809529 0.9950279 0.9995006
+ &\parbox{0.21\linewidth}{\color{myred}\rlap{standard method}}
+ &\textcolor{myred}{0.968}
+ &\textcolor{myred}{0.834}
+ &\textcolor{myred}{0.767}
+ &\textcolor{myred}{0.988}
+ %& \textcolor{myred}{0.989}
+ \\[1\jot]
+ \smash{\rotatebox[origin=l]{90}{\hspace{1em}\clap{\parbox{5em}{\centering Random\\Forest}}}}
+ &\parbox{0.21\linewidth}{\color{mypurpleblue}\bfseries augmentation}
+ &\textcolor{mypurpleblue}{\bfseries 0.974}
+ &\textcolor{mypurpleblue}{\bfseries 0.964}
+ &\textcolor{mypurpleblue}{\bfseries 0.981}
+ &\textcolor{mypurpleblue}{\bfseries 0.995}
+ %&\textcolor{mypurpleblue}{\bfseries 1.000}
+ % \\[2\jot]
+ % &\parbox{0.21\linewidth}{\footnotesize relative increase}
+ % &\footnotesize+0.6\%
+ % &\footnotesize+26\%
+ % &\footnotesize+73\%
+ % &\footnotesize+1.5\%
+ % % &\footnotesize+2.2\%
+ \\[5\jot]
+%%%%%%%%
+%%% normalized scores CNN
+% ##                 [,1]      [,2]      [,3]      [,4]      [,5]
+% ## standard   0.9593088 0.8898998 0.8554381 0.9696642 0.9702034
+% ## mixed      0.9593088 0.9302801 0.9754316 0.9853278 0.9941522
+% ## transducer 0.9615385 0.9366183 0.9788058 0.9950279 0.9995006
+ &\parbox{0.21\linewidth}{\color{myred}\rlap{standard method}}
+ &\textcolor{myred}{0.959}
+ &\textcolor{myred}{0.890}
+ &\textcolor{myred}{0.855}
+ &\textcolor{myred}{0.970}
+ %&\textcolor{myred}{0.970}
+ \\[1\jot]
+ \smash{\rotatebox[origin=l]{90}{\hspace{1em}\clap{\parbox{8em}{\centering Neural\\Network}}}}
+ &\parbox{0.21\linewidth}{\color{mypurpleblue}\bfseries augmentation}
+ &\textcolor{mypurpleblue}{\bfseries 0.962}
+ &\textcolor{mypurpleblue}{\bfseries 0.937}
+ &\textcolor{mypurpleblue}{\bfseries 0.979}
+ &\textcolor{mypurpleblue}{\bfseries 0.995}
+ %&\textcolor{mypurpleblue}{\bfseries 1.000}
+  \end{tabular*}
+  \\[1em]
+  \caption{\emph{Rescaled} utility yields from demonstration dataset}
+  \label{tab:results_utilities_normalized}
+
+\end{table}
+
+The utility yields for the different cases, classifiers, and methods are presented in table~\ref{tab:results_utilities}. The maximum and minimum theoretically achievable yields, which are obtained when all data are correctly classified or incorrectly  misclassified, are also shown for each case. Since the maximum and minimum differ from case to case, we also report the \emph{rescaled} utilities in table~\ref{tab:results_utilities_normalized}. For each case, the rescaled utility is obtained by a shift and a scaling of its measurement unit, which set the minimum and maximum achievable yields to $0$ and $1$:
+\begin{equation}
+  \label{eq:norm_utility_formula}
+  \texts{rescaled utility} =
+  \frac{\texts{utility} - \texts{theoretical min}}{
+    \texts{theoretical max} - \texts{theoretical min}
+  } \ .
+\end{equation}
+\FloatBlock
+
+\medskip
+
+Let us first compare the two algorithms when employed in the standard way (red). Their performance is very close to the theoretical maximum in most cases, the only exception being the \RF\ in case~III.  The \RF\ outperforms the \CNN\ in  cases~I and~II; vice versa in cases~II and~III.
+
+Then let us look at the performances obtained with the augmentation (blue bold). We note the following:
+\begin{itemize}
+\item The augmentation improves the performance of each algorithm in all cases. The improvement also occurs also in case~IV for the \RF, where the standard method already had an extremely high performance (rescaled utility of 0.988).
+\item In cases~II--IV the augmentation improves the originally worse algorithm above the originally better one. This almost happens also in case~I, the difference possibly being at the level of statistical variability.
+\item In case~IV the augmentation brings the utility yield to above 99\% of the theoretical maximum; remember from the previous section that this is achieved by classifying all data as class~0.
+\item With augmentation, the \RF\ outperforms the \CNN\ in all cases, with a possible tie for case~IV.
+\end{itemize}
+
+
+
+
+\medskip
+
+These were four particular cases only, though. Does the augmentation lead to an improvement (or at least to no change) for \emph{all} possible utility matrices? This must indeed be the case, owing to the internal consistency of decision theory.
+
+We give evidence of this fact by considering a large number (10\,000) of utility matrices selected uniformly from the utility-matrix space for binary classification. This two-dimensional space, shown in \fig~\ref{fig:space_UM}, is discussed in our companion work \autocites[\sect~3.2]{dyrlandetal2022}.
+\begin{figure}[t]
+  \centering
+  \includegraphics[width=0.5\linewidth]{space_UM2c.pdf}\\
+  \caption{Space of utility matrices (modulo equivalence) for binary classification.}
+  \label{fig:space_UM}
+\end{figure}
+
+For each of these utility matrices, we calculate the rescaled yields obtained by using either classifier in the standard way, and with the augmentation -- probability-transducer \amp\ utility-based classification. The yields obtained in the two ways are plotted against each other in \fig~\ref{fig:RF_gain_UMspace}. Only 2\,000 are plotted, in order to show the fact that most of the yields are quite high (they accumulate on the top right corner); but all 10\,000 lie along the jagged curves evident in the plot.
+\begin{figure}[t]
+  \centering
+  \includegraphics[width=\linewidth]{RFCNN_transducer_gains_max.pdf}\\
+  \caption{Rescaled utility yields obtained using the two classifiers in the standard way, vs those obtained with augmentation, for a uniform distribution of possible utility matrices over the utility-matrix space of \fig~\ref{fig:space_UM}. The augmentation always leads to an improved utility yield, especially in cases where the standard method has a low or high performance. Owing to noise coming from numerical rounding, in some cases the yield from augmentation may appear lower than from the standard method (points below the dashed grey line). Note that the minimum value of each axis is 0.75, so this plot is showing}
+  \label{fig:RF_gain_UMspace}
+\end{figure}
+
+Clearly, the augmentation always leads to increased utility yields, especially for those cases where the standard performance of the two algorithms is particularly low or high (in relative terms); hence the U-shapes of the scattered points. Note that the minimum values of the plot's axes is 0.75, so the improvement is upon yields that are already quite high. Numerical rounding can lead to apparent decreases in some cases (maximum relative decreases: $-0.09\%$ for \RF, $-0.2\%$ for \CNN); this is actually useful for estimating the magnitude of numerical-rounding errors occurring in the computation and the number of significant digits.
+
+
+\mynotew{add final remark that this is not evaluation}
+
+
+\section{Summary, discussion, and teasers of further ...}
+\label{sec:summary_discussion}
+
+\mynotew{Maybe add note about how (sequential) decision theory was used during World War I; see  \textcites{good1950} around \sect~6.2 }
+
+
+
+% \begin{figure}[t]
+%   \centering
+%   \includegraphics[width=\linewidth]{CNN_transducer_gainsx2.pdf}\\
+%   \caption{Utility yields obtained using the \cnn\ classifier in the standard way, vs those obtained using the probability transducer and utility maximization in each single classification, for a uniform distribution of possible utility matrices}
+%   \label{fig:CNN_gain_UMspace}
+% \end{figure}
+
+
+
+
+
+
+% classesb
+%   0   1 
+% 163 326 
+%
+%  baserates
+%         0         1 
+% 0.3333333 0.6666667 
+\iffalse
+\begin{table}[!t]
+  \centering
+  \small
+  \caption{Utility yields of the two algorithms with the two approaches}
+  \label{tab:results_5}
+  \begin{tabular}{cp{0.3\linewidth}cccc}
+&    &$\sumatrix{1}{0}{0}{1}$
+ &$\sumatrix{1}{-10}{0}{10}$
+ &$\sumatrix{1}{-100}{0}{100}$
+ &$\sumatrix{10}{0}{-10}{1}$
+ % &$\sumatrix{100}{0}{-100}{1}$
+    \\[2\jot]
+% ## standard  0.835   3.746   34.48   3.797   33.43
+% ## discr     0.918   6.685   66.09   3.333   33.33
+% ## gener     0.957   6.867   66.67   3.840   33.58
+% ##          14.610  83.320   93.33   1.130    0.44
+% ##           4.250   2.720    0.87  15.210    0.73
+ &\textcolor{myred}{standard method}
+ &\textcolor{myred}{0.835}
+ &\textcolor{myred}{3.75}
+ &\textcolor{myred}{34.5}
+ &\textcolor{myred}{3.80}
+ %& \textcolor{myred}{33.4}
+ \\[0\jot]
+ \rotatebox[origin=c]{90}{\clap{\parbox{5em}{\centering Random\\Forest}}}
+ &\parbox{\linewidth}{\color{mypurpleblue}transducer,\\generative mode}
+ &\textcolor{mypurpleblue}{0.957}
+ &\textcolor{mypurpleblue}{6.87}
+ &\textcolor{mypurpleblue}{66.7}
+ &\textcolor{mypurpleblue}{3.84}
+ %&\textcolor{mypurpleblue}{33.6}
+ \\[1\jot]
+ &\footnotesize relative increase
+ &\footnotesize+15\%
+ &\footnotesize+83\%
+ &\footnotesize+93\%
+ &\footnotesize+1.1\%
+ % &\footnotesize+0.4\%
+ \\[1\jot]
+ &\parbox{\linewidth}{\color{myyellow}\scriptsize transducer,\\ discriminative mode}
+ &\textcolor{myyellow}{\scriptsize 0.918}
+ &\textcolor{myyellow}{\scriptsize 6.69}
+ &\textcolor{myyellow}{\scriptsize 66}
+ &\textcolor{myyellow}{\scriptsize 3.33}
+ %&\textcolor{myyellow}{\scriptsize 33.3}
+ \\[2.5em]
+%%%%%%%%
+% ## standard 0.894   4.990   46.95   3.777   32.67
+% ## discr    0.861   6.466   66.46   3.333   33.33
+% ## gener    0.930   6.802   66.67   3.742   33.36
+% ##          4.030  36.310   41.99  -0.930    2.11
+% ##          8.010   5.200    0.31  12.270    0.09
+ &\textcolor{myred}{standard method}
+ &\textcolor{myred}{0.894}
+ &\textcolor{myred}{4.99}
+ &\textcolor{myred}{47.0}
+ &\textcolor{myred}{3.78}
+ %&\textcolor{myred}{32.7}
+ \\[0\jot]
+ \rotatebox[origin=c]{90}{\clap{\parbox{8em}{\centering Convolutional\\Neural\\Network}}}
+ &\parbox{\linewidth}{\color{mypurpleblue}transducer,\\ generative mode}
+ &\textcolor{mypurpleblue}{0.930}
+ &\textcolor{mypurpleblue}{6.80}
+ &\textcolor{mypurpleblue}{66.7}
+ &\textcolor{mypurpleblue}{3.74}
+ %&\textcolor{mypurpleblue}{33.4}
+ \\[1\jot]
+ &\footnotesize relative increase
+ &\footnotesize+4.0\%
+ &\footnotesize+36\%
+ &\footnotesize+42\%
+ &\footnotesize-0.9\%
+ %&\footnotesize+2.1\%
+ \\[1\jot]
+ &\parbox{\linewidth}{\color{myyellow}\scriptsize transducer,\\ discriminative mode}
+ &\textcolor{myyellow}{\scriptsize 0.861}
+ &\textcolor{myyellow}{\scriptsize 6.47}
+ &\textcolor{myyellow}{\scriptsize 66.5}
+ &\textcolor{myyellow}{\scriptsize 3.33}
+ %&\textcolor{myyellow}{\scriptsize 33.3}
+ \end{tabular}
+\end{table}
+\fi
+
+
+
+\iffalse
+\begin{figure}[t]
+  \centering
+  \includegraphics[width=\linewidth]{RFCNN_transducer_gains_max.pdf}\\
+  \caption{Utility yields obtained using the \rf\ classifier in the standard way, vs those obtained using the probability transducer in generative mode, with utility maximization in each single classification, for a uniform distribution of possible utility matrices}
+  \label{fig:RF_gain_gener_UMspace}
+\end{figure}
+
+\begin{figure}[t]
+  \centering
+  \includegraphics[width=\linewidth]{CNN_transducer_gains_generx.pdf}\\
+  \caption{Utility yields obtained using the \cnn\ classifier in the standard way, vs those obtained using the probability transducer in generative mode, with utility maximization in each single classification, for a uniform distribution of possible utility matrices}
+  \label{fig:CNN_gain_gener_UMspace}
+\end{figure}
+\fi
+
+
+
+% \begin{figure}[t]
+%   \centering
+%   \includegraphics[width=\linewidth]{comparison_schema2.pdf}\\
+%   \caption{Comparison scheme}
+%   \label{fig:comparison scheme}
+% \end{figure}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%% Appendices
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 
+\clearpage
+\bigskip
+\renewcommand*{\appendixpagename}{Appendices: mathematical and technical details}
+% \renewcommand*{\appendixname}{Appendix: test2}
+% %\appendixpage
+\appendix
+
+
+
+%%%%% Kjetil's
+\section{Algorithms and data used in the demonstration}
+ 
+\subsection{Data} 
+  
+The data comes from the open-access CheMBL bioactivity database \autocites{bentoetal2014}. The dataset used in the present work was introduced by \textcite{koutsoukasetal2017}. The data consist in structure-activity relationships from version 20 of ChEMBL, with Carbonic Anhydrase II (ChEMBL205) as protein target.
+
+
+\subsection{Pre-processing} 
+
+For our pre-processing pipeline, we use two different methods to represent the molecule, one for the Random Forest (RF) and one for the Convolutional Neural Network (CNN). The first method turns the molecule into a hashed bit vector of circular fingerprints called Extended Connectivity Fingerprints (ECFP) \autocites{rogersetal2010}. From our numerical analysis, there was little to no improvement using a 2048-bit vector over a 1024-bit vector. 
+  
+For our convolutional neural network, the data is represented by converting the molecule into images of 224~pixels \texttimes\ 224~pixels. This is done by taking a molecule's SMILES (Simplified Molecular Input Line Entry System) string \autocites{davidetal2020} from the dataset and converting it into a canonical graph structure by means of RdKit \autocites{rdkit2017}. This differs from ECFP in that it represents the actual spatial and chemical structure (or something very close to it) of the molecule rather than properties generated from the molecule.
+
+The dataset has in total 1631 active molecules and 16310 non-active molecules which act as decoys. For training, the active molecules are oversampled, as usually done with imbalanced datasets \autocites{provost2000}, to match the same number of non-active molecules.
+% The data is therefore unbalanced and we solve this by giving the loss functions different weights for each class, which give the same result but have better performance as oversampling.
+
+\subsection{Prediction}
+
+Virtual screening is the process of assessing chemical activity in the interaction between a compound (molecule) and a target (protein). The goal of the machine learning algorithms is to find structural features or chemical properties that show that the molecule is active towards the protein \autocites{green2019}. Deep neural networks have previously been shown to outperform random forests and various linear models in virtual high-throughput screening and in quantitative structure-activity relationship (QSAR) problems \autocite{koutsoukasetal2017}.
+  
+\subsection{Chosen classifiers} 
+
+The algorithms and methods used to create the models have previously been shown to give great results for a lot of different fields.
+
+\subsubsection{\textit{Random Forest}}
+
+The first machine learning model used in the experiments is an RF model implemented in sci-kit learn \autocites{pedregosaetal2011}. RF is an ensemble of classifying or regression trees where the majority of votes is chosen as the predicted class \autocites{breiman2001b}. It is known for being robust when dealing with a large number of features (as in our case), being resilient to over-fitting, and achieving good performance. And has already been shown to deliver powerful and accurate results in compound classification and QSAR analysis \autocites{svetniketal2003}. The following parameters were used when training the model: 
+
+\medskip
+
+%\fbox{\parbox{\textwidth}{
+\begin{framed}
+  \begin{description}
+  \item[Number of trees:] 200 
+  \item[Criterion:] Entropy 
+  \item[Max Features:] Square root
+  \end{description}
+\end{framed}
+%}}
+
+\subsubsection{\textit{Convolutional Neural Network}} 
+The second model is a pre-trained residual network (ResNet) \autocites{heetal2016} with 18 hidden layers trained on the well-known ImageNet dataset  \autocites{russakovskyetal2015} by using the PyTorch framework \autocites{paszkeetal2019}. ResNet has shown to outperform other pre-trained convolutional neural network models \autocites{heetal2016}. A ResNet with 34 hidden layers showed little to no performance gain, so we chose to go with the simpler model. The model is trained with the following hyperparameters:
+\medskip
+
+%\fbox{\parbox{\textwidth}{
+\begin{framed}
+  \begin{description}
+  \item[Learning rate:] 0.003 
+  \item[Optimization technique:] Stochastic Gradient Descent 
+  \item[Activation Function:] Rectified linear unit (ReLU) 
+  \item[Dropout:] 50\% 
+  \item[Number of epochs:] 20 
+  \item[Loss function:] Cross-entropy loss
+  \end{description}
+\end{framed}
+%}}
+
+\subsection{Train, Validation, Test split}
+
+The data set is split into four parts:
+\begin{itemize}
+\item Training set: 45\% of the dataset to train the model.
+\item Validation set: 15\%, for validating the model after each epoch.
+\item Calibration set: 20\%, for calibrating the probability transducer.
+\item Test set: 20\%, for evaluation.
+\end{itemize}
+%%%%
+
+
+\section{Mathematical details and computation of the transducer}
+\label{sec:maths_transducer}
+
+The notation is the one used in \sect~\ref{sec:calculation_transducer}: the class is denoted $c$ and the algorithm output $y$. In our demonstration $c$ takes on values in $\set{0,1}$, and $y$ either in $\clcl{0,1}$ or in $\RR^{2}$; but the method can be applied to more general cases, such as continuous but low-dimensional spaces for both $c$ and $y$, or combinations of continuous and discrete spaces. For convenience we use a single symbol for the pair $d \defd (c, y)$.
+
+For general references about the probability calculus and concepts, and specific probability distributions see \cites{jaynes1994_r2003,mackay1995_r2005,jeffreys1939_r1983,gregory2005,bernardoetal1994_r2000,hailperin1996,johnsonetal1969_r1996,johnsonetal1969b_r2005,johnsonetal1970_r1994,johnsonetal1970b_r1995,kotzetal1972_r2000}.
+
+\subsection{Exchangeability and expression for the probability transducer}
+\label{sec:deFinetti}
+
+
+
+There is a fundamental theorem in the probability calculus that tells us how extrapolation from known units -- molecules, patients, widgets, images -- to new, unknown units takes place: de~Finetti's theorem \autocites[\chap~4]{bernardoetal1994_r2000}{dawid2013,definetti1929,definetti1937}. It is a consequence of the assumption that our uncertainty is invariant or \enquote{exchangeable} under permutations of the labelling or order of the units (therefore it does not apply to time series, for example).
+
+De~Finetti's theorem states that the probability density of a value $d_{0}$ for a new unit \enquote{0} is given by the following integral:
+\begin{equation}
+  \label{eq:prob_is_expe_freq}
+  \p(d_{0}) = \int\! F(d_{0})\ \wf(F)\ \di F \ ,
+\end{equation}
+which can be given an intuitive interpretation. We consider every possible long-run frequency distribution $F(d)$ of data; give it a weight $\wf(F)$; and then take the weighted sum of all such long-run frequency distributions.
+
+The weight $\wf(F)$ -- a probability density -- given to a frequency distribution $F$ is proportional to two factors:
+\begin{equation}
+  \label{eq:weight_F_two_factors}
+  \wf(F) \propto F(D)\ \wfo(F) \ .
+\end{equation}
+\begin{itemize}
+  \item The first factor (\enquote{likelihood}) $F(D)$ quantifies how well $F$ \emph{fits} known data of the same kind, in our case the calibration data $D \defd \set{d_{1}, \dotsc, d_{M}}$. It is simply proportional to how frequent the known data would be, according to $F$:
+  \begin{equation}
+    \label{eq:factor_likelihood}
+F(D) \equiv F(d_{1})\cdot F(d_{2})\cdot \dotsm\cdot F(d_{M}) \ .
+  \end{equation}
+
+\item The second factor (\enquote{prior}) $\wfo(F)$ quantifies how well $F$ \emph{generalizes} beyond the data we have seen, owing to reasons such as physical or biological constraints for example. In our case we expect $F$ to be somewhat smooth in $X$ when this variable is continuous \autocites[Cf.][]{goodetal1971}. No assumptions are made about $F$ when $X$ is discrete.
+  %%\mynotew{add plot of prior transducer curves}
+\end{itemize}
+Formula~\eqref{eq:weight_F_two_factors} is just Bayes's theorem. Its normalization factor is the integral $\int F(D)\, \wfo(F)\, \di F$, which ensures that $\wf(F)$ is normalized.
+
+The first factor becomes larger as the number of known data increases. Thus a large amount of data indicating a non-smooth distribution $F$ will override any smoothness preferences embodied in the second factor. Note that no assumptions about the shape of $F$ -- Gaussians, logistic curves, sigmoids, or similar -- are made in this approach.
+
+The weight $\wf(F)$  tells us how much we can expect the long-run frequency distribution $F$ to change, given new data.
+
+The integral in~\eqref{eq:prob_is_expe_freq} is calculated in either of two ways, depending on whether $d$ is discrete or continuous. For $d$ discrete, the integral is over $\RR^{n}$, where $n$ is the number of possible values of $d$, and can be done analytically. For $d$ with continuous components, the integral is numerically approximated by a sum over $T$ representative samples, obtained by Markov-chain Monte Carlo, of distributions $F$ according to the weights~\eqref{eq:weight_F_two_factors}:
+\begin{equation}
+  \label{eq:MC_approx}
+  \p(d_{0}) = \int\! F(d_{0})\ \wf(F)\ \di F
+  \approx
+\frac{1}{T}\sum_{t=1}^{T} F_{t}(d_{0}) \ .  
+\end{equation}
+The error of this approximation can be calculated and made as small as required by increasing the number of Monte Carlo samples.
+
+We must find a way to express any kind of distribution $F(d)$. As mentioned in \sect~\ref{sec:calculation_transducer}, this is done by writing it as
+\begin{equation}
+  \label{eq:representation_F}
+  F(c, y) = \sum_{l} w_{l}\ A(c \| \alpha_{l})\ B(y \| \beta_{l}) \ ,
+\end{equation}
+where the sum as a very large number of terms, $\set{w_{l}}$ are normalized weights, and $A(c\|\alpha)$, $B(y \| \beta)$ are distributions, possibly the product of further one-dimensional distributions. Effectively we are expressing $F(\dotv)$ by the \enquote{coordinates} $(w_{l}, \alpha_{l}, \beta_{l})$ in a space of extremely high dimensions.
+
+This representation \autocites[promoted by]{dunsonetal2011}[see also][]{rasmussen1999} has several advantages:
+\begin{itemize}
+\item Its marginal distributions for $c$ and $y$ are also of the form~\eqref{eq:representation_F}, as shown in \sect~\ref{sec:calculation_transducer}, and easily computable.
+\item Its conditional distributions for $c$ given $y$ and vice versa have also a form similar to \eqn~\eqref{eq:representation_F} and easily computable.
+\item It can be used with conjugate priors.
+\item The final probability $p(c,y)$, approximated by the sum~\eqref{eq:MC_approx}, has also the form~\eqref{eq:representation_F}:
+  \begin{equation}
+    \label{eq:sum_of_sums_for_prob}
+    \p(c_{0}, y_{0}) \approx
+    \sum_{t,l} \frac{w_{t,l}}{T}
+    \ A(c_{0} \| \alpha_{t,l})\ B(y_{0} \| \beta_{t,l}) \ .
+  \end{equation}
+This is the expression given in \sect~\ref{sec:calculation_transducer} with $k$ running over both indexes $t,l$ and with $q_{k} \defd w_{t,l}/T$.
+\end{itemize}
+
+In our demonstration of \sect~\ref{sec:demonstration}, where the class variable $c$ takes on conventional values $\set{0,1}$, we use a Bernoulli distribution for the first:
+\begin{equation}
+  \label{eq:distr_class}
+  A(c \| \alpha) = c\ \alpha + (1-c)\ (1-\alpha) \equiv
+  \begin{dcases*}
+    \alpha& if $c=1$, \\ 1-\alpha & if $c=0$ \ ;
+  \end{dcases*}
+\end{equation}
+and a Gaussian distribution for the second, $\beta \equiv (\mu,\sigma)$ being its mean and standard deviation:
+\begin{equation}
+  \label{eq:distr_output}
+  B(y \| \beta) = \No(y \| \mu, \sigma) \defd \frac{1}{\sqrt{2\pu\sigma^{2}}} \exp\biggl[-\frac{(y-\mu)^{2}}{2\sigma^{2}}\biggr] \ ,
+\end{equation}
+or a product of such Gaussians, each with its own parameters, if $y$ is multidimensional. For the \rf\ output $y\in \clcl{0,1}$ such a Gaussian should in principle be truncated; we did not use any truncation as the error committed is small and the computation much faster.
+
+
+
+\subsection{Markov-chain Monte Carlo sampling}
+\label{sec:MCMC}
+
+The samples $\set{F_{t}(\dotv)}$ of the sum~\eqref{eq:MC_approx} -- these are samples of the distribution $\wf(F)$ -- are obtained through Markov-chain Monte Carlo; specifically Gibbs sampling \autocites{neal1993}[\chap~29]{mackay1995_r2005}.
+Effectively we obtain samples of the coordinates $(w_{l}, \alpha_{l}, \beta_{l})$, and the prior $\wfo(F)$ is a prior over these coordinates.
+
+For the demonstration of \sect~\ref{sec:demonstration} we use a Dirichlet distribution for $(w_{l})$, a beta distribution for $(\alpha_{l})$, a Gaussian distribution for $(\mu_{l})$, and a gamma distribution for $(1/{\sigma_{l}}^{2})$.
+
+The Markov-chain Monte Carlo sampling scheme is implemented using the R \autocites{rcoreteam1995_r2022} package NIMBLE \autocites{nimble2016_r2021}, and uses 16 parallel chains \autocites[scripts available in][]{dyrlandetal2022c}.
+
+
+
+
+
+%%%% examples use empheq
+%   \begin{empheq}[left={\mathllap{\begin{aligned}    \de\yF_{\yc}/\de\yp&=0\text{:} \\
+%         \de\yF_{\yc}/\de\ym&=0\text{:}\\ \de\yF_{\yc}/\de\yl&=0\text{:}\end{aligned}}\qquad}\empheqlbrace]{align}
+%     \label{eq:con_p}
+% %    \de\yF_{\yc}/\de\yp &\equiv
+%     -\ln\yp + \ln\yq + \yl\yM + \ym\yu &=0,\\
+%     \label{eq:con_u}
+% %    \de\yF_{\yc}/\de\ym &\equiv
+%     \yu\yp-1 &=0,\\
+%     \label{eq:con_l}
+%     %\de\yF_{\yc}/\de\yl &\equiv
+%     \yM\yp-\yc &=0.
+%   \end{empheq}
+%%%%
+% \begin{empheq}[box=\widefbox]{equation}
+%   \label{eq:maxent_question}
+%   \p\bigl[\yE{N+1}{k} \bigcond \tsum\yo\yf{N}\in\yA, \yM\bigr] = \mathord{?}
+% \end{empheq}
+
+
+%%\setlength{\intextsep}{0ex}% with wrapfigure
+%%\setlength{\columnsep}{0ex}% with wrapfigure
+%\begin{figure}[p!]% with figure
+%\begin{wrapfigure}{r}{0.4\linewidth} % with wrapfigure
+%  \centering\includegraphics[trim={12ex 0 18ex 0},clip,width=\linewidth]{maxent_saddle.png}\\
+%\caption{caption}\label{fig:comparison_a5}
+%\end{figure}% exp_family_maxent.nb
+
+
+\clearpage
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%% Acknowledgements
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 
+\begin{contributions}
+The authors were so immersed in the development of the present work, that unfortunately they forgot to keep a detailed record of who did what.
+\end{contributions}
+
+\begin{acknowledgements}
+  KD and ASL acknowledge support from the Trond Mohn Research Foundation, grant number BFS2018TMT07, and PGLPM from The Research Council of Norway, grant number 294594.
+
+  The computations of the parameters for the probability transducer were performed on resources provided by Sigma2 -- the National Infrastructure for High Performance Computing and Data Storage in Norway.
+
+  KD would like to thank family for endless support; partner Synne for constant love, support, and encouragement; and the developers and maintainers of Python, FastAi, PyTorch, scikit-learn, NumPy and RDKit for free open source software and for making the experiments possible. 
+
+  PGLPM thanks Maja, Mari, Miri, Emma for continuous encouragement and affection;  Buster Keaton and Saitama for filling life with awe and inspiration; and the developers and maintainers of \LaTeX, Emacs, AUC\TeX, Open Science Framework, R, Python, Inkscape, LibreOffice, Sci-Hub for making a free and impartial scientific exchange possible.
+  % Our work was supported by the Trond Mohn Research Foundation, grant number BFS2018TMT07
+%\rotatebox{15}{P}\rotatebox{5}{I}\rotatebox{-10}{P}\rotatebox{10}{\reflectbox{P}}\rotatebox{-5}{O}.
+%\sourceatright{\autanet}
+%\mbox{}\hfill\autanet
+\end{acknowledgements}
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%% Bibliography
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 
+\renewcommand*{\finalnamedelim}{\addcomma\space}
+\defbibnote{prenote}{{\footnotesize (\enquote{de $X$} is listed under D,
+    \enquote{van $X$} under V, and so on, regardless of national
+    conventions.)\par}}
+% \defbibnote{postnote}{\par\medskip\noindent{\footnotesize% Note:
+%     \arxivp \mparcp \philscip \biorxivp}}
+
+\printbibliography[prenote=prenote%,postnote=postnote
+]
+
+\clearpage
+
+{\color{mygreen}
+  \hrule
+PIECES OF TEXT
+\hrule
+}
+\bigskip
+
+
+
+\section{An example}
+\label{sec:example}
+\mynotew{will delete this section}
+
+
+An example. Imagine you're a clinician and must attend to a patient with a particular disease. The disease may appear in two variants \tI\ and \tII; you are not sure which type affects your patient. For this disease there are three kinds of treatment \tA, \tB, \tC\ available at present, and you must choose one of them. Their efficacies, measured on some scale, depend on the disease type according to the following table:
+% \begin{table}[!h]\centering\footnotesize
+%   \caption{}\label{tab:treat_effects}
+%   \begin{tabular}{lcc}
+%     Treatment & type \tI & type \tII \\
+%     \hline
+%     Accuracy (also balanced accuracy) & \bad{0.62} & \good{0.75} \\
+%     Precision & \bad{0.64} & \good{0.70} \\
+%     $F_{1}$ measure & \bad{0.59} & \good{0.77} \\
+%     Matthews Correlation Coefficient & \bad{0.24} & \good{0.51} \\
+%     Fowlkes-Mallows index & \bad{0.59} & \good{0.78} \\
+% %    Balanced accuracy & \bad{0.62} & \good{0.75} \\
+%     True-positive rate (recall) & \bad{0.54} & \good{0.86} \\
+%     True-negative rate (specificity) & \good{0.70} & \bad{0.64}
+%   \end{tabular}
+% \end{table}\FloatBlock
+\begin{equation*}
+  {\text{\rotatebox[origin=c]{90}{\scriptsize treatment}}}\ 
+  \begin{matrix} {\scriptsize\tA}\\
+    {\scriptsize\tB}\\
+    {\scriptsize\tC}
+  \end{matrix}\quad
+  \overbracket[0pt]{
+      \begin{matrix*}[r]
+    2 & -2 \\ 1 & 1 \\ -2 & 2
+      \end{matrix*}}^{
+      \mathclap{\text{\parbox{8em}{\centering\scriptsize disease type\\\hphantom{$-{}$}\tI\hspace{2em}\hphantom{$-{}$}\tII}}
+    }}
+\end{equation*}
+Treatment \tA\ is very effective for disease type \tI\ but causes harm (hence the negative value) if administered to a patient of type \tII; vice versa for treatment $\tC$. Treatment \tB\ never causes harm but is less effective on either disease type.
+
+Which treatment do you choose?
+
+You could say \enquote*{the answer depends on the patient's disease type}. This would be correct if you knew the disease type: type \tI, choose treatment \tA; type \tII, choose treatment \tC. But you do \emph{not} know the disease type, so cannot make your answer depend on unavailable knowledge.
+
+Rather, the answer depends \emph{on how sure you are about the disease type}, given whatever evidence you have. This is clear in the case where you are completely uncertain about the type (and have no way to dispel your uncertainty), which could equally be either way. The rational, safest choice in this case is treatment \tB: the patient will have some relief for sure, albeit not the highest, and no harm will be done. If you are \emph{extremely sure}  that the disease type is \tI\ instead, then you recommend your patient to go for treatment \tA, as there's low risk for harm  and greater benefits to be reaped (surgical treatments are typical examples of this case: there's always some minimal risk that a surgery goes awry, but such risk may be offset by the benefits of the more likely successful surgery). Analogously if you are sure about type \tII\ instead, recommending treatment \tC.
+
+Now suppose that a shiny new \ml\ algorithm has been acquired by your clinic to help diagnosing the disease type quickly and with minimal expenses. This algorithm takes as input the results of various cheap clinical tests performed on a patient, and outputs the disease type. You use it for your patient, it outputs \enquote{\tI}, so you go for treatment \tA, and the patient indeed gets better. You use it for two more patients. The outputs are \tII\ and \tI, so you administer treatments \tC\ and \tA. Both patients get better. Bliss! You use the algorithm for a third patient. Clinical tests are again made and their results fed into the algorithm. It outputs \enquote{\tII}. You therefore administer treatment \tC. But the patient is badly harmed and gets worse (and possibly sues you). To check for human error, the tests are repeated; the algorithm consistently outputs \enquote{\tII}. Eventually you perform an expensive and invasive but reliable test. It turns out the disease type is \tI, not \tII. The algorithm is simply wrong, and you chose the worst treatment.
+
+You ask the algorithm's vendor or developers for an explanation: \enquote*{isn't the algorithm supposed to tell me the actual disease type?}. They tell you that no, there's always a chance that the algorithm is wrong, depending on the case. For some input values (test results) the prediction is virtually certain, but for others there may be a larger margin of error. You tell them:
+\begin{quote}
+  Sorry, but there has been a misunderstanding then. I don't need an algorithm that gives me a best guess, making me sometimes almost kill my patients. \emph{I need an algorithm that tells me how sure a disease type is}. Because if there's much uncertainty I can give my patients a treatment that's guaranteed harm-free even if not the best!
+\end{quote}
+
+\bigskip
+
+This example exposes several misconceptions and issues in how classification problems and also some regression problems are often stated and faced in machine learning:
+\begin{enumerate}[label=(\roman*),wide]
+\item\label{item:choice_vs_guess} The ultimate goal in a classification is often not the guess a class, but the choice among a set of alternative decisions. In a \enquote{cat vs dog} image classification the classes are \enquote{cat} and \enquote{dog}, and the decisions might be \enquote{put into folder Cats} vs \enquote{put into folder Dogs}. A clinician, however, does not simply tell a patient \enquote*{you probably have such-and-such disease}, but has to decide among different kinds of treatment \autocites{soxetal1988_r2013,huninketal2001_r2014}.
+\item The alternative decisions, for example treatments in medicine, often do not correspond to the unknown classes in a one-one way; they may be more numerous than the classes.
+\item The target is not what's most probable, but what's \emph{optimal}. The two may be different. In the clinical example above, the clinician and patients would opt for treatment \tB, rather than \tA, even if type \tI\ had slightly higher probability than \tII\ -- say 60\% vs 40\% (we shall show later that the threshold for this case is 70\%). This is also true when the decisions have some natural one-one correspondence with the classes. Consider for example two other treatments $\tA'$, $\tB'$ with this efficiency table:
+  \begin{equation*}
+  {\text{\rotatebox[origin=c]{90}{\scriptsize treatment}}}\ 
+  \begin{matrix} {\scriptsize\tA'}\\
+    {\scriptsize\tB'}
+  \end{matrix}\quad
+  \overbracket[0pt]{
+      \begin{matrix*}[r]
+    2 & -2 \\ 1 & 1
+      \end{matrix*}}^{
+      \mathclap{\text{\parbox{8em}{\centering\scriptsize disease type\\\tI\hspace{2em}\hphantom{$-{}$}\tII}}
+    }}
+\end{equation*}
+Clearly $\tA'$ is best for type \tI, and $\tB'$ for type \tII, but we would choose $\tA'$ only if type \tI\ had quite  a higher probability than \tII\ (the threshold is again 70\%).
+\end{enumerate}
+
+
+
+\subsection{Actual utility yield}
+\label{sec:dt_utility_yield}
+
+The utility matrix is not only the basis for making optimal decisions by means of expected-utility maximization. It also provides the metric to rank a set of decisions already made -- for example on a test set -- by some algorithm, if we know the corresponding true classes. Suppose we have $N$ test instances, in which each class $c$ occurs $N_{c}$ times, so that $\sum_{c} N_{c} = N$. A decision algorithm made decision $d$ when the true class was $c$ a number $M_{dc}$ of times. These numbers form the confusion matrix $(M_{dc})$ of the algorithm's output. The numbers $M_{dc}$ are must satisfy the constraints $\sum_{d} M_{dc} = N_{c}$ for each $c$.
+
+For given decision $d$ and class $c$, in each of the $M_{dc}$ instances the algorithm yielded a utility $U_{dc}$. The actual average utility yield in the test set is then
+\begin{equation}
+  \label{eq:utility_gained}
+ \frac{1}{N} \sum_{dc} U_{dc}\, M_{dc} \ .
+\end{equation}
+It is convenient to consider the average utility yield, rather than the total utility yield (without the $1/N$ factor), because if we shift the zero or change the measurement unity of our utilities then the yield changes in the same way.
+
+
+
+% The utility matrix is not only the basis for making optimal decisions by means of expected-utility maximization. It also provides the metric to rank a set of decisions already made -- for example on a test set -- by some algorithm, if we know the corresponding true classes. Suppose we have $N$ test instances, in which each class $c$ occurs $N_{c}$ times, so that $\sum_{c} N_{c} = N$. A decision algorithm made decision $d$ when the true class was $c$ a number $M_{dc}$ of times. These numbers form the confusion matrix $(M_{dc})$ of the algorithm's output. The numbers $M_{dc}$ are not all independent: they must satisfy the constraints
+% \begin{equation}
+%   \label{eq:sum_frequencies}
+%   \sum_{d} M_{dc} = N_{c} \quad\text{for each class $c$} \ .
+% \end{equation}
+% The test output of the decision algorithm is therefore characterized by $(\nd-1)\nc$ independent numbers. We can take these to be the first $\nd-1$ rows of the confusion matrix, so that for the last row we have
+% \begin{equation}
+%   \label{eq:lastrow_conf_matrix}
+%   M_{\nd c} = N_{c} - \sum_{d=1}^{\nd - 1} M_{dc}
+%   \quad\text{for each class $c$} \ .
+% \end{equation}
+% In binary classification for example, where $\nd=\nc=2$, the two independent numbers are often taken to be the \enquote{true positives} and \enquote{false positives} (the axes of the receiver-operating-characteristic plot).
+
+% For given decision $d$ and class $c$, in each of the $M_{dc}$ instances the algorithm yielded a utility $U_{dc}$. The actual total utility gained in the test set is then
+% \begin{equation}
+%   \label{eq:utility_gained}
+%   \sum_{d=1}^{\nd}\sum_{c=1}^{\nc} U_{dc}\, M_{dc}
+%   \quad\text{or}\quad
+%   \sum_{d=1}^{\nd  - 1}\sum_{c=1}^{\nc} (U_{dc} - U_{\nd c})\, M_{dc}
+%   + \sum_{c=1}^{\nc} U_{\nd c}\,N_{c}
+%    \ ,
+%   % \sum_{d=1}^{\nd}\sum{c=1}^{\nc} U_{dc}\, M_{dc}
+%   % \sum_{d=1}^{\nd-1}\sum{c=1}^{\nc} U_{dc}\, M_{dc}
+%   % + \sum_{c=1}^{\nc} U_{\nd c}\,M_{\nd c}
+%   % \sum_{d=1}^{\nd-1}\sum{c=1}^{\nc} U_{dc}\, M_{dc}
+%   % + \sum_{c=1}^{\nc} U_{\nd c}\,(N_{c} - \sum_{d=1}^{\nd-1}M_{d c})
+%   % \sum_{d=1}^{\nd-1}\sum{c=1}^{\nc} U_{dc}\, M_{dc}
+%   % + \sum_{c=1}^{\nc} U_{\nd c}\,N_{c}
+%   % - \sum_{c=1}^{\nc}\sum_{d=1}^{\nd-1} U_{\nd c}\,M_{dc})
+% \end{equation}
+% the second expression being in terms of the independent elements of the confusion matrix. We can also consider the average gained utility per test instance:
+% \begin{equation}
+%   \label{eq:avg_utility_gained}
+%   \sum_{d=1}^{\nd}\sum_{c=1}^{\nc} U_{dc}\, \frac{M_{dc}}{N}
+%   \quad\text{or}\quad
+%   \sum_{d=1}^{\nd  - 1}\sum_{c=1}^{\nc} (U_{dc} - U_{\nd c})\, \frac{M_{dc}}{N}
+%   + \sum_{c=1}^{\nc} U_{\nd c}\,\frac{N_{c}}{N} \ .
+% \end{equation}
+
+% [Don't know whether to include the following discussion, it may not have substantial import in this work]
+% Formulae~\eqref{eq:utility_gained} or \eqref{eq:avg_utility_gained} show that the performance and ranking of several decision algorithm depend on the values of the utility matrix $(U_{dc})$, and that changes in the zero or measurement unit of the utilities do not affect such raking, as it should intuitively be the case. Note, however, that two \emph{in}equivalent utility matrices can also lead to the same ranking, \emph{provided the frequencies $N_{c}$ of the classes are not changed}. If we add a different constant term to each column of the utility matrix, these terms disappear within the parentheses of formulae~\eqref{eq:utility_gained} and \eqref{eq:avg_utility_gained} and only contribute a total constant term in the remaining sum. This happens because the performance depends not only on the utility but also on the relative proportions of classes.
+
+
+\bigskip
+
+The summary of decision theory just given suffices to address issues~\ref{item:metrics}--\ref{item:optimal_true}.
+
+
+
+
+
+\bigskip
+
+In comparing, evaluating, and using \ml\ classifiers we face a number of questions and issues; some are well-known, others are rarely discussed:
+
+\begin{enumerate}[label=\textbf{\textsf{i\arabic*}},ref=\textbf{\textsf{i\arabic*}},itemsep=\parsep]
+  
+\item\label{item:metrics}\textsf{\textbf{Choice of valuation metric.}}\enspace When we have to evaluate and compare different classifying algorithms or different hyperparameter values for one algorithm, we are avalanched by a choice of possible evaluation metrics: accuracy, area under curve, $F_{1}$-measure, mean square contingency \autocites[denoted \enquote{$r$} there]{yule1912} also known as Matthews correlation coefficient \autocites{matthews1975}[\sect~31 p.~183]{fisher1925_r1963}, precision, recall, sensitivity, specificity, and many others \autocites{sammutetal2011_r2017}[see also the analysis in ][]{goodmanetal1954,goodmanetal1959,goodmanetal1963,goodmanetal1972b}. Only vague guidelines are usually given to face this choice. Typically one computes several of such scores and hopes that they will lead to similar ranking.
+
+\item\label{item:rationale}\textsf{\textbf{Rationale and consistency.}}\enspace Most or all of such metrics were proposed only on intuitive grounds, from the exploration of specific problems and relying on tacit assumptions, then heedlessly applied to new problems. The Matthews correlation coefficient, for example, relies on several assumptions of Gaussianity \autocites[\sect~31 p.~183 first paragraph]{fisher1925_r1963}, which for instance do not apply to skewed population distributions \autocites{jenietal2013,zhu2020}. The area under the receiver-operating-characteristic curve is heavily affected by values of false-positive and false-negative frequencies, as well as by misclassification costs, that have nothing to do with those of the specific application of the classifier \autocites{bakeretal2001,loboetal2008}. The $F_{1}$-measure implicitly gives correct classifications a weight that depends on their frequency or probability \autocites{handetal2018}; such dependence amounts to saying, for example, \enquote*{this class is rare, \emph{therefore} its correct classification leads to high gains}, which is a form of scarcity cognitive bias \autocites{camereretal1989,kimetal1999,mittoneetal2009}.
+
+  We are therefore led to ask: are there valuation metrics that can be proven, from first principles, to be free from biases and unnecessary assumptions?
+
+\item\label{item:class_imbal}\textsf{\textbf{Class imbalance.}}\enspace  If our sample data are more numerous for one class than for another -- a common predicament in medical applications -- we must face the \enquote{class-imbalance problem}: the classifier ends up classifying all data as belonging to the more numerous class \autocites{sammutetal2011_r2017,provost2000}, which may be an undesirable action if the misclassification of cases from the less numerous class entails high losses. \mynotew{discussion and refs about cost-sensitive learning}
+  
+  
+\item\label{item:optimal_true}\textsf{\textbf{Optimality vs truth.}}\enspace  
+\end{enumerate}
+
+
+\medskip
+
+All the issues above are manifestly connected: they involve considerations of importance, gain, loss, and of uncertainty.
+
+In the present work we show how issues~\ref{item:metrics}--\ref{item:optimal_true} are all solved at once by using the principles of \emph{Decision Theory}. Decision theory gives a logically and mathematically self-consistent procedure to catalogue all possible valuation metrics, to make optimal choices under uncertainty, and to evaluate and compare the performance of several decision algorithms. Most important, we show that implementing decision-theoretic procedures in a \ml\ classifier does not require any changes in current training practices \mynotez{(possibly it may even make procedures like under- or over-sampling unnecessary!)}, is computationally inexpensive, and takes place downstream after the output of the classifier.
+
+The use of decision theory requires sensible probabilities for the possible classes, which brings us to issue*** above. In the present work we also present and use a computationally inexpensive way of calculating these probabilities from the ordinary output of a \ml\ classifier, both for classifiers such as \mynotez{example here} that can only output a class label, and for classifiers that can output some sort of continuous score.
+
+\mynotew{Write here a summary or outlook of the rest of the paper and a summary of results:  
+\begin{itemize*}
+\item The admissible valuation metrics for a binary
+  classifier form a two-dimensional family; that is, the choice of a specific
+  metric corresponds to the choice of two numbers. Such choice is
+  problem-dependent and cannot be given a priori.
+\item Admissible metrics are only those that can be
+  expressed as a linear function of the elements of the
+  population-normalized confusion matrix. Metrics such as the
+  $F_{1}$-measure or the Matthews correlation coefficient are therefore inadmissible
+\end{itemize*}
+}
+
+
+
+
+\section{Classification from the point of view of decision theory}
+\label{sec:classification_decision}
+
+In using \ml\ classifiers one typically considers situations where the set of available decisions and the set of possible classes have some kind of natural correspondence and equal in number. In a \enquote{cat vs dog} image classification, for example, the classes are \enquote{cat} and \enquote{dog}, and the decisions could be \enquote{put into folder Cats} vs \enquote{put into folder Dogs}. In a medical application the classes could be \enquote{ill} and \enquote{healthy} and the decisions \enquote{treat} vs \enquote{dismiss}. In the following when we speak of \enquote{classification} we mean a \emph{decision} problem of this kind. The number of decisions thus equals that of classes: $\nd=\nc$.
+
+\mynotez{For simplicity we will focus on binary classification, $\nd=\nc=2$, but the discussion generalizes to multi-class problems in an obvious way.}
+
+
+\subsection{Choice of valuation metric, rationale and consistency (issues~\ref{item:metrics}, \ref{item:rationale})}
+\label{sec:choice_valuation}
+
+
+
+% According to decision theory, a classification problem requires the specification of a utility matrix $(U_{dc})$. We saw in \sect~\ref{sec:dt_utility_yield} that the utility matrix should also be used in evaluating the decisions made by one or more classification algorithms in a test set with $N$ datapoints. Each algorithm gives rise to a confusion matrix $(M_{dc})$, containing the number $M_{dc}$ of times the algorithm made decision $d$ when the true class was $c$. We saw that the total and average utilities obtained by the classifier algorithm on the test set are, in terms of the independent components of the confusion matrix,
+% \begin{equation}
+%   \label{eq:utility_testset}
+%   \begin{aligned}
+% %  \sum_{d=1}^{\nd}\sum_{c=1}^{\nc} U_{dc}\, M_{dc}
+% \texts{total:}&\quad  \sum_{d=1}^{\nd  - 1}\sum_{c=1}^{\nc} (U_{dc} - U_{\nd c})\, M_{dc}
+%   + \sum_{c=1}^{\nc} U_{\nd c}\,N_{c}
+%    \\
+%   % \sum_{d=1}^{\nd}\sum_{c=1}^{\nc} U_{dc}\, \frac{M_{dc}}{N}
+% \texts{average:}&\quad  \sum_{d=1}^{\nd  - 1}\sum_{c=1}^{\nc} (U_{dc} - U_{\nd c})\, \frac{M_{dc}}{N}
+%   + \sum_{c=1}^{\nc} U_{\nd c}\,\frac{N_{c}}{N} \ .
+%   \end{aligned}
+% \end{equation}
+
+% The expressions above are a linear combination of the elements in the first $\nd-1$ rows of the confusion matrix $(M_{dc})$, possibly normalized to the total number of test data, plus a term independent of the confusion matrix. The coefficients of the linear combination depend only on the utility matrix $(U_{dc})$, the additive term also depends on the frequencies of the classes.
+
+% We thus find the following important result according to decision theory: \emph{A valuation metric should be a \textbf{linear combination} of the independent elements of the confusion matrix, possibly normalized to the number of test data. The coefficients of the linear combination are problem-specific and \textbf{cannot depend on the confusion matrix}, nor on the frequencies of the classes.}
+
+% Let us see what this means in the case of binary classification. The decisions and classes are typically both denoted as positive \enquote{$\Po$} and negative \enquote{$\Ne$}, and we speak of the number of \enquote{true positives}, \enquote{false positives}, and so on, so that
+% \begin{equation*}
+%   M_{\Po\Po} \equiv M_{\tp}, \quad
+%   M_{\Po\Ne} \equiv M_{\fp}, \quad
+%   M_{\Ne\Po} \equiv M_{\fn}, \quad
+%   M_{\Ne\Ne} \equiv M_{\tn} \ .
+% \end{equation*}
+% Accordingly we denote the elements of the utility matrix as
+% \begin{equation*}
+%   U_{\Po\Po} \equiv U_{\tp}, \quad
+%   U_{\Po\Ne} \equiv U_{\fp}, \quad
+%   U_{\Ne\Po} \equiv U_{\fn}, \quad
+%   U_{\Ne\Ne} \equiv U_{\tn} \ .
+% \end{equation*}
+% With this notation, formulae~\eqref{eq:utility_testset} take the general form
+% \begin{equation}
+%   \label{eq:utility_testset_binary}
+%   \begin{aligned}
+%     \texts{total:}&\quad
+%                           x_{\tp}\, M_{\tp} + x_{\fp}\, M_{\fp} +
+%                           (y_{\Po}\, N_{\Po} + y_{\Ne}\, N_{\Ne})
+%     \\
+%     \texts{average:}&\quad
+%                             x_{\tp}\, \frac{M_{\tp}}{N} + x_{\fp}\, \frac{M_{\fp}}{N} +
+%                             \Bigl(y_{\Po}\, \frac{N_{\Po}}{N} + y_{\Ne}\, \frac{N_{\Ne}}{N}\Bigr) \ .
+%   \end{aligned}
+% \end{equation}
+
+% A valuation metric consistent with decision theory must take one of the forms above for particular values of the coefficients $x_{\tp}, x_{\fp}, y_{\Po}, y_{\Ne}$. Let us examine some common valuation metrics according to this requirement.
+
+% \begin{itemize}
+% \item[\itemyes] \emph{Accuracy:} $(M_{\tp}-M_{\fp}+N_{\Ne})/N$. It is a particular case of formula~\eqref{eq:utility_testset_binary} with $x_{\tp}=y_{\Ne}=1$, $x_{\fp}=-1$, $y_{\Po}=0$. In fact it corresponds to using a utility matrix equivalent to the identity $\begin{psmallmatrix} 1&0\\0&1 \end{psmallmatrix}$.
+  
+% \item[\itemno] \emph{Precision:} $M_{\tp}/(M_{\tp}+M_{\fp})$.  It cannot be written as a linear expression in $M_{\tp},M_{\fp}$.
+
+% \item[\itemno] \emph{$F_{1}$-measure:} $2 M_{\tp}/(M_{\tp} + M_{\fp} + N_{\Po})$.
+
+% \item[\itemno] \emph{Matthews correlation coefficient:} $\frac{N_{\Ne}\, M_{\tp} - N_{\Po}\, M_{\fp}}{\sqrt{(M_{\tp}+M_{\fp})(N-M_{\tp}-M_{\fp})N_{\Po}N_{\Ne}}}$. It cannot be written as a linear expression in $M_{\tp},M_{\fp}$.
+% \end{itemize}
+% \mynotez{It seems most or all commonly used metrics, except accuracy, do not comply with decision theory!}
+
+
+
+
+
+
+\subsection{Optimality vs truth (issue~\ref{item:optimal_true})}
+\label{sec:optimality_truth}
+
+According to decision theory a classification algorithm should, at each application, calculate the probabilities $(p_{c\|z})$ for the possible classes, given the feature $z$ provided as input; calculate the expected utility of the available decisions according to \eqn***, using the probabilities and the utility matrix; and finally output the decision $d^{*}$ having maximal expected utility:
+\begin{equation}
+  \label{eq:argmax_decision}
+  d^{*} = \argmax_{d}   \sum_{c} U_{dc}\, p_{c\|z} \ .
+\end{equation}
+We assume here that the utilities are given and the same at each application -- the latter assumption could be dropped, however; see the discussion in \sect~\ref{sec:summary_discussion}.
+
+Current common practice with algorithms capable of outputting some sort of probability-like score is simply to output the class $c^{*}$ having highest probability:
+\begin{equation}
+  \label{eq:argmax_probable}
+  c^{*} = \argmax_{c} p_{c\|z} \ .
+\end{equation}
+As discussed in \sect~\ref{sec:intro}, issue~\ref{item:optimal_true}, this means choosing the \emph{most probable} class, not the \emph{optimal} class, and the two are often different, the second being what we typically want. This choice is also the one that would be made with an identity utility matrix $\begin{psmallmatrix} 1&0\\0&1 \end{psmallmatrix}$.
+
+How can we amend current practice for this kind of classifiers, so that they look for optimality rather than truth?
+
+A first idea could be to simply modify the standard output step~\eqref{eq:argmax_probable} into~\eqref{eq:argmax_decision}. It is an easily implementable and computationally cheap modification: we just multiply the probability tuple by a matrix. Such simple modification, however, has a profound implication for the training procedure: we are modifying the algorithm to output the optimal class, and therefore it should also \emph{learn what is optimal}, not what is true: \emph{the targets in the training and validation phases should be the optimal classes, not the true classes}. But optimality depends on the value of sensible probabilities for the specific situation of uncertainty, in this case conditional on the input features. Determining the optimal classes would thus require a probabilistic analysis that is computationally unfeasible at present for problems that involve very high-dimensional spaces, such as image classification -- if an exact probabilistic analysis were possible we would not be developing \ml\ classifiers in the first place \autocites[\chaps~2, 12]{russelletal1995_r2022}{pearl1988}. \mynotez{Maybe useful to add a reminder that probability theory is the \emph{learning} theory par excellence (even if there's no \enquote{learning} in its name)? Its rules are all about making logical updates given new data.}
+
+
+\addsec{Appendix: broader overview of binary classification}
+% \label{sec:test}
+
+Let us consider our binary-classification problem from a general perspective and summarize how it would be approached and solved from first principles\autocites[part~IV]{russelletal1995_r2022} if our computational resources had no constraints.
+
+In our long-term task we will receive \enquote{units} of a specific kind; the units for example could be gadgets, individuals, or investment portfolios. Each new unit will belong to one of two classes, which we can denote $X\mo 0$ and $X\mo 1$; for example they could be \enquote{defective} vs \enquote{non-defective}, \enquote{ill} vs \enquote{healthy}. The class will be unknown to us. For each new unit we shall need to decide among two possible actions, which we can denote $A\mo\za$ and $A\mo\zb$; for example \enquote{discard} vs \enquote{keep}, or \enquote{treat} vs \enquote{dismiss}. The utility of each action depends on the unknown class of the unit; we denote these utilities by $U(A \| X)$. For each new unit we will be able to measure a \enquote{feature} $Z$ of a specific kind common to all units; for example $Z$ could be a set of categorical and real quantities, or an image such as a brain scan. We have a set of units -- our \enquote{sample units} or \enquote{sample data} -- that are somehow \enquote*{representative} of the units we will receive in our long-term task \autocites[for a critical analysis of the sometimes hollow term \enquote{representative sample} see][]{kruskaletal1979,kruskaletal1979b,kruskaletal1979c,kruskaletal1980}. we know both the class and the feature of each of these sample units. Let us denote this sample information by $D$.
+
+According to the principles of decision theory and probability theory, for each new unit we would proceed as follows:
+\begin{enumerate}[label=\arabic*.]
+\item Assign probabilities to the two possible values of the unit's class, given the value of the unit's feature $Z\mo z$, our sample data $D$, and any other available information:
+  \begin{equation}
+    \p(X\mo 0 \| Z\mo z, D), \qquad \p(X\mo 1 \| Z\mo z,D) \equiv 1- \p(X\mo 0 \| Z\mo z,D) \ ,
+  \end{equation}
+  according to the rules of the probability calculus.
+\item Calculate the expected utilities $\eu$ of the two possible actions:
+  \begin{equation}
+    \begin{aligned}
+      \eu(\za) &\defd U(\za \| X\mo 0) \ 
+                 \p(X\mo 0 \| Z\mo z, D) + U(\za \| X\mo 1) \ 
+                 \p(X\mo 1 \| Z\mo z, D)
+      \\
+      \eu(\zb) &\defd U(\zb \| X\mo 0) \ 
+                 \p(X\mo 0 \| Z\mo z, D) + U(\zb \| X\mo 1) \ 
+                 \p(X\mo 1 \| Z\mo z, D)
+    \end{aligned}
+\end{equation}
+  and choose the action having maximal expected utility.
+\end{enumerate}
+
+\medskip
+
+How is the probability $\p(X \| Z\mo z, D)$ determined by the probability calculus? Here is a simplified, intuitive picture. First consider the case where the feature $Z$ can only take on a small number of possible values, so that many units can in principle have the same value of $Z$.
+
+Consider the collection of all units having $Z\mo z$ that we received in the past and will receive in the future. Among them, a proportion $F(X\mo 0 \| Z\mo z)$ belong to class $0$, and a proportion $1 - F(X\mo 0 \| Z\mo z) \equiv F(X\mo 1 \| Z\mo z)$ to class $1$. For example these two proportions could be 74\% and 26\%. Our present unit with $Z\mo z$ is a member of this collection. The probability $\p(X\mo 0 \| Z\mo z)$ that our unit belongs to class $0$, given that its feature has value $z$, is then intuitively equal to the proportion $F(X\mo 0 \| Z\mo z)$. Analogously for $X\mo 1$.
+
+The problem is that we do not know the proportion $F(X\mo 0 \| Z\mo z)$. However, we expect it to be roughly equal to the analogous proportion seen in our sample data; let us denote the latter by $\Fs(X\mo 0 \| Z\mo z)$:
+\begin{equation}
+  \label{eq:approx_repres}
+  F(X\mo 0 \| Z\mo z) \sim \Fs(X\mo 0 \| Z\mo z) \ .
+\end{equation}
+this is indeed what we mean by saying that our sample data are \enquote{representative} of the future units. Later we shall discuss the case in which such representativeness is of different kinds. We expect the discrepancy between $F(X\mo 0 \| Z\mo z)$ and $\Fs(X\mo 0 \| Z\mo z)$ to be smaller, the larger the number of sample data. Vice versa we expect it to be larger, the smaller the number of sample data.
+
+If $Z$ can take on a continuum of values, as is the case for a brain scan for example, then the collection of units having $Z\mo z$ is more difficult to imagine. In this case each unit will be unique in its feature value -- no two brains are exactly alike.
+
+
+
+
+\mynotew{\medskip\hrule old text below}
+
+Given the unit's feature $Z$ we will assign probabilities to the possible values of the unit's class:  according to the rules of the probability calculus.
+
+As mentioned in \sect***, a decision problem under uncertainty is conceptually divided into two steps 
+
+The Suppose we have a population of units or individuals characterized by a possibly multidimensional variable $Z$ and a binary variable $X \in \set{0,1}$. Different joint combinations of $(X,Z)$ values can appear in this population. Denote by $F(X\mo x, Z\mo z)$, or more simply $F(x, z)$ when there is no confusion, the number of individuals having specific joint values $(X\mo x, Z\mo z)$. This is the absolute frequency of the values $(x,z)$. We can also count the number of individuals having a specific value of $Z\mo z$, regardless of $X$; this is the marginal absolute frequency $F(z)$. It is easy to see that
+\begin{equation}
+  \label{eq:marginal_prob}
+  F(z) = F(X\mo 0, z) + F(X\mo 1, z) \equiv \sum_{x} F(x,z)\ .
+\end{equation}
+Analogously for $F(x)$.
+
+Select only the subpopulation of individuals that have a specific value $Z\mo z$. In this subpopulation, the \emph{proportion} of individuals having a specific value $X\mo x$ is $f(x\| Z\mo z)$. This is the conditional relative frequency of $x$ given that $z$. It is easy to see that
+\begin{equation}
+  \label{eq:cond_prob}
+  f(x \| z) = \frac{F(x,z)}{F(z)} \ .
+\end{equation}
+
+Now suppose that we know all these statistics about this population. An
+individual coming from this population is presented to us. We measure its
+$Z$ and obtain the value $z$. What could be the value of $X$ for this
+individual? We know that among all individuals having $Z\mo z$ (and the
+individual before us is one of them) a proportion $f(x \| z)$ has $X\mo x$.
+Thus we can say that there is a probability $f(x \| z)$ that our individual
+has $X\mo x$. And this is all we can say if we only know $Z$.
+
+\medskip
+
+For this individual we must choose among two actions $\set{a, b}$. The
+utility of performing action $a$ if the individual has $X\mo x$, and given
+any other known circumstances, is $U(a \| x)$; similarly for $b$. If we
+knew the value of $X$, say $X\mo 0$, we would simply choose the action
+leading to maximal utility:
+\begin{equation}
+  \label{eq:choice_ex}
+  \begin{aligned}
+    &\text{if}\quad U(a \| X\mo 0) > U(b \| X\mo 0) \quad\text{then choose action $a$},
+\\
+      &\text{if}\quad U(a \| X\mo 0) < U(b \| X\mo 0) \quad\text{then choose action $b$},
+\\&\text{else}\quad\text{it does not matter which action is chosen}.
+  \end{aligned}
+\end{equation}
+But we do not know the actual value of $X$. We have probabilities for the
+possible values of $X$ given that $Z\mo z$ for our individual. Since $X$ is
+uncertain, the final utilities of the two actions are also uncertain; but we can
+calculate their \emph{expected} values $\bar{U}(a \| Z \mo z)$ and
+$\bar{U}(b \| Z \mo z)$:
+\begin{equation}
+  \label{eq:expe_util}
+  \begin{aligned}
+    &\bar{U}(a \| z) \defd
+    U(a \| X\mo 0)\ f(X\mo 0 \| z) + U(a \| X\mo 1)\ f(X\mo 1 \| z) \ ,
+    \\
+    &\bar{U}(b \| z) \defd
+    U(b \| X\mo 0)\ f(X\mo 0 \| z) + U(b \| X\mo 1)\ f(X\mo 1 \| z) \ .
+\end{aligned}
+\end{equation}
+Decision theory shows that the optimal action is the one having the maximal
+expected utility. Our choice therefore proceeds as follows:
+\begin{equation}
+  \label{eq:choice_uncertain}
+  \begin{aligned}
+    &\text{if}\quad \bar{U}(a \| z) > \bar{U}(b \| z) \quad\text{then choose action $a$},
+\\
+      &\text{if}\quad \bar{U}(a \| z) < \bar{U}(b \| z) \quad\text{then choose action $b$},
+\\&\text{else}\quad\text{it does not matter which action is chosen}.
+  \end{aligned}
+\end{equation}
+
+\medskip
+
+The decision procedure just discussed is very simple and does not need any machine-learning algorithms. It could be implemented in a simple algorithm that takes as input the full statistics $F(X,Z)$ of the population, the utilities, and yields an output according to~\eqref{eq:choice_uncertain}.
+
+Our main problem is that the full statistics $F(X,Z)$ is almost universally not known. Typically we only have the statistics $\Fs(X,Z)$ of a sample of individuals that come from the population of interest or from populations that are somewhat related to the one of interest. This is where probability theory steps in. It allows us to assign probabilities to all the possible statistics $F(X,Z)$. From these probabilities we can calculate the \emph{expected} value $\uf(x \| z)$ of the conditional frequencies $f(x \| z)$. Decision theory says that the expected value $\uf(x \| z)$ should then be used, in this uncertain case, in \eqn~\eqref{eq:expe_util} in place of the unknown $f(x \| z)$. The decision procedure~\eqref{eq:choice_uncertain} can then be used again.
+
+Probability theory says that in this particular situation the probability of a particular possible statistics $F(X,Z)$ is the product of two factors having intuitive interpretations:
+\begin{itemize}
+\item the probability of observing the statistics $\Fs(X,Z)$ of our data sample, assuming the full statistics to be $F(X,Z)$. With some combinatorics it can be shown that this probability is proportional to
+  \begin{equation}
+    \label{eq:likelihood_relentropy}
+%    \exp\biggl[\sum_{X,Z}\Fs(X,Z) \ln \frac{\Fs(X,Z)}{F(X,Z)}\biggr]
+    \exp\biggl[\sum_{X,Z}\Fs(X,Z) \ln F(X,Z)\biggr]
+  \end{equation}
+  The argument of the exponential is the cross-entropy between $\Fs(X,Z)$ and $F(X,Z)$; this is the reason of its appearance in the loss function used for classifiers \autocites{bridle1990,mackay1992d}.
+
+  This factor tells us how much the possible statistics \emph{fit} the sample data; it gives more weight to statistics with a better fit.
+  
+\item the probability of the full statistics $F(X,Z)$ for reasons not present in the data, for example because of physical laws, biological plausibility, or similar.
+
+This factor tells us whether the possible statistics should be favourably considered, or maybe even discarded instead, for reasons that go beyond the data we have seen; in other words, whether the hypothetical statistics would \emph{generalize} well beyond the sample data.  
+\end{itemize}
+The final probability comes from the balance between these \enquote{fit} and \enquote{generalization} factors. Note that the first factor becomes more important as the sample size and therefore $\Fs(X,Z)$ increases; the sample data eventually determine what the most probable statistics is, if the sample is large enough.
+
+A similar probabilistic reasoning applies if our sample data come not from
+the population of interest but from a population having at least the same
+\emph{conditional} frequencies of as the one of interest, either
+$f(X \| Z)$ or $f(Z \| X)$. The latter case must be examined with care when
+our purpose is to guess $X$ from $Z$. In this case we cannot use the
+conditional frequencies $\fs(X \| Z)$ that appear in the data to obtain the
+expected value $\uf(X \| Z)$: they could be completely different from the
+ones of the population of interest. We must instead use the sample
+conditional frequencies $\fs(Z \| X)$ to obtain the expected value
+$\uf(Z \| X)$, and then combine the latter with an appropriate probability
+$P(X)$ through Bayes's theorem:
+\begin{equation}
+  \label{eq:bayes_app}
+  \frac{\uf(Z \| X)\ P(X)}{\sum_{X} \uf(Z \| X)\ P(X)} \ .
+\end{equation}
+The probability $P(X)$ cannot be obtained from the data, but requires a separate study or survey. In medical applications, where $X$ represents for example the presence or absence of a disease, the probability $P(X)$ is the base rate of the disease. Direct use of $\fs(X \| Z)$ from the data instead of \eqref{eq:bayes_app} is the \enquote{base-rate fallacy} \autocites[\sect~12.5]{russelletal1995_r2022}{axelsson2000,jennyetal2018}.
+
+
+
+
+In supervised learning the classifier is trained to learn the most probable $f(X \| Z)$ from the data. The training finds the $f(X \| Z)$ that most closely fits the conditional frequency $\fs(X \| Z)$ of the sampled data; this roughly corresponds to maximizing the first factor \eqref{eq:likelihood_relentropy} described above. The architecture and the parameter regularizer of the classifier play the role of the second factor.
+
+
+
+
+\section{Sensible probabilities for classifiers}
+\label{sec:intro}
+\mynotew{only pieces will be taken from this section}
+
+% Some machine-learning algorithms for classification, such as support-vector machines, typically output a class label. Others, such as deep networks, output a set of real numbers. These real numbers can be positive, normalized to unity, and can bear some qualitative relation to the plausibilities of the classes. But they cannot be reliably interpreted as sensible probabilities, that is, as the degrees of belief assigned to each possible class by a rational agent \autocites{mackay1992d,galetal2016}[\chaps~2, 12, 13]{russelletal1995_r2022}; or, in terms of \enquote{populations} \autocites{lindleyetal1981}[\sect~II.4]{fisher1956_r1967}, as the expected frequencies of the classes in the hypothetical population of units (degrees of belief and frequencies being related by de~Finetti's theorem \autocites[\chap~4]{bernardoetal1994_r2000}{dawid2013}).
+
+% Algorithms that internally do perform probabilistic calculations, such as naive-Bayes or logistic-regression classifiers \autocites[\sect~3.5, \chap~8]{murphy2012}[\sects~8.2, 4.3]{bishop2006}[\chap~10, \sect~17.4]{barber2007_r2020}, unfortunately rest on probabilistic assumptions, such as independence and particular shapes of distributions, that are often unrealistic (and their consistency with the specific application is rarely checked). Only particular classifiers such as Bayesian neural networks \autocites{nealetal2006}[\sect~5.7]{bishop2006} output sensible probabilities.
+
+% It is difficult to assess sensible probabilities for the possible classes. Some \ml\ algorithms only output a class label. Others, including deep networks, output real numbers that, even if normalized and usually called \enquote{probabilities}, cannot be reliably interpreted as proper probabilities, that is, degrees of belief or frequencies in the population of interest \autocites{mackay1992d,galetal2016} conditional on the information given as input to the classifier (this is why we used the qualifier \enquote{sensible}). Algorithms that internally do perform probabilistic calculations, such as naive-Bayes or logistic-regression classifiers \autocites[\sect~3.5, \chap~8]{murphy2012}[\sects~8.2, 4.3]{bishop2006}[\chap~10, \sect~17.4]{barber2007_r2020}, unfortunately rest on probabilistic assumptions -- independence and particular shapes of distributions, for example -- that are often unrealistic (and their consistency with the specific application is rarely checked).
+% 
+% As already mentioned in \sect~\ref{sec:intro}, some \ml\ classifiers only output a class label. Others can output a set of real numbers that are positive, normalized to unity, and bear some qualitative relation to the plausibilities of the classes; but their values cannot be considered as the correct degrees of belief in the classes conditional on the input features. It is these values that we need for decision theory. Determining these probabilities would require an analysis that is computationally unfeasible at present for problems that involve very high-dimensional spaces, such as image classification; in fact if an exact probabilistic analysis were possible we would not be developing \ml\ classifiers in the first place \autocites[\chaps~2, 12]{russelletal1995_r2022}{pearl1988}. \mynotew{\puzzle~Maybe useful to add a reminder that probability theory is the \emph{learning} theory par excellence (even if there's no \enquote{learning} in its name)? Its rules are all about making logical updates given new data.} Only particular classifiers such as Bayesian neural networks \autocites{nealetal2006}[\sect~5.7]{bishop2006} output somewhat sensible  probabilities. But we would like to find a solution that can be applied to all commonly used classifiers, without being forced to use specific ones.
+
+
+
+Why are probability values important? As we argue in a companion work \mynotew{\pencil}, our ultimate purpose in classification is seldom only to guess a class; most often it is to choose a specific course of action, or to make a decision, among several available ones. A clinician, for example, does not simply tell a patient \enquote*{you will probably not contract the disease}, but has to decide among dismissal or different kinds of preventive treatment \autocites{soxetal1988_r2013,huninketal2001_r2014}. Said otherwise, in classification we must choose the \emph{optimal} class, not the probably true one.
+Making optimal choices in situations of uncertainty is the domain of Decision Theory \autocites[\chap~15]{russelletal1995_r2022}{jeffrey1965,north1968,raiffa1968_r1970}. In order to make an optimal choice, decision theory requires the use of probability values that properly reflect our state of uncertainty.
+
+Determining class probabilities conditional on the input features is unfortunately computationally unfeasible at present for problems that involve very high-dimensional spaces, such as image classification; in fact if an exact probabilistic analysis were possible we would not be developing \ml\ classifiers in the first place \autocites[\chaps~2, 12]{russelletal1995_r2022}{pearl1988}.
+\mynotew{\scriptsize\puzzle~Maybe useful to add a reminder that probability theory is the \emph{learning} theory par excellence (even if there's no \enquote{learning} in its name)? Its rules are all about making logical updates given new data.
+
+}
+
+In the present work we propose an alternative solution that has a low computational cost and that can be applied to all commonly used classifiers, even those that only output class labels.
+
+The essential idea comes from seeing an analogy between a classifier and a diagnostic test, such as any common diagnostic or prognostic test used in medicine for example. There are many parallels in the way \ml\ classifiers and diagnostic tests, a flu test for instance, are devised and work. Our basic motivation in using either is that we would like to assess some situational variable -- class, pathological condition -- by means of its correlation (in the general sense of the word, not the linear Pearson one; and including deterministic dependence as a particular case) with a set of \enquote{difficult} variables that are either too complex or hidden -- image pixels, presence of replicating viral agents~--:
+\[
+  \text{situational variable} \longleftrightarrow \text{difficult variables}
+\]
+We devise an auxiliary variable -- algorithm output, test result -- to be correlated with the difficult variables:
+\[
+    \text{situational variable} \longleftrightarrow \text{difficult variables}
+    \longleftrightarrow \text{aux variable}
+\]
+% \[
+%   \begin{aligned}
+%     \text{situation} &\leftrightarrow \text{complicated variables}
+%     \\[-\jot]
+% \mathrel{\mathrlap{\nwarrow}\mkern-5mu\searrow}&\hphantom{{}\:\text{aux variable}}\mathrel{\mathrlap{\nearrow}\mkern-5mu\swarrow}
+% \\[-2.5\jot] &{}\:\text{aux variable}
+%   \end{aligned}
+% \]
+We can now assess the situational variable by observing the more easily accessible auxiliary variable instead of the difficult ones. In probability language we are \emph{marginalizing} over the difficult variables. This is the procedure dictated by the probability calculus whenever we do not have informational access to a set of variables. The correlation of the auxiliary variable is achieved by the training process in the case of the \ml\ algorithm, and by the exploitation of biochemical processes or reactions in the case of the flu test.
+
+The situational variable is \emph{informationally screened} from the auxiliary variable by the difficult variables. That is, the auxiliary variable does not -- in fact, cannot -- contain any more information about the situational variable than that contained in the difficult variables. This means that the probability relationship between the three variables is as follows:
+\begin{multline}
+  \label{eq:screening}
+  \p\Bigl(
+  \text{\parbox[c]{\widthof{\footnotesize situational}}{\centering\footnotesize situational\\[-1\jot]variable}}
+  \|[\Big]
+  \text{\parbox[c]{\widthof{\footnotesize variable}}{\centering\footnotesize aux\\[-1\jot]variable}}
+  \Bigr)
+  ={}\\[\jot]
+\sum_{\mathclap{
+    \text{\parbox[c]{\widthof{\scriptsize variables}}{\centering\scriptsize difficult\\[-1\jot]variables}}
+}}
+\p\Bigr(
+  \text{\parbox[c]{\widthof{\footnotesize situational}}{\centering\footnotesize situational\\[-1\jot]variable}}
+  \|[\Big]
+  \text{\parbox[c]{\widthof{\footnotesize variables}}{\centering\footnotesize difficult\\[-1\jot]variables}}
+  \Bigr)  \times
+  \p\Bigl(
+  \text{\parbox[c]{\widthof{\footnotesize variables}}{\centering\footnotesize difficult\\[-1\jot]variables}}
+  \|[\Big]
+  \text{\parbox[c]{\widthof{\footnotesize variable}}{\centering\footnotesize aux\\[-1\jot]variable}}
+\Bigr)   \ ,
+\end{multline}
+the sum running over all possible values of the difficult variables.
+
+In the case of the diagnostic test we determine the probability %
+$\p\bigl(%
+\text{\parbox[c]{\widthof{\footnotesize situational}}{\centering\footnotesize situational\\[-1\jot]variable}}%
+\|[\big]%
+\text{\parbox[c]{\widthof{\footnotesize variable}}{\centering\footnotesize aux\\[-1\jot]variable}}%
+\bigr)$ %
+by carrying out the test on a representative sample of cases and collecting joint statistics between the test's output and the true situation, the presence of the flu in our example. These statistics are typically displayed in a so-called contingency table \autocites{fienberg1980_r2007,mostelleretal1983_r2013}, akin to a confusion matrix. % It is from this contingency table that we derive the probabilities of the virus's presence, given all possible test result.
+
+\medskip
+
+Unlike the case of a diagnostic test, the output of a \ml\ classifier is usually taken at face value: if the output is a class label, that label is regarded as the true class; if the output is a unity-normalized tuple of positive numbers, that tuple is regarded as the probability distribution for the classes.
+
+We instead propose \emph{to treat the classifier's output just like a diagnostic test's result}. This output, discrete or continuous, is regarded as a quantity that has some correlation with the true class. This correlation can be analysed in a set of representative samples and used to calculate a sensible probability for the class given the classifier's output. This analysis only needs to be made once and is computationally cheap, because the classifier output takes values in a discrete or low-dimensional space.
+
+% Analogously we can use the statistics of the application of \ml\ classifier on a test set to derive the probability of a class, given the classifier output. This can be seamlessly done for both a discrete and a continuous output.
+
+% Consider for example a flu test. Having a specific kind of flu means that a large number of agents of a specific virus are present and replicating in one's body. These agents cannot be simply seen by visual inspection. Instead we devise some kind of biochemical mechanism that creates a correlation between the presence of the viral agents and some more easily measurable quantity; in simple cases just the colour on some display for example. Such correlation is often statistical, even if it can be strong. When we train a \ml\ classifier we are creating a statistical correlation between features of a particular kind and a discrete or continuous quantity: the classifier's output.
+
+% In the case of the diagnostic test we do not take its output at face value. Its application on a representative sample of cases gives us a table of joint statistics -- a so-called contingency table \autocites{fienberg1980_r2007,mostelleretal1983_r2013}, akin to a confusion matrix -- between the test's output and the true situation, the presence of the flu in our example. It is from this contingency table that we derive the probabilities of the virus's presence, given all possible test result. Analogously we can use the statistics of the application of \ml\ classifier on a test set to derive the probability of a class, given the classifier output. This can be seamlessly done for both a discrete and a continuous output.
+
+% The idea is \emph{to treat the classifier as a diagnostic test}, such as any common diagnostic or prognostic test used in medicine for example. We consider its output, discrete or continuous, as a quantity that has some correlation (in the general sense of the word, not the linear Pearson one) with the true class. This correlation can be analysed and quantified with probability theory in a test set and used to calculate a sensible probability for the class given the output of the test -- of the classifier. This analysis needs to be made only once and is computationally cheap, because the classifier output takes values in a discrete or low-dimensional space.
+
+This approach differs from the computationally infeasible one discussed above in that we are calculating the computationally easier probability
+\begin{equation}
+  \label{eq:approach_p_test}
+  \p(\texts{class} \| \texts{output})
+\end{equation}
+rather than
+\begin{equation}
+  \label{eq:approach_p_feature}
+  \p(\texts{class} \| \texts{feature}) \ .
+\end{equation}
+The former probability, as we saw in \eqn~\eqref{eq:screening}, is the marginal
+\begin{equation}
+  \label{eq:approach_p_marginal}
+  \p(\texts{class} \| \texts{output}) =
+  \sum_{\text{\clap{feature}}}
+  \p(\texts{class} \| \texts{feature})\times
+  \p(\texts{feature} \| \texts{output}) \ .
+\end{equation}
+We can thus think of this approach as a marginalization over the possible features, which is a necessary operation as have no effective access to them.
+
+A hallmark of this approach is that we are calculating exact probabilities conditional on reduced information, rather than approximate probabilities conditional on full information. This protects us from biases that are typically present in the approximation method. The price of using reduced information is that the probabilities may be open to more variability as we collect more representative data. But as we shall see this variability is actually quite low, and moreover it can be exactly assessed.
+
+This approach also offers the following advantages:
+\begin{itemize}
+\item It does not require any changes of the standard training procedures.
+\item It is easily implemented as an additional low-cost computation of a function at the end of the classifier's output, or as a replacement of a softmax-like computation.
+%\item For one classifier, the assessment of this function needs to be done only once.
+\item It does not make any assumptions such as linearity or Gaussianity.% , except for the (unavoidable) assumption of continuity \mynotew{\wrench\ need to explain this better}
+\item It yields not only the probability distribution for the classes, but also a measure of how much this distribution could change if we collected more test data (the \enquote{probability of the probability}, so to speak).
+\item It allows us to use the classifier both in a discriminative and generative way. That is, we can use either\; $\p(\texts{class} \| \texts{output})$, or\; $\p(\texts{output} \| \texts{class})$\; in conjunction with Bayes's theorem. The latter approach enables us to avoid possible base-rate fallacies \autocites[\sect~12.5]{russelletal1995_r2022}{axelsson2000,jennyetal2018}.
+\item It can be seamlessly integrated with a utility matrix to compute the optimal class, as shown in the companion work \mynotew{\pencil}.
+\end{itemize}
+
+\medskip
+
+In \sect~\ref{sec:prob_calc} we present some notation and the general procedure for the calculation of the probabilities; more technical details are given in appendix***. Section*** explains how to augment a classifier's output with the probability calculation. Results of numerical experiments are presented in \sect***.
+
+\mynotew{\wrench\ We could show that even if we used a biased test set, the method corrects the bias (provided we know what the bias is).}
+
+
+\section{Calculation of the probabilities: general procedure}
+\label{sec:prob_calc}
+
+Let us denote the class variable by $C$ and the classifier-output variable by $X$. We assume that $C$ is discrete and finite, its values can be simply renamed $1,2,3,\dotsc$. We also assume that $X$ is either discrete and finite (it is isomorphic to $C$ for many classifying algorithms) or a low-dimensional tuple of real variables; a combination of both cases can also be easily accommodated. We imagine to have a sample of $M$ such data pairs denoted collectively by $D$:
+\begin{equation}
+  \label{eq:sample_data_notation}
+  D \defd \set[\big]{(c_{1}, x_{1}), (c_{2}, x_{2}), \dotsc, (c_{M}, x_{M}) } \ .
+\end{equation}
+Let us call them \emph{calibration data}. It must be emphasized that these are not pairs of class\,\amp\,feature values, but pairs of class\,\amp\,classifier-output values, obtained as described in \sect~\ref{sec:implem_idea}.
+
+Instead of the conditional probability $\p(\texts{class} \| \texts{output})$, that is, $\p(C \| X)$,  we can actually calculate the joint probability
+\begin{equation}
+  \label{eq:approach_p_joint}
+  \p(C, X)
+\end{equation}
+given the sample data. The computational cost is the same, but from the joint probability we can easily derive both conditionals
+\begin{align}
+  \label{eq:approach_p_conditional_direct}
+  \p(C \| X) &= \frac{\p(C, X)}{ \sum_{C} \p(C, X) } \ ,
+  \\[\jot]
+  \label{eq:approach_p_conditional_inverse}
+  \p(X \| C) &= \frac{\p(C, X)}{ \sum_{X} \p(C, X) } \ .
+\end{align}
+It is advantageous to have both, as we shall see in \sect\mynotew{\pencil}: if one of them is biased owing to the way the test samples were obtained, we can still use the other.
+
+In our specific inference problem, where no time trends are assumed to exist in future data (the probability distribution for future data is exchangeable), probability theory dictates that the joint probability~\eqref{eq:approach_p_joint} for a new datapoint $(c_{0}, x_{0})$ is equal to the \emph{expected} frequency of that datapoint  in a hypothetically infinite run of observations, that is, the average
+\begin{equation}
+  \label{eq:prob_is_expe_freq}
+  \p(c_{0}, x_{0}) = \int\! F(c_{0}, x_{0})\ \wf(F)\ \di F \ .
+\end{equation}
+This formula is the so-called de~Finetti's theorem \autocites[\chap~4]{bernardoetal1994_r2000}{dawid2013,definetti1929,definetti1937}. It is derived from first principles but can be intuitively interpreted: We are considering every possible long-run frequency distribution $F(\dotv, \dotv)$, giving it a weight $\wf(F)$, and then taking the weighted sum of all such distributions. The result is still a distribution, and its value at $(c_{0}, x_{0})$ is the probability of this datapoint.
+
+The weight $\wf(F)$ -- a probability density -- given to a frequency distribution $F$ is proportional to two factors:
+\begin{equation}
+  \label{eq:weight_F_two_factors}
+  \wf(F) \propto F(D)\ \wfo(F) \ .
+\end{equation}
+\begin{itemize}
+  
+\item The first factor (\enquote{likelihood}) $F(D)$ quantifies how well $F$ \emph{fits} known data of the same kind, the sample data $D$ in our case. It is simply proportional to how frequent the known data would be, according to $F$:
+  \begin{equation}
+    \label{eq:factor_likelihood}
+F(D) = F(c_{1}, x_{1})\ F(c_{2}, x_{2})\ \dotsm\ F(c_{M}, x_{M}) \ .
+  \end{equation}
+
+\item The second factor (\enquote{prior}) $\wfo(F)$ quantifies how well $F$ \emph{generalizes} beyond the data we have seen, owing to reasons such as physical or biological constraints for example. In our case we expect $F$ to be somewhat smooth in $X$ when this variable is continuous \autocites[Cf.][]{goodetal1971} \mynotew{\wrench\ add a picture -- a sample from the prior over $F$ -- to illustrate the expected range of smoothness}. No assumptions are made about $F$ when $X$ is discrete. 
+\end{itemize}
+Formula~\eqref{eq:weight_F_two_factors} is just Bayes's theorem. Its normalization factor is the integral $\int F(D)\, \wfo(F)\, \di F$, which ensures that $\wf(F)$ is normalized.
+
+The first factor becomes larger as the number of known data increases. Thus a large amount of data indicating a non-smooth distribution $F$ will override any smoothness preferences embodied in the second factor. Note that no assumptions about the shape of $F$ -- no Gaussians, logistic curves, sigmoids, and so on -- are made in this approach.
+
+The integral in~\eqref{eq:prob_is_expe_freq} is calculated in either of two ways, depending on whether $X$ is discrete or continuous. For $X$ discrete and taking on the same values as the class variable $C$, the integral is over $\RR^{\nc^{2}}$ where $\nc$ is the number of possible classes, and can be done analytically. For $X$ continuous, the integral is numerically approximated by a sum over a representative sample, obtained by Markov-chain Monte Carlo, of distributions $F$ according to the weights~\eqref{eq:weight_F_two_factors}. The error of this approximation can be calculated and made as small as required by increasing the number of Monte Carlo samples.
+
+The expected value~\eqref{eq:prob_is_expe_freq} is calculated for all possible values of $(c_{0}, x_{0})$, obtaining the full joint probability distribution $\p(C, X)$. From this joint distribution we calculate the direct and inverse conditional distributions
+\begin{align}
+  \label{eq:conditional_direct}
+  \p(C \| X) &= \frac{\p(C, X)}{\sum_{C} \p(C, X)} \ , \\
+  \label{eq:conditional_inverse}
+  \p(X \| C) &= \frac{\p(C, X)}{\sum_{X} \p(C, X)} \ .
+\end{align}
+It is very convenient to have both, as discussed in \sect~\ref{sec:biases}.
+
+The conditional distributions above are just matrices when $X$ is discrete. For continuous $X$ they can be regarded as $\nc$ tuples of functions in $X$. We can find convenient approximate expressions, such as polynomial interpolants, for faster numerical implementations of these functions.
+
+The integration procedure for~\eqref{eq:prob_is_expe_freq} also tells us how much the probability distribution $\p(C, X)$ would change if we acquired new data (a sort of \enquote{probability of the probability}).
+
+For further mathematical details see appendix***
+
+\section{Implementation in the classifier output}
+\label{sec:implem_idea}
+
+The implementation of our approach takes place after the training of the classifier has been carried out in the usual way. We assume that a collection of $M$ \emph{test data} were set aside as usual:
+\begin{equation}
+  \label{eq:testdata_features}
+  T \defd \set[\big]{(c_{1}, z_{1}), (c_{2}, z_{2}), \dotsc, (c_{M}, z_{M})} \ ,
+\end{equation}
+where the $c_{i}$ are the true classes and $z_{i}$ the corresponding feature values.
+
+The $M$ feature values $z_{i}$ are given as inputs to the classifier, which produces $M$ corresponding outputs $x_{i}$. We now consider data pairs consisting in the true classes $c_{i}$ and the outputs $x_{i}$: these are the \emph{calibration data} discussed in \sect~\ref{sec:prob_calc}:
+\begin{equation*}
+  D \defd \set[\big]{(c_{1}, x_{1}), (c_{2}, x_{2}), \dotsc, (c_{M}, x_{M}) } \ .
+\end{equation*}
+They are used to find the direct and inverse conditional probability distributions $\p(C \| X)$ and $\p(X \| C)$ as described in \sect~\ref{sec:prob_calc}.
+
+We can finally augment our classifier either in a \enquote{direct} or \enquote{discriminative} way, or an \enquote{inverse} or \enquote{generative} way, by adding one computation step at the end of the classifier's operation:
+\begin{description}
+\item[Direct:] from its output $x_{0}$ we obtain the probability for each class, $\p(c \| x_{0})$.
+\item[Inverse:] from its output $x_{0}$ we obtain the probability of the output itself, conditional on each class, $\p(x_{0} \| c)$. 
+\end{description}
+These $\nc$ probabilities are the final output of the augmented classifier.
+
+In the direct or discriminative case, at each new use of the classifier the output probabilities can be used together with a utility matrix to choose the \emph{optimal} class for that case, as discussed in the companion paper\mynotew{\pencil}.
+
+In the inverse or generative case, at each new use of the classifier the probabilities for the classes are obtained via Bayes's theorem:
+\begin{equation}
+  \label{eq:bayes_theorem}
+  \p(c) = \frac{\p(x_{0} \| c)\ B(c)}{\sum_{c} \p(x_{0}\| c)\ B(c)} \ ,
+\end{equation}
+where $B(c)$ is the base rate of class $c$. The probabilities $\p(c)$ can finally be used together with a utility matrix to choose the \emph{optimal} class.
+
+
+
+
+
+\section{Circumventing biases}
+\label{sec:biases}
+
+\section{Alternative to ensembling}
+\label{sec:ensembling}
+
+\mynotew{\wrench\ The idea is to implement this output-to-probability conversion in several classifiers, \emph{in a generative way}. These probabilities can then be multiplied together and with a base rate, to obtain the \enquote{ensembled} probabilities of the classes. This way of doing ensembling would be a rigorous application of the probability calculus; should be superior to a majority vote or similar.}
+
+\end{document}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%% Cut text (won't be compiled)
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 
+
+% \begin{table}[t]
+%   \centering
+%   \small
+%   \caption{Results for the \rf\ classifier}
+% % standard  0.835   3.75   34.5   3.80   33.4
+% % discr     0.918   6.68   66.1   3.33   33.3
+% % gener     0.957   6.87   66.7   3.84   33.6
+% %          14.600  83.30   93.3   1.10    0.4
+% %           4.200   2.70    0.9  15.20    0.7
+%   \label{tab:results_5_RF_gen}
+%   \begin{tabular}{p{0.3\linewidth}ccccc}
+%     &$\begin{bsmallmatrix*}[r]1&0\\0&1\end{bsmallmatrix*}$
+%                           &$\begin{bsmallmatrix*}[r]1&-10\\0&10\end{bsmallmatrix*}$
+%                           &$\begin{bsmallmatrix*}[r]1&-100\\0&100\end{bsmallmatrix*}$
+%                           &$\begin{bsmallmatrix*}[r]10&0\\-10&1\end{bsmallmatrix*}$
+%                           &$\begin{bsmallmatrix*}[r]100&0\\-100&1\end{bsmallmatrix*}$
+%     \\[2\jot]
+%     \textcolor{myred}{standard method}&
+% \textcolor{myred}{0.835} & \textcolor{myred}{3.75} & \textcolor{myred}{34.5} & \textcolor{myred}{3.80} & \textcolor{myred}{33.4}
+%     \\[0\jot]
+%     \parbox{\linewidth}{\color{mypurpleblue}transducer,\\ generative mode} &
+% \textcolor{mypurpleblue}{0.957} & \textcolor{mypurpleblue}{6.87} & \textcolor{mypurpleblue}{66.7} & \textcolor{mypurpleblue}{3.84} & \textcolor{mypurpleblue}{33.6}
+%     \\[1\jot]
+%     \footnotesize relative increase&
+%                        \footnotesize+15\% & \footnotesize+83\% & \footnotesize+93\% & \footnotesize+1.1\% & \footnotesize+0.4\%
+%     \\[1\jot]
+%     \parbox{\linewidth}{\color{myyellow}\scriptsize transducer,\\ discriminative mode} &
+% \textcolor{myyellow}{\scriptsize 0.918} & \textcolor{myyellow}{\scriptsize 6.68} & \textcolor{myyellow}{\scriptsize 66.1} & \textcolor{myyellow}{\scriptsize 3.33} & \textcolor{myyellow}{\scriptsize 33.3}
+%   \end{tabular}
+
+% \bigskip
+  
+%   \centering
+%   \small
+%   \caption{Results for the \cnn\ classifier}
+%   \label{tab:results_5_CNN_gen}
+% % standard 0.894   4.99   47.0   3.78   32.7
+% % discr    0.861   6.47   66.5   3.33   33.3
+% % gener    0.930   6.80   66.7   3.74   33.4
+% %          4.000  36.30   42.0  -0.90    2.1
+% %          8.000   5.20    0.3  12.30    0.1
+%   \begin{tabular}{p{0.3\linewidth}ccccc}
+%     &$\begin{bsmallmatrix*}[r]1&0\\0&1\end{bsmallmatrix*}$
+%                           &$\begin{bsmallmatrix*}[r]1&-10\\0&10\end{bsmallmatrix*}$
+%                           &$\begin{bsmallmatrix*}[r]1&-100\\0&100\end{bsmallmatrix*}$
+%                           &$\begin{bsmallmatrix*}[r]10&0\\-10&1\end{bsmallmatrix*}$
+%                           &$\begin{bsmallmatrix*}[r]100&0\\-100&1\end{bsmallmatrix*}$
+%     \\[2\jot]
+%     \textcolor{myred}{standard method}&
+%                                         \textcolor{myred}{0.894} & \textcolor{myred}{4.99} & \textcolor{myred}{47.0} & \textcolor{myred}{3.78} & \textcolor{myred}{32.7}
+%     \\[0\jot]
+%     \parbox{\linewidth}{\color{mypurpleblue}transducer,\\ generative mode} &
+% \textcolor{mypurpleblue}{0.930} & \textcolor{mypurpleblue}{6.80} & \textcolor{mypurpleblue}{66.7} & \textcolor{mypurpleblue}{3.74} & \textcolor{mypurpleblue}{33.4}
+%     \\[1\jot]
+%     \footnotesize relative increase&
+%                        \footnotesize+4.0\% & \footnotesize+36\% & \footnotesize+42\% & \footnotesize-0.9\% & \footnotesize+0.1\%
+%     \\[1\jot]
+%     \parbox{\linewidth}{\color{myyellow}\scriptsize transducer,\\ discriminative mode} &
+% \textcolor{myyellow}{\scriptsize 0.861} & \textcolor{myyellow}{\scriptsize 6.47} & \textcolor{myyellow}{\scriptsize 66.5} & \textcolor{myyellow}{\scriptsize 3.33} & \textcolor{myyellow}{\scriptsize 33.3}
+%   \end{tabular}
+% \end{table}
+
+%%% Local Variables: 
+%%% mode: LaTeX
+%%% TeX-PDF-mode: t
+%%% TeX-master: t
+%%% End: 
