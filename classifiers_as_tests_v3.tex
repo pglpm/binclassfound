@@ -1,7 +1,7 @@
 \pdfoutput=1
 %% Author: PGL  Porta Mana
 %% Created: 2022-04-14T17:18:22+0200
-%% Last-Updated: 2022-05-30T13:13:40+0200
+%% Last-Updated: 2022-05-30T15:36:21+0200
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Probabilities for classifier outputs
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -1028,41 +1028,6 @@ Once calculated, these parameters are saved in memory and can be used to compute
 Note that the role of the classifier in this calculation is simply to produce the outputs $y$ for the calibration data, after having been trained in any standard way on a training data set. No changes in its architecture or in its training procedure have been made, nor are any required.
 
 
-\subsection{Applying the probability transduction: discriminative and generative modes}
-\label{sec:effect_transd}
-
-Let us now discuss the application of the various probability functions presented above. For simplicity we shall omit the dependence \enquote{$\|\dotsc, D)$} on the calibration data, leaving it implicitly understood.
-
-We have a new unit, which could be part of an evaluation test-set or coming from a real application after deployment. Its features are fed to the classifier, which outputs the real value $y$. We can then proceed in two ways:
-\begin{description}[font=\textit]
-\item[Discriminative mode:] \textit{probability of class given output}\\
- We calculate $p(c \| y)$ from formula~\eqref{eq:conditional_c_given_y}, for each value of $c$, say $c=0$ and $c=1$ in a binary-classification case. These are the probabilities of the classes.
-\end{description}
-The discriminative mode is the standard way of proceeding in classification and does not need further discussion. We have simply translated the classifier's raw output into a more sensible probability. From this point of view the function $p(c \| y)$ can be considered as a more appropriate substitute of the softmax function, for instance, at the output of a neural network.
-
-
-\begin{description}[resume, font=\textit]
-\item[Generative mode:] \textit{probability of class given output and base rates}\\
-  We calculate $p(y \| c)$ from formula~\eqref{eq:conditional_y_given_c}, again for each value of $c$. The probability of each class $c$ is then obtained through Bayes's theorem after supplying the \emph{population prevalence} $\br_{c}$ of the class:
-  \begin{equation}
-    \label{eq:bayes_baserate}
-    p(c \| y,\, \texts{prevalences}) = \frac{p(y \| c)\ \br_{c}}{ \sum_{c} p(y \| c)\ \br_{c} } \ .
-  \end{equation}
-\end{description}
-The population prevalences \autocites[\chap~3]{soxetal1988_r2013}[\sect~5.1]{huninketal2001_r2014}, also called \emph{base rates} \autocites{barhillel1980,axelsson2000}, are the relative frequencies of occurrence of the various classes in the population whence our unit originates. This notion is very familiar in medicine and epidemiology. For example, a particular type of tumour can have a prevalence of 0.01\% among people of a given age and sex, meaning that 1 person in 10\,000 among them has that kind of tumour, as obtained through a large survey.
-
-\mynotew{maybe move parts below to independent section}
-
-The generative mode, generally not available for classifiers with a discriminative design, is the required way to calculate the class probabilities if the calibration set does not have the same class frequencies as the population on which the classifier will be employed -- let us call the latter the \enquote{real population}. For example, two classes may appear in a 50\%/50\% proportion in the calibration set but in a  90\%/10\% proportion in the real population. This frequency discrepancy can occur for several reasons.  Examples: samples of the real population are unavailable or too expensive to be used for calibration purposes; the class statistics of the real population has suddenly changed right after the deployment of the classifier; it is necessary to use the classifier on a slightly different population; the sampling of calibration data was poorly designed.
-
-% \mynotez{The discussion below is not true, because the probabilities of the outputs of different classifiers are not independent (they are conditional on the same data)}
-% The generative mode is also required if we want to combine the outputs $y_{1}, y_{2}, \dotsc$ of several independent classifiers. According to the probability calculus, the probability of class $c$ is in this case proportional to the probabilities of the outputs \emph{given the class}\autocites[\sect~8.9]{jaynes1994_r2003}{hailperin2006}:
-% \begin{equation}
-%   \label{eq:combine_probs}
-%   \p(c \| y_{1}, y_{2}, \dotsc) \propto \p(c) \times
-%   \p(y_{1} \| c) \times \p(y_{2} \| c)\times \dotsm
-% \end{equation}
-% where $\p(c)$ is a population prevalence or an initial probability assessment.
 
 \section{Utility-based classification}
 \label{sec:utility_classification}
@@ -1717,13 +1682,33 @@ Clearly, the augmentation always leads to increased utility yields, especially f
 \mynotew{add final remark that this is not evaluation}
 
 
-\section{Summary, discussion, and teasers of further developments}
-\label{sec:summary_discussion}
+\section{Additional uses of the probability-transducer: an overview}
+\label{sec:overview_other_uses}
+
+The probability-transducer presented in \sect~\ref{sec:transducer} and illustrated in the previous section has several other uses and advantages, all of which come for free or almost for free with its calculation. We give a brief overview of them in the present section, leaving a more thorough discussion and applications to future works.
+
+The additional uses are mainly three:
+\begin{itemize}
+\item Quantification of the possible variability of the transducer probability curve.
+\item Evaluation of the optimal algorithm, including the uncertainty about such evaluation.
+\item \enquote{Generative use} of the augmented algorithm, even if the original algorithm is not designed for generative use.
+\end{itemize}
+
+\subsection{Variability of the transducer probability curve}
+\label{sec:variability_curve}
+
+The output-to-probability function, \eqn~\eqref{eq:prob_output}, such as those plotted in \figs~\ref{fig:prob_curve_RF} and \ref{fig:prob_curve_CNN}--\ref{fig:prob_curve_CNN_section}, is determined by the data in the calibration set. There is the question, then, of how the function could change if we used more calibration data. Such possible variability could be of importance. For example, we may find that the transducer only yields class probabilities around 0.5, and wonder whether this is just a statistical effect of a too small calibration dataset, or whether it would persist even if we used more calibration data.
+
+The calculation of the transducer parameters automatically tells us the probabilities of these possible variations, in the form of  a set of possible alternative transducer curves, from which we can for example calculate quantiles. The shaded regions in \figs~\ref{fig:prob_curve_RF}, \ref{fig:prob_curve_RF_inverse} and \ref{fig:prob_curve_CNN_section} are examples of such probability intervals. Their calculation is sketched in appendix~\ref{sec:variability_prob}.
+
+\subsection{Expected utility of the classifying algorithm}
+\label{sec:yield_of_classifier}
+
+At the end of the discussion about the calibration dataset, \sect~\ref{sec:calibration_data}, we gave our assurances that no additional data must be set apart -- with a detrimental reduction in training data -- for evaluation or testing purposes. This is because from the probabilities~\eqref{eq:prob_output}, obtained from the calibration data, we can also calculate \emph{the expected, future utility yield of the augmented algorithm}, once we have specified the utility matrix underlying the particular application. More details about this calculation, which amounts to a low-dimensional integration, are given in appendix~\ref{sec:algorithm_yield}.
 
 
 
-\mynotew{Maybe add note about how (sequential) decision theory was used during World War I; see  \textcites{good1950} around \sect~6.2 }
-
+For the \RF\ and \CNN\ of the demonstration \sect~\ref{sec:demonstration}, for instance, this calculation gives the expected utilities (non-rescaled) of table~\ref{tab:algorithms_utilities}.
 % CNN:
 %  0.9623081 1.6206641 9.5603046 9.0772883
 % RF:
@@ -1752,17 +1737,82 @@ Clearly, the augmentation always leads to increased utility yields, especially f
   \caption{Expected utilities for the two algorithms of \sect~\ref{sec:demonstration}}
   \label{tab:algorithms_utilities}
 \end{table}
+The augmented \RF\ is expected to be optimal for cases~I and~II, possibly also in case~III, although the difference in utilities is likely affected by numerical-precision error. There is no preference in case~IV.
+
+Let us emphasize again that these values are obtained \emph{from the parameters of the transducer curve, without the need of any additional dataset}. The demonstration dataset discussed in \sect~\ref{sec:demo_overview} was not used for their calculation. The results from that dataset, reported in table~\ref{tab:results_utilities}, corroborate these values.
 
 
-\begin{figure}[t]
+One may ask: but how can you be sure that what you basically found from the calibration data will generalize to new data? The answer goes back to the discussion at the end of \sect~\ref{sec:calibration_data}, about how the probability calculus works, and to the technical details explained in appendix~\ref{sec:maths_transducer}: the probability calculus automatically considers all possible sets of new data that could be encountered in the future application.
+
+In fact, the calculation of an algorithm's expected utility automatically produces a probability distribution of the possible long-run yields the algorithm could give. The distributions for the long-run utilities of the \RF\ and the \CNN\ in cases~I--IV of \sect~\ref{sec:demonstration} are shown in \fig~\ref{fig:algorithms_utilities_histograms}.
+\begin{figure}[!t]
   \centering
-  \includegraphics[width=0.49\linewidth]{histogram_alg_utilities_1.pdf}\hfill
-  \includegraphics[width=0.49\linewidth]{histogram_alg_utilities_2.pdf}\\
-  \includegraphics[width=0.49\linewidth]{histogram_alg_utilities_3.pdf}\hfill
-  \includegraphics[width=0.49\linewidth]{histogram_alg_utilities_4.pdf}\\
-  \caption{\mynotew{}}
+  \parbox{0.495\linewidth}{\centering
+    \includegraphics[width=\linewidth]{histogram_alg_utilities_1.pdf}
+   \\ case I}%
+  \hfill
+  \parbox{0.495\linewidth}{\centering
+    \includegraphics[width=\linewidth]{histogram_alg_utilities_2.pdf}
+    \\ case II}
+  \\[\jot]
+  \parbox{0.495\linewidth}{\centering
+    \includegraphics[width=\linewidth]{histogram_alg_utilities_3.pdf}
+  \\ case III}%
+  \hfill
+  \parbox{0.495\linewidth}{\centering
+    \includegraphics[width=\linewidth]{histogram_alg_utilities_4.pdf}
+  \\ case IV}
+\\
+  \caption{Probability distributions of the long-run utility yields of \RF\ and \CNN\ in the four cases of \sect~\ref{sec:demonstration}}
   \label{fig:algorithms_utilities_histograms}
 \end{figure}
+We see that in case~I the \RF\ will very probably (and the actual probability can be easily calculated) be superior to the \CNN. In case~II the probability is somewhat lower. In cases~III and~IV it is completely uncertain which algorithm will be best.
+
+The evaluation of candidate classifiers' performances and their uncertainties are obviously extremely important for the choice and final deployment of the optimal classifier.
+
+\subsection{Applying the probability transduction: discriminative and generative modes}
+\label{sec:effect_transd}
+
+Let us now discuss the application of the various probability functions presented above. For simplicity we shall omit the dependence \enquote{$\|\dotsc, D)$} on the calibration data, leaving it implicitly understood.
+
+We have a new unit, which could be part of an evaluation test-set or coming from a real application after deployment. Its features are fed to the classifier, which outputs the real value $y$. We can then proceed in two ways:
+\begin{description}[font=\textit]
+\item[Discriminative mode:] \textit{probability of class given output}\\
+ We calculate $p(c \| y)$ from formula~\eqref{eq:conditional_c_given_y}, for each value of $c$, say $c=0$ and $c=1$ in a binary-classification case. These are the probabilities of the classes.
+\end{description}
+The discriminative mode is the standard way of proceeding in classification and does not need further discussion. We have simply translated the classifier's raw output into a more sensible probability. From this point of view the function $p(c \| y)$ can be considered as a more appropriate substitute of the softmax function, for instance, at the output of a neural network.
+
+
+\begin{description}[resume, font=\textit]
+\item[Generative mode:] \textit{probability of class given output and base rates}\\
+  We calculate $p(y \| c)$ from formula~\eqref{eq:conditional_y_given_c}, again for each value of $c$. The probability of each class $c$ is then obtained through Bayes's theorem after supplying the \emph{population prevalence} $\br_{c}$ of the class:
+  \begin{equation}
+    \label{eq:bayes_baserate}
+    p(c \| y,\, \texts{prevalences}) = \frac{p(y \| c)\ \br_{c}}{ \sum_{c} p(y \| c)\ \br_{c} } \ .
+  \end{equation}
+\end{description}
+The population prevalences \autocites[\chap~3]{soxetal1988_r2013}[\sect~5.1]{huninketal2001_r2014}, also called \emph{base rates} \autocites{barhillel1980,axelsson2000}, are the relative frequencies of occurrence of the various classes in the population whence our unit originates. This notion is very familiar in medicine and epidemiology. For example, a particular type of tumour can have a prevalence of 0.01\% among people of a given age and sex, meaning that 1 person in 10\,000 among them has that kind of tumour, as obtained through a large survey.
+
+\mynotew{maybe move parts below to independent section}
+
+The generative mode, generally not available for classifiers with a discriminative design, is the required way to calculate the class probabilities if the calibration set does not have the same class frequencies as the population on which the classifier will be employed -- let us call the latter the \enquote{real population}. For example, two classes may appear in a 50\%/50\% proportion in the calibration set but in a  90\%/10\% proportion in the real population. This frequency discrepancy can occur for several reasons.  Examples: samples of the real population are unavailable or too expensive to be used for calibration purposes; the class statistics of the real population has suddenly changed right after the deployment of the classifier; it is necessary to use the classifier on a slightly different population; the sampling of calibration data was poorly designed.
+
+% \mynotez{The discussion below is not true, because the probabilities of the outputs of different classifiers are not independent (they are conditional on the same data)}
+% The generative mode is also required if we want to combine the outputs $y_{1}, y_{2}, \dotsc$ of several independent classifiers. According to the probability calculus, the probability of class $c$ is in this case proportional to the probabilities of the outputs \emph{given the class}\autocites[\sect~8.9]{jaynes1994_r2003}{hailperin2006}:
+% \begin{equation}
+%   \label{eq:combine_probs}
+%   \p(c \| y_{1}, y_{2}, \dotsc) \propto \p(c) \times
+%   \p(y_{1} \| c) \times \p(y_{2} \| c)\times \dotsm
+% \end{equation}
+% where $\p(c)$ is a population prevalence or an initial probability assessment.
+
+
+\section{Summary, discussion, and teasers of further developments}
+\label{sec:summary_discussion}
+
+
+
+\mynotew{Maybe add note about how (sequential) decision theory was used during World War I; see  \textcites{good1950} around \sect~6.2 }
 
 
 % \begin{figure}[t]
@@ -2131,7 +2181,6 @@ What is important in the formula above is that the probabilities for the outputs
 
 We have performed this calculation for the \RF\ and \CNN\ (both with augmentation) of \sect~\ref{sec:demonstration}, obtaining the values shown in table~\ref{tab:algorithms_utilities} (these utilities are not rescaled).
 
-The augmented \RF\ is optimal for cases~I--III, and there is no preference in case~IV. We emphasize again that \emph{this algorithm evaluation is done from the calibration set; no demonstration data are used}. The results from the demonstration dataset, reported in table~\ref{tab:results_utilities}, corroborate these assessments.
 
 \medskip
 
