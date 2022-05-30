@@ -1,6 +1,6 @@
 ## Author: PGL  Porta Mana
 ## Created: 2022-03-17T14:21:57+0100
-## Last-Updated: 2022-05-30T19:20:30+0200
+## Last-Updated: 2022-05-30T22:22:11+0200
 ################
 ## Exploration of several issues for binary classifiers
 ################
@@ -755,8 +755,8 @@ tplot(x=cbind((RFallscores[1,1:nn2]-rmins)/norms, (CNNallscores[1,1:nn2]-rmins)/
       ## yticks=log10(sort(c(1:9)*rep(10^c(-1,0),each=9))),
       ## ylabels=sort(c(1:9)*rep(10^c(-1,0),each=9)),
       mar=c(4.5,5.5,0,0),
-      xlab='rescaled utility yield, standard method',#bquote(frac('utility yield','max utility yield')~', standard method'),
-      ylab='rescaled utility yield, augmentation'#bquote(frac('utility yield','max utility yield')~', augmentation')
+      xlab='rescaled utility yield, standard method           ',#bquote(frac('utility yield','max utility yield')~', standard method'),
+      ylab='rescaled utility yield, augmentation            '#bquote(frac('utility yield','max utility yield')~', augmentation')
       )
 tplot(x=c(lbound,1),y=c(lbound,1), col=paste0(palette()[7],'FF'), lwd=4, lty=2, add=T)
 #abline(0,1, col=paste0(palette()[7],'FF'), lwd=4, lty=2)
@@ -776,7 +776,7 @@ tplot(x=list(RFhist1$breaks,CNNhist1$breaks),
 tplot(y=list(RFhist3$breaks,CNNhist3$breaks),
       x=list(RFhist3$density/hscale+hstart, CNNhist3$density/hscale+hstart),
              xlim=c(hstart,NA),add=T, border=NA)
-legend('bottomright',c('Random Forest', 'Neural Network'), pch=c(16,17), col=palette()[1:2], cex=1.25, bty='n')
+legend('bottom',c('Random Forest              ', 'Neural Network'), pch=c(16,17), col=palette()[1:2], cex=1.25, bty='n')
 ## tplot(x=log10(RFallscores[2,1:nn2]), y=log10(RFallscores[3,1:nn2]), type='p', pch=16, cex=0.5, alpha=0.25, col=2,
 ##       xticks=log10(sort(c(1:9)*rep(10^c(-1,0),each=9))),
 ##       xlabels=sort(c(1:9)*rep(10^c(-1,0),each=9)),
@@ -1155,8 +1155,8 @@ tplot(x=cbind((RFallscoresb[1,1:nn2]-rmins)/norms, (CNNallscoresb[1,1:nn2]-rmins
       ## yticks=log10(sort(c(1:9)*rep(10^c(-1,0),each=9))),
       ## ylabels=sort(c(1:9)*rep(10^c(-1,0),each=9)),
       mar=c(4.5,5.5,0,0),
-      xlab='rescaled utility yield, standard method',#bquote(frac('utility yield','max utility yield')~', standard method'),
-      ylab='rescaled utility yield, augmentation & generative mode'#bquote(frac('utility yield','max utility yield')~', augmentation')
+      xlab='rescaled utility yield, standard method           ',#bquote(frac('utility yield','max utility yield')~', standard method'),
+      ylab='rescaled utility yield, augmentation in generative mode            '#bquote(frac('utility yield','max utility yield')~', augmentation')
       )
 tplot(x=c(lbound,1),y=c(lbound,1), col=paste0(palette()[7],'FF'), lwd=4, lty=2, add=T)
 #abline(0,1, col=paste0(palette()[7],'FF'), lwd=4, lty=2)
@@ -1176,7 +1176,7 @@ tplot(x=list(RFhist1$breaks,CNNhist1$breaks),
 tplot(y=list(RFhist3$breaks,CNNhist3$breaks),
       x=list(RFhist3$density/hscale+hstart, CNNhist3$density/hscale+hstart),
              xlim=c(hstart,NA),add=T, border=NA)
-legend('bottomright',c('Random Forest', 'Neural Network'), pch=c(16,17), col=palette()[1:2], cex=1.25, bty='n')
+legend('bottom',c('Random Forest              ', 'Neural Network'), pch=c(16,17), col=palette()[1:2], cex=1.25, bty='n')
 ## tplot(x=log10(RFallscores[2,1:nn2]), y=log10(RFallscores[3,1:nn2]), type='p', pch=16, cex=0.5, alpha=0.25, col=2,
 ##       xticks=log10(sort(c(1:9)*rep(10^c(-1,0),each=9))),
 ##       xlabels=sort(c(1:9)*rep(10^c(-1,0),each=9)),

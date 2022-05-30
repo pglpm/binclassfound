@@ -1,6 +1,6 @@
 ## Author: PGL  Porta Mana
 ## Created: 2022-03-17T14:21:57+0100
-## Last-Updated: 2022-05-30T18:07:50+0200
+## Last-Updated: 2022-05-30T22:39:12+0200
 ################
 ## Exploration of several issues for binary classifiers
 ################
@@ -996,13 +996,20 @@ saveRDS(utdistr,'CNNutdistr.rds')
 
 rfutdistr <- readRDS('RFutdistr.rds')
 
+sapply(1:4,function(i){sum(rfutdistr[i,]>cnnutdistr[i,])/ncol(rfutdistr)})
+## > sapply(1:4,function(i){sum(rfutdistr[i,]>cnnutdistr[i,])/ncol(rfutdistr)})
+## [1] 0.9934082 0.8276367 0.5039062 0.5075684
+
+tplot(x=rfutdistr[3,],y=cnnutdistr[3,], type='p', pch='.')
+abline(0,1)
+
 for(i in 1:nrow(utdistr)){
 histcnn <- thist(cnnutdistr[i,])
 histrf <- thist(rfutdistr[i,])
 ##
 pdff(paste0('../histogram_alg_utilities_',i), asp=1)
 tplot(x=list(histrf$breaks, histcnn$breaks), y=list(histrf$density, histcnn$density),
-      yticks=F, ylab=(if(i==1){'probability density'}else{NA}),
+      yticks=F, ylab=(if(i==1 | i==3){'probability density'}else{NA}),
       xlab="algorithm's long-run utility", family='Palatino')
 if(i==1){
 legend('topleft',c('Random Forest', 'Conv. Neural Net'), col=paste0(palette()[1:2],'80'), lwd=3, lty=c(1,2),

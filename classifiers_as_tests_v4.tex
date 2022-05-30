@@ -1,7 +1,7 @@
 \pdfoutput=1
 %% Author: PGL  Porta Mana
 %% Created: 2022-04-14T17:18:22+0200
-%% Last-Updated: 2022-05-30T21:59:06+0200
+%% Last-Updated: 2022-05-30T22:54:15+0200
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Probabilities for classifier outputs
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -1711,19 +1711,19 @@ For the \RF\ and \CNN\ of the demonstration \sect~\ref{sec:demonstration}, for i
   \centering
   \parbox{0.495\linewidth}{\centering
     \includegraphics[width=\linewidth]{histogram_alg_utilities_1.pdf}
-   \\ case I}%
+   \\\footnotesize case I}%
   \hfill
   \parbox{0.495\linewidth}{\centering
     \includegraphics[width=\linewidth]{histogram_alg_utilities_2.pdf}
-    \\ case II}
+    \\\footnotesize case II}
   \\[\jot]
   \parbox{0.495\linewidth}{\centering
     \includegraphics[width=\linewidth]{histogram_alg_utilities_3.pdf}
-  \\ case III}%
+  \\\footnotesize case III}%
   \hfill
   \parbox{0.495\linewidth}{\centering
     \includegraphics[width=\linewidth]{histogram_alg_utilities_4.pdf}
-  \\ case IV}
+  \\\footnotesize case IV}
 \\
   \caption{Probability distributions of the long-run utility yields of \RF\ and \CNN\ in the four cases of \sect~\ref{sec:demonstration}}
   \label{fig:algorithms_utilities_histograms}
@@ -1736,8 +1736,9 @@ Let us emphasize again that these values are obtained \emph{from the parameters 
 
 One may ask: but how can you be sure that what you basically found from the calibration data will generalize to new data? The answer goes back to the discussion at the end of \sect~\ref{sec:calibration_data}, about how the probability calculus works, and to the technical details explained in appendix~\ref{sec:maths_transducer}: the probability calculus automatically considers all possible sets of new data that could be encountered in the future application \autocites[\cf][]{smithetal2006}.
 
-In fact, the calculation of an algorithm's expected utility automatically produces a probability distribution of the possible long-run yields the algorithm could give. The distributions for the long-run utilities of the \RF\ and the \CNN\ in cases~I--IV of \sect~\ref{sec:demonstration} are shown in \fig~\ref{fig:algorithms_utilities_histograms}.
-We see that in case~I the \RF\ will very probably (and the actual probability can be easily calculated) be superior to the \CNN. In case~II the probability is somewhat lower. In cases~III and~IV it is completely uncertain which algorithm will be best.
+% ## > sapply(1:4,function(i){sum(rfutdistr[i,]>cnnutdistr[i,])/ncol(rfutdistr)})
+% ## [1] 0.9934082 0.8276367 0.5039062 0.5075684
+In fact, the calculation of an algorithm's expected utility automatically produces a probability distribution of the possible long-run yields the algorithm could give. The distributions for the long-run utilities of the \RF\ and the \CNN\ in cases~I--IV of \sect~\ref{sec:demonstration} are shown in \fig~\ref{fig:algorithms_utilities_histograms}. It can be calculated, \eqn~\eqref{eq:compare_alg_utilities}, that in case~I the \RF\ will very probably, 99\%, be superior to the \CNN. In case~II the probability is somewhat lower, 83\%. In cases~III and~IV it is completely uncertain (50\%) which algorithm will be best.
 
 The evaluation of candidate classifiers' performances and their uncertainties are obviously extremely important for the choice and final deployment of the optimal classifier.
 
@@ -1800,7 +1801,7 @@ The distribution of possible utility matrices is  uniform over their space, as b
 % ##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
 % ##  0.9213  0.9322  0.9414  0.9467  0.9596  1.0000 
 
-First of all we see that the performance of the standard method has worsened; this is especially apparent comparing the x-axis histograms of \figs~\ref{fig:RF_gain_UMspace} and \ref{fig:genRF_gain_UMspace}. The median utility yield of the \RF\ has gone from 0.967 to 0.834; that of the \CNN\ from 0.959 to 0.893. And yet the augmentation in generative mode is almost unaffected instead, the median changing from 0.974 to 0.967 for the \RF\ and from 0.961 to 0.941 for the \CNN.
+We see that the performance of the standard method has worsened; this is especially manifest by a comparison of the top histograms of \figs~\ref{fig:RF_gain_UMspace} and \ref{fig:genRF_gain_UMspace}. The median utility yield of the \RF\ has gone from 0.967 to 0.834; that of the \CNN\ from 0.959 to 0.893. And yet the augmentation in generative mode is almost unaffected, the median changing from 0.974 to 0.967 for the \RF\ and from 0.961 to 0.941 for the \CNN.
 
 
 % \mynotez{The discussion below is not true, because the probabilities of the outputs of different classifiers are not independent (they are conditional on the same data)}
@@ -2016,8 +2017,7 @@ Effectively we obtain samples of the coordinates $(w_{l}, \alpha_{l}, \beta_{l})
 
 For the demonstration of \sect~\ref{sec:demonstration} we use a Dirichlet distribution for $(w_{l})$, a beta distribution for $(\alpha_{l})$, a Gaussian distribution for $(\mu_{l})$, and a gamma distribution for $(1/{\sigma_{l}}^{2})$.
 
-The Markov-chain Monte Carlo sampling scheme is implemented using the R \autocites{rcoreteam1995_r2022} package NIMBLE \autocites{nimble2016_r2021}, and uses 16 parallel chains \autocites[scripts available in][]{dyrlandetal2022c}.
-The sampling took approximately 45\,min for the \RF\ and 75\,min for the \CNN, wall-clock time. The resulting parameters are available in our supplementary data\footcites[\addcomma\ files \texttt{transducer\_params-Random\_Forest.zip} and \texttt{transducer\_params-Neural\_Net.zip}]{dyrlandetal2022c}.
+The Markov-chain Monte Carlo sampling scheme is implemented using the R \autocites{rcoreteam1995_r2022} package \textsc{nimble} \autocites{nimble2016_r2021}, and uses 16 parallel chains \autocites[\addcomma\ scripts \texttt{RFmcmc.R} and \texttt{NNmcmc.R}]{dyrlandetal2022c}. The sampling took approximately 45\,min for the \RF\ and 75\,min for the \CNN, wall-clock time. The resulting parameters are available in our supplementary data\footcites[\addcomma\ files \texttt{transducer\_params-Random\_Forest.zip} and \texttt{transducer\_params-Neural\_Net.zip}]{dyrlandetal2022c}.
 
 \subsection{Assessment of the possible variability of the probability}
 \label{sec:variability_prob}
@@ -2074,7 +2074,11 @@ The expected utilities of table~\ref{tab:algorithms_utilities}, \sect~\ref{sec:y
 
 These values are \emph{expected} utilities, though. One may ask: what is the probability that the final utility of one model will actually be higher or lower than the other's?
 
-We can answer this question, again thanks to de~Finetti's formula~\eqref{eq:prob_is_expe_freq}, similarly to how we did with the variability of the transducer curves, explained in the previous \sect~\ref{sec:variability_prob}. The long-run utility of the algorithm $M$ is given by formula~\eqref{eq:algorithm_utility} but with the probabilities replaced by the long-term frequencies $F(c\|y)$ and $F(y)$. The probability of this long-run utility is then determined by the density $\wf(F)$ represented by a set of samples. Calculating the long-run utility for each sample we can finally construct a probability histogram for each algorithm's utility. These are the histograms shown in \fig~\ref{fig:algorithms_utilities_histograms}.
+We can answer this question, again thanks to de~Finetti's formula~\eqref{eq:prob_is_expe_freq}, similarly to how we did with the variability of the transducer curves, explained in the previous \sect~\ref{sec:variability_prob}. The long-run utility of the algorithm $M$ is given by formula~\eqref{eq:algorithm_utility} but with the probabilities replaced by the long-term frequencies $F(c\|y)$ and $F(y)$. The probability of this long-run utility is then determined by the density $\wf(F)$ represented by a set of samples. Calculating the long-run utility for each sample we can finally construct a probability histogram for each algorithm's utility. The histograms of \fig~\ref{fig:algorithms_utilities_histograms} are obtained this way. From them we can also calculate the probability that an algorithm's utility $u'$ will be higher than another's utility $u''$, corresponding to the integral
+\begin{equation}
+  \label{eq:compare_alg_utilities}
+\iint \delt(u' > u'')\ \p(u')\ \p(u'')\ \di u'\ \di u'' \ .
+\end{equation}
 
 %%%% examples use empheq
 %   \begin{empheq}[left={\mathllap{\begin{aligned}    \de\yF_{\yc}/\de\yp&=0\text{:} \\
