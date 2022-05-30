@@ -1,6 +1,6 @@
 ## Author: PGL  Porta Mana
 ## Created: 2022-03-17T14:21:57+0100
-## Last-Updated: 2022-05-30T02:27:33+0200
+## Last-Updated: 2022-05-30T19:20:30+0200
 ################
 ## Exploration of several issues for binary classifiers
 ################
@@ -642,6 +642,20 @@ CNNallscores <- readRDS('CNNallscores.rds')
 
 CNNnormallscores <- t((t(CNNallscores)-allmins)/(allmaxs-allmins))
 
+## > summary(normallscores[1,])
+##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+##  0.7563  0.9429  0.9670  0.9523  0.9791  0.9887 
+## > summary(normallscores[3,])
+##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+##  0.9618  0.9682  0.9740  0.9749  0.9796  1.0000 
+## > summary(CNNnormallscores[1,])
+##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+##  0.8498  0.9466  0.9590  0.9514  0.9653  0.9703 
+## > summary(CNNnormallscores[3,])
+##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+##  0.9225  0.9478  0.9614  0.9605  0.9733  1.0000 
+
+
 ## > range((normallscores[3,]-normallscores[1,])/normallscores[1,])*100
 ## [1] -0.09453707 32.09361399
 ## > range((CNNnormallscores[3,]-CNNnormallscores[1,])/CNNnormallscores[1,])*100
@@ -686,17 +700,17 @@ dev.off()
 nn2 <- 2000
 rmins <- allmins[1:nn2]
 norms <- allmaxs[1:nn2]-allmins[1:nn2]
-lbound <- min((allscores[1,1:nn2]-rmins)/norms, (allscores[3,1:nn2]-rmins)/norms,
+lbound <- min((RFallscores[1,1:nn2]-rmins)/norms, (RFallscores[3,1:nn2]-rmins)/norms,
               (CNNallscores[1,1:nn2]-rmins)/norms, (CNNallscores[3,1:nn2]-rmins)/norms)
 pdff('../RFCNN_transducer_gains_max', asp=1)
-## tplot(x=allscores[1,1:nn2], y=allscores[2,1:nn2]-allscores[1,1:nn2], type='p', pch=16, cex=1, alpha=0.5)
-tplot(x=cbind((allscores[1,1:nn2]-rmins)/norms, (CNNallscores[1,1:nn2]-rmins)/norms),
-      y=cbind((allscores[3,1:nn2]-rmins)/norms, (CNNallscores[3,1:nn2]-rmins)/norms),
+## tplot(x=RFallscores[1,1:nn2], y=RFallscores[2,1:nn2]-RFallscores[1,1:nn2], type='p', pch=16, cex=1, alpha=0.5)
+tplot(x=cbind((RFallscores[1,1:nn2]-rmins)/norms, (CNNallscores[1,1:nn2]-rmins)/norms),
+      y=cbind((RFallscores[3,1:nn2]-rmins)/norms, (CNNallscores[3,1:nn2]-rmins)/norms),
       type='p', pch=c(16,17), cex=1, alpha=0.67,
       xlim=c(lbound,1),
       ylim=c(lbound,1),
-      ## xlim=c(min(allscores[1,1:nn2]/allscores[4,1:nn2],allscores[3,1:nn2]/allscores[4,1:nn2]),1),
-      ## ylim=c(min(allscores[1,1:nn2]/allscores[4,1:nn2],allscores[3,1:nn2]/allscores[4,1:nn2]),1),
+      ## xlim=c(min(RFallscores[1,1:nn2]/RFallscores[4,1:nn2],RFallscores[3,1:nn2]/RFallscores[4,1:nn2]),1),
+      ## ylim=c(min(RFallscores[1,1:nn2]/RFallscores[4,1:nn2],RFallscores[3,1:nn2]/RFallscores[4,1:nn2]),1),
       ## xticks=log10(sort(c(1:9)*rep(10^c(-1,0),each=9))),
       ## xlabels=sort(c(1:9)*rep(10^c(-1,0),each=9)),
       ## yticks=log10(sort(c(1:9)*rep(10^c(-1,0),each=9))),
@@ -707,7 +721,7 @@ tplot(x=cbind((allscores[1,1:nn2]-rmins)/norms, (CNNallscores[1,1:nn2]-rmins)/no
       )
 abline(0,1, col=paste0(palette()[7],'FF'), lwd=4, lty=2)
 legend('left',c('Random Forest', 'Neural Network'), pch=c(16,17), col=palette()[1:2], cex=1.5, bty='n')
-## tplot(x=log10(allscores[2,1:nn2]), y=log10(allscores[3,1:nn2]), type='p', pch=16, cex=0.5, alpha=0.25, col=2,
+## tplot(x=log10(RFallscores[2,1:nn2]), y=log10(RFallscores[3,1:nn2]), type='p', pch=16, cex=0.5, alpha=0.25, col=2,
 ##       xticks=log10(sort(c(1:9)*rep(10^c(-1,0),each=9))),
 ##       xlabels=sort(c(1:9)*rep(10^c(-1,0),each=9)),
 ##       yticks=log10(sort(c(1:9)*rep(10^c(-1,0),each=9))),
@@ -716,6 +730,70 @@ legend('left',c('Random Forest', 'Neural Network'), pch=c(16,17), col=palette()[
 ##       ylab='utility yield from transducer & utility maximization')
 ## abline(0,1, col=paste0(palette()[4],'88'), lwd=2, lty=1)
 dev.off()
+
+
+
+nn2 <- 2000
+rmins <- allmins[1:nn2]
+norms <- allmaxs[1:nn2]-allmins[1:nn2]
+lbound <- min((RFallscores[1,1:nn2]-rmins)/norms, (RFallscores[3,1:nn2]-rmins)/norms,
+              (CNNallscores[1,1:nn2]-rmins)/norms, (CNNallscores[3,1:nn2]-rmins)/norms)
+hstart <- 1+0.002
+hheight <- 0.04
+pdff('../RFCNN_transducer_gains_histograms', asp=1)
+## tplot(x=RFallscores[1,1:nn2], y=RFallscores[2,1:nn2]-RFallscores[1,1:nn2], type='p', pch=16, cex=1, alpha=0.5)
+tplot(x=cbind((RFallscores[1,1:nn2]-rmins)/norms, (CNNallscores[1,1:nn2]-rmins)/norms),
+      y=cbind((RFallscores[3,1:nn2]-rmins)/norms, (CNNallscores[3,1:nn2]-rmins)/norms),
+      type='p', pch=c(16,17), cex=1, alpha=0.67,
+      xlim=c(lbound,hstart+hheight-0.007),
+      ylim=c(lbound,hstart+hheight-0.007),
+      ## xlim=c(min(RFallscores[1,1:nn2]/RFallscores[4,1:nn2],RFallscores[3,1:nn2]/RFallscores[4,1:nn2]),1),
+      ## ylim=c(min(RFallscores[1,1:nn2]/RFallscores[4,1:nn2],RFallscores[3,1:nn2]/RFallscores[4,1:nn2]),1),
+      xticks=seq(0.76,1,by=0.02),
+      yticks=seq(0.76,1,by=0.02),
+      ## xlabels=sort(c(1:9)*rep(10^c(-1,0),each=9)),
+      ## yticks=log10(sort(c(1:9)*rep(10^c(-1,0),each=9))),
+      ## ylabels=sort(c(1:9)*rep(10^c(-1,0),each=9)),
+      mar=c(4.5,5.5,0,0),
+      xlab='rescaled utility yield, standard method',#bquote(frac('utility yield','max utility yield')~', standard method'),
+      ylab='rescaled utility yield, augmentation'#bquote(frac('utility yield','max utility yield')~', augmentation')
+      )
+tplot(x=c(lbound,1),y=c(lbound,1), col=paste0(palette()[7],'FF'), lwd=4, lty=2, add=T)
+#abline(0,1, col=paste0(palette()[7],'FF'), lwd=4, lty=2)
+##
+nbreaks <- 10
+rmins <- allmins
+norms <- allmaxs-allmins
+RFhist1 <- thist((RFallscores[1,]-rmins)/norms,n=nbreaks)
+CNNhist1 <- thist((CNNallscores[1,]-rmins)/norms,n=nbreaks)
+RFhist3 <- thist((RFallscores[3,]-rmins)/norms,n=nbreaks)
+CNNhist3 <- thist((CNNallscores[3,]-rmins)/norms,n=nbreaks)
+hscale <- max(RFhist1$density,CNNhist1$density,RFhist3$density,CNNhist3$density)/hheight
+## polygon(x=c(RFhist1$mids,rev(RFhist1$mids)), y=c(rep(hstart,length(RFhist1$mids)), rev(RFhist1$density/hscale*(1-hstart)/4+hstart)), border=NA, col=paste0(palette()[1],'80'))
+tplot(x=list(RFhist1$breaks,CNNhist1$breaks),
+      y=list(RFhist1$density/hscale+hstart, CNNhist1$density/hscale+hstart),
+             ylim=c(hstart,NA),add=T, border=NA)
+tplot(y=list(RFhist3$breaks,CNNhist3$breaks),
+      x=list(RFhist3$density/hscale+hstart, CNNhist3$density/hscale+hstart),
+             xlim=c(hstart,NA),add=T, border=NA)
+legend('bottomright',c('Random Forest', 'Neural Network'), pch=c(16,17), col=palette()[1:2], cex=1.25, bty='n')
+## tplot(x=log10(RFallscores[2,1:nn2]), y=log10(RFallscores[3,1:nn2]), type='p', pch=16, cex=0.5, alpha=0.25, col=2,
+##       xticks=log10(sort(c(1:9)*rep(10^c(-1,0),each=9))),
+##       xlabels=sort(c(1:9)*rep(10^c(-1,0),each=9)),
+##       yticks=log10(sort(c(1:9)*rep(10^c(-1,0),each=9))),
+##       ylabels=sort(c(1:9)*rep(10^c(-1,0),each=9)),
+##       xlab='utility yield from mixed method',
+##       ylab='utility yield from transducer & utility maximization')
+## abline(0,1, col=paste0(palette()[4],'88'), lwd=2, lty=1)
+dev.off()
+
+
+
+
+
+
+
+
 
 nn2 <- 2000
 rmins <- allmins[1:nn2]
@@ -1037,6 +1115,96 @@ colMeans((t(allscoresb)-allminsb)/(allmaxsb-allminsb))
 normallscoresb <- t((t(allscoresb)-allminsb)/(allmaxsb-allminsb))
 
 
+CNNallscoresb <- readRDS('genCNNallscores.rds')
+
+CNNnormallscoresb <- t((t(CNNallscoresb)-allminsb)/(allmaxsb-allminsb))
+
+## > summary(normallscoresb[1,])
+##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+##  0.7561  0.7964  0.8340  0.8451  0.8844  0.9938 
+## > summary(normallscoresb[3,])
+##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+##  0.9550  0.9606  0.9673  0.9683  0.9736  1.0000 
+## > summary(CNNnormallscoresb[1,])
+##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+##  0.8497  0.8721  0.8929  0.8991  0.9209  0.9815 
+## > summary(CNNnormallscoresb[3,])
+##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+##  0.9213  0.9322  0.9414  0.9467  0.9596  1.0000 
+
+
+nn2 <- 2000
+rmins <- allminsb[1:nn2]
+norms <- allmaxsb[1:nn2]-allminsb[1:nn2]
+lbound <- min((RFallscoresb[1,1:nn2]-rmins)/norms, (RFallscoresb[3,1:nn2]-rmins)/norms,
+              (CNNallscoresb[1,1:nn2]-rmins)/norms, (CNNallscoresb[3,1:nn2]-rmins)/norms)
+hstart <- 1+0.002
+hheight <- 0.04
+pdff('../genRFCNN_transducer_gains_histograms', asp=1)
+## tplot(x=RFallscores[1,1:nn2], y=RFallscores[2,1:nn2]-RFallscores[1,1:nn2], type='p', pch=16, cex=1, alpha=0.5)
+tplot(x=cbind((RFallscoresb[1,1:nn2]-rmins)/norms, (CNNallscoresb[1,1:nn2]-rmins)/norms),
+      y=cbind((RFallscoresb[3,1:nn2]-rmins)/norms, (CNNallscoresb[3,1:nn2]-rmins)/norms),
+      type='p', pch=c(16,17), cex=1, alpha=0.67,
+      xlim=c(lbound,hstart+hheight-0.007),
+      ylim=c(lbound,hstart+hheight-0.007),
+      ## xlim=c(min(RFallscores[1,1:nn2]/RFallscores[4,1:nn2],RFallscores[3,1:nn2]/RFallscores[4,1:nn2]),1),
+      ## ylim=c(min(RFallscores[1,1:nn2]/RFallscores[4,1:nn2],RFallscores[3,1:nn2]/RFallscores[4,1:nn2]),1),
+      xticks=seq(0.76,1,by=0.02),
+      yticks=seq(0.76,1,by=0.02),
+      ## xlabels=sort(c(1:9)*rep(10^c(-1,0),each=9)),
+      ## yticks=log10(sort(c(1:9)*rep(10^c(-1,0),each=9))),
+      ## ylabels=sort(c(1:9)*rep(10^c(-1,0),each=9)),
+      mar=c(4.5,5.5,0,0),
+      xlab='rescaled utility yield, standard method',#bquote(frac('utility yield','max utility yield')~', standard method'),
+      ylab='rescaled utility yield, augmentation & generative mode'#bquote(frac('utility yield','max utility yield')~', augmentation')
+      )
+tplot(x=c(lbound,1),y=c(lbound,1), col=paste0(palette()[7],'FF'), lwd=4, lty=2, add=T)
+#abline(0,1, col=paste0(palette()[7],'FF'), lwd=4, lty=2)
+##
+nbreaks <- 10
+rmins <- allminsb
+norms <- allmaxsb-allminsb
+RFhist1 <- thist((RFallscoresb[1,]-rmins)/norms,n=nbreaks)
+CNNhist1 <- thist((CNNallscoresb[1,]-rmins)/norms,n=nbreaks)
+RFhist3 <- thist((RFallscoresb[3,]-rmins)/norms,n=nbreaks)
+CNNhist3 <- thist((CNNallscoresb[3,]-rmins)/norms,n=nbreaks)
+hscale <- max(RFhist1$density,CNNhist1$density,RFhist3$density,CNNhist3$density)/hheight
+## polygon(x=c(RFhist1$mids,rev(RFhist1$mids)), y=c(rep(hstart,length(RFhist1$mids)), rev(RFhist1$density/hscale*(1-hstart)/4+hstart)), border=NA, col=paste0(palette()[1],'80'))
+tplot(x=list(RFhist1$breaks,CNNhist1$breaks),
+      y=list(RFhist1$density/hscale+hstart, CNNhist1$density/hscale+hstart),
+             ylim=c(hstart,NA),add=T, border=NA)
+tplot(y=list(RFhist3$breaks,CNNhist3$breaks),
+      x=list(RFhist3$density/hscale+hstart, CNNhist3$density/hscale+hstart),
+             xlim=c(hstart,NA),add=T, border=NA)
+legend('bottomright',c('Random Forest', 'Neural Network'), pch=c(16,17), col=palette()[1:2], cex=1.25, bty='n')
+## tplot(x=log10(RFallscores[2,1:nn2]), y=log10(RFallscores[3,1:nn2]), type='p', pch=16, cex=0.5, alpha=0.25, col=2,
+##       xticks=log10(sort(c(1:9)*rep(10^c(-1,0),each=9))),
+##       xlabels=sort(c(1:9)*rep(10^c(-1,0),each=9)),
+##       yticks=log10(sort(c(1:9)*rep(10^c(-1,0),each=9))),
+##       ylabels=sort(c(1:9)*rep(10^c(-1,0),each=9)),
+##       xlab='utility yield from mixed method',
+##       ylab='utility yield from transducer & utility maximization')
+## abline(0,1, col=paste0(palette()[4],'88'), lwd=2, lty=1)
+dev.off()
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 rmins <- allminsb[1:nn2]
 norms <- allmaxsb[1:nn2]-allminsb[1:nn2]
 lbound <- min((allscoresb[1,1:nn2]-rmins)/norms, (allscoresb[3,1:nn2]-rmins)/norms)
@@ -1129,6 +1297,7 @@ dev.off()
 #########################################################
 
 Myield <- function(yprobgrid,cprobgrid,um){
+
 yprobgrid <- cbind(yprobgrid)
 cprobgrid <- cbind(cprobgrid)
 
@@ -1174,8 +1343,7 @@ ulist2 <- unlist(umlist)
 dim(ulist2) <- c(4,2*length(ulist))
 ulist2 <- t(ulist2)
 
-
-sapply(umlist, function(um){Myield(rowMeans(ypgrid), rowMeans(opgrid), um)})[1:4]
+sapply(umlist[1:4], function(um){Myield(rowMeans(ypgrid), rowMeans(opgrid), um)})[1:4]
 ## [1] 0.9725162 1.6815698 9.5864235 9.0783451
 
 

@@ -1,6 +1,6 @@
 ## Author: PGL  Porta Mana
 ## Created: 2022-03-17T14:21:57+0100
-## Last-Updated: 2022-05-29T19:40:15+0200
+## Last-Updated: 2022-05-30T18:07:50+0200
 ################
 ## Exploration of several issues for binary classifiers
 ################
@@ -620,9 +620,6 @@ allmaxs <- apply(lut, 3, function(um){
 colMeans((t(allscores)-allmins)/(allmaxs-allmins))
  ##  standard      mixed transducer 
  ## 0.9514084  0.9588223  0.9605364 
-#### correct params
-##   standard      mixed transducer 
-##  0.7527198  0.7555375  0.7569162 
 
 rowMeans(t(t(allscores)/allscores[4,]))
  ##  standard      mixed transducer        max 
@@ -870,7 +867,7 @@ allscoresb <- apply(lut, 3, function(um){
       sum(buildcm(classesb, probs1b, um) * um),
       sum(buildcm(classesb, bayesprobs1, um) * um)
       )
-})/length(classesb)
+})
 ## allscores <- (foreach(i=1:nn, .combine=cbind, .inorder=F)%dopar%{
 ##     um <- lut[,,i]
 ##     c(sum(cmstandard * um),
@@ -879,6 +876,22 @@ allscoresb <- apply(lut, 3, function(um){
 ##       )
 ## })/length(classes)
 rownames(allscoresb) <- c('standard', 'discr', 'gener')
+
+saveRDS(allscoresb,'genCNNallscores.rds')
+
+
+allmins <- apply(lut, 3, function(um){
+    um[2,1]*Fclass0 + um[1,2]*Fclass1
+})
+
+allmaxs <- apply(lut, 3, function(um){
+    um[1,1]*Fclass0 + um[2,2]*Fclass1
+})
+
+
+
+
+
 
 rowMeans(allscoresb)
 ##  standard     discr     gener 
@@ -984,7 +997,7 @@ saveRDS(utdistr,'CNNutdistr.rds')
 rfutdistr <- readRDS('RFutdistr.rds')
 
 for(i in 1:nrow(utdistr)){
-histcnn <- thist(utdistr[i,])
+histcnn <- thist(cnnutdistr[i,])
 histrf <- thist(rfutdistr[i,])
 ##
 pdff(paste0('../histogram_alg_utilities_',i), asp=1)
