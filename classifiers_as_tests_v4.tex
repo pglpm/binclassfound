@@ -1,7 +1,7 @@
 \pdfoutput=1
 %% Author: PGL  Porta Mana
 %% Created: 2022-04-14T17:18:22+0200
-%% Last-Updated: 2022-05-30T21:48:12+0200
+%% Last-Updated: 2022-05-30T21:59:06+0200
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Probabilities for classifier outputs
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -1672,7 +1672,7 @@ The calculation of the transducer parameters automatically tells us the probabil
 \subsection{Expected utility of the classifying algorithm}
 \label{sec:yield_of_classifier}
 
-At the end of the discussion about the calibration dataset, \sect~\ref{sec:calibration_data}, we gave our assurances that no additional data must be set apart -- with a detrimental reduction in training data -- for evaluation or testing purposes. This is because from the probabilities~\eqref{eq:prob_output}, obtained from the calibration data, we can also calculate \emph{the expected, future utility yield of the augmented algorithm}, once we have specified the utility matrix underlying the particular application. More details about this calculation, which amounts to a low-dimensional integration, are given in appendix~\ref{sec:algorithm_yield}.
+At the end of the discussion about the calibration dataset, \sect~\ref{sec:calibration_data}, we gave our assurances that no additional data must be set apart -- with a detrimental reduction in training data -- for evaluation or testing purposes. This is because from the probabilities~\eqref{eq:prob_output}, obtained from the calibration data, we can also calculate \emph{the expected, future utility yield of the augmented algorithm}, once we have specified the utility matrix underlying the particular application. More details about this calculation, which amounts to a low-dimensional integration, are given in appendix~\ref{sec:algorithm_yield}; see especially formula~\eqref{eq:algorithm_utility}.
 
 
 
@@ -1800,7 +1800,7 @@ The distribution of possible utility matrices is  uniform over their space, as b
 % ##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
 % ##  0.9213  0.9322  0.9414  0.9467  0.9596  1.0000 
 
-First of all we see that the performance of the standard method has worsened; this is especially apparent comparing the x-axis histograms of \figs~\ref{fig:RF_gain_UMspace} and \ref{fig:genRF_gain_UMspace}. The median utility yield of the \RF\ has gone from 0.967 to 0.834; that of the \CNN\ from 0.959 to 0.893. The augmentation in generative mode is almost unaffected instead, the median changing from 0.974 to 0.967 for the \RF\ and from 0.961 to 0.941 for the \CNN.
+First of all we see that the performance of the standard method has worsened; this is especially apparent comparing the x-axis histograms of \figs~\ref{fig:RF_gain_UMspace} and \ref{fig:genRF_gain_UMspace}. The median utility yield of the \RF\ has gone from 0.967 to 0.834; that of the \CNN\ from 0.959 to 0.893. And yet the augmentation in generative mode is almost unaffected instead, the median changing from 0.974 to 0.967 for the \RF\ and from 0.961 to 0.941 for the \CNN.
 
 
 % \mynotez{The discussion below is not true, because the probabilities of the outputs of different classifiers are not independent (they are conditional on the same data)}
@@ -1816,134 +1816,14 @@ First of all we see that the performance of the standard method has worsened; th
 \section{Summary and discussion}
 \label{sec:summary_discussion}
 
+
+
+
 \mynotep{Cost-sensitive learning: theoretical problems, expensive}
 
 \mynotep{Discussion on \enquote{mixed} method}
 
 \mynotew{Maybe add note about how (sequential) decision theory was used during World War I; see  \textcites{good1950} around \sect~6.2 }
-
-
-% \begin{figure}[t]
-%   \centering
-%   \includegraphics[width=\linewidth]{CNN_transducer_gainsx2.pdf}\\
-%   \caption{Utility yields obtained using the \cnn\ classifier in the standard way, vs those obtained using the probability transducer and utility maximization in each single classification, for a uniform distribution of possible utility matrices}
-%   \label{fig:CNN_gain_UMspace}
-% \end{figure}
-
-
-
-
-
-
-% classesb
-%   0   1 
-% 163 326 
-%
-%  baserates
-%         0         1 
-% 0.3333333 0.6666667 
-\iffalse
-\begin{table}[!t]
-  \centering
-  \small
-  \caption{Utility yields of the two algorithms with the two approaches}
-  \label{tab:results_5}
-  \begin{tabular}{cp{0.3\linewidth}cccc}
-&    &$\sumatrix{1}{0}{0}{1}$
- &$\sumatrix{1}{-10}{0}{10}$
- &$\sumatrix{1}{-100}{0}{100}$
- &$\sumatrix{10}{0}{-10}{1}$
- % &$\sumatrix{100}{0}{-100}{1}$
-    \\[2\jot]
-% ## standard  0.835   3.746   34.48   3.797   33.43
-% ## discr     0.918   6.685   66.09   3.333   33.33
-% ## gener     0.957   6.867   66.67   3.840   33.58
-% ##          14.610  83.320   93.33   1.130    0.44
-% ##           4.250   2.720    0.87  15.210    0.73
- &\textcolor{myred}{standard method}
- &\textcolor{myred}{0.835}
- &\textcolor{myred}{3.75}
- &\textcolor{myred}{34.5}
- &\textcolor{myred}{3.80}
- %& \textcolor{myred}{33.4}
- \\[0\jot]
- \rotatebox[origin=c]{90}{\clap{\parbox{5em}{\centering Random\\Forest}}}
- &\parbox{\linewidth}{\color{mypurpleblue}transducer,\\generative mode}
- &\textcolor{mypurpleblue}{0.957}
- &\textcolor{mypurpleblue}{6.87}
- &\textcolor{mypurpleblue}{66.7}
- &\textcolor{mypurpleblue}{3.84}
- %&\textcolor{mypurpleblue}{33.6}
- \\[1\jot]
- &\footnotesize relative increase
- &\footnotesize+15\%
- &\footnotesize+83\%
- &\footnotesize+93\%
- &\footnotesize+1.1\%
- % &\footnotesize+0.4\%
- \\[1\jot]
- &\parbox{\linewidth}{\color{myyellow}\scriptsize transducer,\\ discriminative mode}
- &\textcolor{myyellow}{\scriptsize 0.918}
- &\textcolor{myyellow}{\scriptsize 6.69}
- &\textcolor{myyellow}{\scriptsize 66}
- &\textcolor{myyellow}{\scriptsize 3.33}
- %&\textcolor{myyellow}{\scriptsize 33.3}
- \\[2.5em]
-%%%%%%%%
-% ## standard 0.894   4.990   46.95   3.777   32.67
-% ## discr    0.861   6.466   66.46   3.333   33.33
-% ## gener    0.930   6.802   66.67   3.742   33.36
-% ##          4.030  36.310   41.99  -0.930    2.11
-% ##          8.010   5.200    0.31  12.270    0.09
- &\textcolor{myred}{standard method}
- &\textcolor{myred}{0.894}
- &\textcolor{myred}{4.99}
- &\textcolor{myred}{47.0}
- &\textcolor{myred}{3.78}
- %&\textcolor{myred}{32.7}
- \\[0\jot]
- \rotatebox[origin=c]{90}{\clap{\parbox{8em}{\centering Convolutional\\Neural\\Network}}}
- &\parbox{\linewidth}{\color{mypurpleblue}transducer,\\ generative mode}
- &\textcolor{mypurpleblue}{0.930}
- &\textcolor{mypurpleblue}{6.80}
- &\textcolor{mypurpleblue}{66.7}
- &\textcolor{mypurpleblue}{3.74}
- %&\textcolor{mypurpleblue}{33.4}
- \\[1\jot]
- &\footnotesize relative increase
- &\footnotesize+4.0\%
- &\footnotesize+36\%
- &\footnotesize+42\%
- &\footnotesize-0.9\%
- %&\footnotesize+2.1\%
- \\[1\jot]
- &\parbox{\linewidth}{\color{myyellow}\scriptsize transducer,\\ discriminative mode}
- &\textcolor{myyellow}{\scriptsize 0.861}
- &\textcolor{myyellow}{\scriptsize 6.47}
- &\textcolor{myyellow}{\scriptsize 66.5}
- &\textcolor{myyellow}{\scriptsize 3.33}
- %&\textcolor{myyellow}{\scriptsize 33.3}
- \end{tabular}
-\end{table}
-\fi
-
-
-
-\iffalse
-\begin{figure}[t]
-  \centering
-  \includegraphics[width=\linewidth]{RFCNN_transducer_gains_.pdf}\\
-  \caption{Utility yields obtained using the \rf\ classifier in the standard way, vs those obtained using the probability transducer in generative mode, with utility maximization in each single classification, for a uniform distribution of possible utility matrices}
-  \label{fig:RF_gain_gener_UMspace}
-\end{figure}
-
-\begin{figure}[t]
-  \centering
-  \includegraphics[width=\linewidth]{CNN_transducer_gains_generx.pdf}\\
-  \caption{Utility yields obtained using the \cnn\ classifier in the standard way, vs those obtained using the probability transducer in generative mode, with utility maximization in each single classification, for a uniform distribution of possible utility matrices}
-  \label{fig:CNN_gain_gener_UMspace}
-\end{figure}
-\fi
 
 
 
@@ -2071,7 +1951,7 @@ The weight $\wf(F \| D)$ given to a frequency distribution $F$ is proportional t
     F(D) \defd F(d_{1})\cdot F(d_{2})\cdot \dotsm\cdot F(d_{M})
     \equiv \exp\biggl[M \sum_{d} \hat{F}(d) \ln F(d)\biggr] \ ,
   \end{equation}
-where $\hat{F}(d)$ is the frequency distribution \emph{observed} in the data.
+where $\hat{F}(d)$ is the frequency distribution observed in the data.
   
 \item The second factor (\enquote{prior}) $\wfo(F)$ quantifies how well $F$ \emph{generalizes} beyond the data we have seen, owing to reasons such as physical or biological constraints for example. In our case we expect $F$ to be somewhat smooth in $X$ when this variable is continuous \autocites[Cf.][]{goodetal1971}. No assumptions are made about $F$ when $X$ is discrete.
   %%\mynotew{add plot of prior transducer curves}
@@ -2184,12 +2064,11 @@ The basic procedure of this decision problem is to first calculate expected util
 \texts{utility of algorithm $M$} =  \sum_{y} \biggl[\max_{i}\set[\bigg]{\sum_{c} U_{ic}\ \P(c \| y, M)}\biggr]\
   \P(y \| M) \ .
 \end{equation}
-The sum are replaced by integrals over densities if the quantities $c$ or $y$ are continuous.
+Either sum is replaced by an integral over a density if the related quantity, $y$ or $c$, is continuous.
 
 What is important in the formula above is that the probabilities for the outputs and the conditional probabilities for the classes given the outputs are known: \emph{they are the ones calculated for the transducer from the calibration set}.
 
-We have performed this calculation for the \RF\ and \CNN\ (both with augmentation) of \sect~\ref{sec:demonstration}, obtaining the values shown in table~\ref{tab:algorithms_utilities} (these utilities are not rescaled).
-
+The expected utilities of table~\ref{tab:algorithms_utilities}, \sect~\ref{sec:yield_of_classifier}, were calculated with the formula above (the integral over $y$ being approximated by a sum over a dense grid).
 
 \medskip
 
