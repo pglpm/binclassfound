@@ -1,7 +1,7 @@
 \pdfoutput=1
 %% Author: PGL  Porta Mana
 %% Created: 2022-04-14T17:18:22+0200
-%% Last-Updated: 2022-05-30T10:13:35+0200
+%% Last-Updated: 2022-05-30T10:52:01+0200
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Probabilities for classifier outputs
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -1714,8 +1714,10 @@ Clearly, the augmentation always leads to increased utility yields, especially f
 \mynotew{add final remark that this is not evaluation}
 
 
-\section{Summary, discussion, and teasers of further ...}
+\section{Summary, discussion, and teasers of further developments}
 \label{sec:summary_discussion}
+
+
 
 \mynotew{Maybe add note about how (sequential) decision theory was used during World War I; see  \textcites{good1950} around \sect~6.2 }
 
@@ -1949,17 +1951,17 @@ For general references about the probability calculus and concepts, and specific
 
 There is a fundamental theorem in the probability calculus that tells us how extrapolation from known units -- molecules, patients, widgets, images -- to new, unknown units takes place: de~Finetti's theorem \autocites[\chap~4]{bernardoetal1994_r2000}{dawid2013,definetti1929,definetti1937}. It is a consequence of the assumption that our uncertainty is invariant or \enquote{exchangeable} under permutations of the labelling or order of the units (therefore it does not apply to time series, for example).
 
-De~Finetti's theorem states that the probability density of a value $d_{0}$ for a new unit \enquote{0} is given by the following integral:
+De~Finetti's theorem states that the probability density of a value $d_{0}$ for a new unit \enquote{0}, conditional on data $D$, is given by the following integral:
 \begin{equation}
   \label{eq:prob_is_expe_freq}
-  \p(d_{0}) = \int\! F(d_{0})\ \wf(F)\ \di F \ ,
+  \p(d_{0} \| D) = \int\! F(d_{0})\ \wf(F \| D)\ \di F \ ,
 \end{equation}
-which can be given an intuitive interpretation. We consider every possible long-run frequency distribution $F(d)$ of data; give it a weight $\wf(F)$; and then take the weighted sum of all such long-run frequency distributions.
+which can be given an intuitive interpretation. We consider every possible long-run frequency distribution $F(d)$ of data; give it a weight density $\wf(F \| D)$ which depends on the observed data; and then take the weighted sum of all such long-run frequency distributions.
 
-The weight $\wf(F)$ -- a probability density -- given to a frequency distribution $F$ is proportional to two factors:
+The weight $\wf(F \| D)$ given to a frequency distribution $F$ is proportional to two factors:
 \begin{equation}
   \label{eq:weight_F_two_factors}
-  \wf(F) \propto F(D)\ \wfo(F) \ .
+  \wf(F \| D) \propto F(D)\ \wfo(F) \ .
 \end{equation}
 \begin{itemize}
   \item The first factor (\enquote{likelihood}) $F(D)$ quantifies how well $F$ \emph{fits} known data of the same kind, in our case the calibration data $D \defd \set{d_{1}, \dotsc, d_{M}}$. It is simply proportional to how frequent the known data would be, according to $F$:
@@ -1977,12 +1979,10 @@ Formula~\eqref{eq:weight_F_two_factors} is just Bayes's theorem. Its normalizati
 
 The exponential expression in \eqn~\eqref{eq:factor_likelihood} is proportional to the number $M$ of data, and in it we recognize the cross-entropy between the observed frequency distribution $\hat{F}$ and $F$. This has two consequences. First, it makes the final probability $p(d_{0})$ increasingly identical with the distribution $\hat{F}(d)$ observed in the data, because the average~\eqref{eq:prob_is_expe_freq} gets more and more concentrated around $\hat{F}$. Second, a large amount of data indicating a non-smooth distribution $F$ will override any smoothness preferences embodied in the second factor. Note that no assumptions about the shape of $F$ -- Gaussians, logistic curves, sigmoids, or similar -- are made in this approach.
 
-The weight $\wf(F)$  tells us how much we can expect the long-run frequency distribution $F$ to change, given new data.
-
 The integral in~\eqref{eq:prob_is_expe_freq} is calculated in either of two ways, depending on whether $d$ is discrete or continuous. For $d$ discrete, the integral is over $\RR^{n}$, where $n$ is the number of possible values of $d$, and can be done analytically. For $d$ with continuous components, the integral is numerically approximated by a sum over $T$ representative samples, obtained by Markov-chain Monte Carlo, of distributions $F$ according to the weights~\eqref{eq:weight_F_two_factors}:
 \begin{equation}
   \label{eq:MC_approx}
-  \p(d_{0}) = \int\! F(d_{0})\ \wf(F)\ \di F
+  \p(d_{0} \| D) = \int\! F(d_{0})\ \wf(F \| D)\ \di F
   \approx
 \frac{1}{T}\sum_{t=1}^{T} F_{t}(d_{0}) \ .  
 \end{equation}
@@ -2038,7 +2038,20 @@ For the demonstration of \sect~\ref{sec:demonstration} we use a Dirichlet distri
 The Markov-chain Monte Carlo sampling scheme is implemented using the R \autocites{rcoreteam1995_r2022} package NIMBLE \autocites{nimble2016_r2021}, and uses 16 parallel chains \autocites[scripts available in][]{dyrlandetal2022c}.
 The sampling took approximately 45\,min for the \RF\ and 75\,min for the \CNN, wall-clock time. The resulting parameters are available in our supplementary data\footcites[\addcomma\ files \texttt{transducer\_params-Random\_Forest.zip} and \texttt{transducer\_params-Neural\_Net.zip}]{dyrlandetal2022c}.
 
+\subsection{Assessment of the possible variability of the probability}
+\label{sec:variability_prob}
 
+In \sect\mynotew{} we mentioned that the calculation of the transducer parameters automatically also tells us how much the probabilities curves could change if we used more data for the calibration. The range of this possible variability was shown for example in \figs~\ref{fig:prob_curve_RF}, \ref{fig:prob_curve_RF_inverse}, and \ref{fig:prob_curve_CNN_section} of the demonstration.
+
+This possible variability is encoded in the weight $\wf(F \| D)$, which can be interpreted as the probability distribution of the long-run frequency distribution $F$; remember that the probability $\p(d_{0} \| D)$, for the new unit, \eqn~\eqref{eq:prob_is_expe_freq}, becomes closer and closer to the distribution $F$ at which $\wf(F \| D)$ peaks, as the number of data increases.
+
+In the approximation~\eqref{eq:MC_approx}, the probability $\wf(F \| D)$ is effectively represented by a large number of samples $\set{F_{t}}$ from it. Plotting these samples alongside $\p(d_{0} \| D)$ gives an approximate idea of how the latter probability could change with new data. For fixed $d$, the samples $\set{F_{t}(d)}$  also give estimates of the quantiles of such change. This is how the ranges of \figs~\ref{fig:prob_curve_RF}, \ref{fig:prob_curve_RF_inverse}, \ref{fig:prob_curve_CNN_section} were obtained.
+
+An analogous discussion holds for the marginal and conditional probabilities that we can obtain from $\p(d_{0} \| D)$.
+
+
+\subsection{Assessment of the augmented algorithm's final utility yield}
+\label{sec:algorithm_yield}
 
 
 
