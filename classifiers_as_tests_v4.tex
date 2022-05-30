@@ -1,7 +1,7 @@
 \pdfoutput=1
 %% Author: PGL  Porta Mana
 %% Created: 2022-04-14T17:18:22+0200
-%% Last-Updated: 2022-05-30T19:49:40+0200
+%% Last-Updated: 2022-05-30T20:05:02+0200
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Probabilities for classifier outputs
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -809,7 +809,8 @@ A stereotypical \enquote{cat vs dog} image classification, for instance, has fou
 
 \item\label{item:decisions_classes} To what purpose do we try to guess whether an image's subject is a cat or a dog? For example because we must decide whether to put it in the folder \enquote{cats} or in the folder \enquote{dogs}. To what purpose do we try to guess a patient's disease or a compound's chemical activity? A clinician does not simply tell a patient \enquote*{You probably have such-and-such disease. Goodbye!}, but has to decide among many different kinds of treatments. The candidate drug compound may be discarded, pursued as it is, modified, and so on. \emph{The ultimate goal of a classification is always some kind of decision}, not just a class guess. In the cat-vs-dog problem there is a natural one-one correspondence between classes and decisions. But in the medical or drug-discovery problems \emph{the set of classes and the set of decisions are very different}, and have even different numbers of elements.
 
-\item\label{item:optimal_truth} If there is a 70\% probability that an image's subject is a cat, then it is natural to put it in the folder \enquote{cats} rather than \enquote{dogs} (if the decision is only between these two folders). If there is a 70\% probability that a patient has a particular health condition, it may nonetheless be better to dismiss the patient -- that is, to behave as if there was no condition. This is the optimal decision, for example, when the only available treatment for the condition would severely harm the patient if the condition were not present. Such treatment would be recommended only if the probability for the condition were much higher than 70\%. Similarly, even if there is a 70\% probability that a candidate drug is active it may nonetheless be best to discard it. This is the economically most advantageous choice if pursuing a false-positive leads to large economic losses. \emph{The target of a classification is not what’s most probable, but what’s optimal.} \mynotep{add something on proper probabilities, connecting to~\ref{item:determ_statist}}
+\item\label{item:optimal_truth} If there is a 70\% probability that an image's subject is a cat, then it is natural to put it in the folder \enquote{cats} rather than \enquote{dogs} (if the decision is only between these two folders). If there is a 70\% probability that a patient has a particular health condition, it may nonetheless be better to dismiss the patient -- that is, to behave as if there was no condition. This is the optimal decision, for example, when the only available treatment for the condition would severely harm the patient if the condition were not present. Such treatment would be recommended only if the probability for the condition were much higher than 70\%. Similarly, even if there is a 70\% probability that a candidate drug is active it may nonetheless be best to discard it. This is the economically most advantageous choice if pursuing a false-positive leads to large economic losses. \emph{The target of a classification is not what’s most probable, but what’s optimal.}
+  % \mynotep{add something on proper probabilities, connecting to~\ref{item:determ_statist}}
 
   
 \item\label{item:determ_statist} The relation from image pixels to house-pet subject may be almost deterministic; so we are effectively looking for or extrapolating a function $\texts{pet} \mo f(\texts{pixels})$ contaminated by little noise. But the relation between medical-test scores or biochemical features on one side, and disease or drug activity on the other, is typically \emph{probabilistic}; so a function $\texts{disease} \mo f(\texts{scores})$
@@ -836,7 +837,7 @@ In summary, there is place to improve classifiers so as to
 
 \medskip
 
-In artificial intelligence and machine learning it is known how to address all these issues in principle -- the theoretical framework is for example beautifully presented in the first 18 chapters or so of Russell \amp\ Norvig's \parencites*{russelletal1995_r2022} text \autocites[see also]{selfetal1987,cheeseman1988,cheeseman1995_r2018,pearl1988,mackay1995_r2005}.
+In artificial intelligence and machine learning it is known how to address all these issues in principle -- the theoretical framework is for example beautifully presented in the first 18 chapters or so of Russell \amp\ Norvig's \cites*{russelletal1995_r2022} text \autocites[see also]{selfetal1987,cheeseman1988,cheeseman1995_r2018,pearl1988,mackay1995_r2005}.
 
 Issues~\ref{item:gain_loss}--\ref{item:optimal_truth} are simply solved by adopting the standpoint of \emph{Decision Theory}, which we briefly review in \sect~\ref{sec:utility_classification} below and discuss at length in a companion work \autocites{dyrlandetal2022}. In short: The set of decisions and the set of classes pertinent to a problem are separated if necessary. A utility is associated to each decision, relative to the occurrence of each particular class; these utilities are assembled into a utility matrix: one row per decision, one column per class. This matrix is multiplied by a column vector consisting in the probability for the classes. The resulting vector of numbers contains the expected utility of each decision. Finally we select the decision having \emph{maximal expected utility}, according to the principle bearing this name. Such procedure also takes care of the class imbalance problem \autocites[\cf\ the analysis by][(they use the term \enquote{cost} instead of \enquote{utility})]{drummondetal2005}.
 
@@ -869,7 +870,7 @@ Finally, we give a summary and discussion in \sect~\ref{sec:summary_discussion},
 \section{An output-to-probability transducer}
 \label{sec:transducer}
 
-In the present section we explain the main idea in informal and intuitive terms, and give its  mathematical essentials only. % Stricter logical derivation and more mathematical details are left to appendix\mynotep{\ldots}.
+% In the present section we explain the main idea in informal and intuitive terms, and give its  mathematical essentials only. % Stricter logical derivation and more mathematical details are left to appendix\mynotep{\ldots}.
 
 
 
@@ -964,12 +965,11 @@ Obviously all these considerations only hold if we have good training and calibr
 
 Since we are using as calibration data the data traditionally set aside as \enquote{test data} instead, an important question arises. Do we then need a third, separate test dataset for the final evaluation and comparison of candidate classifiers or hyperparameters? This would be inconvenient: it would reduce the amount of data available for training.
 
-The answer is no: \emph{the calibration set automatically also acts as a test set}. It may be useful to explain why this is the case, especially for those who may mistakenly take for granted the universal necessity of a test set.
+The answer is no: \emph{the calibration set automatically also acts as a test set}. In fact, from the calculations for the probability transducer, discussed in the next section, we can also arrive at a final evaluation value for the algorithm as a whole. See \sect~\ref{sec:yield_of_classifier} and appendix~\ref{sec:algorithm_yield} for more details about this.
 
-Many standard \ml\ methodologies need a test set because they are only an approximation of ideal inference performed with the probability calculus. The latter needs no division of available data into different sets: something analogous to such division is automatically made internally, so to speak. It can be shown \autocites{portamana2019b,fongetal2020,wald1949}[many examples of this fact are scattered across the text by][]{jaynes1994_r2003} that the mathematical operations behind the probability rules correspond to making \emph{all possible} divisions of available data between \enquote{training} and \enquote{test}, as well as all possible cross-validations with folds of all orders. This is the reason why ideal inference by means of the probability calculus is almost computationally impossible in some cases, and we have to resort to approximate but faster \ml\ methods. The latter typically do not do such data partitions automatically; the latter need to be made -- and only approximately -- by hand.
+It may be useful to explain why this is the case, especially for those who may mistakenly take for granted the universal necessity of a test set.
 
-
-\mynotep{explain how testing is done}
+Many standard \ml\ methodologies need a test set because they are only an approximation of the ideal inference performed with the probability calculus. The latter needs no division of available data into different sets: something analogous to such division is automatically made internally, so to speak (see appendix~\ref{sec:deFinetti}). It can be shown \autocites{portamana2019b,fongetal2020,wald1949}[many examples of this fact are scattered across the text by][]{jaynes1994_r2003} that the mathematical operations behind the probability rules correspond to making \emph{all possible} divisions of available data between \enquote{training} and \enquote{test}, as well as \emph{all possible} cross-validations with folds of all orders. It is this completeness and thoroughness that makes the ideal inference by means of the probability calculus almost computationally impossible in some cases. We thus resort to approximate but faster \ml\ methods. These methods do not typically perform such data partitions \enquote{internally} and automatically, so we need to make them -- and only approximately -- by hand.
 
 
 \subsection{Calculation of the probabilities}
@@ -984,7 +984,7 @@ It is more convenient to focus on the \emph{joint} probability of class and outp
 \end{equation}
 rather than on the conditional probability of the class given the output and calibration data,~\eqref{eq:prob_output}.
 
-The joint probability is calculated using standard non-parametric Bayesian methods \autocites[for introductions and reviews see \eg][]{walker2013,muelleretal2004b,hjort1996}. \enquote{Non-parametric} in this case means that we do not make any assumptions about the shape of the probability curve as a function of $c,y$ (contrast this with logistic regression, for instance), or about special independence between the variables (contrast this with naive-Bayes). The only assumption made -- and we believe it is quite realistic -- is that the curve must have some minimal degree of smoothness. This assumption allows for much leeway, however: \fig\mynotep{\ldots} for instance shows that the probability curve can still have very sharp bends, as long as they are not cusps.
+The joint probability is calculated using standard non-parametric Bayesian methods \autocites[for introductions and reviews see \eg][]{walker2013,muelleretal2004b,hjort1996}. \enquote{Non-parametric} in this case means that we do not make any assumptions about the shape of the probability curve as a function of $c,y$ (contrast this with logistic regression, for instance), or about special independence between the variables (contrast this with naive-Bayes). The only assumption made -- and we believe it is quite realistic -- is that the curve must have some minimal degree of smoothness. This assumption allows for much leeway, however: \figs~\ref{fig:prob_curve_RF} and \ref{fig:prob_curve_CNN_section} for instance show that the probability curve can still have very sharp bends, as long as they are not cusps.
 
 Non-parametric methods differ from one another in the kind of \enquote{coordinate system} they select on the infinite-dimensional space of all possible probability curves, that is, in the way they represent a general positive normalized function.
 
