@@ -1,7 +1,7 @@
 \pdfoutput=1
 %% Author: PGL  Porta Mana
 %% Created: 2022-04-14T17:18:22+0200
-%% Last-Updated: 2022-05-30T19:35:34+0200
+%% Last-Updated: 2022-05-30T19:49:40+0200
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Probabilities for classifier outputs
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -1811,7 +1811,9 @@ We can then use them to calculate the probability of class $c$ through Bayes's t
   \label{eq:bayes_baserate}
   p(c \| y,\, \texts{prevalences}) = \frac{p(y \| c)\ \br_{c}}{ \sum_{c} p(y \| c)\ \br_{c} } \ .
 \end{equation}
-The population prevalences \autocites[\chap~3]{soxetal1988_r2013}[\sect~5.1]{huninketal2001_r2014}, also called \emph{base rates} \autocites{barhillel1980,axelsson2000}, are the relative frequencies of occurrence of the various classes in the population whence our unit originates. This notion is very familiar in medicine and epidemiology. For example, a particular type of tumour can have a prevalence of 0.01\% among people of a given age and sex, meaning that 1 person in 10\,000 among them has that kind of tumour, as obtained through a large survey. We recommend the extremely insightful analysis by \cites{lindleyetal1981} on the problem of population mismatch and which conditional probabilities to use in that case.
+The population prevalences \autocites[\chap~3]{soxetal1988_r2013}[\sect~5.1]{huninketal2001_r2014}, also called \emph{base rates} \autocites{barhillel1980,axelsson2000}, are the relative frequencies of occurrence of the various classes in the population whence our unit originates. This notion is very familiar in medicine and epidemiology. For example, a particular type of tumour can have a prevalence of 0.01\% among people of a given age and sex, meaning that 1 person in 10\,000 among them has that kind of tumour, as obtained through a large survey.
+
+We recommend the outstandingly insightful discussion by \cites{lindleyetal1981} on the problem of population mismatch and on which conditional probabilities to use in that case.
 
 \medskip
 
@@ -1864,7 +1866,9 @@ First of all we see that the performance of the standard method has worsened; th
 \section{Summary and discussion}
 \label{sec:summary_discussion}
 
+\mynotep{Cost-sensitive learning: theoretical problems, expensive}
 
+\mynotep{Discussion on \enquote{mixed} method}
 
 \mynotew{Maybe add note about how (sequential) decision theory was used during World War I; see  \textcites{good1950} around \sect~6.2 }
 
@@ -2241,7 +2245,7 @@ We have performed this calculation for the \RF\ and \CNN\ (both with augmentatio
 
 These values are \emph{expected} utilities, though. One may ask: what is the probability that the final utility of one model will actually be higher or lower than the other's?
 
-We can answer this question, again thanks to de~Finetti's formula~\eqref{eq:prob_is_expe_freq}, similarly to how we did with the variability of the transducer curves, explained in the previous \sect~\ref{sec:variability_prob}. The long-run utility of the algorithm $M$ is given by formula~\eqref{eq:algorithm_utility} but with the probabilities replaced by the long-term frequencies $F(c\|y)$ and $F(y)$. The probability of this long-run utility is then determined by the density $\wf(F)$ represented by a set of samples. Calculating the long-run utility for each sample we can finally construct a probability histogram for each algorithm's utility. These are the histograms shown in \sect\mynotew{}
+We can answer this question, again thanks to de~Finetti's formula~\eqref{eq:prob_is_expe_freq}, similarly to how we did with the variability of the transducer curves, explained in the previous \sect~\ref{sec:variability_prob}. The long-run utility of the algorithm $M$ is given by formula~\eqref{eq:algorithm_utility} but with the probabilities replaced by the long-term frequencies $F(c\|y)$ and $F(y)$. The probability of this long-run utility is then determined by the density $\wf(F)$ represented by a set of samples. Calculating the long-run utility for each sample we can finally construct a probability histogram for each algorithm's utility. These are the histograms shown in \fig~\ref{fig:algorithms_utilities_histograms}.
 
 %%%% examples use empheq
 %   \begin{empheq}[left={\mathllap{\begin{aligned}    \de\yF_{\yc}/\de\yp&=0\text{:} \\
@@ -2272,7 +2276,8 @@ We can answer this question, again thanks to de~Finetti's formula~\eqref{eq:prob
 %\end{figure}% exp_family_maxent.nb
 
 
-\clearpage
+\bigskip
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%% Acknowledgements
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 
@@ -2287,7 +2292,7 @@ The authors were so immersed in the development of the present work, that unfort
 
   KD would like to thank family for endless support; partner Synne for constant love, support, and encouragement; and the developers and maintainers of Python, FastAi, PyTorch, scikit-learn, NumPy and RDKit for free open source software and for making the experiments possible. 
 
-  PGLPM thanks Maja, Mari, Miri, Emma for continuous encouragement and affection;  Buster Keaton and Saitama for filling life with awe and inspiration; and the developers and maintainers of \LaTeX, Emacs, AUC\TeX, Open Science Framework, R, Python, Inkscape, LibreOffice, Sci-Hub for making a free and impartial scientific exchange possible.
+  PGLPM thanks Maja, Mari, Miri, Emma for continuous encouragement and affection;  Buster Keaton and Saitama for filling life with awe and inspiration; and the developers and maintainers of \LaTeX, Emacs, AUC\TeX, Open Science Framework, R, Nimble, Inkscape, LibreOffice, Sci-Hub for making a free and impartial scientific exchange possible.
   % Our work was supported by the Trond Mohn Research Foundation, grant number BFS2018TMT07
 %\rotatebox{15}{P}\rotatebox{5}{I}\rotatebox{-10}{P}\rotatebox{10}{\reflectbox{P}}\rotatebox{-5}{O}.
 %\sourceatright{\autanet}
