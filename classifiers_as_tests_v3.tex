@@ -1,7 +1,7 @@
 \pdfoutput=1
 %% Author: PGL  Porta Mana
 %% Created: 2022-04-14T17:18:22+0200
-%% Last-Updated: 2022-05-30T10:52:01+0200
+%% Last-Updated: 2022-05-30T12:55:20+0200
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Probabilities for classifier outputs
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -1711,6 +1711,9 @@ For each of these utility matrices, we calculate the rescaled yields obtained by
 Clearly, the augmentation always leads to increased utility yields, especially for those cases where the standard performance of the two algorithms is particularly low or high (in relative terms); hence the U-shapes of the scattered points. Note that the minimum values of the plot's axes is 0.75, so the improvement is upon yields that are already quite high. Numerical rounding can lead to apparent decreases in some cases (maximum relative decreases: $-0.09\%$ for \RF, $-0.2\%$ for \CNN); this is actually useful for estimating the magnitude of numerical-rounding errors occurring in the computation and the number of significant digits.
 
 
+
+\mynotew{add note about generalization to other decisions}
+
 \mynotew{add final remark that this is not evaluation}
 
 
@@ -2050,9 +2053,74 @@ In the approximation~\eqref{eq:MC_approx}, the probability $\wf(F \| D)$ is effe
 An analogous discussion holds for the marginal and conditional probabilities that we can obtain from $\p(d_{0} \| D)$.
 
 
-\subsection{Assessment of the augmented algorithm's final utility yield}
+\subsection{Assessment of the augmented algorithm's long-run utility yield}
 \label{sec:algorithm_yield}
 
+Besides making a decision -- such as choosing a class -- for each new unit, we generally must also decide which algorithm to use for such a future task, among a set of candidates. This latter decision depends on the future performance of each algorithm, which in turn depends on the decision that the algorithm will make for each new unit. Two kinds of unknown accompany this double decision: we do not know the classes of the future units, and we do not know which outputs each algorithm will give for the future data.
+
+This more complex kind of decision \amp\ uncertainty problems are also dealt with decision theory. Their theory is presented  and applied step-by-step in the humorous lectures by \cites[\chap~2]{raiffa1968_r1970}; other references are  \autocites[\sect~2.2]{bernardoetal1994_r2000}{prattetal1995_r1996,raiffaetal1961_r2000,luceetal1957}. We here give only a sketch and refer to the works above for details.
+
+Our double decision \amp\ uncertainty problem can be represented as a \emph{decision tree}. A very simplified example is illustrated in \fig~\ref{fig:decision_tree}.
+\begin{figure}[!t]
+  \centering
+  \includegraphics[width=\linewidth]{decision_tree_algorithm.pdf}\\
+  \caption{Decision tree for the choice of algorithm}
+  \label{fig:decision_tree}
+\end{figure}
+
+We imagine to have to choose between two classification algorithms $M'$ and $M''$. This choice corresponds to the \emph{decision node} on the left (green). Decision nodes are represented by squares.
+
+If we choose to use algorithm $M'$, then it may happen that it will give either output $y_{1}$ or $y_{2}$ when applied to a new unit. We are uncertain about which output will occur, with probabilities $\P(y_{1} \| M')$ and $\P(y_{2} \| M')$. This uncertainty corresponds to an \emph{uncertainty node} (yellow). Uncertainty nodes are represented by circles.
+
+Once the output of the algorithm is known, we must decide (blue decision nodes) among choices $i'$ and $i''$, for example to choose whether to consider the new unit as class~0 or class~1.
+
+The unit will turn out to be class~0 or class~1: we are uncertain about which (red decision nodes), with probabilities $\P(c\mo0 \| y_{1}, M')$, $\P(c\mo1 \| y_{1}, M')$ if the output was $y_{1}$, and with probabilities $\P(c\mo0 \| y_{2}, M')$, $\P(c\mo1 \| y_{2}, M')$ if the output was $y_{2}$.
+
+Finally, depending on our choice between $i'$ and $i''$ and on the actual class, we will gain one of the four utility amounts $U_{i1\, 0}$, $U_{i'\, 1}$, $U_{i''\, 0}$, $U_{i''\, 1}$. These are the elements of the utility matrix discussed in \sect~\ref{sec:utility_classification}; we have seen concrete numerical examples in the demonstration of \sect~\ref{sec:demonstration}.
+
+An analogous analysis and probabilities hold if we choose algorithm $M''$ (the output space of this algorithm can be different from that of $M'$).
+
+The basic procedure of this decision problem is to first calculate expected utilities starting from the terminal uncertainty nodes, making optimal decisions at the immediately preceding decision nodes. Each such decision will therefore have an associated utility equal to its corresponding maximal expected utility. The same procedure is then applied to the uncertainty nodes about the outputs. In this way each algorithm receives a final expected utility; in formulae,
+\begin{equation}
+  \label{eq:algorithm_utility}
+\texts{utility of algorithm $M$} =  \sum_{y} \biggl[\max_{i}\set[\bigg]{\sum_{c} U_{ic}\ \P(c \| y, M)}\biggr]\
+  \P(y \| M) \ .
+\end{equation}
+The sum are replaced by integrals over densities if the quantities $c$ or $y$ are continuous.
+
+What is important in the formula above is that the probabilities for the outputs and the conditional probabilities for the classes given the outputs are known: \emph{they are the ones calculated for the transducer from the calibration set}.
+
+We have performed this calculation for the \RF\ and \CNN\ (both with augmentation) of \sect~\ref{sec:demonstration}, obtaining the values shown in table~\ref{tab:algorithms_utilities} (these utilities are not rescaled).
+% CNN:
+%  0.9623081 1.6206641 9.5603046 9.0772883
+% RF:
+%  0.9725162 1.6815698 9.5864235 9.0783451
+\begin{table}[!ht]
+  \centering
+  \begin{tabular*}{\linewidth}{lw{c}{0.12\linewidth}w{c}{0.12\linewidth}w{c}{0.12\linewidth}w{c}{0.12\linewidth}}
+    &$\sumatrix{1}{0}{0}{1}$
+    &$\sumatrix{1}{-10}{0}{10}$
+    &$\sumatrix{1}{-100}{0}{100}$
+    &$\sumatrix{10}{0}{-10}{1}$
+    % &$\sumatrix{100}{0}{-100}{1}$
+    \\[2\jot]
+    \parbox{0.21\linewidth}{\color{mypurpleblue}Random Forest}
+    &\textcolor{mypurpleblue}{0.973}
+    &\textcolor{mypurpleblue}{1.68}
+    &\textcolor{mypurpleblue}{9.59}
+      &\textcolor{mypurpleblue}{9.08}
+    \\[1\jot]
+    \parbox{0.21\linewidth}{\color{myred}Neural Net}
+    &\textcolor{myred}{0.962}
+    &\textcolor{myred}{1.62}
+    &\textcolor{myred}{9.56}
+      &\textcolor{myred}{9.08}
+  \end{tabular*}
+  \caption{Expected utilities for the two algorithms of \sect}
+  \label{tab:algorithms_utilities}
+\end{table}
+
+The augmented \RF\ is optimal for cases~I--III, and there is no preference in case~IV. We emphasize again that \emph{this algorithm evaluation is done from the calibration set; no demonstration data are used}. Our results from the demonstration dataset, reported in table~\ref{tab:results_utilities}, corroborate these findings.
 
 
 
