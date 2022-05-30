@@ -1,7 +1,7 @@
 \pdfoutput=1
 %% Author: PGL  Porta Mana
 %% Created: 2022-04-14T17:18:22+0200
-%% Last-Updated: 2022-05-30T20:34:01+0200
+%% Last-Updated: 2022-05-30T21:34:51+0200
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Probabilities for classifier outputs
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -841,7 +841,7 @@ In artificial intelligence and machine learning it is known how to address all t
 
 Issues~\ref{item:gain_loss}--\ref{item:optimal_truth} are simply solved by adopting the standpoint of \emph{Decision Theory}, which we briefly review in \sect~\ref{sec:utility_classification} below and discuss at length in a companion work \autocites{dyrlandetal2022}. In short: The set of decisions and the set of classes pertinent to a problem are separated if necessary. A utility is associated to each decision, relative to the occurrence of each particular class; these utilities are assembled into a utility matrix: one row per decision, one column per class. This matrix is multiplied by a column vector consisting in the probability for the classes. The resulting vector of numbers contains the expected utility of each decision. Finally we select the decision having \emph{maximal expected utility}, according to the principle bearing this name. Such procedure also takes care of the class imbalance problem \autocites[\cf\ the analysis by][(they use the term \enquote{cost} instead of \enquote{utility})]{drummondetal2005}.
 
-Clearly this procedure is computationally inexpensive and ridiculously easy to implement in any \ml\ classifier. The difficulty is that this procedure requires \emph{sensible probabilities} for the classes, which brings us to issue~\ref{item:determ_statist}, the most difficult.
+Clearly this procedure is computationally inexpensive and ridiculously easy to implement in any \ml\ classifier. The difficulty is that this procedure requires \emph{sensible probabilities} \autocites[\enquote*{credibilities \textins*{that} would be agreed by all rational men if there were any rational men}][]{good1966} for the classes, which brings us to issue~\ref{item:determ_statist}, the most difficult.
 
 Some machine-learning algorithms for classification, such as support-vector machines, output only a class label. Others, such as deep networks, output a set of real numbers that can bear some qualitative relation to the plausibilities of the classes. But these numbers cannot be reliably interpreted as proper probabilities, that is, as the degrees of belief assigned to the classes by a rational agent \autocites{mackay1992d,galetal2016}[\chaps~2, 12, 13]{russelletal1995_r2022}; or, in terms of \enquote{populations} \autocites{lindleyetal1981}%[\sect~II.4]{fisher1956_r1967}
 , as the expected frequencies of the classes in the hypothetical population of units (degrees of belief and frequencies being related by de~Finetti's theorem \autocites[\chap~4]{bernardoetal1994_r2000}{dawid2013}). Algorithms that internally do perform probabilistic calculations, for instance naive-Bayes or logistic-regression classifiers \autocites[\sect~3.5, \chap~8]{murphy2012}[\sects~8.2, 4.3]{bishop2006}[\chap~10, \sect~17.4]{barber2007_r2020}, unfortunately rest on strong probabilistic assumptions, such as independence and particular shapes of distributions, that are often unrealistic (and their consistency with the specific application is rarely checked). Only particular classifiers such as Bayesian neural networks \autocites{nealetal2006}[\sect~5.7]{bishop2006} output sensible probabilities, but they are computationally very expensive. The stumbling block is the extremely high dimensionality of the feature space, which makes the calculation of the probabilities
@@ -1524,7 +1524,7 @@ We can finally assess the performance of both classifiers, with and without augm
 %   \caption{Utility yields from demonstration dataset}
 %   \label{tab:results_utilities}
     \\[2em]
-&&\multicolumn{4}{c}{\scriptsize \rule[0.5ex]{6em}{0.25pt}\quad\emph{Rescaled} utility yields\quad\rule[0.5ex]{6em}{0.25pt}}
+&&\multicolumn{4}{c}{\scriptsize \rule[0.5ex]{4em}{0.25pt}\quad\emph{Rescaled} utility yields, \eqn~\eqref{eq:norm_utility_formula}\quad\rule[0.5ex]{4em}{0.25pt}}
 \\[2\jot]
 % \vspace{3em}
 % % classes
