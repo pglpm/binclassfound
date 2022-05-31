@@ -1,7 +1,7 @@
 \pdfoutput=1
 %% Author: PGL  Porta Mana
 %% Created: 2022-04-14T17:18:22+0200
-%% Last-Updated: 2022-05-31T02:00:29+0200
+%% Last-Updated: 2022-05-31T02:07:31+0200
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Probabilities for classifier outputs
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -1087,7 +1087,7 @@ Rather than looking for some classification problem and dataset on which the dec
 
 The binary-classification task is a simplified version of an early-stage drug-discovery problem: to determine whether a molecule is chemically \enquote{inactive} (class~$0$) or \enquote{active} (class~$1$) towards one specific target protein.
 
-Two \ml\ classifiers are considered: a Random Forest and a residual Convolutional Neural Network (ResNet), details of which are given in appendix\mynotep{\ldots}. The \RF\ takes as input a set of particular physico-chemical characteristics of a molecule, and outputs a real number in the range $\clcl{0,1}$, corresponding to the fraction of decision trees which vote for class~$1$, \enquote{active}. The \cnn\ takes as input an image representing the chemical and spatial structure of the molecule, and outputs two real numbers roughly corresponding to scores for the two classes.
+Two \ml\ classifiers are considered: a Random Forest and a residual Convolutional Neural Network (ResNet), details of which are given in appendix~\ref{sec:appendix_algorithms}. The \RF\ takes as input a set of particular physico-chemical characteristics of a molecule, and outputs a real number in the range $\clcl{0,1}$, corresponding to the fraction of decision trees which vote for class~$1$, \enquote{active}. The \cnn\ takes as input an image representing the chemical and spatial structure of the molecule, and outputs two real numbers roughly corresponding to scores for the two classes.
 
 We use data from the ChEMBL database \autocites{bentoetal2014}, previously used in the literature for other studies of \ml\ applications to drug discovery \autocites{koutsoukasetal2017}. One set with 60\% of the data is used to train and validate the two classifiers. One set with 20\% is used for the calibration of the probability transducer and evaluation of the classifiers. One further data set with 20\% is here used as fictive \enquote{real data} to illustrate the results of our procedure; we call this the \enquote{demonstration set}.
 
@@ -1882,7 +1882,8 @@ The method proposed in the present work does not suffer from either of these dra
 
 %%%%% Kjetil's
 \section{Algorithms and data used in the demonstration}
- 
+\label{sec:appendix_algorithms} 
+
 \subsection{Data} 
   
 The data comes from the open-access ChEMBL bioactivity database \autocites{bentoetal2014}. The dataset used in the present work was introduced by \textcite{koutsoukasetal2017}. The data consist in structure-activity relationships from version 20 of ChEMBL, with Carbonic Anhydrase II (ChEMBL205) as protein target.
