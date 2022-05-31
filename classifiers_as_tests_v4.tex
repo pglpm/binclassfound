@@ -1,7 +1,7 @@
 \pdfoutput=1
 %% Author: PGL  Porta Mana
 %% Created: 2022-04-14T17:18:22+0200
-%% Last-Updated: 2022-05-31T08:58:46+0200
+%% Last-Updated: 2022-05-31T09:26:53+0200
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Probabilities for classifier outputs
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -762,8 +762,9 @@ Open Science Framework \doi{10.31219/osf.io/#1}%
 % \setlength{\absrightindent}{0pt}
 \setlength{\abstitleskip}{-\absparindent}
 \begin{abstract}\labelsep 0pt%
-  \noindent \mynotep{}
-  The present work sells probabilities for \ml\ algorithms at a bargain price. It shows that these probabilities are just what those algorithms need in order to increase their sales.
+  \noindent
+  In a classification task from a set of features, one would ideally like to have the probability of the class conditional on the values of the features. Such probability computationally almost impossible to find in many important cases. The primary idea of the present work is to calculate the probability of a class conditional not on the features, but on a trained classifying algorithm's output. Such probability can be easily calculated, in a model-free and exact way, for any algorithm with a low-dimensional output. This calculation needs to be done only once and provides an output-to-probability \enquote{transducer} that can afterwards be applied to the algorithm's outputs in new classification instances. The probabilities thus obtained can be used, in conjunction with problem-dependent utilities, to perform the classification or even choose among a set of more general decisions, by means of expected-utility maximization. The combined procedure is a computationally cheap \enquote{augmentation} of the original classifier's capabilities. This idea is demonstrated with a simplified drug-discovery problem with a highly imbalanced dataset. The augmentation leads to improved results in all cases, under all possible combinations of problem-dependent utilities. The calculation of the transducer also provides, automatically: (i) a quantification of the uncertainty about the transducer itself; (ii) the expected utility of the augmented algorithm (including its uncertainty), which can be used for algorithm selection; (iii) the possibility of using the algorithm in a \enquote{generative mode}, providing the probabilities of the output given the class, which are useful if the training dataset is biased. It is argued that the optimality, flexibility, and uncertainty assessment provided by the transducer and augmentation methods are dearly needed for classification problems in important fields such as medicine and drug discovery.
+  % The present work sells probabilities for \ml\ algorithms at a bargain price. It shows that these probabilities are just what those algorithms need in order to increase their sales.
 % \\\noindent\emph{\footnotesize Note: Dear Reader
 %     \amp\ Peer, this manuscript is being peer-reviewed by you. Thank you.}
 % \par%\\[\jot]
@@ -1878,11 +1879,38 @@ For the demonstration of \sect~\ref{sec:demonstration} we also tried a \enquote{
 % \end{figure}
 
 
+
+\bigskip
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%% Acknowledgements
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 
+\begin{contributions}
+The authors were so immersed in the development of the present work, that unfortunately they forgot to keep a detailed record of who did what.
+\end{contributions}
+
+\begin{acknowledgements}
+  KD and ASL acknowledge support from the Trond Mohn Research Foundation, grant number BFS2018TMT07, and PGLPM from The Research Council of Norway, grant number 294594.
+
+  The computations of the parameters for the probability transducer were performed on resources provided by Sigma2 -- the National Infrastructure for High Performance Computing and Data Storage in Norway (project NN8050K).
+
+  KD would like to thank family for endless support; partner Synne for constant love, support, and encouragement; and the developers and maintainers of Python, FastAi, PyTorch, scikit-learn, NumPy and RDKit for free open source software and for making the experiments possible. 
+
+  PGLPM thanks Maja, Mari, Miri, Emma for continuous encouragement and affection;  Buster Keaton and Saitama for filling life with awe and inspiration; and the developers and maintainers of \LaTeX, Emacs, AUC\TeX, Open Science Framework, R, Nimble, Inkscape, LibreOffice, Sci-Hub for making a free and impartial scientific exchange possible.
+  % Our work was supported by the Trond Mohn Research Foundation, grant number BFS2018TMT07
+%\rotatebox{15}{P}\rotatebox{5}{I}\rotatebox{-10}{P}\rotatebox{10}{\reflectbox{P}}\rotatebox{-5}{O}.
+%\sourceatright{\autanet}
+%\mbox{}\hfill\autanet
+\end{acknowledgements}
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%% Appendices
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 
+
+%\vspace{2\bigskipamount}
+
 \clearpage
-\bigskip
+
 \renewcommand*{\appendixpagename}{Appendices: mathematical and technical details}
 % \renewcommand*{\appendixname}{Appendix: test2}
 % %\appendixpage
@@ -2151,31 +2179,7 @@ We can answer this question, again thanks to de~Finetti's formula~\eqref{eq:prob
 %\caption{caption}\label{fig:comparison_a5}
 %\end{figure}% exp_family_maxent.nb
 
-
-\bigskip
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%% Acknowledgements
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 
-\begin{contributions}
-The authors were so immersed in the development of the present work, that unfortunately they forgot to keep a detailed record of who did what.
-\end{contributions}
-
-\begin{acknowledgements}
-  KD and ASL acknowledge support from the Trond Mohn Research Foundation, grant number BFS2018TMT07, and PGLPM from The Research Council of Norway, grant number 294594.
-
-  The computations of the parameters for the probability transducer were performed on resources provided by Sigma2 -- the National Infrastructure for High Performance Computing and Data Storage in Norway (project NN8050K).
-
-  KD would like to thank family for endless support; partner Synne for constant love, support, and encouragement; and the developers and maintainers of Python, FastAi, PyTorch, scikit-learn, NumPy and RDKit for free open source software and for making the experiments possible. 
-
-  PGLPM thanks Maja, Mari, Miri, Emma for continuous encouragement and affection;  Buster Keaton and Saitama for filling life with awe and inspiration; and the developers and maintainers of \LaTeX, Emacs, AUC\TeX, Open Science Framework, R, Nimble, Inkscape, LibreOffice, Sci-Hub for making a free and impartial scientific exchange possible.
-  % Our work was supported by the Trond Mohn Research Foundation, grant number BFS2018TMT07
-%\rotatebox{15}{P}\rotatebox{5}{I}\rotatebox{-10}{P}\rotatebox{10}{\reflectbox{P}}\rotatebox{-5}{O}.
-%\sourceatright{\autanet}
-%\mbox{}\hfill\autanet
-\end{acknowledgements}
-
-
+\clearpage
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%% Bibliography
