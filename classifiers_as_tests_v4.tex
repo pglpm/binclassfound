@@ -1,7 +1,7 @@
 \pdfoutput=1
 %% Author: PGL  Porta Mana
 %% Created: 2022-04-14T17:18:22+0200
-%% Last-Updated: 2022-05-30T22:54:15+0200
+%% Last-Updated: 2022-05-31T02:00:29+0200
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Probabilities for classifier outputs
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -803,7 +803,7 @@ As the potential of using \ml\ algorithms in important fields such as medicine o
 The \ml\ mindset and approach to problems such as classification in such new important fields is often still inadequate in many respects. It reflects simpler needs and contexts of many  inference problems successfully tackled by machine learning earlier on.
 
 A stereotypical \enquote{cat vs dog} image classification, for instance, has four very important differences from a \enquote{disease \tI\ vs disease \tII} medical classification, or from an \enquote{active vs inactive} drug classification:
-\begin{enumerate}[label=(\roman*),wide]
+\begin{enumerate}[label=(\roman*)]
 
 \item\label{item:gain_loss}Nobody presumably dies or loses large amounts of money if a cat image is misclassified as dog or vice versa. But a person can die if a disease is misdiagnosed; huge capitals can be lost if an ultimately ineffective drug candidate is pursued. The \emph{gains and losses} -- or generally speaking the \emph{utilities} -- of correct and incorrect classifications in the former problem and in the two latter problems are vastly different.
 
@@ -860,9 +860,11 @@ This solution consists in a sort of \enquote{transducer} or \enquote{calibration
 
 Moreover, this transducer has three other great benefits, which come automatically with its computation. First, it allows us to calculate both the probability of class conditional on features, and \emph{the probability of features conditional on class}. In other words it allows us to use the classification algorithm in both \enquote{discriminative} and \enquote{generative} modes \autocites[\sect~21.2.3]{russelletal1995_r2022}[\sect~8.6]{murphy2012}, even if the algorithm was not designed for a generative use. Second, its computation also gives a quantification of how much the probability would change if we had further training data. Third, it can give an \emph{evaluation of the whole classifier} -- including an uncertainty about such evaluation -- that allows us to compare it with other classifiers to choose the optimal one.
 
-In \sect~\ref{sec:transducer} we present the general idea behind the probability-transducer and its calculation. Its combination with the rule of expected-utility maximization to perform classification is discussed in \sect~\ref{sec:utility_classification}; we call this combined use the \enquote{augmentation} of a classifier.
+In \sect~\ref{sec:transducer} we present the general idea behind the probability transducer and its calculation. Its combination with the rule of expected-utility maximization to perform classification is discussed in \sect~\ref{sec:utility_classification}; we call this combined use the \enquote{augmentation} of a classifier.
 
 In \sect~\ref{sec:demonstration} we demonstrate the implementation, use, and benefits of classifier augmentation in a concrete drug-discovery classification problem and dataset, with a \RF\ and a \CNN\ classifiers.
+
+Section~\ref{sec:overview_other_uses} offers a synopsis of further benefits and uses of the probability transducer, which are obtained almost automatically from its calculation.
 
 Finally, we give a summary and discussion in \sect~\ref{sec:summary_discussion}, including some teasers of further applications to be discussed in future work.
 
@@ -1643,11 +1645,10 @@ The augmentation clearly leads to increased utility yields, especially for those
 
 There are few apparent decreases in the utility yield, in some cases. The extremal relative decreases are $-0.09\%$ for \RF\ and  $-0.2\%$ for \CNN. Given their small magnitude, we believe them to be caused by numerical-precision error rather than to be real decreases % this is actually useful for estimating the magnitude of numerical-rounding errors occurring in the computation and the number of significant digits.
 
+\subsection{From `inactive vs active' to more general decisions}
+\label{sec:gen_decision}
 
-
-\mynotew{add note about generalization to other decisions}
-
-\mynotew{add final remark that this is not evaluation}
+In the demonstration just discussed we assumed that the decisions available for each molecule examined were just two: \enquote{molecule is inactive} vs \enquote{molecule is active}, corresponding to the two unknown classes. In a more general drug-discovery problem we could have a different set of decisions, for instance \enquote{discard} vs \enquote{promote to next examination stage} vs \enquote{examine with different method}. Each decision would have its own utilities conditional on the two possible classes, forming a 3\texttimes2 utility matrix. The analysis and calculations of the present section would be easily generalized to such case.
 
 
 \section{Additional uses of the probability-transducer: an overview}
@@ -1817,14 +1818,45 @@ We see that the performance of the standard method has worsened; this is especia
 \section{Summary and discussion}
 \label{sec:summary_discussion}
 
+The successful application of \ml\ classifiers in fields such as medicine or drug discovery, which involve high risks and special courses of action, demands that we replace a too-simplistic view of classification with a more articulated and flexible one. A classifier must be able to handle decisions that do not correspond to some unknown classes; it must take into account problem-specific gains and losses arising from such decisions; it must choose not what's likely, but what's optimal; and the uncertainties underlying its operation must be amenable to assessment. And it should preferably face all these requirements with methods based on first-principles guaranteeing consistency and universal applicability.
 
+The basic theory that allows us to face most of these requirements has been around for a long time \autocites[at least since][]{luceetal1957}[\cf][\sect~1.2]{russelletal1995_r2022}: Decision Theory, whose methods keep on see-sawing in machine learning \autocites[\eg][]{selfetal1987,elkan2001,drummondetal2005}. It allows us to consider decisions separate from classes, to evaluate gains and losses, and to decide what's optimal. In the present work we have tried to revive it, showing that its application is straightforward, involves little computational cost, and always leads to improvement on results obtained with standard \ml\ methods, even when these are already nearly optimal.
 
+\medskip
 
-\mynotep{Cost-sensitive learning: theoretical problems, expensive}
+The main obstacle in using decision theory is that it requires proper probabilities, which in many applications might only be obtained at too high computational costs -- \emph{if these probabilities are conditional on the \enquote{features} constituting the input to classifier}.
 
-\mynotep{Discussion on \enquote{mixed} method}
+We have proposed the idea of \emph{using probabilities conditional on the output of the classifier} instead. This is somehow like using the classifier in the guise of a diagnostic test, such as a typical medical test. A diagnostic test is useful because its result has a probabilistic relationship with the unknown of interest, say, a medical condition. This relationship is easier to quantify than the one between the condition and the more complex biological variables that the test is exploiting \enquote{under the hood}. Likewise, the output of a classifier has a probabilistic relationship with the unknown class (owing to the training process); and this relationship is in many cases easier to quantify than the one between the class and the typically complex \enquote{features} that are the classifier's input.
 
-\mynotew{Maybe add note about how (sequential) decision theory was used during World War I; see  \textcites{good1950} around \sect~6.2 }
+This probabilistic quantification is not computationally expensive, can be calculated exactly by Bayesian \emph{model-free} (non-parametric) density-regression methods \autocites{dunsonetal2011}, and \emph{only needs to be done once} per trained algorithm.
+
+We have called the resulting output-to-probability function a \enquote{probability transducer}. Concrete examples are given in \fig~\ref{fig:prob_curve_RF} for the output of a \rf\ classifier, and in \figs~\ref{fig:prob_curve_CNN}, \ref{fig:prob_curve_CNN_section} for the bivariate output of a \CNN. In the latter case, the probability transducer is essentially a replacement of the popular softmax.
+
+The quantification of the probabilistic relationship between a classifier's output and the unknown class requires a \enquote{calibration dataset}, whose role can perfectly be played by the \enquote{test} or \enquote{evaluation} set of standard \ml\ methodology. The calibration dataset also delivers all necessary evaluations; thus a third, additional test set is not required.
+
+The probability transducer gives probabilities that are easily combined with the set of utilities specific to the problem, to make a classification or a more general decision based on \emph{maximum expected utility}, according to the principles of decision theory. This procedure is computationally inexpensive: a low-dimensional matrix multiplication followed by an \enquote{argmax}. We have called \enquote{augmentation} the joint use of transducer and utility-maximization. The utilities employed by the augmentation can also differ from one tested item to the other, without any changes to the computational costs.
+
+We have demonstrated the use of the probability transducer and augmentation on a \RF\ and a \CNN\ in a drug-discovery problem: classifying molecules as \enquote{inactive} or \enquote{active}. The problem has a naturally high class imbalance, and standard \ml\ classifiers often have nearly optimal performance on the dataset used to explore this problem. Yet, \emph{the augmentation led to improvements for all possible choice of utilities} underlying the classification, as shown in \fig~\ref{fig:RF_gain_UMspace}. The calculation of the two probability transducers' parameters took at most 75\,min.
+
+The calculation of a probability transducer from a calibration dataset also provides extremely useful additional information, for free or almost so:
+\begin{enumerate*}[label=(\alph*)]
+\item the possible variability of the transducer function, if more calibration data were acquired; 
+\item the expected utility of the whole algorithm on which the transducer is used, including the uncertainty about such utility;
+\item the possibility of using the classifier in a \enquote{generative mode}, giving the probability of the output conditional on the class; this is useful when the only available data for training has different statistical properties from the real-use data.
+\end{enumerate*}
+
+\subsubsection{Final remarks}
+\label{sec:comments_cost-sens-learn}
+
+For the demonstration of \sect~\ref{sec:demonstration} we also tried out a \enquote{mixed} method: directly combining the output of the classifier (raw output for the \RF\ and standard softmax for the CNN), as it were a probability, with the utilities for utility maximization. This method generally led to improvements with respect to the standard one, and in some cases also with respect to the probability-transducer augmentation. But on average, over the space of utility matrices, the mixed method was worse than the augmentation method, for both \RF\ and \CNN. In future work we will try to compare the performance of the two methods with different kinds of dataset.
+
+\medskip
+
+Some literature has promoted and employed the use of utilities in so called cost-sensitive learning \autocites{elkan2001,correabahnsenetal2015,lingetal2017}. One approach is to combine utilities and loss function, so that the utilities can have an effect on the training of the classifier. This approach effectively wastes information and has computational disadvantages. First, since the optimal decision depends on the product of utilities and probabilities, the algorithm learns about this product only, and not about the two factors separately. Yet, the utilities are known, otherwise they couldn't be combined with the loss function. This utility information is therefore wasted. Second, if the statistics of the data involved remain the same, but the utilities suddenly change, the classifier has to be trained anew. Such a classifier could not be used in cases where the utilities differ from one tested item to the next (see discussion above).
+
+The method proposed in the present work does not suffer from either of these drawbacks. The training phase needs no changes, and focuses on retrieving information about the data's statistics -- which is then extracted by the probability transducer. The full information contained in the utilities is used. And these utilities can even be changed on the fly during the use of the classifier. We plan to examine more thoroughly the different performances of these two procedures.
+
+% \mynotew{Maybe add note about how (sequential) decision theory was used during World War I; see  \textcites{good1950} around \sect~6.2 }
 
 
 
