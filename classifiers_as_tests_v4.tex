@@ -1,7 +1,7 @@
 \pdfoutput=1
 %% Author: PGL  Porta Mana
 %% Created: 2022-04-14T17:18:22+0200
-%% Last-Updated: 2022-05-31T12:09:21+0200
+%% Last-Updated: 2022-05-31T20:52:23+0200
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Probabilities for classifier outputs
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -1206,10 +1206,10 @@ For illustration we choose four utility matrices:
   \label{eq:utility_matrices_demo}
   \overbracket[0pt]{\umatrix{1}{0}{0}{1}}^{\text{utility case I}} \qquad
   \overbracket[0pt]{\umatrix{1}{-10}{0}{10}}^{\text{utility case II}} \qquad
-  \overbracket[0pt]{\umatrix{1}{-100}{0}{100}}^{\text{utility case III}} \qquad
+  \overbracket[0pt]{\umatrix{1}{0}{-10}{10}}^{\text{utility case III}} \qquad
   \overbracket[0pt]{\umatrix{10}{0}{-10}{1}}^{\text{utility case IV}} \ .
 \end{equation}
-Case~I represents any case where the correct classification of either class is equally valuable; and the incorrect classification, equally invaluable. Note that this utility matrix is equivalent to any other of the form $\sumatrix{a}{b}{b}{a}$ with $a>b$. Accuracy is the correct metric to evaluate this case. Case~II represents any case where the correct classification of class~1, \enquote{active}, is ten times more valuable than that of class~0 \enquote{inactive}, and its incorrect classification is as damaging as correct classification is valuable. The remaining two cases are interpreted in an analogous way. The \enquote{value} could simply be the final average monetary revenue at the end of the drug-discovery project that typically follows any of these four situations. Of particular relevance to drug discovery, where false positives are known to be especially costly \autocites{sinketal2010,hingoranietal2019}, is the utility matrix of case~II and possibly that of case~III.
+Case~I represents any case where the correct classification of either class is equally valuable; and the incorrect classification, equally invaluable. Note that this utility matrix is equivalent to any other of the form $\sumatrix{a}{b}{b}{a}$ with $a>b$. Accuracy is the correct metric to evaluate this case. Case~II represents any case where the correct classification of class~1, \enquote{active} or \enquote{positive}, is ten times more valuable than that of class~0, \enquote{inactive} or \enquote{negative}, and its incorrect classification is as damaging as correct classification is valuable. The remaining two cases are interpreted in an analogous way. The \enquote{value} could simply be the final average monetary revenue at the end of the drug-discovery project that typically follows any of these four situations. Of particular relevance to drug discovery, where false positives are known to be especially costly \autocites{sinketal2010,hingoranietal2019}, is the utility matrix of case~II and possibly that of case~III.
 
 We consider each of these utility matrices, in turn, to be the one underlying our classification problem. In each case we perform the classification of every item -- a molecule -- in the demonstration data as follows:
 % , first by applying the probability transducer and then by finding the class with maximal expected utility, as explained in \sect~\ref{sec:utility_classification}.
@@ -1254,7 +1254,8 @@ This peculiar situation has a notable practical consequence. We have found the t
 
 \medskip
 
-A look at the other confusion matrices of table~\ref{tab:results_CM} shows the effect of the automatic threshold optimization also in utility cases~II and~III: as the cost of misclassifying true class~1 increases ($-10$ or $-100$), the number of such misclassifications decreases. It does so at the detriment of class~0 classification, which, however, incurs lower costs and benefits.
+A look at the other confusion matrices of table~\ref{tab:results_CM} shows the effect of the automatic threshold optimization also in utility cases~II and~III: as the cost of some misclassification increases, the number of the correspoding misclassifications decreases.
+
 
 \subsubsection{Utility yields}
 
@@ -1386,7 +1387,7 @@ We can finally assess the performance of both classifiers, with and without augm
   \begin{tabular*}{\linewidth}{clw{c}{0.12\linewidth}w{c}{0.12\linewidth}w{c}{0.12\linewidth}w{c}{0.12\linewidth}}
 &    &$\sumatrix{1}{0}{0}{1}$
  &$\sumatrix{1}{-10}{0}{10}$
- &$\sumatrix{1}{-100}{0}{100}$
+ &$\sumatrix{1}{0}{-10}{10}$
  &$\sumatrix{10}{0}{-10}{1}$
  % &$\sumatrix{100}{0}{-100}{1}$
     \\[4\jot]
@@ -1396,11 +1397,11 @@ We can finally assess the performance of both classifiers, with and without augm
  &\parbox{0.21\linewidth}{\color{myred}\rlap{standard method}}
  &\multicolumn{4}{c}{\textcolor{myred}{$\sumatrix{3225}{79.5}{37}{246.5}$}}
  \\[2\jot]
- \smash{\rotatebox[origin=l]{90}{\quad\clap{\parbox{5em}{\centering Random\\Forest}}}}
+ \smash{\rotatebox[origin=l]{90}{\hspace{1.5em}\clap{\parbox{\widthof{Random}}{\footnotesize Random\\Forest}}}}
  &\parbox{0.21\linewidth}{\color{mypurpleblue}augmentation}
  &\textcolor{mypurpleblue}{$\sumatrix{3207}{38}{55}{288}$}
  &\textcolor{mypurpleblue}{$\sumatrix{3050}{7}{212}{319}$}
- &\textcolor{mypurpleblue}{$\sumatrix{2358}{2}{904}{324}$}
+ &\textcolor{mypurpleblue}{$\sumatrix{3207}{40}{55}{286}$}
  &\textcolor{mypurpleblue}{$\sumatrix{3262}{326}{0}{0}$}
  %&\textcolor{mypurpleblue}{$\sumatrix{3262}{326}{0}{0}$}
  \\[6\jot]
@@ -1411,11 +1412,11 @@ We can finally assess the performance of both classifiers, with and without augm
  &\parbox{0.21\linewidth}{\color{myred}\rlap{standard method}}
  &\multicolumn{4}{c}{\textcolor{myred}{$\sumatrix{3165}{49}{97}{277}$}}
  \\[2\jot]
- \smash{\rotatebox[origin=l]{90}{\quad\clap{\parbox{8em}{\centering Neural\\Network}}}}
+ \smash{\rotatebox[origin=l]{90}{\hspace{1.5em}\clap{\parbox{\widthof{Network}}{\footnotesize Neural\\Network}}}}
  &\parbox{0.21\linewidth}{\color{mypurpleblue} augmentation}
  &\textcolor{mypurpleblue}{$\sumatrix{3189}{65}{73}{261}$}
  &\textcolor{mypurpleblue}{$\sumatrix{2882}{12}{380}{314}$}
- &\textcolor{mypurpleblue}{$\sumatrix{2011}{1}{1251}{325}$}
+ &\textcolor{mypurpleblue}{$\sumatrix{3189}{66}{73}{260}$}
  &\textcolor{mypurpleblue}{$\sumatrix{3262}{326}{0}{0}$}
  %&\textcolor{mypurpleblue}{$\sumatrix{3262}{326}{0}{0}$}
  \end{tabular*}
@@ -1436,50 +1437,50 @@ We can finally assess the performance of both classifiers, with and without augm
   \begin{tabular*}{\linewidth}{clw{c}{0.12\linewidth}w{c}{0.12\linewidth}w{c}{0.12\linewidth}w{c}{0.12\linewidth}}
 &    &$\sumatrix{1}{0}{0}{1}$
  &$\sumatrix{1}{-10}{0}{10}$
- &$\sumatrix{1}{-100}{0}{100}$
+ &$\sumatrix{1}{0}{-10}{10}$
  &$\sumatrix{10}{0}{-10}{1}$
  % &$\sumatrix{100}{0}{-100}{1}$
      \\[2\jot]
  &\parbox{0.21\linewidth}{\rlap{\color{mygray}\footnotesize min achievable utility}}
-% ##             [,1]
-% ## [1,]   0.0000000
-% ## [2,]  -0.9085842
-% ## [3,]  -9.0858417
-% ## [4,]  -9.0914158
-% ## [5,] -90.9141583
- &\textcolor{mygray}{\footnotesize 0}
+% ## >            [,1]
+% ## [1,]  0.0000000
+% ## [2,] -0.9085842
+% ## [3,] -9.0914158
+% ## [4,] -9.0914158
+% ## [5,] -9.0914158
+ &\textcolor{mygray}{\footnotesize $0$}
  &\textcolor{mygray}{\footnotesize $-0.91$}
  &\textcolor{mygray}{\footnotesize $-9.09$}
  &\textcolor{mygray}{\footnotesize $-9.09$}
  %&\textcolor{mygray}{\footnotesize $-90.9$}
      \\[0\jot]
  &\parbox{0.21\linewidth}{\rlap{\color{mygray}\footnotesize max achievable utility}}
-% ## [1,]  1.000000
-% ## [2,]  1.817726
-% ## [3,]  9.994983
-% ## [4,]  9.182274
-% ## [5,] 91.005017
+% ## [1,] 1.000000
+% ## [2,] 1.817726
+% ## [3,] 1.817726
+% ## [4,] 9.182274
+% ## [5,] 1.817726
  &\textcolor{mygray}{\footnotesize 1}
  &\textcolor{mygray}{\footnotesize 1.82}
- &\textcolor{mygray}{\footnotesize 9.99}
+ &\textcolor{mygray}{\footnotesize 1.82}
  &\textcolor{mygray}{\footnotesize 9.18}
  %&\textcolor{mygray}{\footnotesize 91.0}
     \\[5\jot]
-% ## standard   0.968   1.364    5.553   8.954   88.92
-% ## transducer 0.974   1.720    9.632   9.091   90.91
-% ##            0.620  26.100   73.460   1.530    2.24
+% ## +                 [,1]     [,2]     [,3]     [,4]     [,5]
+% ## standard   0.9675307 1.364270 1.482720 8.953874 1.482720
+% ## transducer 0.9740803 1.719621 1.537625 9.091416 1.537625
  &\parbox{0.21\linewidth}{\color{myred}\rlap{standard method}}
  &\textcolor{myred}{0.968}
  &\textcolor{myred}{1.36}
- &\textcolor{myred}{5.55}
+ &\textcolor{myred}{1.48}
  &\textcolor{myred}{8.95}
  %& \textcolor{myred}{88.9}
  \\[1\jot]
- \smash{\rotatebox[origin=l]{90}{\hspace{1em}\clap{\parbox{5em}{\centering Random\\Forest}}}}
+  \smash{\rotatebox[origin=l]{90}{\hspace{1.5em}\clap{\parbox{\widthof{Random}}{\footnotesize Random\\Forest}}}}
  &\parbox{0.21\linewidth}{\color{mypurpleblue}\bfseries augmentation}
  &\textcolor{mypurpleblue}{\bfseries 0.974}
  &\textcolor{mypurpleblue}{\bfseries 1.72}
- &\textcolor{mypurpleblue}{\bfseries 9.63}
+ &\textcolor{mypurpleblue}{\bfseries 1.54}
  &\textcolor{mypurpleblue}{\bfseries 9.09}
  %&\textcolor{mypurpleblue}{\bfseries 90.9}
  % \\[2\jot]
@@ -1504,21 +1505,21 @@ We can finally assess the performance of both classifiers, with and without augm
 %  &\textcolor{mygray}{\footnotesize $-9.09$}
 %  %&\textcolor{mygray}{\footnotesize $-90.9$}
 %     \\[2\jot]
-% ## standard   0.959   1.518    7.237   8.628   85.58
-% ## transducer 0.962   1.645    9.591   9.091   90.91
-% ##            0.310   8.370   32.530   5.370    6.23
+% ##                 [,1]     [,2]     [,3]     [,4]     [,5]
+% ## standard   0.9593088 1.517559 1.383779 8.627926 1.383779
+% ## transducer 0.9615385 1.644928 1.409978 9.091416 1.409978
  &\parbox{0.21\linewidth}{\color{myred}\rlap{standard method}}
  &\textcolor{myred}{0.959}
  &\textcolor{myred}{1.52}
- &\textcolor{myred}{7.24}
+ &\textcolor{myred}{1.38}
  &\textcolor{myred}{8.63}
  %&\textcolor{myred}{85.6}
  \\[1\jot]
- \smash{\rotatebox[origin=l]{90}{\hspace{1em}\clap{\parbox{8em}{\centering Neural\\Network}}}}
+ \smash{\rotatebox[origin=l]{90}{\hspace{1em}\clap{\parbox{\widthof{Network}}{\footnotesize Neural\\Network}}}}
  &\parbox{0.21\linewidth}{\color{mypurpleblue}\bfseries augmentation}
  &\textcolor{mypurpleblue}{\bfseries 0.962}
  &\textcolor{mypurpleblue}{\bfseries 1.64}
- &\textcolor{mypurpleblue}{\bfseries 9.59}
+ &\textcolor{mypurpleblue}{\bfseries 1.41}
  &\textcolor{mypurpleblue}{\bfseries 9.09}
  %&\textcolor{mypurpleblue}{\bfseries 90.9}
 %   \end{tabular*}
@@ -1538,44 +1539,41 @@ We can finally assess the performance of both classifiers, with and without augm
 % %   \centering
 % %   \small
 %   \begin{tabular*}{\linewidth}{clw{c}{0.12\linewidth}w{c}{0.12\linewidth}w{c}{0.12\linewidth}w{c}{0.12\linewidth}}
-%%% normalized scores RF    
 % ##                 [,1]      [,2]      [,3]      [,4]      [,5]
-% ## standard   0.9675307 0.8336741 0.7672139 0.9875011 0.9885411
-% ## mixed      0.9675307 0.9034962 0.9547778 0.9945856 0.9995036
-% ## transducer 0.9740803 0.9640155 0.9809529 0.9950279 0.9995006
+% ## standard   0.9675307 0.8336741 0.9692913 0.9875011 0.9692913
+% ## transducer 0.9740803 0.9640155 0.9743243 0.9950279 0.9743243
  &\parbox{0.21\linewidth}{\color{myred}\rlap{standard method}}
  &\textcolor{myred}{0.968}
  &\textcolor{myred}{0.834}
- &\textcolor{myred}{0.767}
+ &\textcolor{myred}{0.969}
  &\textcolor{myred}{0.988}
  %& \textcolor{myred}{0.989}
  \\[1\jot]
- \smash{\rotatebox[origin=l]{90}{\hspace{1em}\clap{\parbox{5em}{\centering Random\\Forest}}}}
+ \smash{\rotatebox[origin=l]{90}{\hspace{1.5em}\clap{\parbox{\widthof{Random}}{\footnotesize Random\\Forest}}}}
  &\parbox{0.21\linewidth}{\color{mypurpleblue}\bfseries augmentation}
  &\textcolor{mypurpleblue}{\bfseries 0.974}
  &\textcolor{mypurpleblue}{\bfseries 0.964}
- &\textcolor{mypurpleblue}{\bfseries 0.981}
+ &\textcolor{mypurpleblue}{\bfseries 0.974}
  &\textcolor{mypurpleblue}{\bfseries 0.995}
  %&\textcolor{mypurpleblue}{\bfseries 1.000}
  \\[5\jot]
 %%%%%%%%
 %%% normalized scores CNN
 % ##                 [,1]      [,2]      [,3]      [,4]      [,5]
-% ## standard   0.9593088 0.8898998 0.8554381 0.9696642 0.9702034
-% ## mixed      0.9593088 0.9302801 0.9754316 0.9853278 0.9941522
-% ## transducer 0.9615385 0.9366183 0.9788058 0.9950279 0.9995006
+% ## standard   0.9593088 0.8898998 0.9602218 0.9696642 0.9602218
+% ## transducer 0.9615385 0.9366183 0.9626233 0.9950279 0.9626233
  &\parbox{0.21\linewidth}{\color{myred}\rlap{standard method}}
  &\textcolor{myred}{0.959}
  &\textcolor{myred}{0.890}
- &\textcolor{myred}{0.855}
+ &\textcolor{myred}{0.960}
  &\textcolor{myred}{0.970}
  %&\textcolor{myred}{0.970}
  \\[1\jot]
- \smash{\rotatebox[origin=l]{90}{\hspace{1em}\clap{\parbox{8em}{\centering Neural\\Network}}}}
+ \smash{\rotatebox[origin=l]{90}{\hspace{1em}\clap{\parbox{\widthof{Network}}{\footnotesize Neural\\Network}}}}
  &\parbox{0.21\linewidth}{\color{mypurpleblue}\bfseries augmentation}
  &\textcolor{mypurpleblue}{\bfseries 0.962}
  &\textcolor{mypurpleblue}{\bfseries 0.937}
- &\textcolor{mypurpleblue}{\bfseries 0.979}
+ &\textcolor{mypurpleblue}{\bfseries 0.963}
  &\textcolor{mypurpleblue}{\bfseries 0.995}
  %&\textcolor{mypurpleblue}{\bfseries 1.000}
   \end{tabular*}
@@ -1596,12 +1594,12 @@ The utility yields for the different cases, classifiers, and methods are present
 
 \medskip
 
-Let us first compare the two algorithms when employed in the standard way (red). Their performance is very close to the theoretical maximum in most cases, the only exception being the \RF\ in case~III.  The \RF\ outperforms the \CNN\ in  cases~I and~II; vice versa in cases~II and~III.
+Let us first compare the two algorithms when employed in the standard way (red). Their performance is very close to the theoretical maximum in most cases, the worse  being the \RF\ in case~II.  The \RF\ outperforms the \CNN\ in  cases~I, III, IV.
 
 Then let us look at the performances obtained with the augmentation (blue bold). We note the following:
 \begin{itemize}
-\item The augmentation improves the performance of each algorithm in all cases. The improvement also occurs also in case~IV for the \RF, where the standard method already had an extremely high performance (rescaled utility of 0.988).
-\item In cases~II--IV the augmentation improves the originally worse algorithm above the originally better one. This almost happens also in case~I, the difference possibly being at the level of statistical variability.
+\item The augmentation improves the performance of each algorithm in all cases. The improvement also occurs in case~IV for the \RF, where the standard method already had an extremely high performance (rescaled utility of 0.988).
+\item In cases~II and~IV the augmentation improves the originally worse algorithm above the originally better one.
 \item In case~IV the augmentation brings the utility yield to above 99\% of the theoretical maximum; remember from the previous section that this is achieved by classifying all data as class~0.
 \item With augmentation, the \RF\ outperforms the \CNN\ in all cases, with a possible tie for case~IV.
 \end{itemize}
@@ -1643,7 +1641,7 @@ For each of these utility matrices, we calculate the rescaled utility yields obt
 % ##  0.9225  0.9478  0.9614  0.9605  0.9733  1.0000 
 The augmentation clearly leads to increased utility yields, especially for those cases where the standard performance of the two algorithms is particularly high or low -- compare the left tails of the histograms for the standard method and augmentation. The standard method in some cases has utility yields as low as 0.76 for the \RF\ and 0.85 for the \CNN; whereas the augmentation never leads to yields below 0.96 for the \RF\ and 0.92 for the \CNN. This explains the U-shapes of the scattered points. Note that the minimum values of the plot's axes is 0.75, so the improvement is upon utility yields that are already quite high.
 
-There are few apparent decreases in the utility yield, in some cases. The extremal relative decreases are $-0.09\%$ for \RF\ and  $-0.2\%$ for \CNN. Given their small magnitude, we believe them to be caused by numerical-precision error rather than to be real decreases % this is actually useful for estimating the magnitude of numerical-rounding errors occurring in the computation and the number of significant digits.
+There are a few apparent decreases in the utility yield, in some cases. The extremal relative decreases are $-0.09\%$ for \RF\ and  $-0.2\%$ for \CNN. Given their small magnitude, we believe them to be caused by numerical-precision error rather than to be real decreases % this is actually useful for estimating the magnitude of numerical-rounding errors occurring in the computation and the number of significant digits.
 
 \subsection{From `inactive vs active' to more general decisions}
 \label{sec:gen_decision}
@@ -1688,7 +1686,7 @@ For the \RF\ and \CNN\ of the demonstration \sect~\ref{sec:demonstration}, for i
 {lcccc}
     &$\sumatrix{1}{0}{0}{1}$
     &$\sumatrix{1}{-10}{0}{10}$
-    &$\sumatrix{1}{-100}{0}{100}$
+    &$\sumatrix{1}{0}{-10}{10}$
     &$\sumatrix{10}{0}{-10}{1}$
     % &$\sumatrix{100}{0}{-100}{1}$
     \\[2\jot]
@@ -2023,7 +2021,7 @@ The weight $\wf(F \| D)$ given to a frequency distribution $F$ is proportional t
 where $\hat{F}(d)$ is the frequency distribution observed in the data.
   
 \item The second factor (\enquote{prior}) $\wfo(F)$ quantifies how well $F$ \emph{generalizes} beyond the data we have seen, owing to reasons such as physical or biological constraints for example. In our case we expect $F$ to be somewhat smooth in $X$ when this variable is continuous \autocites[Cf.][]{goodetal1971}. No assumptions are made about $F$ when $X$ is discrete.
-  %%\mynotew{add plot of prior transducer curves}
+  %%\mynotew{add plot of prior transducer curves?}
 \end{itemize}
 Formula~\eqref{eq:weight_F_two_factors} is just Bayes's theorem. Its normalization factor is the integral $\int F(D)\, \wfo(F)\, \di F$, which ensures that $\wf(F)$ is normalized.
 
@@ -2043,7 +2041,7 @@ We must find a way to express any kind of distribution $F(d)$. As mentioned in \
   \label{eq:representation_F}
   F(c, y) = \sum_{l} w_{l}\ A(c \| \alpha_{l})\ B(y \| \beta_{l}) \ ,
 \end{equation}
-where the sum as a very large number of terms, $\set{w_{l}}$ are normalized weights, and $A(c\|\alpha)$, $B(y \| \beta)$ are distributions, possibly the product of further one-dimensional distributions. Effectively we are expressing $F(\dotv)$ by the \enquote{coordinates} $(w_{l}, \alpha_{l}, \beta_{l})$ in a space of extremely high dimensions.
+where the sum has a large number of terms \autocites[see][on why the number of terms does not need to be infinite]{ishwaranetal2002b}, $\set{w_{l}}$ are normalized weights, and $A(c\|\alpha)$, $B(y \| \beta)$ are distributions, possibly the product of further one-dimensional distributions. Effectively we are expressing $F(\dotv)$ by the \enquote{coordinates} $(w_{l}, \alpha_{l}, \beta_{l})$ in a space of extremely high dimensions.
 %\mynotew{add remark about number of clusters and ref...}
 
 This representation \autocites[promoted by][]{dunsonetal2011}[see also][]{rasmussen1999} has several advantages:

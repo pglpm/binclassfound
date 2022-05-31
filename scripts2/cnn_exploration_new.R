@@ -1,6 +1,6 @@
 ## Author: PGL  Porta Mana
 ## Created: 2022-03-17T14:21:57+0100
-## Last-Updated: 2022-05-30T22:39:12+0200
+## Last-Updated: 2022-05-31T20:21:47+0200
 ################
 ## Exploration of several issues for binary classifiers
 ################
@@ -409,9 +409,9 @@ comparescores <- function(trueclasses, um, outputs, probs, softmaxs){
 
 ulist <- list(c(1,0,0,1),
               c(1,-10,0,10),
-              c(1,-100,0,100),
+              c(1,0,-10,10),
               c(10,0,-10,1),
-              c(100,0,-100,1),
+              c(1,0,-10,10),
               ##
               c(1,-10,-1,10),
               c(1,-100,-1,100),
@@ -450,8 +450,8 @@ lapply(umlist[1:5],function(um){buildcm(classes, probs1, um)})
 
 ## [[3]]
 ##      [,1] [,2]
-## [1,] 2011    1
-## [2,] 1251  325
+## [1,] 3189   66
+## [2,]   73  260
 
 ## [[4]]
 ##      [,1] [,2]
@@ -460,8 +460,8 @@ lapply(umlist[1:5],function(um){buildcm(classes, probs1, um)})
 
 ## [[5]]
 ##      [,1] [,2]
-## [1,] 3262  326
-## [2,]    0    0
+## [1,] 3189   66
+## [2,]   73  260
 
 
 Fclass0 <- sum(classes==0)
@@ -490,12 +490,19 @@ minscores[1:5]
 results1 <- t(sapply(umlist, function(um){
     comparescores(trueclasses=classes, um=um, outputs=t(outputs2), probs=probs1, softmaxs=softmax2)/length(classes)}))
 
+t(results1)[,1:5]
+##                 [,1]     [,2]     [,3]     [,4]     [,5]
+## standard   0.9593088 1.517559 1.383779 8.627926 1.383779
+## mixed      0.9593088 1.627648 1.378763 8.914158 1.378763
+## transducer 0.9615385 1.644928 1.409978 9.091416 1.409978
+
+
 
 t((results1-minscores)/(maxscores-minscores))[,1:5]
 ##                 [,1]      [,2]      [,3]      [,4]      [,5]
-## standard   0.9593088 0.8898998 0.8554381 0.9696642 0.9702034
-## mixed      0.9593088 0.9302801 0.9754316 0.9853278 0.9941522
-## transducer 0.9615385 0.9366183 0.9788058 0.9950279 0.9995006
+## standard   0.9593088 0.8898998 0.9602218 0.9696642 0.9602218
+## mixed      0.9593088 0.9302801 0.9597619 0.9853278 0.9597619
+## transducer 0.9615385 0.9366183 0.9626233 0.9950279 0.9626233
 
 
 

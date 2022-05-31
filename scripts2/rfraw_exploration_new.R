@@ -1,6 +1,6 @@
 ## Author: PGL  Porta Mana
 ## Created: 2022-03-17T14:21:57+0100
-## Last-Updated: 2022-05-30T22:22:11+0200
+## Last-Updated: 2022-05-31T20:27:26+0200
 ################
 ## Exploration of several issues for binary classifiers
 ################
@@ -366,9 +366,9 @@ comparescores <- function(trueclasses, um, outputs, probs){
 
 ulist <- list(c(1,0,0,1),
               c(1,-10,0,10),
-              c(1,-100,0,100),
+              c(1,0,-10,10),
               c(10,0,-10,1),
-              c(100,0,-100,1),
+              c(1,-10,-10,10),
               ##
               c(1,-10,-1,10),
               c(1,-100,-1,100),
@@ -388,7 +388,7 @@ ulist2 <- unlist(umlist)
 dim(ulist2) <- c(4,2*length(ulist))
 ulist2 <- t(ulist2)
 
-round(buildcm(classes, outputs1)/length(classes),4)
+round(buildcm(classes, outputs1),4)
 ##        [,1]   [,2]
 ## [1,] 0.8988 0.0222
 ## [2,] 0.0103 0.0687
@@ -396,31 +396,7 @@ round(buildcm(classes, outputs1)/length(classes),4)
 ## [1,] 3225  79.5
 ## [2,]   37 246.5
 
-lapply(umlist[1:5],function(um){round(buildcm(classes, probs1, um)/length(classes),4)})
-## [[1]]
-##        [,1]   [,2]
-## [1,] 0.8938 0.0106
-## [2,] 0.0153 0.0803
-
-## [[2]]
-##        [,1]   [,2]
-## [1,] 0.8501 0.0020
-## [2,] 0.0591 0.0889
-
-## [[3]]
-##        [,1]   [,2]
-## [1,] 0.6572 0.0006
-## [2,] 0.2520 0.0903
-
-## [[4]]
-##        [,1]   [,2]
-## [1,] 0.9091 0.0909
-## [2,] 0.0000 0.0000
-
-## [[5]]
-##        [,1]   [,2]
-## [1,] 0.9091 0.0909
-## [2,] 0.0000 0.0000
+lapply(umlist[1:5],function(um){round(buildcm(classes, probs1, um),4)})
 ## [[1]]
 ##      [,1] [,2]
 ## [1,] 3207   38
@@ -433,8 +409,8 @@ lapply(umlist[1:5],function(um){round(buildcm(classes, probs1, um)/length(classe
 
 ## [[3]]
 ##      [,1] [,2]
-## [1,] 2358    2
-## [2,]  904  324
+## [1,] 3207   40
+## [2,]   55  286
 
 ## [[4]]
 ##      [,1] [,2]
@@ -443,8 +419,8 @@ lapply(umlist[1:5],function(um){round(buildcm(classes, probs1, um)/length(classe
 
 ## [[5]]
 ##      [,1] [,2]
-## [1,] 3262  326
-## [2,]    0    0
+## [1,] 3203   31
+## [2,]   59  295
 
 Fclass0 <- sum(classes==0)
 Fclass1 <- sum(classes==1)
@@ -452,26 +428,38 @@ fclass1 <- Fclass1/length(classes)
 
 maxscores <- sapply(umlist, function(um){um[1,1]*(1-fclass1)+um[2,2]*fclass1})
 cbind(maxscores[1:5])
-## [1,]  1.000000
-## [2,]  1.817726
-## [3,]  9.994983
-## [4,]  9.182274
-## [5,] 91.005017
+## [1,] 1.000000
+## [2,] 1.817726
+## [3,] 1.817726
+## [4,] 9.182274
+## [5,] 1.817726
 
 minscores <- sapply(umlist, function(um){um[2,1]*(1-fclass1)+um[1,2]*fclass1})
 cbind(minscores[1:5])
+## >            [,1]
+## [1,]  0.0000000
+## [2,] -0.9085842
+## [3,] -9.0914158
+## [4,] -9.0914158
+## [5,] -18.1772575
 
 
 
 results1 <- t(sapply(umlist, function(um){
     comparescores(trueclasses=classes, um=um, outputs=outputs1, probs=probs1)/length(classes)}))
 ##
+t(results1)[,1:5]
+## +                 [,1]     [,2]     [,3]     [,4]     [,5]
+## standard   0.9675307 1.364270 1.482720 8.953874 1.482720
+## mixed      0.9675307 1.554627 1.473244 9.083333 1.473244
+## transducer 0.9740803 1.719621 1.537625 9.091416 1.537625
+
 
 t((results1-minscores)/(maxscores-minscores))[,1:5]
 ##                 [,1]      [,2]      [,3]      [,4]      [,5]
-## standard   0.9675307 0.8336741 0.7672139 0.9875011 0.9885411
-## mixed      0.9675307 0.9034962 0.9547778 0.9945856 0.9995036
-## transducer 0.9740803 0.9640155 0.9809529 0.9950279 0.9995006
+## standard   0.9675307 0.8336741 0.9692913 0.9875011 0.9692913
+## mixed      0.9675307 0.9034962 0.9684227 0.9945856 0.9684227
+## transducer 0.9740803 0.9640155 0.9743243 0.9950279 0.9743243
 
 
 rresults <- round(results1,3)
@@ -731,6 +719,43 @@ legend('left',c('Random Forest', 'Neural Network'), pch=c(16,17), col=palette()[
 ## abline(0,1, col=paste0(palette()[4],'88'), lwd=2, lty=1)
 dev.off()
 
+nn2 <- nn
+rmins <- allmins[1:nn2]
+norms <- allmaxs[1:nn2]-allmins[1:nn2]
+vals <- (RFallscores[3,1:nn2]-RFallscores[1,1:nn2])/norms#(RFallscores[1,1:nn2]-rmins)
+#vals <- (RFallscores[3,1:nn2]-rmins)/norms#(RFallscores[1,1:nn2]-rmins)
+maxvals <- max(abs(vals))
+pcols <- rgb(colorRamp(c(palette()[2],'white', palette()[1]))(
+    vals/maxvals*0.5+0.5
+#    (vals-min(vals))/(maxvals-min(vals))*0.5+0.5
+),maxColorValue = 255)
+pdff('../RF_improv_UM')
+tplot(x=rbind(lxy[1:nn2,1]), y=rbind(lxy[1:nn2,2]), type='p', pch=16, cex=0.75, col=pcols,
+      xgrid=F,ygrid=F,xticks=F,yticks=F,
+      mar=c(0,0,0,0),
+      xlim=c(-1,1), ylim=c(-1,1), asp=1)
+tplot(x=c(-1,-1,0,1,1,0,-1), y=c(0,-1,-1,0,1,1,0), type='l', add=T, col='#000000', lwd=1)
+dev.off()
+
+nn2 <- nn
+rmins <- allmins[1:nn2]
+norms <- allmaxs[1:nn2]-allmins[1:nn2]
+vals <- (CNNallscores[3,1:nn2]-CNNallscores[1,1:nn2])/norms#(CNNallscores[1,1:nn2]-rmins)
+#vals <- (CNNallscores[3,1:nn2]-rmins)/norms#(CNNallscores[1,1:nn2]-rmins)
+maxvals <- max(abs(vals))
+pcols <- rgb(colorRamp(c(palette()[1],'white', palette()[2]))(
+    vals/maxvals*0.5+0.5
+#    (vals-min(vals))/(maxvals-min(vals))*0.5+0.5
+),maxColorValue = 255)
+pdff('../CNN_improv_UM')
+tplot(x=rbind(lxy[1:nn2,1]), y=rbind(lxy[1:nn2,2]), type='p', pch=16, cex=0.75, col=pcols,
+      xgrid=F,ygrid=F,xticks=F,yticks=F,
+      mar=c(0,0,0,0),
+      xlim=c(-1,1), ylim=c(-1,1), asp=1)
+tplot(x=c(-1,-1,0,1,1,0,-1), y=c(0,-1,-1,0,1,1,0), type='l', add=T, col='#000000', lwd=1)
+dev.off()
+
+
 
 
 nn2 <- 2000
@@ -778,6 +803,67 @@ tplot(y=list(RFhist3$breaks,CNNhist3$breaks),
              xlim=c(hstart,NA),add=T, border=NA)
 legend('bottom',c('Random Forest              ', 'Neural Network'), pch=c(16,17), col=palette()[1:2], cex=1.25, bty='n')
 ## tplot(x=log10(RFallscores[2,1:nn2]), y=log10(RFallscores[3,1:nn2]), type='p', pch=16, cex=0.5, alpha=0.25, col=2,
+##       xticks=log10(sort(c(1:9)*rep(10^c(-1,0),each=9))),
+##       xlabels=sort(c(1:9)*rep(10^c(-1,0),each=9)),
+##       yticks=log10(sort(c(1:9)*rep(10^c(-1,0),each=9))),
+##       ylabels=sort(c(1:9)*rep(10^c(-1,0),each=9)),
+##       xlab='utility yield from mixed method',
+##       ylab='utility yield from transducer & utility maximization')
+## abline(0,1, col=paste0(palette()[4],'88'), lwd=2, lty=1)
+dev.off()
+
+
+nn2 <- 500
+rmins <- allmins[1:nn2]
+norms <- allmaxs[1:nn2]-allmins[1:nn2]
+lbound <- min((RFallscores[1,1:nn2]-rmins)/norms, (RFallscores[3,1:nn2]-rmins)/norms,
+              (CNNallscores[1,1:nn2]-rmins)/norms, (CNNallscores[3,1:nn2]-rmins)/norms)
+##
+nact <- which(lxy[,1]>-0 & lxy[,2]<0)[1:nn2]
+rmins <- allmins[nact]
+norms <- allmaxs[nact]-allmins[nact]
+## lbound <- min((RFallscores[1,1:nn2]-rmins)/norms, (RFallscores[3,1:nn2]-rmins)/norms,
+##               (CNNallscores[1,1:nn2]-rmins)/norms, (CNNallscores[3,1:nn2]-rmins)/norms)
+hstart <- 1+0.002
+hheight <- 0.04
+pdff('../RFCNN_transducer_gains_histograms_only_actives', asp=1)
+## tplot(x=RFallscores[1,nact], y=RFallscores[2,nact]-RFallscores[1,nact], type='p', pch=16, cex=1, alpha=0.5)
+tplot(x=cbind((RFallscores[1,nact]-rmins)/norms, (CNNallscores[1,nact]-rmins)/norms),
+      y=cbind((RFallscores[3,nact]-rmins)/norms, (CNNallscores[3,nact]-rmins)/norms),
+      type='p', pch=c(16,17), cex=1, alpha=0.67,
+      xlim=c(lbound,hstart+hheight-0.007),
+      ylim=c(lbound,hstart+hheight-0.007),
+      ## xlim=c(min(RFallscores[1,nact]/RFallscores[4,nact],RFallscores[3,nact]/RFallscores[4,nact]),1),
+      ## ylim=c(min(RFallscores[1,nact]/RFallscores[4,nact],RFallscores[3,nact]/RFallscores[4,nact]),1),
+      xticks=seq(0.76,1,by=0.02),
+      yticks=seq(0.76,1,by=0.02),
+      ## xlabels=sort(c(1:9)*rep(10^c(-1,0),each=9)),
+      ## yticks=log10(sort(c(1:9)*rep(10^c(-1,0),each=9))),
+      ## ylabels=sort(c(1:9)*rep(10^c(-1,0),each=9)),
+      mar=c(4.5,5.5,0,0),
+      xlab='rescaled utility yield, standard method           ',#bquote(frac('utility yield','max utility yield')~', standard method'),
+      ylab='rescaled utility yield, augmentation            '#bquote(frac('utility yield','max utility yield')~', augmentation')
+      )
+tplot(x=c(lbound,1),y=c(lbound,1), col=paste0(palette()[7],'FF'), lwd=4, lty=2, add=T)
+#abline(0,1, col=paste0(palette()[7],'FF'), lwd=4, lty=2)
+##
+nbreaks <- 10
+rmins <- allmins
+norms <- allmaxs-allmins
+RFhist1 <- thist((RFallscores[1,]-rmins)/norms,n=nbreaks)
+CNNhist1 <- thist((CNNallscores[1,]-rmins)/norms,n=nbreaks)
+RFhist3 <- thist((RFallscores[3,]-rmins)/norms,n=nbreaks)
+CNNhist3 <- thist((CNNallscores[3,]-rmins)/norms,n=nbreaks)
+hscale <- max(RFhist1$density,CNNhist1$density,RFhist3$density,CNNhist3$density)/hheight
+## polygon(x=c(RFhist1$mids,rev(RFhist1$mids)), y=c(rep(hstart,length(RFhist1$mids)), rev(RFhist1$density/hscale*(1-hstart)/4+hstart)), border=NA, col=paste0(palette()[1],'80'))
+tplot(x=list(RFhist1$breaks,CNNhist1$breaks),
+      y=list(RFhist1$density/hscale+hstart, CNNhist1$density/hscale+hstart),
+             ylim=c(hstart,NA),add=T, border=NA)
+tplot(y=list(RFhist3$breaks,CNNhist3$breaks),
+      x=list(RFhist3$density/hscale+hstart, CNNhist3$density/hscale+hstart),
+             xlim=c(hstart,NA),add=T, border=NA)
+legend('bottom',c('Random Forest              ', 'Neural Network'), pch=c(16,17), col=palette()[1:2], cex=1.25, bty='n')
+## tplot(x=log10(RFallscores[2,nact]), y=log10(RFallscores[3,nact]), type='p', pch=16, cex=0.5, alpha=0.25, col=2,
 ##       xticks=log10(sort(c(1:9)*rep(10^c(-1,0),each=9))),
 ##       xlabels=sort(c(1:9)*rep(10^c(-1,0),each=9)),
 ##       yticks=log10(sort(c(1:9)*rep(10^c(-1,0),each=9))),
