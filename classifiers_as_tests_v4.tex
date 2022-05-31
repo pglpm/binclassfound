@@ -1,7 +1,7 @@
 \pdfoutput=1
 %% Author: PGL  Porta Mana
 %% Created: 2022-04-14T17:18:22+0200
-%% Last-Updated: 2022-05-31T10:52:18+0200
+%% Last-Updated: 2022-05-31T12:09:21+0200
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Probabilities for classifier outputs
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -964,9 +964,14 @@ Since we are using as calibration data the data traditionally set aside as \enqu
 
 The answer is no: \emph{the calibration set automatically also acts as a test set}. In fact, from the calculations for the probability transducer, discussed in the next section, we can also arrive at a final evaluation value for the algorithm as a whole. See \sect~\ref{sec:yield_of_classifier} and appendix~\ref{sec:algorithm_yield} for more details about this.
 
-It may be useful to explain why this is the case, especially for those who may mistakenly take for granted the universal necessity of a test set.
+It may be useful to explain why this is the case, especially for those who may mistakenly take for granted the universal necessity of a test set. Many standard \ml\ methodologies need a test set because they are only an approximation of the ideal inference performed with the probability calculus. The latter needs no division of available data into different sets: something analogous to such division is automatically made internally, so to speak (see appendix~\ref{sec:deFinetti}). It can be shown \autocites{portamana2019b,fongetal2020,wald1949}[many examples of this fact are scattered across the text by][]{jaynes1994_r2003} that the mathematical operations behind the probability rules correspond to making \emph{all possible} divisions of available data between \enquote{training} and \enquote{test}, as well as \emph{all possible} cross-validations with folds of all orders. It is this completeness and thoroughness that makes the ideal inference by means of the probability calculus almost computationally impossible in some cases. We thus resort to approximate but faster \ml\ methods. These methods do not typically perform such data partitions \enquote{internally} and automatically, so we need to make them -- and only approximately -- by hand.
 
-Many standard \ml\ methodologies need a test set because they are only an approximation of the ideal inference performed with the probability calculus. The latter needs no division of available data into different sets: something analogous to such division is automatically made internally, so to speak (see appendix~\ref{sec:deFinetti}). It can be shown \autocites{portamana2019b,fongetal2020,wald1949}[many examples of this fact are scattered across the text by][]{jaynes1994_r2003} that the mathematical operations behind the probability rules correspond to making \emph{all possible} divisions of available data between \enquote{training} and \enquote{test}, as well as \emph{all possible} cross-validations with folds of all orders. It is this completeness and thoroughness that makes the ideal inference by means of the probability calculus almost computationally impossible in some cases. We thus resort to approximate but faster \ml\ methods. These methods do not typically perform such data partitions \enquote{internally} and automatically, so we need to make them -- and only approximately -- by hand.
+\medskip
+
+Let us stress that the performance of a classifier equipped with a probability transducer still depends on the training of the raw classifier, which is the stage where a probabilistic relation between output and class is established. If the classifier's output has no mutual information with the true class (their probabilities are essentially independent), then the transducer will simply yield a uniform probability over the classes.
+
+The question then arises of what is the optimal division of available data into the training set and the calibration set. If the calibration set is too small, the transducer curve is unreliable. If the training set is too small, the correlation between output and class is unreliable. In future work we would like to find the optimal balance, possibly by a first-principle calculation.
+
 
 
 \subsection{Calculation of the probabilities}
@@ -1851,9 +1856,8 @@ The method proposed in the present work does not suffer from either of these dra
 
 It is possible to construct a probability transducer that takes the output from several classifiers at once. This would be the optimal way of doing \enquote{ensembling} from the point of view of the probability theory. In future work we plan to examine this possibility and compare it with standard ensembling methods.
 
-Let us stress that the performance of a classifier equipped with a probability transducer still depends on the training of the raw classifier, which is the stage where a probabilistic relation between output and class is established. If the classifier's output has no relation with the class variables, then the transducer will simply yield a uniform probability over the classes.
+As mentioned at the end of  \sect~\ref{sec:calibration_data}, we also plan to assess what is the best way to split available data into the training set and the calibration set, in order to have an optimal amount of mutual information between features, class, and algorithm output (training data) and a reliable transducer (calibration data).
 
-This fact leads to the question of what is the optimal division of available data into the training set and the calibration set. If the calibration set is too small, the transducer curve is unreliable. If the training set is too small, the correlation between output and class is unreliable. In future work we would like to find the optimal balance, possibly by an application of the probability calculus.
 
 For the demonstration of \sect~\ref{sec:demonstration} we also tried a \enquote{mixed} method: directly combining the output of the classifier (raw output for the \RF\ and standard softmax for the CNN), as it were a probability, with the utilities; and then classifying by utility maximization as usual. This method generally led to improvements with respect to the standard one, and in some cases also with respect to the probability-transducer augmentation. But on average, over the space of utility matrices, the mixed method was worse than the augmentation method, for both \RF\ and \CNN. In future work we may try to compare the performance of the two methods with different kinds of dataset.
 
@@ -2040,8 +2044,9 @@ We must find a way to express any kind of distribution $F(d)$. As mentioned in \
   F(c, y) = \sum_{l} w_{l}\ A(c \| \alpha_{l})\ B(y \| \beta_{l}) \ ,
 \end{equation}
 where the sum as a very large number of terms, $\set{w_{l}}$ are normalized weights, and $A(c\|\alpha)$, $B(y \| \beta)$ are distributions, possibly the product of further one-dimensional distributions. Effectively we are expressing $F(\dotv)$ by the \enquote{coordinates} $(w_{l}, \alpha_{l}, \beta_{l})$ in a space of extremely high dimensions.
+%\mynotew{add remark about number of clusters and ref...}
 
-This representation \autocites[promoted by]{dunsonetal2011}[see also][]{rasmussen1999} has several advantages:
+This representation \autocites[promoted by][]{dunsonetal2011}[see also][]{rasmussen1999} has several advantages:
 \begin{itemize}
 \item Its marginal distributions for $c$ and $y$ are also of the form~\eqref{eq:representation_F}, as shown in \sect~\ref{sec:calculation_transducer}, and easily computable.
 \item Its conditional distributions for $c$ given $y$ and vice versa have also a form similar to \eqn~\eqref{eq:representation_F} and easily computable.
