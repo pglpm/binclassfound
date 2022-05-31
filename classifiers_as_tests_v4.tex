@@ -1,7 +1,7 @@
 \pdfoutput=1
 %% Author: PGL  Porta Mana
 %% Created: 2022-04-14T17:18:22+0200
-%% Last-Updated: 2022-05-31T20:52:23+0200
+%% Last-Updated: 2022-05-31T20:58:36+0200
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Probabilities for classifier outputs
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -995,7 +995,7 @@ We choose the representation discussed by Dunson \amp\ Bhattacharya\autocites{du
   \label{eq:representation_P}
   p(c, y \| D) = \sum_{k} q_{k}\ A(c \| \alpha_{k})\ B(y \| \beta_{k})
 \end{equation}
-of a finite but large number of terms. Each term is the product of a positive weight $q_{k}$, a probability distribution $A(c \| \alpha_{k})$ for $c$ depending on parameters $\alpha_{k}$, and a probability density $B(c \| \beta_{k})$ for $y$ depending on parameters $\beta_{k}$. These distributions are chosen by us according to convenience; see the appendix~\ref{sec:deFinetti} for further details. The parameter values can be different from term to term, as indicated by the index $k$. The weights $\set{q_{k}}$ are normalized. For simplicity we shall from now on omit the dependence \enquote{$\|\dotsc, D)$} on the calibration data, leaving it implicitly understood.
+of a finite but large number of terms \autocites[see][on why the number of terms does not need to be infinite]{ishwaranetal2002b}. Each term is the product of a positive weight $q_{k}$, a probability distribution $A(c \| \alpha_{k})$ for $c$ depending on parameters $\alpha_{k}$, and a probability density $B(c \| \beta_{k})$ for $y$ depending on parameters $\beta_{k}$. These distributions are chosen by us according to convenience; see the appendix~\ref{sec:deFinetti} for further details. The parameter values can be different from term to term, as indicated by the index $k$. The weights $\set{q_{k}}$ are normalized. For simplicity we shall from now on omit the dependence \enquote{$\|\dotsc, D)$} on the calibration data, leaving it implicitly understood.
 
 This mathematical representation can approximate (under some norm) any smooth probability density in $c$ and $y$. It has the advantages of being automatically positive and normalized, and of readily producing the marginal distributions for $c$ and for $y$:
 \begin{equation}
