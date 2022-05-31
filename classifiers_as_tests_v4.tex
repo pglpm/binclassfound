@@ -1,7 +1,7 @@
 \pdfoutput=1
 %% Author: PGL  Porta Mana
 %% Created: 2022-04-14T17:18:22+0200
-%% Last-Updated: 2022-05-31T02:08:57+0200
+%% Last-Updated: 2022-05-31T08:58:46+0200
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Probabilities for classifier outputs
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -856,9 +856,9 @@ If we solved the issue of outputting proper probabilities then the remaining thr
 
 In the present work we propose an alternative solution to calculate proper class probabilities, which can then be used in conjunction with utilities to perform the final classification or decision.
 
-This solution consists in a sort of \enquote{transducer} or \enquote{calibration curve} that transforms the algorithm's raw output into a probability. It has a low computational cost, can be applied to all commonly used classifiers and to simple regression algorithms, does not need any changes in algorithm architecture or in training procedures, and is grounded on first principles. The probability thus obtained can be combined with utilities to perform the final classification task.
+This solution consists in a sort of \enquote{transducer} that transforms the algorithm's raw output into a probability. It has a low computational cost, can be applied to all commonly used classifiers and to simple regression algorithms, does not need any changes in algorithm architecture or in training procedures, and is grounded on first principles. The probability thus obtained can be combined with utilities to perform the final classification task.
 
-Moreover, this transducer has three other great benefits, which come automatically with its computation. First, it allows us to calculate both the probability of class conditional on features, and \emph{the probability of features conditional on class}. In other words it allows us to use the classification algorithm in both \enquote{discriminative} and \enquote{generative} modes \autocites[\sect~21.2.3]{russelletal1995_r2022}[\sect~8.6]{murphy2012}, even if the algorithm was not designed for a generative use. Second, its computation also gives a quantification of how much the probability would change if we had further training data. Third, it can give an \emph{evaluation of the whole classifier} -- including an uncertainty about such evaluation -- that allows us to compare it with other classifiers to choose the optimal one.
+Moreover, this transducer has three other great benefits, which come automatically with its computation. First, it gives a quantification of how much the probability would change if we had further data to calculate the transducer. Second, it can give an \emph{evaluation of the whole classifier} -- including an uncertainty about such evaluation -- that allows us to compare it with other classifiers and choose the optimal one. Third, it allows us to calculate both the probability of class conditional on features, and \emph{the probability of features conditional on class}. In other words it allows us to use the classification algorithm in both \enquote{discriminative} and \enquote{generative} modes \autocites[\sect~21.2.3]{russelletal1995_r2022}[\sect~8.6]{murphy2012}, even if the algorithm was not designed for a generative use.
 
 In \sect~\ref{sec:transducer} we present the general idea behind the probability transducer and its calculation. Its combination with the rule of expected-utility maximization to perform classification is discussed in \sect~\ref{sec:utility_classification}; we call this combined use the \enquote{augmentation} of a classifier.
 
@@ -921,14 +921,15 @@ Our first step is to acknowledge that the information contained in the feature a
 \end{empheq}
 for each class.
 
+Once we calculate the numerical values of these conditional probabilities, we effectively have a function that maps the algorithm's output to class probabilities. It therefore acts as an \emph{output-to-probability transducer}.
 
-This idea can also be informally understood in two ways. First: the classifier's output is regarded as a proxy for the feature. Second: the classifier is regarded as something analogous to a \emph{diagnostic test}, such as any common diagnostic or prognostic test used in medicine for example. We do not take diagnostic-test results at face value -- if a flu test is \enquote{positive} we do not conclude that the patient has the flu -- but rather arrive at a probability that the patient has the flu, given some statistics about results of tests performed on \enquote{verified samples} of true-positive and true-negative patients \autocites[\chap~5]{soxetal1988_r2013}[\chap~5]{huninketal2001_r2014}[see also][]{jennyetal2018}.
+This idea can also be informally understood in two ways. First: the classifier's output is regarded as a proxy for the feature. Second: the classifier is regarded as something analogous to a \emph{diagnostic test}, such as any common diagnostic or prognostic test used in medicine for example. A diagnostic test is useful because its result has a probabilistic relationship with the unknown of interest, say, a medical condition. This relationship is easier to quantify than the one between the condition and the more complex biological variables that the test is exploiting \enquote{under the hood}. Likewise, the output of a classifier has a probabilistic relationship with the unknown class (owing to the training process); and this relationship is in many cases easier to quantify than the one between the class and the typically complex \enquote{features} that are the classifier's input. We do not take diagnostic-test results at face value -- if a flu test is \enquote{positive} we do not conclude that the patient has the flu -- but rather arrive at a probability that the patient has the flu, given some statistics about results of tests performed on \emph{verified samples} of true-positive and true-negative patients \autocites[\chap~5]{soxetal1988_r2013}[\chap~5]{huninketal2001_r2014}[see also][]{jennyetal2018}. Analogously, we need some calibration data to find the probabilities~\eqref{eq:accessible_prob_newunit}.
 
 
 \subsection{Calibration data}
 \label{sec:calibration_data}
 
-To calculate the probability above, however, it is necessary to have examples of further pairs $(\texts{class of unit}, \texts{output for unit})$, of which the new unit's pair can be considered a \enquote{representative sample} \autocites[for a critical analysis of the sometimes hollow term \enquote{representative sample} see][]{kruskaletal1979,kruskaletal1979b,kruskaletal1979c,kruskaletal1980} and vice versa -- exactly for the same reason why we need training data in the first place to calculate the probability of a class given the feature. Or, with a more precise term, the examples and the new unit must be \emph{exchangeable} \autocites{lindleyetal1981}.
+To calculate the conditional probabilities~\eqref{eq:accessible_prob_newunit} it is necessary to have examples of further pairs $(\texts{class of unit}, \texts{output for unit})$, of which the new unit's pair can be considered a \enquote{representative sample} \autocites[for a critical analysis of the sometimes hollow term \enquote{representative sample} see][]{kruskaletal1979,kruskaletal1979b,kruskaletal1979c,kruskaletal1980} and vice versa -- exactly for the same reason why we need training data in the first place to calculate the probability of a class given the feature. Or, with a more precise term, the examples and the new unit must be \emph{exchangeable} \autocites{lindleyetal1981}.
 
 For this purpose, can we use the pairs $(\texts{class of unit}, \texts{output for unit})$ of the training data? This would be very convenient, as those pairs are readily available. But answer is no. The reason is that the outputs of the training data are produced from the features \emph{and the classes} jointly; this is the very point of the training phase. There is therefore a direct informational dependence between the classes and the outputs of the training data. For the new unit, on the other hand, the classifier produces its output from the feature alone. \emph{As regards the probabilistic relation between class and output, the new unit is not exchangeable with (or a representative sample of) the training data}.
 
@@ -1826,7 +1827,7 @@ The basic theory that allows us to face most of these requirements has been arou
 
 The main obstacle in using decision theory is that it requires proper probabilities, which in many applications might only be obtained at too high computational costs -- \emph{if these probabilities are conditional on the \enquote{features} constituting the input to classifier}.
 
-We have proposed the idea of \emph{using probabilities conditional on the output of the classifier} instead. This is somehow like using the classifier in the guise of a diagnostic test, such as a typical medical test. A diagnostic test is useful because its result has a probabilistic relationship with the unknown of interest, say, a medical condition. This relationship is easier to quantify than the one between the condition and the more complex biological variables that the test is exploiting \enquote{under the hood}. Likewise, the output of a classifier has a probabilistic relationship with the unknown class (owing to the training process); and this relationship is in many cases easier to quantify than the one between the class and the typically complex \enquote{features} that are the classifier's input.
+We have proposed the idea of \emph{using probabilities conditional on the output of the classifier} instead. This is somehow like using the classifier in the guise of a diagnostic test, such as a typical medical test.
 
 This probabilistic quantification is not computationally expensive, can be calculated exactly by Bayesian \emph{model-free} (non-parametric) density-regression methods \autocites{dunsonetal2011}, and \emph{only needs to be done once} per trained algorithm.
 
@@ -1845,16 +1846,25 @@ The calculation of a probability transducer from a calibration dataset also prov
 \item the possibility of using the classifier in a \enquote{generative mode}, giving the probability of the output conditional on the class; this is useful when the only available data for training has different statistical properties from the real-use data.
 \end{enumerate*}
 
-\subsubsection{Final remarks}
-\label{sec:comments_cost-sens-learn}
-
-For the demonstration of \sect~\ref{sec:demonstration} we also tried out a \enquote{mixed} method: directly combining the output of the classifier (raw output for the \RF\ and standard softmax for the CNN), as it were a probability, with the utilities for utility maximization. This method generally led to improvements with respect to the standard one, and in some cases also with respect to the probability-transducer augmentation. But on average, over the space of utility matrices, the mixed method was worse than the augmentation method, for both \RF\ and \CNN. In future work we will try to compare the performance of the two methods with different kinds of dataset.
-
 \medskip
 
-Some literature has promoted and employed the use of utilities in so called cost-sensitive learning \autocites{elkan2001,correabahnsenetal2015,lingetal2017}. One approach is to combine utilities and loss function, so that the utilities can have an effect on the training of the classifier. This approach effectively wastes information and has computational disadvantages. First, since the optimal decision depends on the product of utilities and probabilities, the algorithm learns about this product only, and not about the two factors separately. Yet, the utilities are known, otherwise they couldn't be combined with the loss function. This utility information is therefore wasted. Second, if the statistics of the data involved remain the same, but the utilities suddenly change, the classifier has to be trained anew. Such a classifier could not be used in cases where the utilities differ from one tested item to the next (see discussion above).
+Some literature has promoted and employed the use of utilities in so called cost-sensitive learning \autocites{elkan2001,correabahnsenetal2015,lingetal2017}. One approach is to bake utilities into the loss function used at the training stage, so that the utilities can have an effect on the training of the classifier. This approach effectively wastes information and has computational disadvantages. First, since the optimal decision depends on the product of utilities and probabilities, the algorithm learns about this product only, and not about the two factors separately. \autocites[In][\sects~2--3, for example, the decision threshold of the algorithm is changed by making the algorithm  learn wrong class probabilities on purpose]{elkan2001} Yet, the utilities are known, otherwise they could not be combined with the loss function. The information about them is therefore wasted. Second, if the statistics of the data involved remain the same, but the utilities suddenly change, the classifier has to be trained anew. Such a classifier cannot be used in cases where the utilities differ from one tested item to the next (see discussion above).
 
-The method proposed in the present work does not suffer from either of these drawbacks. The training phase needs no changes, and focuses on retrieving information about the data's statistics -- which is then extracted by the probability transducer. The full information contained in the utilities is used. And these utilities can even be changed on the fly during the use of the classifier. We plan to examine more thoroughly the different performances of these two procedures.
+The method proposed in the present work does not suffer from either of these drawbacks. The training phase needs no changes, and focuses on retrieving information about the data's statistics -- which is then extracted by the probability transducer. The full information contained in the utilities is used. And the utilities can even be changed on the fly during the use of the classifier.
+
+\subsubsection{Future directions}
+\label{sec:future}
+
+It is possible to construct a probability transducer that takes the output from several classifiers at once. This would be the optimal way of doing \enquote{ensembling} from the point of view of the probability theory. In future work we plan to examine this possibility and compare it with standard ensembling methods.
+
+Let us stress that the performance of a classifier equipped with a probability transducer still depends on the training of the raw classifier, which is the stage where a probabilistic relation between output and class is established. If the classifier's output has no relation with the class variables, then the transducer will simply yield a uniform probability over the classes.
+
+This fact leads to the question of what is the optimal division of available data into the training set and the calibration set. If the calibration set is too small, the transducer curve is unreliable. If the training set is too small, the correlation between output and class is unreliable. In future work we would like to find the optimal balance, possibly by an application of the probability calculus.
+
+For the demonstration of \sect~\ref{sec:demonstration} we also tried a \enquote{mixed} method: directly combining the output of the classifier (raw output for the \RF\ and standard softmax for the CNN), as it were a probability, with the utilities; and then classifying by utility maximization as usual. This method generally led to improvements with respect to the standard one, and in some cases also with respect to the probability-transducer augmentation. But on average, over the space of utility matrices, the mixed method was worse than the augmentation method, for both \RF\ and \CNN. In future work we may try to compare the performance of the two methods with different kinds of dataset.
+
+
+
 
 % \mynotew{Maybe add note about how (sequential) decision theory was used during World War I; see  \textcites{good1950} around \sect~6.2 }
 
