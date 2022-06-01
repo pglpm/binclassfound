@@ -1,6 +1,6 @@
 ## Author: PGL  Porta Mana
 ## Created: 2022-03-17T14:21:57+0100
-## Last-Updated: 2022-05-31T20:27:26+0200
+## Last-Updated: 2022-06-01T07:53:47+0200
 ################
 ## Exploration of several issues for binary classifiers
 ################
@@ -150,6 +150,21 @@ legend(x=0.25,y=1.05, c('class 1', 'class 0'), lty=c(1,2), col=c(1,2), lwd=3, bt
 ##
 polygon(x=c(xgrid,rev(xgrid)), y=c(qgrid[1,],rev(qgrid[2,])), col=paste0(palette()[1],'40'), border=NA)
 polygon(x=c(xgrid,rev(xgrid)), y=1-c(qgrid[1,],rev(qgrid[2,])), col=paste0(palette()[2],'40'), border=NA)
+dev.off()
+
+set.seed(333)
+pdff('../transducer_curve_RFraw_all', asp=1)
+tplot(x=xgrid, y=opgrid[,sample(1:ncol(opgrid),128)], xlab='output',
+##      ylab=expression(p~group('(',class~output,')')),
+      ylab=bquote('P'~group('(','class 1', '.')~group('|', ' output',')')),
+      mar=c(4.5,5.5,1,1),
+      lty=1,
+      ylim=c(0,1), lwd=1, alpha=0.75, col=5, family='Palatino', asp=1)
+tplot(x=xgrid, y=rowMeans(opgrid), add=T, lwd=1)
+##legend(x=0.25,y=1.05, c('class 1', 'class 0'), lty=c(1,2), col=c(1,2), lwd=3, bty='n', cex=1.5)
+##
+## polygon(x=c(xgrid,rev(xgrid)), y=c(qgrid[1,],rev(qgrid[2,])), col=paste0(palette()[1],'40'), border=NA)
+## polygon(x=c(xgrid,rev(xgrid)), y=1-c(qgrid[1,],rev(qgrid[2,])), col=paste0(palette()[2],'40'), border=NA)
 dev.off()
 
 
@@ -819,7 +834,7 @@ norms <- allmaxs[1:nn2]-allmins[1:nn2]
 lbound <- min((RFallscores[1,1:nn2]-rmins)/norms, (RFallscores[3,1:nn2]-rmins)/norms,
               (CNNallscores[1,1:nn2]-rmins)/norms, (CNNallscores[3,1:nn2]-rmins)/norms)
 ##
-nact <- which(lxy[,1]>-0 & lxy[,2]<0)[1:nn2]
+nact <- which(lxy[,1]<0 & lxy[,2]<0)[1:nn2]
 rmins <- allmins[nact]
 norms <- allmaxs[nact]-allmins[nact]
 ## lbound <- min((RFallscores[1,1:nn2]-rmins)/norms, (RFallscores[3,1:nn2]-rmins)/norms,
