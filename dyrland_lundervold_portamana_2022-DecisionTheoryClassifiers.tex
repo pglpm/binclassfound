@@ -1,7 +1,7 @@
 \pdfoutput=1
 %% Author: PGL  Porta Mana
 %% Created: 2022-03-04T07:39:34+0200
-%% Last-Updated: 2022-05-31T11:09:09+0200
+%% Last-Updated: 2022-06-01T12:13:00+0200
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Decision theory for machine-learning classifiers
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -922,12 +922,12 @@ The story above illustrates several well-known issues of currently popular evalu
       \clap{\textit{\parbox{6em}{\centering\scriptsize true class\\$0\hspace{4em}1$}}
     }} \ .
 \end{equation}
-One could argue that also this case there is a great economic difference between correct and wrong classification for class~1, as compared with class~0. The true-negative rate should, therefore, still be the appropriate metric. Yet a simple calculation shows that, in this case, it is classifier~$\Beta$ that actually leads to the best average revenue: $7.3\,\text{\texteuro/component}$, vs $4.7\,\text{\texteuro/component}$ for classifier $\Alpha$. Hence the true-negative rate is \emph{not} the appropriate metric here and our qualitative reasoning failed us.
+One could argue that also in this case there is a great economic difference between correct and wrong classification for class~1, as compared with class~0. The true-negative rate should, therefore, still be the appropriate metric. Yet a simple calculation shows that, in this case, it is classifier~$\Beta$ that actually leads to the best average revenue: $7.3\,\text{\texteuro/component}$, vs $4.7\,\text{\texteuro/component}$ for classifier $\Alpha$. Hence the true-negative rate is \emph{not} the appropriate metric here and our qualitative reasoning failed us.
 
 
 \item A classifier favoured by the majority of available metrics can still turn out \emph{not} to be the best one in practice.
 
-\item\label{item:ad_hoc} Most popular metrics are introduced by intuitive reasoning, ad hoc mathematical operations, special assumptions (such as gaussianity\autocites[e.g.][\sect~31 p.~183 for the Matthews correlation coefficient]{fisher1925_r1963}), and analysis of special cases. Unfortunately such derivations do not guarantee generalization to all cases, nor that the proposed metric is uniquely determined by the chosen assumptions, nor that it satisfies other basic but neglected requirements. By contrast, compare for instance the derivation of the Shannon entropy \autocites{shannon1948}[\sect~3.2]{woodward1953_r1964}[also][]{goodetal1968} as the \emph{unique} metric universally satisfying a set of general, basic requirements for the amount of information; or the derivation of the probability calculus\footnote{\cites{cox1946,fine1973}[\chaps~1--2]{jaynes1994_r2003}. Some literature cites \cite{halpern1999} as a critique of Cox's proof, but curiously does not cite Halpern's \cite*{halpern1999b} partial rebuttal of his own critique, as well as the rebuttals by \cite{snow1998,snow2001}.} as the \emph{unique} set of rules satisfying general rational requirements for inductive reasoning, learning, and prediction \autocites{selfetal1987,cheeseman1988}[\chap~12]{russelletal1995_r2022}.
+\item\label{item:ad_hoc} Most popular metrics are introduced by intuitive reasoning, ad hoc mathematical operations, special assumptions (such as Gaussianity\autocites[e.g.][\sect~31 p.~183 for the Matthews correlation coefficient]{fisher1925_r1963}), and analysis of special cases. Unfortunately such derivations do not guarantee generalization to all cases, nor that the proposed metric is uniquely determined by the chosen assumptions, nor that it satisfies other basic but neglected requirements. By contrast, compare such derivations for instance with the derivation of the Shannon entropy \autocites{shannon1948}[\sect~3.2]{woodward1953_r1964}[also][]{goodetal1968} as the \emph{unique} metric universally satisfying a set of general, basic requirements for the amount of information; or with the derivation of the probability calculus\footnote{\cites{cox1946,fine1973}[\chaps~1--2]{jaynes1994_r2003}. Some literature cites \cite{halpern1999} as a critique of Cox's proof, but curiously does not cite Halpern's \cite*{halpern1999b} partial rebuttal of his own critique, as well as the rebuttals by \cite{snow1998,snow2001}.} as the \emph{unique} set of rules satisfying general rational requirements for inductive reasoning, learning, and prediction \autocites{selfetal1987,cheeseman1988}[\chap~12]{russelletal1995_r2022}.
   
 \item\label{item:hope_medical} Let us assume that some of the popular metrics identify the best algorithm \enquote{in the majority of cases} -- although it is difficult to statistically define such a majority, and no real surveys have ever been conducted to back up such an assumption. Yet, do we expect the end-user to simply \emph{hope} not to belong to the unlucky minority? Is such uncertainty inevitable?
 
@@ -1114,7 +1114,8 @@ We can represent this space as in \fig~\ref{fig:space_UM}. The centre is the uti
   \begin{bmatrix}
     1 - x\ \delt(x > 0) & y\ \delt(y>0) \\
     -y\ \delt(y<0) & 1 + x\ \delt(x < 0)
-  \end{bmatrix} \ .
+  \end{bmatrix} \ ,
+  \qquad \abs{x},\abs{y} \le 1 \ .
 \end{equation}
 
 Note that this representation is \emph{not} meant to reflect any convex or metric properties, however. No metric or distance is defined in the space of utility matrices. Convex combination is defined if we drop the normalization~\eqref{eq:normalize_utilities} % and will be discussed in \sect~\mynotep{\ldots},
@@ -1167,9 +1168,9 @@ We can also use this freedom to include the term $a\ f_{0}\ U_{10} + a\ f_{1}\ U
   a(N, f_{0}, f_{1})\ \cy\  C_{11} +
   b(N, f_{0}, f_{1})
 \end{equation}
-\emph{where $\cx,\cy$ are constants that do not depend on $C_{00}, C_{11}, N, f_{0}, f_{1}$; and $a(\dotv)>0$, $b(\dotv)$ are arbitrary functions of $N, f_{0}, f_{1}$ only.}
+\emph{where $\cx,\cy$ are real constants that do not depend on $C_{00}, C_{11}, N, f_{0}, f_{1}$; and $a(\dotv)>0$, $b(\dotv)$ are arbitrary functions of $N, f_{0}, f_{1}$ only.}
 
-A monotonic function (such as an exponential) of such form is also admissible if we only require a comparison score to rank several classifiers from best to worst.
+A monotonic function (such as an exponential) of the expression above is also admissible if we only require a comparison score to rank several classifiers from best to worst.
 
 Let us examine some common evaluation metrics for binary classification from this point of view. We write their formulae in terms of $C_{00}, C_{11}$.
 
@@ -1203,7 +1204,7 @@ We see that many popular evaluation metrics do not comply with the principles of
 
 First, as discussed in \sect~\ref{sec:decision_theory}, the metric involves an interdependence of utilities and classification frequencies, which implies some form of cognitive bias\autocites[discuss such biases regarding the $F_{1}$-measure]{handetal2018}.
 
-Second, the ranking of confusion matrices yielded by the metric does not fully agree with that yielded by any utility matrix -- a full agreement would otherwise imply that the metric could be written in the form~\eqref{eq:general_valuation_metric}. Some confusion matrices must therefore be incorrectly ranked. Since any rational classification problem is characterized by some underlying utility matrix, this means that the incompliant metric will always lead to some wrong evaluations. By contrast, compliant metrics such as the accuracy give completely correct rankings for all pairs of confusion matrices in specific sets of classification problems.
+Second, the ranking of confusion matrices yielded by the metric does not fully agree with that yielded by any utility matrix -- a full agreement would otherwise imply that the metric could be written in the form~\eqref{eq:general_valuation_metric}. Some confusion matrices must therefore be incorrectly ranked. Since any rational classification problem is characterized by some underlying utility matrix, this means that the non-compliant metric will always lead to some wrong evaluations. By contrast, compliant metrics such as the accuracy give completely correct rankings for all pairs of confusion matrices in specific sets of classification problems.
 
 The second phenomenon is illustrated in the plots of \figs~\ref{fig:metrics_vs_utility}--\ref{fig:metrics_vs_utility2}.
 % \setlength{\fboxsep}{0pt}%
@@ -1222,7 +1223,7 @@ The second phenomenon is illustrated in the plots of \figs~\ref{fig:metrics_vs_u
 %
   % {\color{myred}Red triangular pairs} (almost overlapping in some plots) in each column show two confusion matrices wrongly ranked by \emph{all} metrics but one simultaneously.
   %%
-  The accuracy yields correct evaluations the classification problem on the left column; and the true-positive rate, for the one on the right. }
+  The accuracy gives correct evaluations for the classification problem on the left column; and the true-positive rate, for the one on the right. }
   \label{fig:metrics_vs_utility}
 \end{figure}
 %%
@@ -1242,7 +1243,7 @@ The confusion matrices are selected by first fixing a proportion of classes in t
 true-positive rate and a true-negative rate are independently selected %
 \begin{minipage}[t]{0.66\linewidth}
 from the range $\clcl{1/2,1}$, with a probability linearly increasing in the rate (median of 0.85, lower and upper quartiles at 0.75 and 0.93; see side plot). These confusion matrices therefore represent the classification statistics produced %(one and the same in each figure)
-  by classifiers that tend to have good performance -- as is clear from the fact that the points tend to accumulate on the upper-right corners of the plots.
+  by classifiers that tend to have high true-negative and true-positive rates -- as is clear from the fact that the points tend to accumulate on the upper-right corners of the plots.
 \end{minipage}%
 \hfill\begin{minipage}[t]{0.32\linewidth}\vspace{0pt}
 \centering\includegraphics[width=\linewidth]{TP_TN_prob.pdf}
@@ -1285,7 +1286,7 @@ Several interrelated questions spring from our arguments, though:
 \item What happens if the utilities we use are actually wrong, that is, not the true ones underlying the problem?
 \item How often do uncompliant metrics such as $F_{1}$-measure or Matthews correlation coefficient lead to incorrect results, on average?
 \end{itemize}
-In fact, if a small error in the assessment of the utilities led to a large number of wrong evaluations, while incompliant metrics led to a small number of wrong evaluations on average, then all the rigorousness of decision-theoretic metrics would be useless in practice, and  incompliant metrics would be best for real applications.
+In fact, if a small error in the assessment of the utilities led to a large number of wrong evaluations, while non-compliant metrics led to a small number of wrong evaluations on average, then all the rigorousness of decision-theoretic metrics would be useless in practice, and  non-compliant metrics would be best for real applications.
 
 This is not the case, however. We now discuss how to deal with uncertainty about the utilities and present an important result: Using wrong utilities, even with relative errors almost as large as 20\% of the maximum utility, still leads to fewer incorrect relative evaluations on average than using many currently popular metrics.
 
@@ -1405,7 +1406,7 @@ A utility error with standard deviations around $0.25$ covers the whole space of
 
 Another very common metric for evaluating binary classifiers is the Area Under the Curve of the Receiver Operating Characteristic, or \enquote{area under the curve} for short. This metric can only be used for particular classifying algorithms, and its meaning is different from that of the metrics reviewed so far. For these reasons, we leave a full discussion of it to future works and only offer a couple of remarks here.
 
-The area under the curve can only be computed for classifiers that output a continuous variable rather than a class. A threshold for this variable determines whether its value predicts one class or the other. Different choices of threshold lead to different pairs of false-positive rate $f$ (which is $1-{}$true-negative rate) and true-positive rate $t$ in a given test set. These pairs can be plotted as a curve $f \mapsto t(f)$ on a graph with corresponding axes. Given the proportion of classes in the test set, every point on such curve corresponds to a possible confusion matrix $C_{ij}(f)$ that the classifier can produce depending on the threshold chosen. The area subtended by such curve is a weighted average of true-positive rates with a peculiar choice of weights; the weights are uniform as a function of the false-positive rate, but generally not uniform as a function of the threshold, for example. The meaning and proper use of the receiver operating characteristic are discussed in a classic by \cites{metz1978}, see especially p.~290.
+The area under the curve can only be computed for classifiers that output a continuous variable rather than a class. A threshold for this variable determines whether its value predicts one class or the other. Different choices of threshold lead to different pairs of false-positive rate $f$ (which is $1-{}$true-negative rate) and true-positive rate $t$ in a given test set. These pairs can be plotted as a curve $f \mapsto t(f)$ on a graph with corresponding axes. Given the proportion of classes in the test set, every point on the curve corresponds to a possible confusion matrix $C_{ij}(f)$ that the classifier can produce depending on the threshold chosen. The area subtended by the curve is a weighted average of true-positive rates with a peculiar choice of weights; the weights are uniform as a function of the false-positive rate, but generally not uniform as a function of the threshold, for example. The meaning and proper use of the receiver operating characteristic are discussed in a classic by \cites{metz1978}, see especially p.~290.
 
 
 \medskip
@@ -1575,7 +1576,7 @@ In a companion work \autocites{dyrlandetal2022b} we apply the general ideas pres
 
   KD would like to thank family for endless support; partner Synne for constant love, support, and encouragement; and the developers and maintainers of Python, FastAi, PyTorch, scikit-learn, NumPy and RDKit for free open source software and for making the experiments possible. 
 
-  PGLPM thanks Maja, Mari, Miri, Emma for continuous encouragement and affection;  Buster Keaton and Saitama for filling life with awe and inspiration; and the developers and maintainers of \LaTeX, Emacs, AUC\TeX, Open Science Framework, R, Python, Inkscape, LibreOffice, Sci-Hub for making a free and impartial scientific exchange possible.
+  PGLPM thanks Iv{\'an} Davidovich for useful comments on previous drafts of this work; Maja, Mari, Miri, Emma for continuous encouragement and affection; Buster Keaton and Saitama for filling life with awe and inspiration; and the developers and maintainers of \LaTeX, Emacs, AUC\TeX, Open Science Framework, R, Python, Inkscape, LibreOffice, Sci-Hub for making a free and impartial scientific exchange possible.
   % Our work was supported by the Trond Mohn Research Foundation, grant number BFS2018TMT07
 %\rotatebox{15}{P}\rotatebox{5}{I}\rotatebox{-10}{P}\rotatebox{10}{\reflectbox{P}}\rotatebox{-5}{O}.
 %\sourceatright{\autanet}
