@@ -1,7 +1,7 @@
 \pdfoutput=1
 %% Author: PGL  Porta Mana
 %% Created: 2022-04-14T17:18:22+0200
-%% Last-Updated: 2022-06-01T10:07:45+0200
+%% Last-Updated: 2022-06-01T10:43:14+0200
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Probabilities for classifier outputs
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -1227,12 +1227,12 @@ Once all items in the demonstration dataset are classified, we compare their cho
 
 The standard method produces the same confusion matrix in all four utility cases because it does not use utilities to choose a class. The augmentation produces instead a different confusion matrix in each utility case: even if the class probabilities for a give datum are the same in all cases, the threshold of acceptance varies so as to always be optimal for the utilities involved.
 
-A peculiar case of this automatic optimization of the threshold is visible for the transducer applied to either algorithm in case~IV: it leads to the confusion matrix
+A peculiar case of this automatic optimization of the threshold is visible for the transducer applied to either algorithm in case~IV: it leads, for both the \RF\ and the \CNN, to the confusion matrix
 \begin{equation}
   \label{eq:peculiar_CM}
   \umatrix{3262}{326}{0}{0}
 \end{equation}
-which means that \emph{all} items were classified as \enquote{0}, \enquote{inactive}. How can this happen? Let us say that the probabilities for class~0 and~1, determined by the transducer from the \rf\ output, are $1-p$ and $p$. In case~IV, the expected utilities of choosing class~0 or~1 are given by the matrix multiplication $\sumatrix{10}{0}{-10}{1} \begin{bsmallmatrix}1-p\\p\end{bsmallmatrix}$:
+which means that \emph{all} items were classified as \enquote{0}, \enquote{inactive}. How can this happen? Let us say that the probabilities for class~0 and~1, determined by the transducer from algorithm output, are $1-p$ and $p$. In case~IV, the expected utilities of choosing class~0 or~1 are given by the matrix multiplication $\sumatrix{10}{0}{-10}{1} \begin{bsmallmatrix}1-p\\p\end{bsmallmatrix}$:
 \begin{equation}
   \label{eq:expe_utilities_peculiar}
   \begin{aligned}
@@ -1248,7 +1248,7 @@ It is optimal to choose class~1 only if (disregarding ties)
   \qquad\text{or}\qquad
   p > 20/21 \approx 0.952 \ ,
 \end{equation}
-that is, only if the probability of class~1 is higher than 95\%. The threshold is so high because on the one hand there's a high cost ($-10$) if the class isn't actually~1, and on the other hand a high reward ($10$) if the class is actually~0. Now, a look at the transducer curve for the \RF, \fig~\ref{fig:prob_curve_RF}, shows that the transducer never gives a probability higher than 93\% to class~1. Similarly the transducer for the \CNN, \fig~\ref{fig:prob_curve_CNN}, never reaches probabilities above 92\%. So the threshold of 95\% will never be met in either case, and no item will be classified as~1. It is simply never rewarding, on average, to do so \autocites[\cf\ the analysis by]{drummondetal2005}. It can be seen that this situation will occur with any utility matrix $\sumatrix{a}{b}{c}{d}$, with $a>c$ and $d>b$, such that $\frac{a-c}{a-c+d-b}\approx 0.93$.
+that is, only if the probability of class~1 is higher than 95\%. The threshold is so high because on the one hand there is a high cost ($-10$) if the true class is not~1, and on the other hand a high reward ($10$) if the true class is indeed~0. Now, a look at the transducer curve for the \RF, \fig~\ref{fig:prob_curve_RF}, shows that the transducer never assigns a probability higher than 93\% to class~1. Similarly the transducer for the \CNN, \fig~\ref{fig:prob_curve_CNN}, never reaches probabilities above 92\%. So the threshold of 95\% will never be met in either case, and no item will be classified as~1. It is simply never rewarding, on average, to do so \autocites[\cf\ the analysis by]{drummondetal2005}. It can be seen that this situation will occur with any utility matrix $\sumatrix{a}{b}{c}{d}$, with $a>c$ and $d>b$, such that $\frac{a-c}{a-c+d-b}\approx 0.93$.
 
 This peculiar situation has a notable practical consequence. We have found the transducer curve for a classifier, and see that its maximum probability for class~1 is 93\%. We have assessed that the utilities involved are $\sumatrix{10}{0}{-10}{1}$, so the threshold to classify as~1 is 95\%. Then we immediately find that \emph{there is no need to employ that classifier, in this utility case}: it is simply more profitable to automatically treat all data as class~0.
 
