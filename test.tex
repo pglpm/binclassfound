@@ -1,7 +1,7 @@
 \pdfoutput=1
 %% Author: PGL  Porta Mana
 %% Created: 2022-04-14T17:18:22+0200
-%% Last-Updated: Sat Jun  4 21:19:58 2022 (+0200)
+%% Last-Updated: Sat Jun  4 12:59:43 2022 (+0200)
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Probabilities for classifier outputs
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -544,9 +544,7 @@ P.G.L.  Porta Mana  \href{https://orcid.org/0000-0002-6070-0784}{\protect\includ
 \\{\tiny(listed alphabetically)}
 \\[\jot]
 {\footnotesize Dept of Computer science, Electrical Engineering and Mathematical Sciences,\\Western Norway University of Applied Sciences, Bergen, Norway
-  \\[\jot]\textsuperscript{\ensuremath{\dagger}}\amp\ Mohn Medical Imaging and Visualization Centre, Dept of Radiology,\\Haukeland University Hospital, Bergen, Norway
-
-}
+\\[\jot]\textsuperscript{\ensuremath{\dagger}}\amp\ Mohn Medical Imaging and Visualization Centre, Dept of Radiology,\\Haukeland University Hospital, Bergen, Norway}
 }
 
 %\date{Draft of \today\ (first drafted \firstdraft)}
@@ -921,7 +919,7 @@ Once we calculate the numerical values of these conditional probabilities, we ef
 
 This idea can also be informally understood in two ways. First: the classifier's output is regarded as a proxy for the feature. Second: the classifier is regarded as something analogous to a \emph{diagnostic test}, such as any common diagnostic or prognostic test used in medicine for example. A diagnostic test is useful because its result has a probabilistic relationship with the unknown of interest, say, a medical condition. This relationship is easier to quantify than the one between the condition and the more complex biological variables that the test is exploiting \enquote{under the hood}. Likewise, the output of a classifier has a probabilistic relationship with the unknown class (owing to the training process); and this relationship is in many cases easier to quantify than the one between the class and the typically complex \enquote{features} that are the classifier's input. We do not take diagnostic-test results at face value -- if a flu test is \enquote{positive} we do not conclude that the patient has the flu -- but rather arrive at a probability that the patient has the flu, given some statistics about results of tests performed on \emph{verified samples} of true-positive and true-negative patients \autocites[\chap~5]{soxetal1988_r2013}[\chap~5]{huninketal2001_r2014}[see also][]{jennyetal2018}. Analogously, we need some calibration data to find the probabilities~\eqref{eq:accessible_prob_newunit}.
 
-
+ 
 \subsection{Calibration data}
 \label{sec:calibration_data}
 
@@ -1104,33 +1102,28 @@ Technical details about the setup and training of the two classifiers and of the
 \subsection{Probability-transducer curves}
 \label{sec:demo_curves}
 
-Mathematical details about the expression of the joint probability $p(c,y)$, \eqn~\eqref{eq:representation_P}, for the \RF\ and the \CNN\ are given in appendix~\ref{sec:MCMC}.
-
 \subsubsection{Random forest}
 \label{sec:curve_RF}
 
+The joint probability of class $c$ and output $y$, \eqn~\eqref{eq:representation_P}, for the \RF\ is expressed by the sum
+\begin{equation}
+  \label{eq:P_c_out_RF}
+  p(c, y) = \sum_{k} q_{k}\
+  [c\ \alpha_{k} + (1-c)\ (1-\alpha_{k})]\ 
+  \No(y \| \mu_{k}, \sigma_{k})
+\end{equation}
+where $\No(\cdot)$ is a Gaussian as in \eqn~\eqref{eq:distr_output}. The sum contains $2^{18} \approx 260\,000$ terms.
+% ; $L(y)$ is a logit transformation composed with a small contraction around $0.5$, to take care of $0$ and $1$ values, which maps the output $y\in \clcl{0,1}$ onto the real numbers \autocites[\cf][\sect~3.3 \eqn~(19)]{johnson1949}; $L'(y)$ is its Jacobian determinant;
 
-% The joint probability of class $c$ and output $y$, \eqn~\eqref{eq:representation_P}, for the \RF\ is expressed by the sum
-% \begin{equation}
-%   \label{eq:P_c_out_RF}
-%   p(c, y) = \sum_{k} q_{k}\
-%   [c\ \alpha_{k} + (1-c)\ (1-\alpha_{k})]\ 
-%   \No(y \| \mu_{k}, \sigma_{k})
-% \end{equation}
-% where $\No(\cdot)$ is a Gaussian as in \eqn~\eqref{eq:distr_output}. The sum contains $2^{18} \approx 260\,000$ terms.
-% % ; $L(y)$ is a logit transformation composed with a small contraction around $0.5$, to take care of $0$ and $1$ values, which maps the output $y\in \clcl{0,1}$ onto the real numbers \autocites[\cf][\sect~3.3 \eqn~(19)]{johnson1949}; $L'(y)$ is its Jacobian determinant;
-
-\begin{figure}[!t]
+\begin{figure}[t]
 % P range:  0.1411262 92.9317592
   \centering
   \includegraphics[width=\linewidth]{transducer_curve_RFraw2.pdf}\\
-  \caption{Probabilities of class~1 (\enquote{active}, \textcolor{mypurpleblue}{blue solid curve}) and class~0 (\enquote{inactive}, \textcolor{myred}{red dashed curve}) conditional on the \rf\ output. Their extremal values are 0.0014 and 0.929. The \rf\ output clearly cannot be interpreted as a probability. The shaded region around each curve represents its 12.5\%--87.5\% range of possible variability if more data were used to calculate the probabilities.}
+  \caption{Probabilities of class~1 (\enquote{active}, \textcolor{mypurpleblue}{blue solid curve}) and class~0 (\enquote{inactive}, \textcolor{myred}{red dashed curve}) conditional on the \rf\ output. Their extremal values are 0.0014 and 0.929. The shaded region around each curve represents its 12.5\%--87.5\% range of possible variability if more data were used to calculate the probabilities.}
   \label{fig:prob_curve_RF}
 \end{figure}
 %
 Figure~\ref{fig:prob_curve_RF} shows the probabilities of classes~1 and~0 conditional on the \rf\ output: $\p(\texts{class 1} \| \texts{output})$ and $\p(\texts{class 0} \| \texts{output})$. It also shows the range of variability that these probabilities could have if more data were used for the calibration: with a 75\% probability they would remain within the shaded regions. This variability information is provided for free by the calculation; we plan to discuss and use it more in future work.
-
-This curve is not a straight line, which means that the \rf\ output cannot be interpreted as a probability. Note that for an output of around 0.32 both classes are equally probable. For an output of 0.5, class~1 has a probability of around 75\%. 
 
 The probabilities increase (class~1) or decrease (class~0) monotonically up to output values of around 0.9. The minimum and maximum probabilities are 0.14\% and 92.9\%; these values will be important for a later discussion. The output, if interpreted as a probability for class~1 (\enquote{active}), tends to be too pessimistic for this class (and too optimistic for the other) in a range from roughly 0.25 to 0.95; and too optimistic outside this range. For instance, for an output of 0.3 the probability for class~1 is 40\%; for an output of 1 the probability for class 1 is 92\%.
 
@@ -1138,15 +1131,15 @@ The probabilities increase (class~1) or decrease (class~0) monotonically up to o
 \subsubsection{Convolutional neural network}
 \label{sec:curve_CNN}
 
-% The joint probability of class $c$ and the bivariate output $y\equiv (y_{0}, y_{1})$ of the \CNN\ is expressed by the sum
-% \begin{multline}
-%   \label{eq:P_c_out_CNN}
-%   p(c, y_{0}, y_{1}) ={}\\ \sum_{k} q_{k}\
-%   [c\ \alpha_{k} + (1-c)\ (1-\alpha_{k})]\
-%   \No(y_{0} \| \mu_{0k}, \sigma_{0k})\ 
-%   \No(y_{1} \| \mu_{1k}, \sigma_{1k})
-% \end{multline}
-% containing again $2^{18} \approx 260\,000$ terms, and with parameters analogous to those of \eqn~\eqref{eq:P_c_out_RF}.
+The joint probability of class $c$ and the bivariate output $y\equiv (y_{0}, y_{1})$ of the \CNN\ is expressed by the sum
+\begin{multline}
+  \label{eq:P_c_out_CNN}
+  p(c, y_{0}, y_{1}) ={}\\ \sum_{k} q_{k}\
+  [c\ \alpha_{k} + (1-c)\ (1-\alpha_{k})]\
+  \No(y_{0} \| \mu_{0k}, \sigma_{0k})\ 
+  \No(y_{1} \| \mu_{1k}, \sigma_{1k})
+\end{multline}
+containing again $2^{18} \approx 260\,000$ terms, and with parameters analogous to those of \eqn~\eqref{eq:P_c_out_RF}.
 
 \begin{figure}[!t]
   \centering
@@ -2097,23 +2090,20 @@ This representation \autocites[promoted by][]{dunsonetal2011}[see also][]{rasmus
 This is the expression given in \sect~\ref{sec:calculation_transducer} with $k$ running over both indexes $t,l$ and with $q_{k} \defd w_{t,l}/T$.
 \end{itemize}
 
-In the demonstration of \sect~\ref{sec:demonstration}, where the class variable $c$ takes on conventional values $\set{0,1}$, we use a Bernoulli distribution for the class variable $c$:
+In our demonstration of \sect~\ref{sec:demonstration}, where the class variable $c$ takes on conventional values $\set{0,1}$, we use a Bernoulli distribution for the first:
 \begin{equation}
   \label{eq:distr_class}
   A(c \| \alpha) = c\ \alpha + (1-c)\ (1-\alpha) \equiv
   \begin{dcases*}
-    \alpha& if $c=1$, \\ 1-\alpha & if $c=0$ \ ,
+    \alpha& if $c=1$, \\ 1-\alpha & if $c=0$ \ ;
   \end{dcases*}
 \end{equation}
-both in the case of the \RF\ and of the \CNN. For the output variable we use
-a Gaussian distribution in the case of the \RF, $\beta \equiv (\mu,\sigma)$ being its mean and standard deviation:
+and a Gaussian distribution for the second, $\beta \equiv (\mu,\sigma)$ being its mean and standard deviation:
 \begin{equation}
   \label{eq:distr_output}
-  B(y \| \beta) = \No(y \| \mu, \sigma) \defd \frac{1}{\sqrt{2\pu\sigma^{2}}} \exp\biggl[-\frac{(y-\mu)^{2}}{2\sigma^{2}}\biggr] \ .
+  B(y \| \beta) = \No(y \| \mu, \sigma) \defd \frac{1}{\sqrt{2\pu\sigma^{2}}} \exp\biggl[-\frac{(y-\mu)^{2}}{2\sigma^{2}}\biggr] \ ,
 \end{equation}
-The \rf\ output is actually bounded, $y\in \clcl{0,1}$, and this Gaussian should in principle be truncated; we did not use any truncation as the error committed is small and the computation much faster. In the case of the  \CNN's output we use a product of two Gaussians, each with its own parameters.
-
-In both cases, the sum of the representation~\eqref{eq:representation_F} has 64 terms, and the approximating sum~\eqref{eq:MC_approx} 4096 terms.
+or a product of such Gaussians, each with its own parameters, if $y$ is multidimensional. For the \rf\ output $y\in \clcl{0,1}$ such a Gaussian should in principle be truncated; we did not use any truncation as the error committed is small and the computation much faster.
 
 \medskip
 
@@ -2128,7 +2118,7 @@ The Markov-chain Monte Carlo sampling scheme is implemented using the R \autocit
 \subsection{Assessment of the possible variability of the probability}
 \label{sec:variability_prob}
 
-In \sect~\ref{sec:variability_curve} we mentioned that the calculation of the transducer parameters automatically also tells us how much the probabilities curves could change if we used more data for the calibration. The range of this possible variability was shown for example in \figs~\ref{fig:prob_curve_RF}, \ref{fig:prob_curve_RF_inverse}, and \ref{fig:prob_curve_CNN_section} of the demonstration.
+In \sect\mynotew{} we mentioned that the calculation of the transducer parameters automatically also tells us how much the probabilities curves could change if we used more data for the calibration. The range of this possible variability was shown for example in \figs~\ref{fig:prob_curve_RF}, \ref{fig:prob_curve_RF_inverse}, and \ref{fig:prob_curve_CNN_section} of the demonstration.
 
 This possible variability is encoded in the weight $\wf(F \| D)$, which can be interpreted as the probability distribution of the long-run frequency distribution $F$; remember that the probability $\p(d_{0} \| D)$, for the new unit, \eqn~\eqref{eq:prob_is_expe_freq}, becomes closer and closer to the distribution $F$ at which $\wf(F \| D)$ peaks, as the number of data increases.
 
