@@ -1,7 +1,7 @@
 \pdfoutput=1
 %% Author: PGL  Porta Mana
 %% Created: 2022-04-14T17:18:22+0200
-%% Last-Updated: Sat Jun  4 21:19:58 2022 (+0200)
+%% Last-Updated: Tue Jun  7 15:44:58 2022 (+0200)
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Probabilities for classifier outputs
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -21,7 +21,7 @@ british%
 \newcommand*{\firstdraft}{1 June 2022}%{14 April 2022}
 \newcommand*{\firstpublished}{\firstdraft}
 \newcommand*{\updated}{\ifarxiv***\else\today\fi}
-\newcommand*{\propertitle}{A probability transducer\\ and decision-theoretic augmentation\\ for machine-learning classifiers}%\\ {\Large}}
+\newcommand*{\propertitle}{Don't guess what's true: choose what's optimal\\ \Large A probability transducer for machine-learning classifiers}%\\ {\Large}}
 % title uses LARGE; set Large for smaller
 \newcommand*{\pdftitle}{\propertitle}
 \newcommand*{\headtitle}{Probability transducer for classifiers}
@@ -758,7 +758,8 @@ P.G.L.  Porta Mana  \href{https://orcid.org/0000-0002-6070-0784}{\protect\includ
 \setlength{\abstitleskip}{-\absparindent}
 \begin{abstract}\labelsep 0pt%
   \noindent
-  In a classification task from a set of features, one would ideally like to have the probability of the class conditional on the features. Such probability is computationally almost impossible to find in many important cases. The primary idea of the present work is to calculate the probability of a class conditional not on the features, but on a trained classifying algorithm's output. Such probability is easily calculated and provides an output-to-probability \enquote{transducer} that can be applied to the algorithm's future outputs. In conjunction with problem-dependent utilities, the probabilities of the transducer allows one to make the optimal choice among the classes or among a set of more general decisions, by means of expected-utility maximization. The combined procedure is a computationally cheap yet powerful \enquote{augmentation} of the original classifier. This idea is demonstrated in a simplified drug-discovery problem with a highly imbalanced dataset. The augmentation leads to improved results, sometimes close to theoretical maximum, for any set of problem-dependent utilities. The calculation of the transducer also provides, automatically: (i) a quantification of the uncertainty about the transducer itself; (ii) the expected utility of the augmented algorithm (including its uncertainty), which can be used for algorithm selection; (iii) the possibility of using the algorithm in a \enquote{generative mode}, useful if the training dataset is biased. It is argued that the optimality, flexibility, and uncertainty assessment provided by the transducer \amp\ augmentation are dearly needed for classification problems in fields such as medicine and drug discovery.
+  In fields such as medicine and drug discovery, the ultimate goal of a classification is not to guess a class, but to choose the optimal course of action among a set of possible ones, usually not in one-one correspondence with the set of classes. This decision-theoretic problem requires sensible probabilities for the classes. Probabilities conditional on the features are computationally almost impossible to find in many important cases. The main idea of the present work is to calculate probabilities conditional not on the features, but on the trained classifier's output. This calculation is cheap, needs to be made only once, and provides an output-to-probability \enquote{transducer} that can be applied to all future outputs of the classifier. In conjunction with problem-dependent utilities, the probabilities of the transducer allow us to find the optimal choice among the classes or among a set of more general decisions, by means of expected-utility maximization. This idea is demonstrated in a simplified drug-discovery problem with a highly imbalanced dataset. The transducer and utility maximization together always lead to improved results, sometimes close to theoretical maximum, for all sets of problem-dependent utilities. The one-time-only calculation of the transducer also provides, automatically: (i) a quantification of the uncertainty about the transducer itself; (ii) the expected utility of the augmented algorithm (including its uncertainty), which can be used for algorithm selection; (iii) the possibility of using the algorithm in a \enquote{generative mode}, useful if the training dataset is biased.
+% It is argued that the optimality, flexibility, and uncertainty assessment provided by the transducer \amp\ augmentation are dearly needed for classification problems in fields such as medicine and drug discovery.
   % The present work sells probabilities for \ml\ algorithms at a bargain price. It shows that these probabilities are just what those algorithms need in order to increase their sales.
 % \\\noindent\emph{\footnotesize Note: Dear Reader
 %     \amp\ Peer, this manuscript is being peer-reviewed by you. Thank you.}
