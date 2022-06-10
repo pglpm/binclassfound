@@ -1,12 +1,15 @@
 ## Author: PGL  Porta Mana
 ## Created: 2022-03-17T14:21:57+0100
-## Last-Updated: 2022-05-31T20:21:47+0200
+## Last-Updated: Fri Jun 10 15:14:54 2022 (+0200)
 ################
 ## Exploration of several issues for binary classifiers
 ################
 if(file.exists("/cluster/home/pglpm/R")){
     .libPaths(c("/cluster/home/pglpm/R",.libPaths()))
 }
+
+source('pglpm_plotfunctions.R')
+
 #### Custom setup ####
 ## Colour-blind friendly palettes, from https://personal.sron.nl/~pault/
 ## library('khroma')
@@ -31,7 +34,7 @@ print(availableCores('multicore'))
 if(file.exists("/cluster/home/pglpm/R")){
     plan(multicore, workers=availableCores()-1)
 }else{
-    plan(multisession, workers=6)
+    plan(multisession, workers=12)
 }
 ##library('ash')
 ## library('LaplacesDemon')
@@ -204,6 +207,23 @@ tplot(x=xgrid, y=cbind(rowMeans(opgrid[diagon,]),softm), xlab=bquote('output 1' 
 legend(x=6.5,y=1.07, c('softmax'), lty=NA, col=c(7), lwd=4, bty='n', cex=1.5)
 ##
 polygon(x=c(xgrid,rev(xgrid)), y=c(q1grid[diagon],rev(q2grid[diagon])), col=paste0(palette()[1],'40'), border=NA)
+## polygon(x=c(xgrid,rev(xgrid)), y=c(1-q2grid[diagon],rev(1-q1grid[diagon])), col=paste0(palette()[2],'40'), border=NA)
+dev.off()
+
+
+diagon <- which(vpoints[,1]==-vpoints[,2])
+softm <- apply(vpoints[diagon,], 1, function(x){exp(x[2])/sum(exp(x))})
+xgrid <- vpoints[diagon,2]
+pdff('../transducer_curve_diagonal_CNN_prob_softmax_novariability')
+tplot(x=xgrid, y=cbind(rowMeans(opgrid[diagon,]),softm), xlab=bquote('output 1' == -'output 0'),
+##      ylab=expression(p~group('(',class~output,')')),
+      ylab=bquote('P'~group('(','class 1', '.')~group('|', '  output 1' == -'output 0',')')),
+      ylim=c(0,1), mar=c(4.5,5.75,1,1), #cex.axis=2, cex.lab=2,
+      lwd=c(3,4), family='Palatino',
+      col=c(1,7))
+legend(x=6.5,y=1.07, c('softmax'), lty=NA, col=c(7), lwd=4, bty='n', cex=1.5)
+##
+## polygon(x=c(xgrid,rev(xgrid)), y=c(q1grid[diagon],rev(q2grid[diagon])), col=paste0(palette()[1],'40'), border=NA)
 ## polygon(x=c(xgrid,rev(xgrid)), y=c(1-q2grid[diagon],rev(1-q1grid[diagon])), col=paste0(palette()[2],'40'), border=NA)
 dev.off()
 

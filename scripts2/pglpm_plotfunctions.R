@@ -130,7 +130,7 @@ tplot <- function(x, y, xlim=c(NA,NA), ylim=c(NA,NA), asp=NA, n=10, family='', x
     ##
     nx <- length(x)
     ny <- length(y)
-    if(!is.na(x) && !is.na(y)){
+    if(all(!is.na(x) & !is.na(y))){
         for(j in 1:max(nx,ny)){
             xx <- x[[(j-1)%%nx+1]]
             yy <- y[[(j-1)%%ny+1]]

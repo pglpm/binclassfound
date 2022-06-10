@@ -1,12 +1,14 @@
 ## Author: PGL  Porta Mana
 ## Created: 2022-03-17T14:21:57+0100
-## Last-Updated: 2022-06-01T07:53:47+0200
+## Last-Updated: Fri Jun 10 13:23:51 2022 (+0200)
 ################
 ## Exploration of several issues for binary classifiers
 ################
 if(file.exists("/cluster/home/pglpm/R")){
     .libPaths(c("/cluster/home/pglpm/R",.libPaths()))
 }
+ source('pglpm_plotfunctions.R')
+
 #### Custom setup ####
 ## Colour-blind friendly palettes, from https://personal.sron.nl/~pault/
 ## library('khroma')
@@ -31,7 +33,7 @@ print(availableCores('multicore'))
 if(file.exists("/cluster/home/pglpm/R")){
     plan(multicore, workers=availableCores()-1)
 }else{
-    plan(multisession, workers=6)
+    plan(multisession, workers=12)
 }
 ##library('ash')
 ## library('LaplacesDemon')
@@ -150,6 +152,36 @@ legend(x=0.25,y=1.05, c('class 1', 'class 0'), lty=c(1,2), col=c(1,2), lwd=3, bt
 ##
 polygon(x=c(xgrid,rev(xgrid)), y=c(qgrid[1,],rev(qgrid[2,])), col=paste0(palette()[1],'40'), border=NA)
 polygon(x=c(xgrid,rev(xgrid)), y=1-c(qgrid[1,],rev(qgrid[2,])), col=paste0(palette()[2],'40'), border=NA)
+dev.off()
+
+set.seed(333)
+pdff('../transducer_curve_RFraw_all', asp=1)
+tplot(x=xgrid, y=opgrid[,sample(1:ncol(opgrid),128)], xlab='output',
+##      ylab=expression(p~group('(',class~output,')')),
+      ylab=bquote('P'~group('(','class 1', '.')~group('|', ' output',')')),
+      mar=c(4.5,5.5,1,1),
+      lty=1,
+      ylim=c(0,1), lwd=1, alpha=0.75, col=5, family='Palatino', asp=1)
+tplot(x=xgrid, y=rowMeans(opgrid), add=T, lwd=1)
+##legend(x=0.25,y=1.05, c('class 1', 'class 0'), lty=c(1,2), col=c(1,2), lwd=3, bty='n', cex=1.5)
+##
+## polygon(x=c(xgrid,rev(xgrid)), y=c(qgrid[1,],rev(qgrid[2,])), col=paste0(palette()[1],'40'), border=NA)
+## polygon(x=c(xgrid,rev(xgrid)), y=1-c(qgrid[1,],rev(qgrid[2,])), col=paste0(palette()[2],'40'), border=NA)
+dev.off()
+
+
+
+## without variability region
+pdff('../transducer_curve_RFraw2_novariability', asp=1)
+tplot(x=xgrid, y=cbind(rowMeans(opgrid), 1- rowMeans(opgrid)), xlab='output',
+##      ylab=expression(p~group('(',class~output,')')),
+      ylab=bquote('P'~group('(','class', '.')~group('|', ' output',')')),
+      mar=c(4.5,5.5,1,1),
+      ylim=c(0,1), lwd=3, family='Palatino', asp=1)
+legend(x=0.25,y=1.05, c('class 1', 'class 0'), lty=c(1,2), col=c(1,2), lwd=3, bty='n', cex=1.5)
+##
+## polygon(x=c(xgrid,rev(xgrid)), y=c(qgrid[1,],rev(qgrid[2,])), col=paste0(palette()[1],'40'), border=NA)
+## polygon(x=c(xgrid,rev(xgrid)), y=1-c(qgrid[1,],rev(qgrid[2,])), col=paste0(palette()[2],'40'), border=NA)
 dev.off()
 
 set.seed(333)
@@ -312,12 +344,11 @@ shortparmlist <- list(
     sizeI=oneparmlist$sizeI[,,qorder, drop=F],
     probB=oneparmlist$probB[,,qorder, drop=F]
 )
-fwrite(data.table(w=c(shortparmlist$q),
-               p=c(shortparmlist$probB),
+fwrite(data.table(q=c(shortparmlist$q),
+               alpha=c(shortparmlist$probB),
                mu=c(shortparmlist$meanR),
                sigma=1/sqrt(c(shortparmlist$tauR))
-               ), '_RF_transducer_parameters_raw2.csv', sep=',')
-
+               ), '_transducer_params-Random_Forest.csv', sep=',')
 
 #########################################################
 ## Calculation of utility yields on demonstration set
