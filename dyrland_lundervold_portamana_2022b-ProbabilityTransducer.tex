@@ -1,7 +1,7 @@
 \pdfoutput=1
 %% Author: PGL  Porta Mana
 %% Created: 2022-04-14T17:18:22+0200
-%% Last-Updated: Tue Jun  7 15:44:58 2022 (+0200)
+%% Last-Updated: Tue Jun 13 13:49:03 2022 (+0200)
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Probabilities for classifier outputs
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -841,7 +841,7 @@ Issues~\ref{item:gain_loss}--\ref{item:optimal_truth} are simply solved by adopt
 Clearly this procedure is computationally inexpensive and ridiculously easy to implement in any \ml\ classifier. The difficulty is that this procedure requires \emph{sensible probabilities} \autocites[\enquote*{credibilities \textins*{that} would be agreed by all rational men if there were any rational men}][]{good1966} for the classes, which brings us to issue~\ref{item:determ_statist}, the most difficult.
 
 Some machine-learning algorithms for classification, such as support-vector machines, output only a class label. Others, such as deep networks, output a set of real numbers that can bear some qualitative relation to the plausibilities of the classes. But these numbers cannot be reliably interpreted as proper probabilities, that is, as the degrees of belief assigned to the classes by a rational agent \autocites{mackay1992d,galetal2016}[\chaps~2, 12, 13]{russelletal1995_r2022}; or, in terms of \enquote{populations} \autocites{lindleyetal1981}%[\sect~II.4]{fisher1956_r1967}
-, as the expected frequencies of the classes in the hypothetical population of units (degrees of belief and frequencies being related by de~Finetti's theorem \autocites[\chap~4]{bernardoetal1994_r2000}{dawid2013}). Algorithms that internally do perform probabilistic calculations, for instance naive-Bayes or logistic-regression classifiers \autocites[\sect~3.5, \chap~8]{murphy2012}[\sects~8.2, 4.3]{bishop2006}[\chap~10, \sect~17.4]{barber2007_r2020}, unfortunately rest on strong probabilistic assumptions, such as independence and particular shapes of distributions, that are often unrealistic (and their consistency with the specific application is rarely checked). Only particular classifiers such as Bayesian neural networks \autocites{nealetal2006}[\sect~5.7]{bishop2006} output sensible probabilities, but they are computationally very expensive. The stumbling block is the extremely high dimensionality of the feature space, which makes the calculation of the probabilities
+, as the expected frequencies of the classes in the hypothetical population of units (degrees of belief and frequencies being related by de~Finetti's theorem \autocites[\chap~4]{bernardoetal1994_r2000}{dawid2013}). Algorithms that internally do perform probabilistic calculations, for instance naive-Bayes or logistic-regression classifiers \autocites[\sect~3.5, \chap~8]{murphy2012}[\sects~8.2, 4.3]{bishop2006}[\chap~10, \sect~17.4]{barber2007_r2020}, unfortunately rest on strong probabilistic assumptions, such as independence and particular shapes of distributions, that are often unrealistic (and their consistency with the specific application is rarely checked). Only particular classifiers such as Bayesian neural networks \autocites{nealetal2006}[\sect~5.7]{bishop2006} output sensible probabilities, but they are computationally very expensive. The stumbling block is the extremely high dimensionality of the feature space, which makes the calculation of the conditional probabilities
 \[
   \P(\texts{class}, \texts{feature} \| \texts{training data})
 \]
@@ -853,9 +853,10 @@ If we solved the issue of outputting proper probabilities then the remaining thr
 
 In the present work we propose an alternative solution to calculate proper class probabilities, which can then be used in conjunction with utilities to perform the final classification or decision.
 
-This solution consists in a sort of \enquote{transducer} that transforms the algorithm's raw output into a probability. It has a low computational cost, can be applied to all commonly used classifiers and to simple regression algorithms, does not need any changes in algorithm architecture or in training procedures, and is grounded on first principles. The probability thus obtained can be combined with utilities to perform the final classification task.
+This solution consists in a sort of \enquote{transducer} that transforms the algorithm's raw output into a probability. This probability transducer has a low computational cost, can be applied to all commonly used classifiers and to simple regression algorithms, does not need any changes in algorithm architecture or in training procedures, and is grounded on first principles. The probability obtained from the transducer can be combined with utilities to perform the final classification or decision task. Notably, the set of available decisions and their utilities \emph{can be changed on the fly}, for each new classification instance.
 
-Moreover, this transducer has three other great benefits, which come automatically with its computation. First, it gives a quantification of how much the probability would change if we had further data to calculate the transducer. Second, it can give an \emph{evaluation of the whole classifier} -- including an uncertainty about such evaluation -- that allows us to compare it with other classifiers and choose the optimal one. Third, it allows us to calculate both the probability of class conditional on features, and \emph{the probability of features conditional on class}. In other words it allows us to use the classification algorithm in both \enquote{discriminative} and \enquote{generative} modes \autocites[\sect~21.2.3]{russelletal1995_r2022}[\sect~8.6]{murphy2012}, even if the algorithm was not designed for a generative use.
+
+This probability transducer also has three other great benefits, which come automatically with its computation. First, it gives a quantification of how much the probability would change if we had further data to calculate the transducer. Second, it can give an \emph{evaluation of the whole classifier} -- including an uncertainty about such evaluation -- that allows us to compare it with other classifiers and choose the optimal one. Third, it allows us to calculate both the probability of class conditional on features, and \emph{the probability of features conditional on class}. In other words it allows us to use the classification algorithm in both \enquote{discriminative} and \enquote{generative} modes \autocites[\sect~21.2.3]{russelletal1995_r2022}[\sect~8.6]{murphy2012}, even if the algorithm was not designed for a generative use.
 
 In \sect~\ref{sec:transducer} we present the general idea behind the probability transducer and its calculation. Its combination with the rule of expected-utility maximization to perform classification is discussed in \sect~\ref{sec:utility_classification}; we call this combined use the \enquote{augmentation} of a classifier.
 
@@ -1619,7 +1620,7 @@ Then let us look at the performances obtained with the augmentation (blue bold).
 
 These were four particular cases only, though. Does the augmentation lead to an improvement (or at least to no change), on average, over all possible utility matrices? We expect this to be the case, owing to the internal consistency of decision theory.
 
-We give evidence of this fact by considering a large number (10\,000) of utility matrices selected uniformly from the utility-matrix space for binary classification. This two-dimensional space, shown in \fig~\ref{fig:space_UM}, is discussed in our companion work \autocites[\sect~3.2]{dyrlandetal2022}.
+We give evidence of this fact by considering a large number (10\,000) of utility matrices selected uniformly from the utility-matrix space (more precisely: manifold) for binary classification. This two-dimensional space, shown in \fig~\ref{fig:space_UM}, is discussed in our companion work \autocites[\sect~3.2]{dyrlandetal2022}.
 \begin{figure}[t]
   \centering
   \includegraphics[width=0.5\linewidth]{space_UM2c.pdf}\\
@@ -1998,7 +1999,7 @@ The data set is split into four parts:
 
 The notation is the one used in \sect~\ref{sec:calculation_transducer}: the class is denoted $c$ and the algorithm output $y$. In our demonstration $c$ takes on values in $\set{0,1}$, and $y$ either in $\clcl{0,1}$ or in $\RR^{2}$; but the method can be applied to more general cases, such as continuous but low-dimensional spaces for both $c$ and $y$, or combinations of continuous and discrete spaces. For convenience we use a single symbol for the pair $d \defd (c, y)$.
 
-For general references about the probability calculus and concepts and specific probability distributions see \cites{jaynes1994_r2003,mackay1995_r2005,jeffreys1939_r1983,gregory2005,bernardoetal1994_r2000,hailperin1996,good1950,johnsonetal1969_r1996,johnsonetal1969b_r2005,johnsonetal1970_r1994,johnsonetal1970b_r1995,kotzetal1972_r2000}.
+For general references about the probability calculus and concepts and specific probability distributions see \cites{jaynes1994_r2003,mackay1995_r2005,jeffreys1939_r1983,gregory2005,bernardoetal1994_r2000,hailperin1996,good1950,fentonetal2019,johnsonetal1969_r1996,johnsonetal1969b_r2005,johnsonetal1970_r1994,johnsonetal1970b_r1995,kotzetal1972_r2000}.
 
 \subsection{Exchangeability and expression for the probability transducer}
 \label{sec:deFinetti}
