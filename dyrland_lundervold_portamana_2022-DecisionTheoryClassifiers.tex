@@ -1,7 +1,7 @@
 \pdfoutput=1
 %% Author: PGL  Porta Mana
 %% Created: 2022-03-04T07:39:34+0200
-%% Last-Updated: Tue Jun 13 13:46:22 2022 (+0200)
+%% Last-Updated: 2022-06-26T01:18:21+0200
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Decision theory for machine-learning classifiers
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -745,7 +745,7 @@ P.G.L.  Porta Mana  \href{https://orcid.org/0000-0002-6070-0784}{\protect\includ
 \begin{abstract}\labelsep 0pt%
   \noindent 
   % purpose, method, scope, results, conclusion
-  How can one meaningfully make a measurement, if the meter does not conform to any standard and its scale expands or shrinks depending on what is measured? In the present work it is argued that current evaluation practices for \ml\ classifiers are affected by this kind of problem, leading to negative consequences that appear when classifiers are put to real use and that could have been avoided. It is proposed that evaluation be grounded on Decision Theory, and the consequences of such foundation are explored. The main result is that every evaluation metric must be a linear combination of confusion-matrix elements, with coefficients -- \enquote{utilities} -- that depend on the specific classification problem. For binary classification, the space of such possible metrics is effectively two-dimensional. It is shown that popular metrics such as precision, balanced accuracy, Matthews Correlation Coefficient, Fowlkes-Mallows index, $F_{1}$-measure, and Area Under the Curve are never optimal: they always give rise to an avoidable fraction of incorrect evaluations. This fraction is larger than would be caused by the use of a decision-theoretic metric with moderately wrong coefficients.
+  How can one meaningfully make a measurement, if the meter does not conform to any standard and its scale expands or shrinks depending on what is measured? In the present work it is argued that current evaluation practices for \ml\ classifiers are affected by this kind of problem, leading to negative consequences when classifiers are put to real use; consequences that could have been avoided. It is proposed that evaluation be grounded on Decision Theory, and the implications of such foundation are explored. The main result is that every evaluation metric must be a linear combination of confusion-matrix elements, with coefficients -- \enquote{utilities} -- that depend on the specific classification problem. For binary classification, the space of such possible metrics is effectively two-dimensional. It is shown that popular metrics such as precision, balanced accuracy, Matthews Correlation Coefficient, Fowlkes-Mallows index, $F_{1}$-measure, and Area Under the Curve are never optimal: they always give rise to an in-principle \emph{avoidable} fraction of incorrect evaluations. This fraction is even larger than would be caused by the use of a decision-theoretic metric with moderately wrong coefficients.
 
 
 %   Machine Learning algorithms nowadays rely on a set of popular, well-known evaluation metrics, then trying to get the highest 'score' possible. Is it only the highest 'score' that matters? How can we evaluate the evaluation metrics?
@@ -852,13 +852,27 @@ The developers of the classifiers therefore recommend the employment of classifi
 The factory manager does not fully trust these metrics, asking, \enquote*{how do I know they are appropriate?}. The developers assure that these metrics are widely used. The manager (of engineering background) comments, \enquote*{I don't remember `widely used' being a criterion of scientific correctness -- not after Galileo at least}, and decides to employ both classifiers for a trial period, to see which factually leads to the best revenue. The two classifiers are integrated into two separate but otherwise identical parallel production lines.
 
 During the trial period, the classifiers perform according to the classification statistics of the confusion matrices~\eqref{eq:CM_A} and \eqref{eq:CM_B} above. At the end of this period the factory manager finds that the average net gains per assessed component yielded by the two classifiers are
+% \begin{table}[!h]\centering\footnotesize
+%   \caption{}\label{tab:final_gains}
 \begin{equation}
   \label{eq:final_gains}
-\begin{aligned}
-  \text{classifier $\Alpha$:}& & \good{3.5}\,\text{\texteuro/component}&\ , \\
-  \text{classifier $\Beta$:}& &\bad{-3.5}\,\text{\texteuro/component}&\ .
-\end{aligned}
+  \begin{tabular}{cc}
+ classifier $\Alpha$ & classifier $\Beta$\\
+    \hline
+    \good{3.5}\,\text{\texteuro} & \bad{-3.5}\,\text{\texteuro}
+ \end{tabular}
 \end{equation}
+% \end{table}\FloatBlock
+% \begin{equation}
+%   \begin{tabular}{cc}
+%     test&test
+%   \end{tabular}
+%   \label{eq:final_gains}
+% \begin{aligned}
+%   \text{classifier $\Alpha$:}& & \good{3.5}\,\text{\texteuro/component}&\ , \\
+%   \text{classifier $\Beta$:}& &\bad{-3.5}\,\text{\texteuro/component}&\ .
+% \end{aligned}
+% \end{equation}
 That is, classifier $\Beta$ actually led to a \emph{loss} of revenue. The manager therefore decides to employ classifier $\Alpha$, commenting with a smug smile that it is always unwise to trust the recommendations of developers, unacquainted with the nitty-gritty reality of a business.
 
 The average gains above are easy to calculate from some additional information. The final net gains caused by the correct or incorrect classification of one electronic component are as follows:
@@ -912,8 +926,7 @@ In the present case, the confusion matrices~\eqref{eq:CM_A} and \eqref{eq:CM_B} 
 The story above illustrates several well-known issues of currently popular evaluation procedures for \ml\ classifiers:
 \begin{enumerate}%[label=(\roman*)]
 \item We are swept by an avalanche of possible evaluation metrics. Often it is not clear which is the most compelling. In the story above, for example, one could argue that the true-negative rate was the appropriate metric, in view of the great difference in gains between correct and wrong classification for class~1, compared with that for class~0.
-
-  But at which point does this qualitative reasoning fail? Imagine that the net gains had been as follows instead:
+But at which point does this qualitative reasoning fail? Imagine that the net gains had been as follows instead:
 \begin{equation}
   \label{eq:utility_example_2}
   \rotatebox[origin=c]{90}{
@@ -927,16 +940,18 @@ The story above illustrates several well-known issues of currently popular evalu
       \clap{\textit{\parbox{6em}{\centering\scriptsize true class\\$0\hspace{4em}1$}}
     }} \ .
 \end{equation}
-One could argue that also in this case there is a great economic difference between correct and wrong classification for class~1, as compared with class~0. The true-negative rate should, therefore, still be the appropriate metric. Yet a simple calculation shows that, in this case, it is classifier~$\Beta$ that actually leads to the best average revenue: $7.3\,\text{\texteuro/component}$, vs $4.7\,\text{\texteuro/component}$ for classifier $\Alpha$. Hence the true-negative rate is \emph{not} the appropriate metric here and our qualitative reasoning failed us.
+Also in this case one could argue that there is a greater economic difference between correct and wrong classification for class~1 than for class~0. The true-negative rate should, therefore, again be the appropriate metric. Yet a simple calculation analogous to the one of \sect~\ref{sec:intro} shows that classifier~$\Beta$ actually leads to the best average revenue: $7.3\,\text{\texteuro/component}$, vs $4.7\,\text{\texteuro/component}$ for classifier $\Alpha$. Hence the true-negative rate is \emph{not} the appropriate metric in this case: our qualitative reasoning failed us.
 
 
 \item A classifier favoured by the majority of available metrics can still turn out \emph{not} to be the best one in practice.
 
-\item\label{item:ad_hoc} Most popular metrics are introduced by intuitive reasoning, ad hoc mathematical operations, special assumptions (such as Gaussianity\autocites[e.g.][\sect~31 p.~183 for the Matthews correlation coefficient]{fisher1925_r1963}), and analysis of special cases. Unfortunately such derivations do not guarantee generalization to all cases, nor that the proposed metric is uniquely determined by the chosen assumptions, nor that it satisfies other basic but neglected requirements. By contrast, compare such derivations for instance with the derivation of the Shannon entropy \autocites{shannon1948}[\sect~3.2]{woodward1953_r1964}[also][]{goodetal1968} as the \emph{unique} metric universally satisfying a set of general, basic requirements for the amount of information; or with the derivation of the probability calculus\footnote{\cites{cox1946,fine1973}[\chaps~1--2]{jaynes1994_r2003}. Some literature cites \cite{halpern1999} as a critique of Cox's proof, but curiously does not cite Halpern's \cite*{halpern1999b} partial rebuttal of his own critique, as well as the rebuttals by \cite{snow1998,snow2001}.} as the \emph{unique} set of rules satisfying general rational requirements for inductive reasoning, learning, and prediction \autocites{selfetal1987,cheeseman1988}[\chap~12]{russelletal1995_r2022}.
-  
-\item\label{item:hope_medical} Let us assume that some of the popular metrics identify the best algorithm \enquote{in the majority of cases} -- although it is difficult to statistically define such a majority, and no real surveys have ever been conducted to back up such an assumption. Yet, do we expect the end-user to simply \emph{hope} not to belong to the unlucky minority? Is such uncertainty inevitable?
+\item\label{item:ad_hoc} Most popular metrics are introduced by intuitive reasoning, ad hoc mathematical operations, special assumptions (such as Gaussianity\autocites[e.g.][\sect~31 p.~183 for the Matthews correlation coefficient]{fisher1925_r1963} or other statistical assumptions), and an analysis of special cases only. Unfortunately this kind of derivations does not guarantee generalization to all cases, nor that the proposed metric is uniquely determined by the chosen assumptions, nor that it satisfies more general consistency requirements.
 
-  We cannot have a cavalier attitude towards this problem: life and death can depend on it in some \ml\ applications \autocites[cf.][]{howard1980}. Imagine a story analogous to the factory one, but in a medical setting instead. The classifiers should distinguish between two tumour types, requiring two different types of medical intervention. The confusion matrices are the same~\eqref{eq:CM_A} and \eqref{eq:CM_B}. In the present case, correct or incorrect classification lead to the following expected remaining life lengths \autocites[\cf\ the discussion in][\sect~11.2.9]{soxetal1988_r2013} for patients in a specific age range:
+By contrast, consider the kind of derivation that starts from specific qualitative requirements and mathematically proves the \emph{uniqueness} of a particular formula satisfying them. Examples are the derivation of the Shannon entropy  as the \emph{unique} metric universally satisfying a set of basic requirements for the amount of information \autocites{shannon1948}[\sect~3.2]{woodward1953_r1964}[also][]{goodetal1968}. Or  the derivation  of the probability calculus as the \emph{unique} set of rules satisfying general rational requirements for inductive reasoning, learning, and prediction\footnote{\cites{cox1946,fine1973}[\chaps~1--2]{jaynes1994_r2003}; see also \cites{selfetal1987,cheeseman1988}[\chap~12]{russelletal1995_r2022}. Some literature cites \cite{halpern1999} as a critique of Cox's proof, but curiously does not cite Halpern's \cite*{halpern1999b} partial rebuttal of his own critique, as well as the rebuttals by \cite{snow1998,snow2001}.}. Or the derivation of decision theory as the unique framework guaranteeing a rational and optimal decision under uncertainty \autocites[\sect~15.2]{russelletal1995_r2022}[\chaps~2--3]{vonneumannetal1944_r1955}.
+  
+\item\label{item:hope_medical} Let us assume that some of the popular metrics identify the best algorithm \enquote{in the majority of cases} -- although it is difficult to statistically define such a majority, and no real surveys have ever been conducted to back up this assumption. Yet, do we expect the end-user to simply \emph{hope} not to belong to the unlucky minority? Is such uncertainty inevitable?
+
+  We cannot have a cavalier attitude towards this problem: life and death can depend on it in some \ml\ applications \autocites[cf.][]{howard1980}. Imagine a story analogous to the factory one, but in a medical setting instead. The classifiers should distinguish between two tumour types, requiring two different types of medical intervention. The confusion matrices are the same~\eqref{eq:CM_A} and \eqref{eq:CM_B}. Correct and incorrect classification lead to the following expected remaining life lengths for patients in a specific age range: \autocites[\cf\ the discussion in][\sect~11.2.9]{soxetal1988_r2013}
 \begin{equation}
   \label{eq:utility_example_medicine}
   \rotatebox[origin=c]{90}{
@@ -952,12 +967,12 @@ One could argue that also in this case there is a great economic difference betw
 \end{equation}
 These values might arise in several scenarios. For example, tumours of class~0 and~1 may require very different kinds of treatment. If a class~0 tumour is misdiagnosed and not properly treated, it leads to immediate death (0\,months); if correctly diagnosed, its treatment is usually successful, leading to high life expectancy (500\,months). Class~0 tumours can be treated, but they lead to a shorter life expectancy (350\,months). If they are misdiagnosed as class~1, however, the damage caused by class~1 treatment shortens this life expectancy even further (300\,months).
 
-This matrix above is numerically equivalent to~\eqref{eq:utility_example} up to a common additive constant of $335$, so the final net gains are also simply shifted by this amount. It is easy to see that the metrics are exactly as in Table~\ref{tab:example_metrics}, the majority favouring classifier~$\Beta$. And yet the use of classifier~$\Alpha$ leads to a more than six-month longer expected remaining life than classifier~$\Beta$.
+This matrix above is numerically equivalent to~\eqref{eq:utility_example} up to a common additive constant of $335$, so the final net gains are also shifted by this amount. It is easy to see that the metrics are exactly as in Table~\ref{tab:example_metrics}, the majority favouring classifier~$\Beta$. And yet the use of classifier~$\Alpha$ leads to a more than six-month longer expected remaining life than classifier~$\Beta$.
 
 
 \item Often it is not possible to temporarily deploy all candidate classifiers, as our fictitious manager did, in order to observe which factually leads to the best results. Or it may even be unethical: consider a situation like the medical one above, where a classifier may lead to a larger number of immediate deaths than another.
 
-\item Finally, all issues listed above are not caused by class imbalance (the occurrence of one class with a higher frequency than another). In our story, for example, the two classes were perfectly balanced. Yet all these issues can worsen for imbalanced datasets \autocites{jenietal2013,zhu2020}.
+\item Finally, all issues listed above are not caused by class imbalance (the occurrence of one class with a higher frequency than another). In our story, for example, the two classes were perfectly balanced. Class imbalance can make all these issues worse \autocites{jenietal2013,zhu2020}.
 
 \end{enumerate}
 
@@ -1065,7 +1080,7 @@ In formulae, this principle of \emph{maximization of expected utility}  is
 % \end{equation}
 % The optimal choice is to buy the ticket, that is, to classify the ticket \emph{as if} it belonged to class \texttt{win}, even if it most probably belongs to class \texttt{lose}.
 
-A very important result in decision theory is that basic requirements of rational decision-making imply that there \emph{must} be a set of utilities underlying the decisions of a rational agent, and the decisions must obey the principle of maximization of expected utility\autocites[\sect~15.2]{russelletal1995_r2022}[\chaps~2--3]{neumannetal1944_r1955}.
+A very important result in decision theory is that basic requirements of rational decision-making imply that there \emph{must} be a set of utilities underlying the decisions of a rational agent, and the decisions must obey the principle of maximization of expected utility\autocites[\sect~15.2]{russelletal1995_r2022}[\chaps~2--3]{vonneumannetal1944_r1955}.
 
 How are utilities determined? They are obviously problem-specific and cannot be given by the theory (which would otherwise be a model rather than a theory). Utilities can be obvious in decision problems involving gains or losses of measurable quantities such as money or energy (the utility of money is usually not equal to the amount of money, the relationship between the two being somewhat logarithmic \autocites[\eg][pp.~203--204]{north1968}[\chap~4]{raiffa1968_r1970}). In medical problems they can correspond to life expectancy and quality of life; see for example \cite[esp. \chap~8 and \sect~11.2.9]{soxetal1988_r2013} and \cite[esp. \chap~4]{huninketal2001_r2014} on how such health factors are transformed into utilities.
 
