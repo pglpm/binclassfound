@@ -1,7 +1,7 @@
 \pdfoutput=1
 %% Author: PGL  Porta Mana
 %% Created: 2022-03-04T07:39:34+0200
-%% Last-Updated: 2022-06-26T01:18:21+0200
+%% Last-Updated: 2022-06-26T23:59:44+0200
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Decision theory for machine-learning classifiers
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -991,11 +991,11 @@ In the present work, we argue that formula~\eqref{eq:expected_utility} is indeed
 
 Our argument is based on \emph{Decision Theory}, an overview of which is given in \sect~\ref{sec:decision_theory}.
 
-The utility yield~\eqref{eq:expected_utility} is a linear combination of the confusion-matrix elements, with coefficients independent of the elements themselves. In \sect~\ref{sec:evaluation_metrics} we explore some properties of this formula and of the space of such metrics for binary classification. We also show that some common metrics such as precision, $F_{1}$-measure, Matthews correlation coefficient, balanced accuracy, and Fowlkes-Mallows index \emph{cannot} be written as a linear combination of this kind. This impossibility has two consequences for such a metric. First, it means that the metric is always affected by some kind of cognitive bias. Second, there is \emph{no} classification problem in which the metric correctly ranks the performance of all pairs of classifiers: using such a metric always leaves open the possibility that the evaluation is incorrect \emph{a priori}. On the other hand, metrics such as accuracy, true-positive rate, true-negative rate can be written in the form~\eqref{eq:expected_utility}. Consequently, each has a set of classification problems in which it correctly ranks the performance of \emph{all} pairs of classifiers.
+The utility yield~\eqref{eq:expected_utility} is a linear combination of the confusion-matrix elements, with coefficients independent of the elements themselves. In \sect~\ref{sec:evaluation_metrics} we explore some properties of this formula and of the space of such metrics for binary classification. We also show that some common metrics such as precision, $F_{1}$-measure, Matthews correlation coefficient, balanced accuracy, and Fowlkes-Mallows index \emph{cannot} be written as a linear combination of this kind (or a one-one function thereof). This impossibility has two consequences. First, it means that these metrics are likely affected by some kind of cognitive bias. Second, there exists \emph{no} classification problem for which these metrics can correctly rank the performance of all pairs of classifiers. Using any one of these metrics leaves open the possibility that the evaluation is incorrect \emph{a priori}. In \sect~\ref{sec:auc} we show that this is also true for the Area Under the Curve of the Receiver Operating Characteristic, and we offer some additional remarks about it from the standpoint of decision theory.
 
-What happens if we are uncertain about the utilities appropriate to a classification problem? And what happens if the utilities are incorrectly assessed? We show in \sect~\ref{sec:unknown_wrong_utilities} that uncertainty about utilities still leads to a metric of the form~\eqref{eq:expected_utility}. We also show that an evaluation using incorrect utilities, even with relative errors as large as 20\% of the maximal utility, still leads to a higher amount of correctly ranked classifiers than the use of any other popular metric.
+On the other hand, metrics such as accuracy, true-positive rate, true-negative rate can be written in the form~\eqref{eq:expected_utility}. Consequently, each one has a set of classification problems in which it correctly ranks the performance of \emph{all} pairs of classifiers.
 
-Some remarks about the area under the curve of the receiver operating characteristic from the standpoint of our decision-theoretic approach are given in \sect~\ref{sec:auc}.
+What happens if we are uncertain about the utilities appropriate to a classification problem? And what happens if the utilities are incorrectly assessed? We show in \sect~\ref{sec:unknown_wrong_utilities} that uncertainty about utilities still leads to a metric of the form~\eqref{eq:expected_utility}. We also show that an evaluation using incorrect utilities, even with relative errors as large as 20\% of the maximal utility, still leads to a higher amount of correctly ranked classifiers than the use of any of the popular metrics mentioned above.
 
 We summarize and discuss our results in the final \sect~\ref{sec:discussion}.
 
@@ -1015,7 +1015,7 @@ We summarize and discuss our results in the final \sect~\ref{sec:discussion}.
 \subsection{References}
 \label{sec:dt_refs}
 
-Here we give a brief overview of decision theory. We only focus on the notions relevant to the problem of evaluating classifiers, and simply state the rules of the theory. These rules are quite intuitive, but it must be remarked that they are constructed in order to be logically and mathematically self-consistent: see the following references. For a presentation of decision theory from the point of view of artificial intelligence and machine learning, see \cite[\chap~15]{russelletal1995_r2022}. Simple introductions are given by \cite{jeffrey1965,north1968,raiffa1968_r1970}, and a discussion of its foundations and history by \cite{steeleetal2015_r2020}. For more thorough expositions see \cite{raiffaetal1961_r2000,berger1980_r1985,savage1954_r1972}; and \cite{soxetal1988_r2013,huninketal2001_r2014} for a medical perspective. See also Ramsey's \cite*{ramsey1926} insightful and charming pioneering discussion.
+Here we give a brief overview of decision theory. We only focus on the notions relevant to the problem of evaluating classifiers, and simply state the rules of the theory. These rules are quite intuitive, but it must be remarked that they are constructed in order to be logically and mathematically self-consistent: see the following references. For a presentation of decision theory from the point of view of artificial intelligence and machine learning, see \cite[\chap~15]{russelletal1995_r2022}. Simple introductions are given by \cites{north1968,raiffa1968_r1970}[\chap~8]{tribus1969}{jeffrey1965}; and a discussion of its foundations and history by \cite{steeleetal2015_r2020}. For more thorough expositions see \cite{raiffaetal1961_r2000,fentonetal2019,berger1980_r1985,savage1954_r1972}; and \cite{soxetal1988_r2013,huninketal2001_r2014} for a medical perspective. See also Ramsey's \cite*{ramsey1926} insightful and charming pioneering discussion.
 
 \subsection{Decisions and classes}
 \label{sec:dt_dec_classes}
@@ -1103,7 +1103,7 @@ where $C_{ij} \defd F_{ij}/N$ is the relative frequency of choice $i$ and true c
 
 \emph{The utility yield, formula~\eqref{eq:final_utility}, is therefore the natural metric to evaluate and compare the performance of classifiers on a test set for a classification problem characterized by the utility matrix $(U_{ij})$}.
 
-Note how the utilities $U_{ij}$ cannot depend on the frequencies $F_{ij}$ or $C_{ij}$. If they did, it would mean that we had waited until \emph{all} classification instances had been made in order to assess the value of each \emph{single} instance. This would be a source of evaluation bias, such as the scarcity bias mentioned in \sect~\ref{sec:dt_dec_classes}. It would, moreover, be an impossible procedure in contexts where the consequence of a single classification is manifest before the next classification is made.
+Note how the utilities $U_{ij}$ do depend on the frequencies $F_{ij}$ or $C_{ij}$. If they did, it would mean that we had waited until \emph{all} classification instances had been made in order to assess the value of each \emph{single} instance. In virtually all classification problem we can think of, this would be a source of evaluation bias, such as the scarcity bias mentioned in \sect~\ref{sec:dt_dec_classes}. It would, moreover, be an impossible procedure in contexts where the consequence of a single classification is manifest before the next classification is made.
 
 If we modify the elements of a utility matrix by a common additive constant or by a common positive multiplicative constant,
 \begin{equation}
@@ -1144,7 +1144,7 @@ but it is not correctly reflected in the representation of \fig~\ref{fig:space_U
 \subsection{Relationship with common metrics}
 \label{sec:common_metrics}
 
-In \sect~\ref{sec:admissible_metrics} we found that the most general evaluation metric according to decision theory must be a linear combination of the confusion-matrix elements. The coefficients of this linear combination cannot depend on the confusion-matrix elements themselves, because such a dependence would reflect some sort of cognitive bias. Which common popular metrics adhere to this mathematical form? We want to answer this question in the binary-classification case while giving as much allowance as possible in the typical context in which popular metrics are used.
+In \sect~\ref{sec:admissible_metrics} we found that the most general evaluation metric according to decision theory must be a linear combination of the confusion-matrix elements. The coefficients of this linear combination do not depend on the confusion-matrix elements themselves; such a dependence usually reflects some sort of cognitive bias. Which common popular metrics adhere to this mathematical form? We want to answer this question in the binary-classification case while giving as much allowance as possible in the typical context in which popular metrics are used.
 
 Consider the case in which we are comparing several classifiers \emph{on the same test set}. The number of data $N$ and the relative frequencies $f_{0}, f_{1}$ with which the two classes \enquote{$0$}, \enquote{$1$} occur in the test set are fixed and constant for all classifiers under evaluation.
 
@@ -1222,7 +1222,7 @@ The following metrics instead \emph{cannot} be written in the form~\eqref{eq:gen
 
 We see that many popular evaluation metrics do not comply with the principles of decision theory. Any such metric suffers from two problems.
 
-First, as discussed in \sect~\ref{sec:decision_theory}, the metric involves an interdependence of utilities and classification frequencies, which implies some form of cognitive bias\autocites[discuss such biases regarding the $F_{1}$-measure]{handetal2018}.
+First, as discussed in \sect~\ref{sec:decision_theory}, the metric involves an interdependence of utilities and classification frequencies, which typically implies some form of cognitive bias\autocites[discuss such biases regarding the $F_{1}$-measure]{handetal2018}.
 
 Second, the ranking of confusion matrices yielded by the metric does not fully agree with that yielded by any utility matrix -- a full agreement would otherwise imply that the metric could be written in the form~\eqref{eq:general_valuation_metric}. Some confusion matrices must therefore be incorrectly ranked. Since any rational classification problem is characterized by some underlying utility matrix, this means that the non-compliant metric will always lead to some wrong evaluations. By contrast, compliant metrics such as the accuracy give completely correct rankings for all pairs of confusion matrices in specific sets of classification problems.
 
@@ -1519,7 +1519,7 @@ From this criterion it can be seen geometrically that if a classifier has its cu
 
 The evaluation and ranking of classification algorithms is a critical stage in their development and deployment. Without such evaluation we cannot even say whether an algorithm is better than another, or whether a set of parameter values for a specific algorithm is better than another set.
 
-And yet, at present, we have not an evaluation theory but only an evaluation folklore: different procedures, proposed only out of intuition and of analysis of special cases, with fuzzy criteria to decide which should be used, and without rigorous theoretical foundations that should guarantee uniqueness and universality properties and absence of biases. We believe that some of the surprising failures of machine learning \emph{in actual applications}\autocites[see \eg][]{varoquauxetal2022} come not only from biases in the choice of test datasets and other similar biases but also from the use of wrong evaluation metrics in the development stage.
+And yet, at present, we have not an evaluation theory but only an evaluation folklore: different procedures, proposed only out of intuition and of analysis of special cases, with fuzzy criteria to decide which should be used, and without rigorous theoretical foundations that should guarantee uniqueness, universality properties, and absence of biases. We believe that some of the surprising failures of machine learning \emph{in actual applications}\autocites[see \eg][]{varoquauxetal2022} come not only from biases in the choice of test datasets and other similar biases, but also from the use of wrong evaluation metrics in the development stage.
 
 In the present work, we have argued that theoretical foundations for the evaluation process are available in \emph{Decision Theory}. Its main notions and principle -- utilities and their maximization -- are very intuitive, as shown (we hope) by the introductory story.
 
@@ -1529,7 +1529,7 @@ These are the main results of the application of decision theory to the evaluati
 \item Such metric is completely defined by $n^{2}$ parameters, called utilities, collected in a utility matrix; $n$ is the number of classes. Two parameters are arbitrary and represent a zero and measurement unit of the utility scale. In the binary-classification case, this means that we have a two-dimensional set of possible metrics.
 \item The score of a classifier on a test set is simply given by its utility yield: the grand sum of the products of the elements of the utility matrix and the confusion matrix of the classifier. It is a simple linear expression in the confusion-matrix elements.
 \item A utility matrix, obtained from an average, is also used when we are uncertain about the utilities underlying a classification problem or when we want to consider the average performance over several classification problems.
-\item Some popular metrics such as precision, balanced accuracy, Matthews correlation coefficient, Fowlkes-Mallows index, $F_{1}$-measure, and area under the receiver-operating-characteristic curve do not comply with decision theory. As a consequence, they are affected by cognitive biases and always lead to some erroneous comparative evaluations of classifiers in every classification problem, even when all utilities and frequencies are correctly assessed.
+\item Some popular metrics such as precision, balanced accuracy, Matthews correlation coefficient, Fowlkes-Mallows index, $F_{1}$-measure, and area under the receiver-operating-characteristic curve do not comply with decision theory. As a consequence, they always lead to some erroneous comparative evaluations of classifiers in every classification problem, even when all utilities and frequencies are correctly assessed; are they are likely affected by cognitive biases.
 \item Using a utility matrix with incorrectly assessed utilities still leads, on average, to fewer wrong comparative evaluations than using other popular metrics.
 \end{itemize}
 
