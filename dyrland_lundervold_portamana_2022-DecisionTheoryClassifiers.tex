@@ -1,7 +1,7 @@
 \pdfoutput=1
 %% Author: PGL  Porta Mana
 %% Created: 2022-03-04T07:39:34+0200
-%% Last-Updated: 2022-06-26T23:59:44+0200
+%% Last-Updated: 2023-02-20T11:16:44+0100
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Decision theory for machine-learning classifiers
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -698,7 +698,8 @@ P.G.L.  Porta Mana  \href{https://orcid.org/0000-0002-6070-0784}{\protect\includ
 \newcommand*{\myhat}[1]{{\mkern1.5mu\skew{2}\hat{\mkern-1.5mu#1\mkern-1.5mu}\mkern 1.5mu}}
 
 %\newcommand*{\myeuro}{{\fontencoding{U}\fontfamily{eurosym}\selectfont{}\symbol{22}}}
-\usepackage{eurosym}\renewcommand*{\texteuro}{\euro}
+%\usepackage{eurosym}\renewcommand*{\texteuro}{\raisebox{-0.04ex}{\includegraphics[width=1.58ex]{coin-icon-3814.png}}}
+\renewcommand*{\texteuro}{\$}
 
 % \newcommand{\explanation}[4][t]{%\setlength{\tabcolsep}{-1ex}
 % %\smash{
@@ -851,7 +852,7 @@ The developers of the classifiers therefore recommend the employment of classifi
 
 The factory manager does not fully trust these metrics, asking, \enquote*{how do I know they are appropriate?}. The developers assure that these metrics are widely used. The manager (of engineering background) comments, \enquote*{I don't remember `widely used' being a criterion of scientific correctness -- not after Galileo at least}, and decides to employ both classifiers for a trial period, to see which factually leads to the best revenue. The two classifiers are integrated into two separate but otherwise identical parallel production lines.
 
-During the trial period, the classifiers perform according to the classification statistics of the confusion matrices~\eqref{eq:CM_A} and \eqref{eq:CM_B} above. At the end of this period the factory manager finds that the average net gains per assessed component yielded by the two classifiers are
+During the trial period, the classifiers perform according to the classification statistics of the confusion matrices~\eqref{eq:CM_A} and \eqref{eq:CM_B} above. At the end of this period the factory manager finds that the average net gains per assessed component yielded by the two classifiers are\footnote{\enquote{\texteuro} represents a generic currency or value unit; this is why it is not written in front of the gains.}
 % \begin{table}[!h]\centering\footnotesize
 %   \caption{}\label{tab:final_gains}
 \begin{equation}
@@ -947,7 +948,9 @@ Also in this case one could argue that there is a greater economic difference be
 
 \item\label{item:ad_hoc} Most popular metrics are introduced by intuitive reasoning, ad hoc mathematical operations, special assumptions (such as Gaussianity\autocites[e.g.][\sect~31 p.~183 for the Matthews correlation coefficient]{fisher1925_r1963} or other statistical assumptions), and an analysis of special cases only. Unfortunately this kind of derivations does not guarantee generalization to all cases, nor that the proposed metric is uniquely determined by the chosen assumptions, nor that it satisfies more general consistency requirements.
 
-By contrast, consider the kind of derivation that starts from specific qualitative requirements and mathematically proves the \emph{uniqueness} of a particular formula satisfying them. Examples are the derivation of the Shannon entropy  as the \emph{unique} metric universally satisfying a set of basic requirements for the amount of information \autocites{shannon1948}[\sect~3.2]{woodward1953_r1964}[also][]{goodetal1968}. Or  the derivation  of the probability calculus as the \emph{unique} set of rules satisfying general rational requirements for inductive reasoning, learning, and prediction\footnote{\cites{cox1946,fine1973}[\chaps~1--2]{jaynes1994_r2003}; see also \cites{selfetal1987,cheeseman1988}[\chap~12]{russelletal1995_r2022}. Some literature cites \cite{halpern1999} as a critique of Cox's proof, but curiously does not cite Halpern's \cite*{halpern1999b} partial rebuttal of his own critique, as well as the rebuttals by \cite{snow1998,snow2001}.}. Or the derivation of decision theory as the unique framework guaranteeing a rational and optimal decision under uncertainty \autocites[\sect~15.2]{russelletal1995_r2022}[\chaps~2--3]{vonneumannetal1944_r1955}.
+  By contrast, consider the kind of derivation that starts from specific qualitative requirements and mathematically proves the \emph{uniqueness} of a particular formula satisfying them. Examples are the derivation of the Shannon entropy  as the \emph{unique} metric universally satisfying a set of basic requirements for the amount of information \autocites{shannon1948}[\sect~3.2]{woodward1953_r1964}[also][]{goodetal1968}. Or  the derivation  of the probability calculus as the \emph{unique} set of rules satisfying general rational requirements for inductive reasoning, learning, and prediction\footnote{\cites{cox1946,fine1973,halpern1999b,snow1998,snow2001}[\chaps~1--2]{jaynes1994_r2003}; see also \cites{selfetal1987,cheeseman1988}[\chap~12]{russelletal1995_r2022}.}.
+    % Some literature cites \cite{halpern1999} as a critique of Cox's proof, but curiously does not cite Halpern's \cite*{halpern1999b} partial rebuttal of his own critique, as well as the rebuttals by \cite{snow1998,snow2001}.
+Or the derivation of decision theory as the unique framework guaranteeing a rational and optimal decision under uncertainty \autocites[\sect~15.2]{russelletal1995_r2022}[\chaps~2--3]{vonneumannetal1944_r1955}.
   
 \item\label{item:hope_medical} Let us assume that some of the popular metrics identify the best algorithm \enquote{in the majority of cases} -- although it is difficult to statistically define such a majority, and no real surveys have ever been conducted to back up this assumption. Yet, do we expect the end-user to simply \emph{hope} not to belong to the unlucky minority? Is such uncertainty inevitable?
 
@@ -1015,7 +1018,7 @@ We summarize and discuss our results in the final \sect~\ref{sec:discussion}.
 \subsection{References}
 \label{sec:dt_refs}
 
-Here we give a brief overview of decision theory. We only focus on the notions relevant to the problem of evaluating classifiers, and simply state the rules of the theory. These rules are quite intuitive, but it must be remarked that they are constructed in order to be logically and mathematically self-consistent: see the following references. For a presentation of decision theory from the point of view of artificial intelligence and machine learning, see \cite[\chap~15]{russelletal1995_r2022}. Simple introductions are given by \cites{north1968,raiffa1968_r1970}[\chap~8]{tribus1969}{jeffrey1965}; and a discussion of its foundations and history by \cite{steeleetal2015_r2020}. For more thorough expositions see \cite{raiffaetal1961_r2000,fentonetal2019,berger1980_r1985,savage1954_r1972}; and \cite{soxetal1988_r2013,huninketal2001_r2014} for a medical perspective. See also Ramsey's \cite*{ramsey1926} insightful and charming pioneering discussion.
+Here we give a brief overview of decision theory. We only focus on the notions relevant to the problem of evaluating classifiers, and simply state the rules of the theory. These rules are quite intuitive, but it must be remarked that they are constructed in order to be logically and mathematically self-consistent: see the following references. For a presentation of decision theory from the point of view of artificial intelligence and machine learning, see \cite[\chap~15]{russelletal1995_r2022}. Simple introductions are given by \cites{north1968,raiffa1968_r1970,lindley1971_r1988}[\chap~8]{tribus1969}{jeffrey1965}; and a discussion of its foundations and history by \cite{steeleetal2015_r2020}. For more thorough expositions see \cite{raiffaetal1961_r2000,fentonetal2019,berger1980_r1985,savage1954_r1972}; and \cite{soxetal1988_r2013,huninketal2001_r2014} for a medical perspective. See also Ramsey's \cite*{ramsey1926} insightful and charming pioneering discussion.
 
 \subsection{Decisions and classes}
 \label{sec:dt_dec_classes}
@@ -1485,7 +1488,7 @@ The function in braces is monotonically increasing because $t(f)$ is (we assume,
 t'(f^{*}) = \frac{(U_{11} - U_{01})\ (1-B)}{(U_{00} - U_{10})\  B} \ .
 \end{equation}
 %
-\begin{figure}[!b]
+\begin{figure}%[!b]
   \centering
     \includegraphics[width=0.66\linewidth]{auc_example.pdf}\\
     \caption{Receiver-operating-characteristic curves of two classifiers. The {\color{red}red dashed curve} clearly subtends a larger area than the {\color{blue}blue solid curve}. Yet the classifier with the latter curve yields a higher utility, because it touches the family of parallel lines, \eqn~\eqref{eq:tangent_line}, at a higher point. This example arises for a utility matrix equal to $\sumatrix{ 4}{0}{0}{1 }$ and a test set with $B=0.5$ (balanced), or for a utility matrix equal to $\sumatrix{ 1}{0}{0}{1 }$ and a test set with $B=0.8$.}

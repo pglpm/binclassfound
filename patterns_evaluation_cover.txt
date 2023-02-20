@@ -1,0 +1,15 @@
+Dear Editor,
+
+We would like to submit two connected papers for consideration as regular articles in Patterns.
+
+The first paper concerns the use of Decision Theory to evaluate the performance of machine-learning algorithms. This topic has been brought forward in Machine Learning since the 1980s but is still underappreciated. Our original contribution is to use Decision Theory to assess popular evaluation metrics, currently used in Machine Learning, and show that some of them breaks basic consistency requirements and lead to incorrect evaluations. We illustrate these facts with concrete and simple examples - which have been somewhat lacking in the literature.
+
+The second paper is grounded on the first but proceeds in a different direction: it offers a computationally efficient way to associate "well-calibrated" probabilities to the output of general machine-learning classifiers. We think that our particular approach is a fully novel contribution.
+
+We would like to reach readers in Machine Learning and Computer Science, but also in Statistics and Medicine. For this reason we think that Patterns would be an excellent venue, owing to its multi- and inter-disciplinarity.
+
+The second paper has a mathematical appendix that we could move into supplementary material, depending on what the Editor and reviewers think is optimal.
+
+Cordially,
+Luca Porta Mana
+for all coauthors
