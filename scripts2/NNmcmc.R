@@ -7,7 +7,7 @@
 ################
 
 ## load customized plot functions
-source('pglpm_plotfunctions.R')
+source('tplotfunctions.R')
 ##
 ## Read MCMC seed from command line
 mcmcseed = as.integer(commandArgs(trailingOnly=TRUE))[1]

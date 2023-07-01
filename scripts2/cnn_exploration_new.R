@@ -8,7 +8,7 @@ if(file.exists("/cluster/home/pglpm/R")){
     .libPaths(c("/cluster/home/pglpm/R",.libPaths()))
 }
 
-source('pglpm_plotfunctions.R')
+source('tplotfunctions.R')
 
 #### Custom setup ####
 ## Colour-blind friendly palettes, from https://personal.sron.nl/~pault/
