@@ -1,13 +1,13 @@
 \pdfoutput=1
 %% Author: PGL  Porta Mana
 %% Created: 2022-04-14T17:18:22+0200
-%% Last-Updated: 2023-02-21T11:14:40+0100
+%% Last-Updated: 2023-09-01T17:56:44+0200
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Probabilities for classifier outputs
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \newif\ifarxiv
 \arxivfalse
-\iftrue\pdfmapfile{+classico.map}\fi
+%\iftrue\pdfmapfile{+classico.map}\fi
 \newif\ifafour
 \afourfalse% true = A4, false = A5
 \newif\iftypodisclaim % typographical disclaim on the side
@@ -37,7 +37,7 @@ british%
 
 %\usepackage{fontawesome}
 
-\usepackage[T1]{fontenc} 
+\usepackage[T1]{fontenc}
 \input{glyphtounicode} \pdfgentounicode=1
 
 \usepackage[utf8]{inputenx}
@@ -113,7 +113,7 @@ british%
 %                         \parsep        \z@ \@plus\p@}%
 %                 \item[]\footnotesize}%
 %                 {\endlist}
-% \makeatother                
+% \makeatother
 
 
 \usepackage{amsthm}
@@ -218,9 +218,9 @@ british%
 \makeatother
 \input{definegreek.tex}% Greek letters not usually given in LaTeX.
 
-%\usepackage%[scaled=0.9]%
-%{classico}%  Optima as sans-serif font
-\renewcommand\sfdefault{uop}
+\usepackage%[scaled=0.9]%
+{classico}%  Optima as sans-serif font
+% \renewcommand\sfdefault{uop}
 \DeclareMathAlphabet{\mathsf}  {T1}{\sfdefault}{m}{sl}
 \SetMathAlphabet{\mathsf}{bold}{T1}{\sfdefault}{b}{sl}
 \newcommand*{\mathte}[1]{\textbf{\textit{\textsf{#1}}}}
@@ -547,8 +547,7 @@ P.G.L.  Porta Mana  \href{https://orcid.org/0000-0002-6070-0784}{\protect\includ
 \\{\tiny(listed alphabetically)}
 \\[\jot]
 {\footnotesize Dept of Computer science, Electrical Engineering and Mathematical Sciences,\\Western Norway University of Applied Sciences, Bergen, Norway
-  \\[\jot]\textsuperscript{\ensuremath{\dagger}}\amp\ Mohn Medical Imaging and Visualization Centre, Dept of Radiology,\\Haukeland University Hospital, Bergen, Norway
-
+  \\[\jot]\textsuperscript{\ensuremath{\dagger}}\amp\ Mohn Medical Imaging and Visualization Centre, Dept of Radiology,\\Haukeland University Hospital, Bergen, Norway\\
 }
 }
 
@@ -761,7 +760,7 @@ P.G.L.  Porta Mana  \href{https://orcid.org/0000-0002-6070-0784}{\protect\includ
 \setlength{\abstitleskip}{-\absparindent}
 \begin{abstract}\labelsep 0pt%
   \noindent
-  In fields such as medicine and drug discovery, the ultimate goal of a classification is not to guess a class, but to choose the optimal course of action among a set of possible ones, usually not in one-one correspondence with the set of classes. This decision-theoretic problem requires sensible probabilities for the classes. Probabilities conditional on the features are computationally almost impossible to find in many important cases. The main idea of the present work is to calculate probabilities conditional not on the features, but on the trained classifier's output. This calculation is cheap, needs to be made only once, and provides an output-to-probability \enquote{transducer} that can be applied to all future outputs of the classifier. In conjunction with problem-dependent utilities, the probabilities of the transducer allow us to find the optimal choice among the classes or among a set of more general decisions, by means of expected-utility maximization. This idea is demonstrated in a simplified drug-discovery problem with a highly imbalanced dataset. The transducer and utility maximization together always lead to improved results, sometimes close to theoretical maximum, for all sets of problem-dependent utilities. The one-time-only calculation of the transducer also provides, automatically: (i) a quantification of the uncertainty about the transducer itself; (ii) the expected utility of the augmented algorithm (including its uncertainty), which can be used for algorithm selection; (iii) the possibility of using the algorithm in a \enquote{generative mode}, useful if the training dataset is biased.
+  In fields such as medicine and drug discovery, the ultimate goal of a classification is not to guess a class, but to choose the optimal course of action among a set of possible ones, usually not in one-one correspondence with the set of classes. This decision-theoretic problem requires sensible probabilities for the classes. Probabilities conditional on the features are computationally almost impossible to find in many important cases. The main idea of the present work is to calculate probabilities conditional not on the features, but on the trained classifier's output. This calculation is cheap, needs to be made only once, and provides an output-to-probability \enquote{transducer} that can be applied to all future outputs of the classifier. In conjunction with problem-dependent utilities, the probabilities of the transducer allow us to find the optimal choice among the classes or among a set of more general decisions, by means of expected-utility maximization. This idea is demonstrated in a simplified drug-discovery problem with a highly imbalanced dataset. The transducer and utility maximization together always lead to improved results, sometimes close to the theoretical maximum, for all sets of problem-dependent utilities. The one-time-only calculation of the transducer also provides, automatically: (i) a quantification of the uncertainty about the transducer itself; (ii) the expected utility of the augmented algorithm (including its uncertainty), which can be used for algorithm selection; (iii) the possibility of using the algorithm in a \enquote{generative mode}, useful if the training dataset is biased.
 % It is argued that the optimality, flexibility, and uncertainty assessment provided by the transducer \amp\ augmentation are dearly needed for classification problems in fields such as medicine and drug discovery.
   % The present work sells probabilities for \ml\ algorithms at a bargain price. It shows that these probabilities are just what those algorithms need in order to increase their sales.
 % \\\noindent\emph{\footnotesize Note: Dear Reader
@@ -798,7 +797,7 @@ P.G.L.  Porta Mana  \href{https://orcid.org/0000-0002-6070-0784}{\protect\includ
 \section{The inadequacy of common classification approaches}
 \label{sec:goal_class}
 
-As the potential of using \ml\ algorithms in important fields such as medicine or drug discovery increases \autocites{lundervoldetal2019,chenetal2018,green2019}, the \ml\ community ought to keep in mind what the actual needs and inference contexts in such fields are. We must avoid trying (intentionally or unintentionally) to convince such fields to change their needs, or to ignore their own contexts just to fit \ml\ solutions that are available and fashionable at the moment. Rather, we must make sure the that solutions fit needs \amp\ context, and amend them if they do not.
+As the potential of using \ml\ algorithms in important fields such as medicine or drug discovery increases \autocites{lundervoldetal2019,chenetal2018,green2019}, the \ml\ community ought to keep in mind what the actual needs and inference contexts in such fields are. We must avoid trying (intentionally or unintentionally) to convince such fields to change their needs, or to ignore their own contexts just to fit \ml\ solutions that are available and fashionable at the moment. Rather, we must make sure that the solutions fit needs \amp\ context, and amend them if they do not.
 
 The \ml\ mindset and approach to problems such as classification in such new important fields is often still inadequate in many respects. It reflects simpler needs and contexts of many  inference problems successfully tackled by machine learning earlier on.
 
