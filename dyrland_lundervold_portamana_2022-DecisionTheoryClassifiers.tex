@@ -1,7 +1,7 @@
 \pdfoutput=1
 %% Author: PGL  Porta Mana
 %% Created: 2022-03-04T07:39:34+0200
-%% Last-Updated: 2023-06-13T16:41:21+0200
+%% Last-Updated: 2023-11-15T19:39:45+0100
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Decision theory for machine-learning classifiers
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -12,8 +12,8 @@
 \afourfalse% true = A4, false = A5
 \newif\iftypodisclaim % typographical disclaim on the side
 \typodisclaimtrue
-\newcommand*{\memfontfamily}{zplx}
-\newcommand*{\memfontpack}{newpxtext}
+\newcommand*{\memfontfamily}{zplr}
+\newcommand*{\memfontpack}{newpx}
 \documentclass[\ifafour a4paper,12pt,\else a5paper,10pt,\fi%extrafontsizes,%
 onecolumn,oneside,article,%french,italian,german,swedish,latin,
 british%
@@ -36,7 +36,7 @@ british%
 %\usepackage{pifont}
 
 %\usepackage{fontawesome}
-
+\PassOptionsToPackage{obeyspaces}{url}
 \usepackage[T1]{fontenc} 
 \input{glyphtounicode} \pdfgentounicode=1
 
@@ -102,7 +102,7 @@ british%
 \newcommand{\langnohyph}[1]{\begin{hyphenrules}{nohyphenation}#1\end{hyphenrules}}
 
 \usepackage[autostyle=false,autopunct=false,english=british]{csquotes}
-\setquotestyle{british}
+\setquotestyle{american}
 \newcommand*{\defquote}[1]{`\,#1\,'}
 
 % \makeatletter
@@ -113,7 +113,7 @@ british%
 %                         \parsep        \z@ \@plus\p@}%
 %                 \item[]\footnotesize}%
 %                 {\endlist}
-% \makeatother                
+% \makeatother
 
 
 \usepackage{amsthm}
@@ -146,7 +146,7 @@ british%
 % \setlist[itemize]{leftmargin=\parindent}
 % \setlist[description]{leftmargin=\parindent}
 
-\usepackage[babel,theoremfont,largesc]{newpxtext}
+\usepackage[babel,theoremfont,largesc,smallerops,nosymbolsc]{newpx}
 
 % For Baskerville see https://ctan.org/tex-archive/fonts/baskervillef?lang=en
 % and http://mirrors.ctan.org/fonts/baskervillef/doc/baskervillef-doc.pdf
@@ -157,8 +157,8 @@ british%
 % \usepackage[cal=boondoxo]{mathalfa}
 
 
-\usepackage[bigdelims,nosymbolsc%,smallerops % probably arXiv doesn't have it
-]{newpxmath}
+% \usepackage[bigdelims,nosymbolsc%,smallerops % probably arXiv doesn't have it
+% ]{newpxmath}
 %\useosf
 %\linespread{1.083}%
 %\linespread{1.05}% widely used
@@ -216,11 +216,129 @@ british%
 \def\prod{\DOTSI\prodop\slimits@}
 \def\coprod{\DOTSI\coprodop\slimits@}
 \makeatother
-\input{definegreek.tex}% Greek letters not usually given in LaTeX.
+%%%% Greek letters not usually given in LaTeX
+%%%% best to uncomment only the ones needed
+%% %% \input{definegreek.tex} % originally in a separate file
+\DeclareMathSymbol{\varpartial}{\mathalpha}{egreeki}{"40}
+\DeclareMathSymbol{\partialup}{\mathalpha}{egreekr}{"40}
+% \DeclareMathSymbol{\alpha}{\mathalpha}{egreeki}{"0B}
+% \DeclareMathSymbol{\beta}{\mathalpha}{egreeki}{"0C}
+% \DeclareMathSymbol{\gamma}{\mathalpha}{egreeki}{"0D}
+% \DeclareMathSymbol{\delta}{\mathalpha}{egreeki}{"0E}
+% \DeclareMathSymbol{\epsilon}{\mathalpha}{egreeki}{"0F}
+% \DeclareMathSymbol{\zeta}{\mathalpha}{egreeki}{"10}
+% \DeclareMathSymbol{\eta}{\mathalpha}{egreeki}{"11}
+% \DeclareMathSymbol{\theta}{\mathalpha}{egreeki}{"12}
+% \DeclareMathSymbol{\iota}{\mathalpha}{egreeki}{"13}
+% \DeclareMathSymbol{\kappa}{\mathalpha}{egreeki}{"14}
+% \DeclareMathSymbol{\lambda}{\mathalpha}{egreeki}{"15}
+% \DeclareMathSymbol{\mu}{\mathalpha}{egreeki}{"16}
+% \DeclareMathSymbol{\nu}{\mathalpha}{egreeki}{"17}
+% \DeclareMathSymbol{\xi}{\mathalpha}{egreeki}{"18}
+% \DeclareMathSymbol{\omicron}{\mathalpha}{egreeki}{"6F}
+% \DeclareMathSymbol{\pi}{\mathalpha}{egreeki}{"19}
+% \DeclareMathSymbol{\rho}{\mathalpha}{egreeki}{"1A}
+% \DeclareMathSymbol{\sigma}{\mathalpha}{egreeki}{"1B}
+% \DeclareMathSymbol{\tau}{\mathalpha}{egreeki}{"1C}
+% \DeclareMathSymbol{\upsilon}{\mathalpha}{egreeki}{"1D}
+% \DeclareMathSymbol{\phi}{\mathalpha}{egreeki}{"1E}
+% \DeclareMathSymbol{\chi}{\mathalpha}{egreeki}{"1F}
+% \DeclareMathSymbol{\psi}{\mathalpha}{egreeki}{"20}
+% \DeclareMathSymbol{\omega}{\mathalpha}{egreeki}{"21}
+% \DeclareMathSymbol{\varepsilon}{\mathalpha}{egreeki}{"22}
+% \DeclareMathSymbol{\vartheta}{\mathalpha}{egreeki}{"23}
+% \DeclareMathSymbol{\varpi}{\mathalpha}{egreeki}{"24}
+% \let\varrho\rho 
+% \let\varsigma\sigma
+% \let\varkappa\kappa
+% \DeclareMathSymbol{\varphi}{\mathalpha}{egreeki}{"27}
+% %
+% \DeclareMathSymbol{\varAlpha}{\mathalpha}{egreeki}{"41}
+% \DeclareMathSymbol{\varBeta}{\mathalpha}{egreeki}{"42}
+% \DeclareMathSymbol{\varGamma}{\mathalpha}{egreeki}{"00}
+% \DeclareMathSymbol{\varDelta}{\mathalpha}{egreeki}{"01}
+% \DeclareMathSymbol{\varEpsilon}{\mathalpha}{egreeki}{"45}
+% \DeclareMathSymbol{\varZeta}{\mathalpha}{egreeki}{"5A}
+% \DeclareMathSymbol{\varEta}{\mathalpha}{egreeki}{"48}
+% \DeclareMathSymbol{\varTheta}{\mathalpha}{egreeki}{"02}
+% \DeclareMathSymbol{\varIota}{\mathalpha}{egreeki}{"49}
+% \DeclareMathSymbol{\varKappa}{\mathalpha}{egreeki}{"4B}
+% \DeclareMathSymbol{\varLambda}{\mathalpha}{egreeki}{"03}
+% \DeclareMathSymbol{\varMu}{\mathalpha}{egreeki}{"4D}
+% \DeclareMathSymbol{\varNu}{\mathalpha}{egreeki}{"4E}
+% \DeclareMathSymbol{\varXi}{\mathalpha}{egreeki}{"04}
+% \DeclareMathSymbol{\varOmicron}{\mathalpha}{egreeki}{"4F}
+% \DeclareMathSymbol{\varPi}{\mathalpha}{egreeki}{"05}
+% \DeclareMathSymbol{\varRho}{\mathalpha}{egreeki}{"50}
+% \DeclareMathSymbol{\varSigma}{\mathalpha}{egreeki}{"06}
+% \DeclareMathSymbol{\varTau}{\mathalpha}{egreeki}{"54}
+% \DeclareMathSymbol{\varUpsilon}{\mathalpha}{egreeki}{"07}
+% \DeclareMathSymbol{\varPhi}{\mathalpha}{egreeki}{"08}
+% \DeclareMathSymbol{\varChi}{\mathalpha}{egreeki}{"58}
+% \DeclareMathSymbol{\varPsi}{\mathalpha}{egreeki}{"09}
+% \DeclareMathSymbol{\varOmega}{\mathalpha}{egreeki}{"0A} 
+% %
+\DeclareMathSymbol{\Alpha}{\mathalpha}{egreekr}{"41}
+\DeclareMathSymbol{\Beta}{\mathalpha}{egreekr}{"42}
+% \DeclareMathSymbol{\Gamma}{\mathalpha}{egreekr}{"00}
+% \DeclareMathSymbol{\Delta}{\mathalpha}{egreekr}{"01}
+% \DeclareMathSymbol{\Epsilon}{\mathalpha}{egreekr}{"45}
+% \DeclareMathSymbol{\Zeta}{\mathalpha}{egreekr}{"5A}
+% \DeclareMathSymbol{\Eta}{\mathalpha}{egreekr}{"48}
+% \DeclareMathSymbol{\Theta}{\mathalpha}{egreekr}{"02}
+% \DeclareMathSymbol{\Iota}{\mathalpha}{egreekr}{"49}
+% \DeclareMathSymbol{\Kappa}{\mathalpha}{egreekr}{"4B}
+% \DeclareMathSymbol{\Lambda}{\mathalpha}{egreekr}{"03}
+% \DeclareMathSymbol{\Mu}{\mathalpha}{egreekr}{"4D}
+% \DeclareMathSymbol{\Nu}{\mathalpha}{egreekr}{"4E}
+% \DeclareMathSymbol{\Xi}{\mathalpha}{egreekr}{"04}
+% \DeclareMathSymbol{\Omicron}{\mathalpha}{egreekr}{"4F}
+% \DeclareMathSymbol{\Pi}{\mathalpha}{egreekr}{"05}
+% \DeclareMathSymbol{\Rho}{\mathalpha}{egreekr}{"50}
+% \DeclareMathSymbol{\Sigma}{\mathalpha}{egreekr}{"06}
+% \DeclareMathSymbol{\Tau}{\mathalpha}{egreekr}{"54}
+% \DeclareMathSymbol{\Upsilon}{\mathalpha}{egreekr}{"07}
+% \DeclareMathSymbol{\Phi}{\mathalpha}{egreekr}{"08}
+% \DeclareMathSymbol{\Chi}{\mathalpha}{egreekr}{"58}
+% \DeclareMathSymbol{\Psi}{\mathalpha}{egreekr}{"09}
+% \DeclareMathSymbol{\Omega}{\mathalpha}{egreekr}{"0A}
+% %
+% \DeclareMathSymbol{\alphaup}{\mathalpha}{egreekr}{"0B}
+% \DeclareMathSymbol{\betaup}{\mathalpha}{egreekr}{"0C}
+% \DeclareMathSymbol{\gammaup}{\mathalpha}{egreekr}{"0D}
+\DeclareMathSymbol{\deltaup}{\mathalpha}{egreekr}{"0E}
+% \DeclareMathSymbol{\epsilonup}{\mathalpha}{egreekr}{"0F}
+% \DeclareMathSymbol{\zetaup}{\mathalpha}{egreekr}{"10}
+% \DeclareMathSymbol{\etaup}{\mathalpha}{egreekr}{"11}
+% \DeclareMathSymbol{\thetaup}{\mathalpha}{egreekr}{"12}
+% \DeclareMathSymbol{\iotaup}{\mathalpha}{egreekr}{"13}
+% \DeclareMathSymbol{\kappaup}{\mathalpha}{egreekr}{"14}
+% \DeclareMathSymbol{\lambdaup}{\mathalpha}{egreekr}{"15}
+% \DeclareMathSymbol{\muup}{\mathalpha}{egreekr}{"16}
+% \DeclareMathSymbol{\nuup}{\mathalpha}{egreekr}{"17}
+% \DeclareMathSymbol{\xiup}{\mathalpha}{egreekr}{"18}
+% \DeclareMathSymbol{\omicronup}{\mathalpha}{egreekr}{"6F}
+\DeclareMathSymbol{\piup}{\mathalpha}{egreekr}{"19}
+% \DeclareMathSymbol{\rhoup}{\mathalpha}{egreekr}{"1A}
+% \DeclareMathSymbol{\sigmaup}{\mathalpha}{egreekr}{"1B}
+% \DeclareMathSymbol{\tauup}{\mathalpha}{egreekr}{"1C}
+% \DeclareMathSymbol{\upsilonup}{\mathalpha}{egreekr}{"1D}
+% \DeclareMathSymbol{\phiup}{\mathalpha}{egreekr}{"1E}
+% \DeclareMathSymbol{\chiup}{\mathalpha}{egreekr}{"1F}
+% \DeclareMathSymbol{\psiup}{\mathalpha}{egreekr}{"20}
+% \DeclareMathSymbol{\omegaup}{\mathalpha}{egreekr}{"21}
+% \DeclareMathSymbol{\varepsilonup}{\mathalpha}{egreekr}{"22}
+% \DeclareMathSymbol{\varthetaup}{\mathalpha}{egreekr}{"23}
+% \DeclareMathSymbol{\varpiup}{\mathalpha}{egreekr}{"24}
+% \let\varrhoup\rhoup 
+% \let\varsigmaup\sigmaup
+% \let\varkappaup\kappaup
+% \DeclareMathSymbol{\varphiup}{\mathalpha}{egreekr}{"27}
 
-%\usepackage%[scaled=0.9]%
-%{classico}%  Optima as sans-serif font
-\renewcommand\sfdefault{uop}
+
+% \usepackage%[scaled=0.9]%
+% {classico}%  Optima as sans-serif font
+\usepackage{classico} % \renewcommand\sfdefault{URWClassico-TLF}
 \DeclareMathAlphabet{\mathsf}  {T1}{\sfdefault}{m}{sl}
 \SetMathAlphabet{\mathsf}{bold}{T1}{\sfdefault}{b}{sl}
 \newcommand*{\mathte}[1]{\textbf{\textit{\textsf{#1}}}}
@@ -284,6 +402,9 @@ citestyle=authoryear-comp,bibstyle=pglpm-authoryear,autopunct=false,sorting=ny,s
 % \setcounter{biburlnumpenalty}{1} % to allow url breaks anywhere
 % \setcounter{biburlucpenalty}{0}
 % \setcounter{biburllcpenalty}{1}
+\setcounter{biburlucpenalty}{1}  %break URL after uppercase character
+\setcounter{biburlnumpenalty}{1} %break URL after number
+\setcounter{biburllcpenalty}{1}  %break URL after lowercase character
 \DeclareDelimFormat{multicitedelim}{\addsemicolon\addspace\space}
 \DeclareDelimFormat{compcitedelim}{\addsemicolon\addspace\space}
 \DeclareDelimFormat{postnotedelim}{\addspace}
@@ -310,16 +431,21 @@ citestyle=authoryear-comp,bibstyle=pglpm-authoryear,autopunct=false,sorting=ny,s
 \newcommand*{\chapb}{ch.}
 %
 %\def\UrlOrds{\do\*\do\-\do\~\do\'\do\"\do\-}%
-\def\myUrlOrds{\do\0\do\1\do\2\do\3\do\4\do\5\do\6\do\7\do\8\do\9\do\a\do\b\do\c\do\d\do\e\do\f\do\g\do\h\do\i\do\j\do\k\do\l\do\m\do\n\do\o\do\p\do\q\do\r\do\s\do\t\do\u\do\v\do\w\do\x\do\y\do\z\do\A\do\B\do\C\do\D\do\E\do\F\do\G\do\H\do\I\do\J\do\K\do\L\do\M\do\N\do\O\do\P\do\Q\do\R\do\S\do\T\do\U\do\V\do\W\do\X\do\Y\do\Z}%
+% \def\myUrlOrds{\do\0\do\1\do\2\do\3\do\4\do\5\do\6\do\7\do\8\do\9\do\a\do\b\do\c\do\d\do\e\do\f\do\g\do\h\do\i\do\j\do\k\do\l\do\m\do\n\do\o\do\p\do\q\do\r\do\s\do\t\do\u\do\v\do\w\do\x\do\y\do\z\do\A\do\B\do\C\do\D\do\E\do\F\do\G\do\H\do\I\do\J\do\K\do\L\do\M\do\N\do\O\do\P\do\Q\do\R\do\S\do\T\do\U\do\V\do\W\do\X\do\Y\do\Z}%
 \makeatletter
 %\g@addto@macro\UrlSpecials{\do={\newline}}
-\g@addto@macro{\UrlBreaks}{\myUrlOrds}
+\g@addto@macro{\UrlBreaks}{%
+\do\0\do\1\do\2\do\3\do\4\do\5\do\6\do\7\do\8\do\9\do\a\do\b\do\c\do\d\do\e\do\f\do\g\do\h\do\i\do\j\do\k\do\l\do\m\do\n\do\o\do\p\do\q\do\r\do\s\do\t\do\u\do\v\do\w\do\x\do\y\do\z\do\A\do\B\do\C\do\D\do\E\do\F\do\G\do\H\do\I\do\J\do\K\do\L\do\M\do\N\do\O\do\P\do\Q\do\R\do\S\do\T\do\U\do\V\do\W\do\X\do\Y\do\Z%
+}
+\g@addto@macro\UrlSpecials{%
+\do\/{\mbox{\UrlFont/}\hskip 0pt plus 10pt}%
+}
 \makeatother
 \newcommand*{\arxiveprint}[1]{%
 arXiv \doi{10.48550/arXiv.#1}%
 }
 \newcommand*{\mparceprint}[1]{%
-\href{http://www.ma.utexas.edu/mp_arc-bin/mpa?yn=#1}{mp\_arc:\allowbreak\nolinkurl{#1}}%
+\href{http://www.ma.utexas.edu/mp_arc-bin/mpa?yn=#1}{mp_arc:\allowbreak\nolinkurl{#1}}%
 }
 \newcommand*{\haleprint}[1]{%
 \href{https://hal.archives-ouvertes.fr/#1}{\textsc{hal}:\allowbreak\nolinkurl{#1}}%
@@ -481,7 +607,7 @@ Open Science Framework \doi{10.17605/osf.io/#1}%
 \providecommand{\email}[2]{\href{mailto:#1ZZ@#2 ((remove ZZ))}{#1\protect\atf#2}}
 %\providecommand{\email}[2]{\href{mailto:#1@#2}{#1@#2}}
 
-\preauthor{\vspace{-0\baselineskip}\begin{center}
+\preauthor{\vspace{-0.5\baselineskip}\begin{center}
 \normalsize\sffamily%
 \lineskip  0.5em}
 \postauthor{\par\end{center}}
@@ -551,7 +677,6 @@ P.G.L.  Porta Mana  \href{https://orcid.org/0000-0002-6070-0784}{\protect\includ
   \\[\jot]
   \textsuperscript{\ensuremath{\dagger}}\amp\ Mohn Medical Imaging and Visualization Centre, Dept of Radiology,\\
   Haukeland University Hospital, Bergen, Norway
-
 }
 }
 
@@ -879,7 +1004,9 @@ During the trial period, the classifiers perform according to the classification
 % \end{equation}
 That is, classifier $\Beta$ actually led to a \emph{loss} of revenue. The manager therefore decides to employ classifier $\Alpha$, commenting with a smug smile that it is always unwise to trust the recommendations of developers, unacquainted with the nitty-gritty reality of a business.
 
-The average gains above are easy to calculate from some additional information. The final net gains caused by the correct or incorrect classification of one electronic component are as follows:
+\smallskip
+
+Actually, the developers could have reached similar conclusions, if they had asked the manager for some additional information. The final net gains caused by the correct or incorrect classification of one electronic component are as follows:
 \begin{equation}
   \label{eq:utility_example}
   \rotatebox[origin=c]{90}{
@@ -997,7 +1124,7 @@ In the present work, we argue that formula~\eqref{eq:expected_utility} is indeed
 
 Our argument is based on \emph{Decision Theory}, an overview of which is given in \sect~\ref{sec:decision_theory}.
 
-The utility yield~\eqref{eq:expected_utility} is a linear combination of the confusion-matrix elements, with coefficients independent of the elements themselves. In \sect~\ref{sec:evaluation_metrics} we explore some properties of this formula and of the space of such metrics for binary classification. We also show that some common metrics such as precision, $F_{1}$-measure, Matthews correlation coefficient, balanced accuracy, and Fowlkes-Mallows index \emph{cannot} be written as a linear combination of this kind (or a one-one function thereof). This impossibility has two consequences. First, it means that these metrics are likely affected by some kind of cognitive bias. Second, there exists \emph{no} classification problem for which these metrics can correctly rank the performance of all pairs of classifiers. Using any one of these metrics leaves open the possibility that the evaluation is incorrect \emph{a priori}. In \sect~\ref{sec:auc} we show that this is also true for the Area Under the Curve of the Receiver Operating Characteristic, and we offer some additional remarks about it from the standpoint of decision theory.
+The utility yield~\eqref{eq:expected_utility} is a linear combination of the confusion-matrix elements, with coefficients independent of the elements themselves. In \sect~\ref{sec:evaluation_metrics} we explore some properties of this formula and of the space of such metrics for binary classification. We also show that some common metrics such as precision, $F_{1}$-measure, Matthews correlation coefficient, balanced accuracy, and Fowlkes-Mallows index \emph{cannot} be written as a linear combination of this kind (or a one-one function thereof). This impossibility has two consequences. First, it means that these metrics are affected by some kind of cognitive bias \autocites{hastieetal2001_r2010,eells1982_r2016}. Second, there exists \emph{no} classification problem for which these metrics can correctly rank the performance of all pairs of classifiers. Using any one of these metrics leaves open the possibility that the evaluation is incorrect \emph{a priori}. In \sect~\ref{sec:auc} we show that this is also true for the Area Under the Curve of the Receiver Operating Characteristic, and we offer some additional remarks about it from the standpoint of decision theory.
 
 On the other hand, metrics such as accuracy, true-positive rate, true-negative rate can be written in the form~\eqref{eq:expected_utility}. Consequently, each one has a set of classification problems in which it correctly ranks the performance of \emph{all} pairs of classifiers.
 
@@ -1434,6 +1561,7 @@ Another very common metric for evaluating binary classifiers is the Area Under t
 
 The area under the curve can only be computed for classifiers that output a continuous variable rather than a class. A threshold for this variable determines whether its value predicts one class or the other. Different choices of threshold lead to different pairs of false-positive rate $f$ (which is $1-{}$true-negative rate) and true-positive rate $t$ in a given test set. These pairs can be plotted as a curve $f \mapsto t(f)$ on a graph with corresponding axes. Given the proportion of classes in the test set, every point on the curve corresponds to a possible confusion matrix $C_{ij}(f)$ that the classifier can produce depending on the threshold chosen. The area subtended by the curve is a weighted average of true-positive rates with a peculiar choice of weights; the weights are uniform as a function of the false-positive rate, but generally not uniform as a function of the threshold, for example. The meaning and proper use of the receiver operating characteristic are discussed in a classic by \cites{metz1978}, see especially p.~290.
 
+% ***Add ref to swetsetal1961***
 
 \medskip
 
