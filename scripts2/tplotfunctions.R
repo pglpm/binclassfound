@@ -33,7 +33,7 @@ palette(tolpalette)
 ## scale_colour_discrete <- khroma::scale_colour_bright
 
 ## to output in pdf format
-mypdf <- function(file = 'Rplot', apaper = 5, portrait = FALSE,
+tpdf <- function(file = 'Rplot', apaper = 5, portrait = FALSE,
                  height = 148 / 25.4, width = 210 / 25.4, asp = NA, ...) {
   if (is.numeric(apaper)) {
     if (portrait) {
@@ -56,7 +56,7 @@ mypdf <- function(file = 'Rplot', apaper = 5, portrait = FALSE,
 }
 
 ## to output in svg format
-mysvg <- function(file = 'Rplot', apaper = 5, portrait = FALSE,
+tsvg <- function(file = 'Rplot', apaper = 5, portrait = FALSE,
                  height = 148 / 25.4, width = 210 / 25.4, asp = NA, ...) {
   if (is.numeric(apaper)) {
     if (portrait) {
@@ -80,7 +80,7 @@ mysvg <- function(file = 'Rplot', apaper = 5, portrait = FALSE,
 
 
 ## to output in png format
-mypng <- function(file = 'Rplot', res = 300, apaper = 5, portrait = FALSE,
+tpng <- function(file = 'Rplot', res = 300, apaper = 5, portrait = FALSE,
                  height = 148 / 25.4, width = 210 / 25.4, asp = NA, ...) {
   if (is.numeric(apaper)) {
     if (portrait) {
@@ -103,7 +103,7 @@ mypng <- function(file = 'Rplot', res = 300, apaper = 5, portrait = FALSE,
 }
 
 ## to output in png format
-myjpg <- function(file = 'Rplot', res = 300, apaper = 5, portrait = FALSE,
+tjpg <- function(file = 'Rplot', res = 300, apaper = 5, portrait = FALSE,
     height = 148 / 25.4, width = 210 / 25.4, asp = NA,
     quality = 90, ...) {
   if (is.numeric(apaper)) {
@@ -127,27 +127,54 @@ myjpg <- function(file = 'Rplot', res = 300, apaper = 5, portrait = FALSE,
       res = res, quality = quality, ...)
 }
 
-myflexiplot <- function(
+tflexiplot <- function(
     x, y,
-    xdomain = NULL, ydomain = NULL,
-    xlim = NULL, ylim = NULL,
     type = 'l',
-    pch = c(1, 0, 2, 5, 6, 3, 4),
-    grid = TRUE,
+    lty = c(1, 2, 4, 3, 6, 5),
+    lwd = 2,
+    pch = c(1, 2, 0, 5, 6, 3), #, 4,
+    col = palette(),
+    xlab = NULL, ylab = NULL,
+    xlim = NULL, ylim = NULL,
     add = FALSE,
-    lwd = 1,
-    family = 'Palatino',
-    mgp = c(1.5, 0.5, 0),
-    oma = c(0.5, 0.5, 0.5, 0.5),
-    mar = c(3, 2.5, 1, 1),
+    xdomain = NULL, ydomain = NULL,
+    alpha.f = 1,
+    xjitter = NULL,
+    yjitter = NULL,
+    ## c( ## Tol's colour-blind-safe scheme
+    ##     '#4477AA',
+    ##     '#EE6677',
+    ##     '#228833',
+    ##     '#CCBB44',
+    ##     '#66CCEE',
+    ##     '#AA3377' #, '#BBBBBB'
+    ## ),
+    grid = TRUE,
+    cex.main = 1,
     ...
 ){
     xat <- yat <- NULL
 
     if(missing('x') && !missing('y')){
-        x <- seq_len(NROW(y))
+        x <- numeric(NROW(y))
+        if(is.null(xdomain) && is.null(xlim)){
+            xat <- 0
+            xdomain <- NA
+            if(!is.null(xjitter)){
+                xlim <- c(-0.04, 0.04)
+            }
+            if(is.null(xlab)){ xlab <- NA }
+        }
     } else if(!missing('x') && missing('y')){
-        y <- seq_len(NROW(x))
+        y <- numeric(NROW(x))
+        if(is.null(ydomain) && is.null(ylim)){
+            yat <- 0
+            ydomain <- NA
+            if(!is.null(yjitter)){
+                ylim <- c(-0.04, 0.04)
+            }
+            if(is.null(ylab)){ ylab <- NA }
+        }
     } else if(missing('x') && missing('y')){
         stop('Arguments "x" and "y" cannot both be missing')
     }
@@ -159,8 +186,10 @@ myflexiplot <- function(
         ## because the lexical order may not be correct
         ## (think of values like 'low', 'medium', 'high')
         x <- as.numeric(factor(x, levels = xdomain))
+        if(is.null(xjitter)){xjitter <- TRUE}
         xat <- seq_along(xdomain)
     }
+    if(isTRUE(xjitter)){x <- jitter(x)}
 
     ## if y is character, convert to numeric
     if(is.character(y)){
@@ -169,11 +198,13 @@ myflexiplot <- function(
         ## because the lexical order may not be correct
         ## (think of values like 'low', 'medium', 'high')
         y <- as.numeric(factor(y, levels = ydomain))
+        if(is.null(yjitter)){yjitter <- TRUE}
         yat <- seq_along(ydomain)
     }
+    if(isTRUE(yjitter)){y <- jitter(y)}
 
     ## Syntax of xlim and ylim that allows
-    ## for the specification of only upper- or lower-bond
+    ## for the specification of only upper- or lower-bound
     if(length(xlim) == 2){
         if(is.null(xlim[1]) || !is.finite(xlim[1])){ xlim[1] <- min(x[is.finite(x)]) }
         if(is.null(xlim[2]) || !is.finite(xlim[2])){ xlim[2] <- max(x[is.finite(x)]) }
@@ -182,19 +213,91 @@ myflexiplot <- function(
         if(is.null(ylim[1]) || !is.finite(ylim[1])){ ylim[1] <- min(y[is.finite(y)]) }
         if(is.null(ylim[2]) || !is.finite(ylim[2])){ ylim[2] <- max(y[is.finite(y)]) }
     }
-    
-    par(family = family, mgp = mgp, oma = oma, mar = mar)
-    graphics::matplot(x, y, xlim = xlim, ylim = ylim, type = type, pch = pch, axes = F, add = add, lwd = lwd, ...)
+
+    if(is.na(alpha.f)){alpha.f <- 1}
+    col <- adjustcolor(col, alpha.f = alpha.f)
+
+    graphics::matplot(x, y, xlim = xlim, ylim = ylim, type = type, axes = F,
+        col = col, lty = lty, lwd = lwd, pch = pch, cex.main = cex.main, add = add, xlab = xlab, ylab = ylab, ...)
     if(!add){
-        graphics::axis(1, at = xat, labels = xdomain, lwd = 0, ...)
-        graphics::axis(2, at = yat, labels = ydomain, lwd = 0, ...)
+        graphics::axis(1, at = xat, labels = xdomain, tick = !grid,
+            col = 'black', lwd = 1, lty = 1, ...)
+        graphics::axis(2, at = yat, labels = ydomain, tick = !grid,
+            col = 'black', lwd = 1, lty = 1, ...)
         if(grid){
             graphics::grid(nx = NULL, ny = NULL, lty = 1, col = '#BBBBBB80')
         }
     }
 }
 
-myplotquantiles <- function(
+## tflexiplot <- function(
+##     x, y,
+##     xdomain = NULL, ydomain = NULL,
+##     xlim = NULL, ylim = NULL,
+##     type = 'l',
+##     pch = c(1, 0, 2, 5, 6, 3, 4),
+##     grid = TRUE,
+##     add = FALSE,
+##     lwd = 1,
+##     family = 'Palatino',
+##     mgp = c(1.5, 0.5, 0),
+##     oma = c(0.5, 0.5, 0.5, 0.5),
+##     mar = c(3, 2.5, 1, 1),
+##     ...
+## ){
+##     xat <- yat <- NULL
+## 
+##     if(missing('x') && !missing('y')){
+##         x <- seq_len(NROW(y))
+##     } else if(!missing('x') && missing('y')){
+##         y <- seq_len(NROW(x))
+##     } else if(missing('x') && missing('y')){
+##         stop('Arguments "x" and "y" cannot both be missing')
+##     }
+## 
+##     ## if x is character, convert to numeric
+##     if(is.character(x)){
+##         if(is.null(xdomain)){ xdomain <- unique(x) }
+##         ## we assume the user has sorted the vaules in a meaningful order
+##         ## because the lexical order may not be correct
+##         ## (think of values like 'low', 'medium', 'high')
+##         x <- as.numeric(factor(x, levels = xdomain))
+##         xat <- seq_along(xdomain)
+##     }
+## 
+##     ## if y is character, convert to numeric
+##     if(is.character(y)){
+##         if(is.null(ydomain)){ ydomain <- unique(y) }
+##         ## we assume the user has sorted the vaules in a meaningful order
+##         ## because the lexical order may not be correct
+##         ## (think of values like 'low', 'medium', 'high')
+##         y <- as.numeric(factor(y, levels = ydomain))
+##         yat <- seq_along(ydomain)
+##     }
+## 
+##     ## Syntax of xlim and ylim that allows
+##     ## for the specification of only upper- or lower-bond
+##     if(length(xlim) == 2){
+##         if(is.null(xlim[1]) || !is.finite(xlim[1])){ xlim[1] <- min(x[is.finite(x)]) }
+##         if(is.null(xlim[2]) || !is.finite(xlim[2])){ xlim[2] <- max(x[is.finite(x)]) }
+##     }
+##     if(length(ylim) == 2){
+##         if(is.null(ylim[1]) || !is.finite(ylim[1])){ ylim[1] <- min(y[is.finite(y)]) }
+##         if(is.null(ylim[2]) || !is.finite(ylim[2])){ ylim[2] <- max(y[is.finite(y)]) }
+##     }
+##     
+##     par(family = family, mgp = mgp, oma = oma, mar = mar)
+##     graphics::matplot(x, y, xlim = xlim, ylim = ylim, type = type, pch = pch, axes = F, add = add, lwd = lwd, ...)
+##     if(!add){
+##         graphics::axis(1, at = xat, labels = xdomain, lwd = 0, ...)
+##         graphics::axis(2, at = yat, labels = ydomain, lwd = 0, ...)
+##         if(grid){
+##             graphics::grid(nx = NULL, ny = NULL, lty = 1, col = '#BBBBBB80')
+##         }
+##     }
+## }
+
+tplotquantiles <- function(
     x, y,
     xdomain = NULL,
     alpha.f = 0.25,
@@ -221,7 +324,7 @@ myplotquantiles <- function(
     ## else if(!is.character(alpha)){alpha <- alpha2hex(alpha)}
     ## if(!(is.na(col) | nchar(col)>7)){col <- paste0(col, alpha)}
     ##
-    myflexiplot(x = x, y = y, xdomain = xdomain, type = 'n', ...)
+    tflexiplot(x = x, y = y, xdomain = xdomain, type = 'n', ...)
 
     ## if x is character, convert to numeric
     if(is.character(x)){
@@ -239,7 +342,7 @@ myplotquantiles <- function(
 }
 
 
-mytplot <- function(x, y, xlim = c(NA, NA), ylim = c(NA, NA), asp = NA,
+tplot <- function(x, y, xlim = c(NA, NA), ylim = c(NA, NA), asp = NA,
     n = 10, family = '', xticks = NULL, xlabels = TRUE,
     yticks = NULL, ylabels = TRUE, cex = 1.5, ly = NULL,
     lx = NULL, mar = NULL, lty.axis = 1, lwd.axis = 0,
@@ -558,12 +661,12 @@ mytplot <- function(x, y, xlim = c(NA, NA), ylim = c(NA, NA), asp = NA,
     }
 }
 
-mylegend <- function(x, y=NULL, legend, col=palette(), pch=c(1,0,2,5,6,3,4), lty=1:4, lwd=2, alpha=1, cex=1.5, ...){
+tlegend <- function(x, y=NULL, legend, col=palette(), pch=c(1,0,2,5,6,3,4), lty=1:4, lwd=2, alpha=1, cex=1.5, ...){
     suppressWarnings(col <- mapply(function(i,j)adjustcolor(i,j),col,alpha))
     legend(x=x, y=y, legend=legend, col=col, pch=pch, lty=lty, lwd=lwd, bty='n', cex=cex, ...)
 }
 
-myfivenumaxis <- function(side, x, col='#555555', type=6){
+tfivenumaxis <- function(side, x, col='#555555', type=6){
     x <- x[!is.na(x) && is.finite(x)]
     if(length(x)==0){x <- c(0,1)}
     if(diff(range(x))==0){x <- range(x) + c(-1,1)}
@@ -598,7 +701,7 @@ myfivenumaxis <- function(side, x, col='#555555', type=6){
 
 ## scatteraxis(): use rug()
 
-myhist <- function(x, n=NULL, type=6, pretty=FALSE, plot=FALSE,
+thist <- function(x, n=NULL, type=6, pretty=FALSE, plot=FALSE,
     extendbreaks=FALSE, ylim=c(0,NA), ...){
     if(!is.list(x)){x <- list(x)}
     if(!is.list(n)){n <- list(n)}
@@ -643,7 +746,7 @@ myhist <- function(x, n=NULL, type=6, pretty=FALSE, plot=FALSE,
         out <- c(out,list(nextout))
     }
     if(plot){
-        mytplot(x=lapply(out,function(xx){
+        tplot(x=lapply(out,function(xx){
             if(length(xx$breaks)==1){xx$mids}else{xx$breaks}
         } ),
               y=lapply(out,function(xx)xx$density),ylim=ylim,type='h', ...)
@@ -652,13 +755,13 @@ myhist <- function(x, n=NULL, type=6, pretty=FALSE, plot=FALSE,
     }
 }
 
-myquantile <- function(x, probs=c(0.055, 0.25, 0.5, 0.75, 0.945), na.rm=TRUE, names=TRUE, type=6, ...){
+tquantile <- function(x, probs=c(0.055, 0.25, 0.5, 0.75, 0.945), na.rm=TRUE, names=TRUE, type=6, ...){
     quantile(x=x, probs=probs, na.rm=na.rm, names=names, type=type, ...)
 }
 
-mymad <- function(x){mad(x, constant=1, na.rm=TRUE)}
+tmad <- function(x){mad(x, constant=1, na.rm=TRUE)}
 
-mysummary <- function(x){
+tsummary <- function(x){
     x <- cbind(x)
     apply(x, 2, function(xx){
         c(quantile(xx, c(0.055, 0.25, 0.5, 0.75, 0.945), type=6, na.rm=TRUE), MAD=mad(xx,constant=1,na.rm=T), IQR=IQR(xx,na.rm=T), mean=mean(xx,na.rm=T), sd=sd(xx,na.rm=T), hr=diff(range(xx,na.rm=T))/2, min=min(xx,na.rm=T), max=max(xx,na.rm=T), NAs=sum(is.na(xx)))
@@ -666,17 +769,17 @@ mysummary <- function(x){
 }
 
 ## Function to build powerset
-mypowerset <- function(set){
+tpowerset <- function(set){
   n <- length(set)
   masks <- 2^(1:n-1)
   lapply( 1:2^n-1, function(u) set[ bitwAnd(u, masks) != 0 ] )
 }
 
 ## Greatest common denominator
-mygcd <- function(...){Reduce(function(a, b){if (b == 0) a else Recall(b, a %% b)}, c(...))}
+tgcd <- function(...){Reduce(function(a, b){if (b == 0) a else Recall(b, a %% b)}, c(...))}
 
 ## Normalize according to row
-mynormalize <- function(x){
+tnormalize <- function(x){
     if(is.null(dim(x)) || is.table(x)){
         x/sum(x,na.rm=T)
     }else{
@@ -685,15 +788,15 @@ mynormalize <- function(x){
 }
 
 ## Table with list of values
-mytable <- function(x, values=NULL, norm=FALSE){
+ttable <- function(x, values=NULL, norm=FALSE){
     if(norm){
-        mynormalize(table(c(x,values))-!(is.null(values)))
+        tnormalize(table(c(x,values))-!(is.null(values)))
     }else{
         table(c(x,values))-!(is.null(values))
         }
 }
 
-mybisect <- function(fn, a, b){
+tbisect <- function(fn, a, b){
     if(fn(a) * fn(b) > 0){
         stop('Cannot use bisection.')
     } else if(fn(a) > 0){
@@ -714,14 +817,14 @@ mybisect <- function(fn, a, b){
     list(value = m, objective = fn(m))
 }
 
-myread.csv <- function(file, header = TRUE, sep = ",", quote = "\"", dec = ".", fill = TRUE, comment.char = "", na.strings = '', stringsAsFactors = FALSE, tryLogical = FALSE, ...){
+tread.csv <- function(file, header = TRUE, sep = ",", quote = "\"", dec = ".", fill = TRUE, comment.char = "", na.strings = '', stringsAsFactors = FALSE, tryLogical = FALSE, ...){
     read.csv(file, header = TRUE, sep = ",", quote = "\"", dec = ".", fill = TRUE, comment.char = "", na.strings = '', stringsAsFactors = FALSE, tryLogical = FALSE, ...)
 }
 
 
-mystr2bin <- function(x) {paste(as.integer(rev(intToBits(strtoi(x)))), collapse = "")}
+tstr2bin <- function(x) {paste(as.integer(rev(intToBits(strtoi(x)))), collapse = "")}
 
-mydec2bin <- function(x) {
+tdec2bin <- function(x) {
     hex <- sprintf('%A', 1+x)
     digits <- gsub('^.*?\\.([^P]+)P.*', '\\1', hex)
     len <- nchar(digits)
