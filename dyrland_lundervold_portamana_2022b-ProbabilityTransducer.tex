@@ -2,7 +2,7 @@
 \pdfinclusioncopyfonts=1 % to preserve fonts in figs
 %% Author: PGL  Porta Mana
 %% Created: 2022-04-14T17:18:22+0200
-%% Last-Updated: 2026-10-18T13:56:40+0200
+%% Last-Updated: 2026-10-18T14:54:56+0200
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Probabilities for classifier outputs
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -30,14 +30,14 @@ british%
 
 \newcommand*{\firstdraft}{1 June 2022}%{14 April 2022}
 \newcommand*{\firstpublished}{\firstdraft}
-\newcommand*{\updated}{\ifarxiv 21 February 2023\else\today\fi}
+\newcommand*{\updated}{\ifarxiv 18 October 2026\else\today\fi}
 \newcommand*{\propertitle}{A probability calibrator\\ for machine-learning classifiers}%\\ {\Large}}
 % title uses LARGE; set Large for smaller
 \newcommand*{\pdftitle}{\propertitle}
 \newcommand*{\headtitle}{Probability calibrator for classifiers}
 \newcommand*{\pdfauthor}{K. Dyrland, A. S. Lundervold, P.G.L.  Porta Mana}
 \newcommand*{\headauthor}{Dyrland, Lundervold, Porta Mana}
-\newcommand*{\reporthead}{\ifarxiv\else Open Science Framework \href{https://doi.org/10.31219/osf.io/vct9y}{\textsc{doi}:10.31219/osf.io/vct9y}\fi}% Report number
+\newcommand*{\reporthead}{\iffalse\else Open Science Framework \href{https://doi.org/10.31219/osf.io/vct9y}{\textsc{doi}:10.31219/osf.io/vct9y}\fi}% Report number
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%% Calls to packages (uncomment as needed)
@@ -599,7 +599,7 @@ citebordercolor=blue,citecolor=blue,linkbordercolor=blue,linkcolor=blue,urlborde
 \scshape\headauthor}}{}{{\footnotesize\sffamily%
 \headtitle}}
 \makeoddfoot{manaart}{}{\thepage}{}
-\newcommand*\autanet{\includegraphics[height=\heightof{M}]{autanet.pdf}}
+% \newcommand*\autanet{\includegraphics[height=\heightof{M}]{autanet.pdf}}
 \definecolor{mygray}{gray}{0.333}
 \iftypodisclaim%
 \ifafour\newcommand\addprintnote{\begin{picture}(0,0)%
@@ -692,13 +692,13 @@ citebordercolor=blue,citecolor=blue,linkbordercolor=blue,linkcolor=blue,urlborde
 \author{%
 %\hspace*{\stretch{0}}%
 %% uncomment if additional authors present
-  K. Dyrland \href{https://orcid.org/0000-0002-7674-5733}{\protect\includegraphics[scale=0.16]{orcid_32x32.png}}\\[-\jot]
+  K. Dyrland \href{https://orcid.org/0000-0002-7674-5733}{\protect\includegraphics[scale=0.16]{pglpm_latex/orcid_32x32.png}}\\[-\jot]
   {\scriptsize\epost{\email{kjetil.dyrland}{gmail.com}}}%
 \\[\jot]%
-A. S. Lundervold \href{https://orcid.org/0000-0001-8663-4247}{\protect\includegraphics[scale=0.16]{orcid_32x32.png}}\textsuperscript{\ensuremath{\dagger}} \\[-\jot]
+A. S. Lundervold \href{https://orcid.org/0000-0001-8663-4247}{\protect\includegraphics[scale=0.16]{pglpm_latex/orcid_32x32.png}}\textsuperscript{\ensuremath{\dagger}} \\[-\jot]
 {\scriptsize\epost{\email{alexander.selvikvag.lundervold}{hvl.no}}}%
 \\[\jot]%
-P.G.L.  Porta Mana  \href{https://orcid.org/0000-0002-6070-0784}{\protect\includegraphics[scale=0.16]{orcid_32x32.png}}\\[-\jot]
+P.G.L.  Porta Mana  \href{https://orcid.org/0000-0002-6070-0784}{\protect\includegraphics[scale=0.16]{pglpm_latex/orcid_32x32.png}}\\[-\jot]
 {\scriptsize\epost{\email{pgl}{portamana.org}}}%
 %
 \\{\tiny(listed alphabetically)}
